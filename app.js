@@ -336,7 +336,7 @@ const TASK_LIBRARY = [
   {
     id: 'bouppteckning',
     title: 'Planera bouppteckningen',
-    desc: 'En bouppteckning är en förteckning över den avlidnes tillgångar och skulder. Den ska vara klar inom 3 månader och skickas till Skatteverket inom 4 månader.<br><br><strong>Göra själv:</strong> Möjligt om boet är enkelt (bara bankmedel och lösöre). Kräver två utomstående vittnen som inte är arvingar. Sparar 6 500–15 000 kr.<br><strong>Anlita jurist:</strong> Rekommenderas vid fastighet, företag, testamente eller om arvingarna inte är överens.',
+    desc: 'En bouppteckning är en förteckning över den avlidnes tillgångar och skulder. Den ska vara klar inom 3 månader och skickas till Skatteverket inom 4 månader.<br><br><strong>Är boet litet?</strong> Om tillgångarna knappt täcker begravnings- och bouppteckningskostnaderna kan du istället göra en <em>dödsboanmälan</em> hos kommunens socialtjänst — det är gratis och enklare. Kontakta socialtjänsten för att se om det gäller dig.<br><br><strong>Göra själv:</strong> Möjligt om boet är enkelt (bara bankmedel och lösöre). Kräver två utomstående vittnen som inte är arvingar. Sparar 6 500–15 000 kr.<br><strong>Anlita jurist:</strong> Rekommenderas vid fastighet, företag, testamente eller om arvingarna inte är överens.',
     urgency: 'week',
     time: 'Kontakta jurist inom veckan',
     link: null,
@@ -389,6 +389,23 @@ const TASK_LIBRARY = [
     urgency: 'week',
     time: 'ca 30 min',
     link: null,
+    triggers: [],
+  },
+
+  {
+    id: 'forsakringskassan',
+    title: 'Kontakta Försäkringskassan',
+    desc: `Försäkringskassan behöver meddelas om dödsfallet för att stoppa löpande utbetalningar och för att du ska kunna ansöka om förmåner du kan ha rätt till.<br><br>
+<strong>Stoppa automatiskt:</strong> Barnbidrag, bostadsbidrag, sjukpenning och andra bidrag avslutas inte alltid automatiskt — kontakta FK för att undvika återkrav.<br><br>
+<strong>Ansök om:</strong><br>
+— <em>Barnpension</em>: Barn under 20 år kan ha rätt till barnpension om en förälder dör.<br>
+— <em>Efterlevandestöd</em>: Om barnpensionen inte räcker får barnet efterlevandestöd upp till 18 år.<br>
+— <em>Omställningspension</em>: Efterlevande make/registrerad partner kan ansöka om omställningspension i upp till 12 månader.<br><br>
+Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`,
+    urgency: 'week',
+    time: 'ca 30 min',
+    phone: '0771-524 524',
+    link: 'https://www.forsakringskassan.se/privatperson/nar-nagon-dor',
     triggers: [],
   },
 
@@ -623,6 +640,23 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 30 min',
     desc: 'Rullstol, säng, lyft och andra medicintekniska produkter är ofta lån från regionen och ska återlämnas rengjorda. Större hjälpmedel hämtas ofta kostnadsfritt — ring regionen eller kommunen. Överblivna mediciner (tabletter, sprutor, krämer) lämnas till närmaste apotek för säker destruktion.',
     triggers: [],
+  },
+
+  {
+    id: 'sorgstod',
+    title: 'Ta hand om dig själv',
+    desc: `Det praktiska tar tid och energi — men sorgen kräver sin egen plats.<br><br>
+Du behöver inte ha allt under kontroll. Det är normalt att känna sig utmattad, arg, lättad, tom eller allt på en gång.<br><br>
+<strong>Prata med någon:</strong><br>
+— <em>1177 Sorgelinjen</em>: Ring 1177 och be om att bli kopplad till sorgestöd.<br>
+— <em>SPES</em> (Suicidprevention och efterlevandestöd): spes.se, för dig som förlorat någon till självmord.<br>
+— <em>Kyrkans stöd</em>: Oavsett tro erbjuder Svenska kyrkan samtalsstöd — kontakta närmaste kyrka.<br><br>
+Det finns ingen tidsgräns för sorg, och du behöver inte vara klar.`,
+    urgency: 'later',
+    time: 'Din tid',
+    link: 'https://www.1177.se/liv-halsa/psykisk-halsa/sorg/',
+    triggers: [],
+    notesPlaceholder: 'Vad hjälper dig just nu? Är det någon du vill ringa?',
   },
 
   // ── ALWAYS: Bostadsavveckling ──────────────
