@@ -2076,6 +2076,69 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   COMPLETION OVERLAY
+════════════════════════════════════════════ */
+.completion-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  animation: co-fade-in 0.5s ease forwards;
+}
+.completion-overlay.hidden { display: none; }
+
+@keyframes co-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.completion-overlay-inner {
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+  animation: co-rise 0.5s ease 0.1s both;
+}
+@keyframes co-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.co-check { width: 72px; height: 72px; margin: 0 auto 24px; }
+.co-check-svg { width: 72px; height: 72px; }
+.co-check-circle {
+  stroke: var(--green); stroke-width: 2.5;
+  stroke-dasharray: 166; stroke-dashoffset: 166;
+  animation: co-circle 0.6s ease 0.3s forwards;
+}
+.co-check-mark {
+  stroke: var(--green); stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 48; stroke-dashoffset: 48;
+  animation: co-checkmark 0.4s ease 0.85s forwards;
+}
+@keyframes co-circle   { to { stroke-dashoffset: 0; } }
+@keyframes co-checkmark { to { stroke-dashoffset: 0; } }
+
+.co-title {
+  font-size: 2rem; font-weight: 700;
+  color: var(--text-primary); letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+.co-name {
+  font-size: 0.9rem; color: var(--text-muted);
+  margin-bottom: 20px; font-weight: 500;
+}
+.co-body {
+  font-size: 1rem; color: var(--text-soft);
+  line-height: 1.75; margin-bottom: 32px;
+}
+.co-actions { display: flex; flex-direction: column; gap: 10px; }
+.co-pdf-btn  { width: 100%; }
+.co-close-btn { width: 100%; font-size: 0.9rem; color: var(--text-muted); }
+
+/* ═══════════════════════════════════════════
    PHONE 2 (secondary action, e.g. 1177)
 ════════════════════════════════════════════ */
 .task-expand-phone--secondary {

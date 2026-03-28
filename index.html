@@ -84,7 +84,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
-  <link rel="stylesheet" href="style.css?v=8" />
+  <link rel="stylesheet" href="style.css?v=9" />
 </head>
 <body>
 
@@ -764,7 +764,32 @@
   <button onclick="undoTaskDone()">Ångra</button>
 </div>
 
-<script src="app.js?v=8"></script>
+<!-- ═══════════════════════════════════════════
+     COMPLETION OVERLAY — visas när allt är klart
+════════════════════════════════════════════ -->
+<div id="completion-overlay" class="completion-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="co-title">
+  <div class="completion-overlay-inner">
+    <div class="co-check" aria-hidden="true">
+      <svg viewBox="0 0 52 52" class="co-check-svg">
+        <circle class="co-check-circle" cx="26" cy="26" r="24" fill="none"/>
+        <path class="co-check-mark" fill="none" d="M14 26l9 9 15-17"/>
+      </svg>
+    </div>
+    <h1 class="co-title" id="co-title">Allt är klart.</h1>
+    <p class="co-name" id="co-name"></p>
+    <p class="co-body">
+      Det har tagit tid och kraft — men du har tagit dig igenom det.<br>
+      Steg för steg, uppgift för uppgift.<br>
+      Nu kan du lämna det praktiska bakom dig.
+    </p>
+    <div class="co-actions">
+      <button class="btn-primary co-pdf-btn" onclick="printPlan()">Spara som PDF</button>
+      <button class="btn-ghost co-close-btn" onclick="closeCompletionOverlay()">Tillbaka till planen</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=9"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

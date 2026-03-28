@@ -967,7 +967,8 @@ function updateProgress() {
   if (done === total) {
     summaryEl.innerHTML = `<strong>${total} av ${total}</strong> uppgifter klara`;
     if (completionEl) completionEl.classList.add('visible');
-    document.getElementById('plan-sub').textContent = 'Du har gått igenom allt. Ta en djup andetag.';
+    document.getElementById('plan-sub').textContent = 'Du har gått igenom allt. Ta ett djupt andetag.';
+    setTimeout(showCompletionOverlay, 600);
   } else {
     summaryEl.innerHTML = `<strong>${done} av ${total}</strong> uppgifter klara`;
     if (completionEl) completionEl.classList.remove('visible');
@@ -1896,6 +1897,27 @@ function saveState() {
   window.addEventListener('online',  hide);
   if (!navigator.onLine) show();
 })();
+
+// ─── COMPLETION OVERLAY ──────────────────────
+function showCompletionOverlay() {
+  const overlay = document.getElementById('completion-overlay');
+  if (!overlay || overlay.dataset.shown === '1') return;
+  overlay.dataset.shown = '1';
+  const nameEl = document.getElementById('co-name');
+  if (nameEl && state.name) {
+    nameEl.textContent = state.name + 's dödsbo är nu genomgånget.';
+  }
+  overlay.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  track('Plan Completed');
+}
+
+function closeCompletionOverlay() {
+  const overlay = document.getElementById('completion-overlay');
+  if (!overlay) return;
+  overlay.classList.add('hidden');
+  document.body.style.overflow = '';
+}
 
 // ─── PDF / PRINT ─────────────────────────────
 function printPlan() {
