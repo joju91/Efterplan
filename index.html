@@ -84,7 +84,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
-  <link rel="stylesheet" href="style.css?v=9" />
+  <link rel="stylesheet" href="style.css?v=10" />
 </head>
 <body>
 
@@ -231,14 +231,14 @@
         <div class="ob-checks">
           <p class="ob-check-group-label">Juridiskt</p>
           <label class="ob-check">
-            <input type="checkbox" data-key="testamente" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="testamente" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Testamente finns
               <span class="ob-check-hint">Hittades bland papperen, i bankfack eller hos notarie</span>
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="minderarig" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="minderarig" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Minderårigt barn ärver
               <span class="ob-check-hint">Barn under 18 år som är arvinge</span>
@@ -247,14 +247,14 @@
 
           <p class="ob-check-group-label">Bostad</p>
           <label class="ob-check">
-            <input type="checkbox" data-key="fastighet" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="fastighet" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Ägde sin bostad
               <span class="ob-check-hint">Villa, radhus eller bostadsrätt — den avlidna <strong>ägde</strong> (inte hyrde)</span>
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="hyresratt" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="hyresratt" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Hyrde sin bostad
               <span class="ob-check-hint">Hyresrätt — betalade hyra till hyresvärd (inte bostadsrätt)</span>
@@ -263,21 +263,21 @@
 
           <p class="ob-check-group-label">Övrigt</p>
           <label class="ob-check">
-            <input type="checkbox" data-key="foretag" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="foretag" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Eget företag
               <span class="ob-check-hint">Enskild firma, aktiebolag eller F-skattsedel</span>
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="utland" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="utland" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Tillgångar utomlands
               <span class="ob-check-hint">Bankkonto, bostad eller pension i annat land</span>
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="skulder" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="skulder" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Skulder eller lån
               <span class="ob-check-hint">Banklån, skulder hos Kronofogden eller kreditkort</span>
@@ -285,14 +285,14 @@
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="fordon" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="fordon" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Bil eller annat fordon
               <span class="ob-check-hint">Bil eller fordon som den avlidna ägde eller delade</span>
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="husdjur" onchange="updateCheckboxState()">
+            <input type="checkbox" data-key="husdjur" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Husdjur
               <span class="ob-check-hint">Hund, katt eller annat djur som behöver ny ägare</span>
@@ -789,7 +789,7 @@
   </div>
 </div>
 
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

@@ -141,6 +141,7 @@ function obChoose(btn) {
 }
 
 function obGoTo(step) {
+  track('Onboarding Step', { step });
   const current = document.querySelector('.ob-step.active');
   if (current) {
     current.classList.add('exit');
@@ -235,10 +236,11 @@ function renderObParticipantList() {
   ).join('');
 }
 
-function updateCheckboxState() {
+function updateCheckboxState(key) {
   document.querySelectorAll('#ob-step-2 input[type="checkbox"]').forEach(cb => {
     state[cb.dataset.key] = cb.checked;
   });
+  if (key) track('Checkbox Toggle', { key });
 }
 
 function generatePlan() {
@@ -483,6 +485,15 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: null,
     triggers: ['fastighet'],
   },
+  {
+    id: 'lagfart',
+    title: 'Ansök om lagfart',
+    desc: 'När en fastighet ärvs måste den nya ägaren ansöka om lagfart hos Lantmäteriet. Ansökan ska göras inom 3 månader från att bouppteckningen registrerats hos Skatteverket. Stämpelskatten är 1,5 % av fastighetens taxeringsvärde, plus en expeditionsavgift på 825 kr.',
+    urgency: 'later',
+    time: 'ca 30 min online',
+    link: 'https://www.lantmateriet.se/sv/fastigheter/agande-och-rattigheter/lagfart/',
+    triggers: ['fastighet'],
+  },
 
   // ── CONDITIONAL: Hyresrätt ────────────────
   {
@@ -712,6 +723,7 @@ const saveTaskNote = _debounce(function(taskId, value) {
   const notes = _getNotes();
   notes[taskId] = value;
   try { localStorage.setItem('efterplan_notes', JSON.stringify(notes)); } catch(e) {}
+  if (value.length > 0) track('Note Saved', { task: taskId });
 }, 400);
 
 function getTaskNote(taskId) {
@@ -764,7 +776,7 @@ function renderPlan() {
   renderParticipants();
   const name = state.name;
   document.getElementById('plan-title').textContent =
-    name ? `Plan för ${name}s dödsbo` : 'Din plan';
+    name ? `${name}s efterplan` : 'Din efterplan';
   document.getElementById('plan-sub').textContent =
     'Uppdateras allteftersom du går vidare. Det finns inget fel sätt att börja.';
 
@@ -1905,7 +1917,7 @@ function showCompletionOverlay() {
   overlay.dataset.shown = '1';
   const nameEl = document.getElementById('co-name');
   if (nameEl && state.name) {
-    nameEl.textContent = state.name + 's dödsbo är nu genomgånget.';
+    nameEl.textContent = 'Du har tagit dig igenom allt för ' + state.name + '.';
   }
   overlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
