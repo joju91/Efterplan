@@ -109,6 +109,9 @@ body {
   text-overflow: ellipsis;
   max-width: 200px;
 }
+@media (max-width: 420px) {
+  .logo-tagline { display: none; }
+}
 .nav-actions {
   display: none;
   gap: 8px;
@@ -865,10 +868,9 @@ body {
 .dot-yellow { background: var(--yellow); }
 .dot-grey   { background: var(--grey); }
 .section-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.1px;
   color: var(--text-soft);
 }
 .section-count {
