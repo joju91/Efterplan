@@ -25,6 +25,7 @@ const state = {
   participantPersonnr: {}, // name → personnr
   taskChecklists:      {}, // taskId → {key: bool}
   tasks:               [],
+  bills:               [],
 };
 
 // ─── SCREENS ─────────────────────────────────
@@ -247,6 +248,7 @@ function generatePlan() {
   state.name     = document.getElementById('deceased-name').value.trim();
   state.personnr = document.getElementById('deceased-personnr').value.trim();
   buildTasks();
+  loadBills();
   renderPlan();
   saveState();
   track('Plan Generated', { relation: state.relation || 'okänd', ansvar: state.ansvar || 'okänd' });
@@ -292,6 +294,7 @@ const TASK_LIBRARY = [
       { label: 'Memorial — rikstäckande kedja', url: 'https://www.memorial.se' },
       { label: 'SBF — branschförbundets byråsök', url: 'https://www.sbf.se' },
     ],
+    notesPlaceholder: 'Byrå kontaktad, kontaktperson, datum och tid för möte…',
   },
   {
     id: 'dodsbevis',
@@ -302,6 +305,7 @@ const TASK_LIBRARY = [
     link: 'https://www.skatteverket.se/privat/folkbokforing/dodsfall.html',
     phone: '0771-567 567',
     triggers: [],
+    notesPlaceholder: 'Ärendenummer, vem som beställde, förväntat datum…',
   },
   {
     id: 'nycklar_post',
@@ -311,6 +315,7 @@ const TASK_LIBRARY = [
     time: 'ca 20 min',
     link: 'https://www.adressandring.se',
     triggers: [],
+    notesPlaceholder: 'Var finns nycklarna? Adressändring gjord hos Postnord?',
   },
 
   // ── WEEK ───────────────────────────────────
@@ -347,6 +352,7 @@ const TASK_LIBRARY = [
       { label: 'Familjens Jurist — rikstäckande, specialiserade på dödsbon', url: 'https://www.familjens-jurist.se' },
       { label: 'Advokatsamfundet — hitta advokat nära dig', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
     ],
+    notesPlaceholder: 'Jurist kontaktad, offert, datum för förrättning…',
   },
   {
     id: 'bank_kontakt',
@@ -392,6 +398,7 @@ const TASK_LIBRARY = [
     time: 'ca 30 min',
     link: null,
     triggers: [],
+    notesPlaceholder: 'Arbetsgivare meddelad, TGL bekräftat, fackförbund kontaktat…',
   },
 
   {
@@ -409,6 +416,7 @@ Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`
     phone: '0771-524 524',
     link: 'https://www.forsakringskassan.se/privatperson/nar-nagon-dor',
     triggers: [],
+    notesPlaceholder: 'Ärenden öppnade, ärendenummer, beviljade förmåner…',
   },
 
   // ── LATER ──────────────────────────────────
@@ -431,6 +439,7 @@ Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`
     time: 'Månader efter dödsfallet',
     link: null,
     triggers: [],
+    notesPlaceholder: 'Jurist anlitad, arvingar överens, datum för skifte…',
   },
   {
     id: 'avsluta_konton',
@@ -464,6 +473,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'Senast 2 maj efter dödsåret',
     link: 'https://www.skatteverket.se',
     triggers: [],
+    notesPlaceholder: 'Deklaration inlämnad, revisor anlitad, datum…',
   },
 
   // ── CONDITIONAL: Fastighet ─────────────────
@@ -475,6 +485,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'Diskussion med familjen',
     link: null,
     triggers: ['fastighet'],
+    notesPlaceholder: 'Beslut om bostaden, kontaktad mäklare eller arvinge…',
   },
   {
     id: 'bostadsratt_brf',
@@ -484,6 +495,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 20 min',
     link: null,
     triggers: ['fastighet'],
+    notesPlaceholder: 'BRF kontaktad, kontaktperson, beslut om överlåtelse…',
   },
   {
     id: 'lagfart',
@@ -493,6 +505,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 30 min online',
     link: 'https://www.lantmateriet.se/sv/fastigheter/agande-och-rattigheter/lagfart/',
     triggers: ['fastighet'],
+    notesPlaceholder: 'Ansökan skickad, datum, stämpelskatt beräknad…',
   },
 
   // ── CONDITIONAL: Hyresrätt ────────────────
@@ -517,6 +530,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: 'https://www.bolagsverket.se',
     phone: '0771-670 670',
     triggers: ['foretag'],
+    notesPlaceholder: 'Anmälan skickad, ärendenummer, datum…',
   },
   {
     id: 'foretag_avveckling',
@@ -526,6 +540,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'Kontakta revisor',
     link: null,
     triggers: ['foretag'],
+    notesPlaceholder: 'Revisor kontaktad, pågående avtal identifierade, åtgärder…',
   },
 
   // ── CONDITIONAL: Skulder ──────────────────
@@ -537,6 +552,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 1–2 timmar',
     link: null,
     triggers: ['skulder'],
+    notesPlaceholder: 'Skulder listade, kontakter till borgenärer, belopp…',
   },
   {
     id: 'skulder_kronofogden',
@@ -547,6 +563,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: 'https://www.kronofogden.se',
     phone: '0771-73 73 00',
     triggers: ['skulder'],
+    notesPlaceholder: 'Kontroll utförd, datum, eventuella skulder noterade…',
   },
 
   // ── CONDITIONAL: Utland ───────────────────
@@ -562,6 +579,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
       { label: 'Advokatsamfundet — hitta specialist i internationell arvsrätt', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
       { label: 'UD — konsulär hjälp vid dödsfall utomlands', url: 'https://www.swedenabroad.se/sv/om-utlandet-for-svenska-medborgare/konsulart-bistand/' },
     ],
+    notesPlaceholder: 'Land och tillgång, jurist kontaktad, datum…',
   },
 
   // ── CONDITIONAL: Minderårigt barn ─────────
@@ -576,6 +594,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     resources: [
       { label: 'Sveriges Kommuner och Regioner — hitta din överförmyndare', url: 'https://skr.se/skr/demokratiledningstyrning/valmaktfordelning/overformyndare.html' },
     ],
+    notesPlaceholder: 'Överförmyndare kontaktad, kommun, handläggare, datum…',
   },
 
   // ── CONDITIONAL: Make/maka ────────────────
@@ -588,6 +607,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: 'https://www.pensionsmyndigheten.se',
     phone: '0771-776 776',
     triggers: ['make'],
+    notesPlaceholder: 'Kontaktad Pensionsmyndigheten, ärendenummer, tjänstepensionsbolag…',
   },
   {
     id: 'make_bostadsratt',
@@ -597,6 +617,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 30 min',
     link: null,
     triggers: ['make'],
+    notesPlaceholder: 'BRF kontaktad, beslut om boende eller överlåtelse…',
   },
 
   // ── CONDITIONAL: Testamente ───────────────
@@ -608,6 +629,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 1 timme',
     link: null,
     triggers: ['testamente'],
+    notesPlaceholder: 'Testamente delgivet, datum, eventuell jurist anlitad…',
   },
 
   // ── CONDITIONAL: Inget testamente ─────────
@@ -619,6 +641,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 1 timme',
     link: null,
     triggers: ['inget_testamente'],
+    notesPlaceholder: 'Kontrollerat papper, bankfack, jurister — resultat…',
   },
 
   // ── CONDITIONAL: Fordon ───────────────────
@@ -630,6 +653,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     desc: 'Fordon i ett dödsbo kräver en manuell process — de digitala tjänsterna hos Transportstyrelsen fungerar inte när säljaren är avliden. Använd registreringsbevisets gula del (Del 2) i original. En dödsboföreträdare skriver under i nuvarande ägares ställe. Den nye ägaren måste teckna trafikförsäkring från ägarbytesdagen.',
     link: 'https://www.transportstyrelsen.se/sv/vagtrafik/fordon/agarbyte/',
     triggers: ['fordon'],
+    notesPlaceholder: 'Fordon, ny ägare, registreringsbevis del 2 skickat…',
   },
 
   // ── CONDITIONAL: Husdjur ──────────────────
@@ -641,6 +665,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     desc: 'Husdjur är juridiskt lös egendom och hanteras i bouppteckning och testamente. Om den avlidne hade hund måste ägarbyte registreras i Jordbruksverkets hundregister av den nya ägaren. Behöver djuret omplaceras finns djurhem och uppfödare som kan hjälpa till.',
     link: 'https://www.jordbruksverket.se/djur/hundar-katter-och-harliga-djur/hundar/registrera-din-hund',
     triggers: ['husdjur'],
+    notesPlaceholder: 'Djurets namn, ny ägare kontaktad, ägarbyte registrerat…',
   },
 
   // ── ALWAYS: Hjälpmedel och mediciner ──────
@@ -651,6 +676,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 30 min',
     desc: 'Rullstol, säng, lyft och andra medicintekniska produkter är ofta lån från regionen och ska återlämnas rengjorda. Större hjälpmedel hämtas ofta kostnadsfritt — ring regionen eller kommunen. Överblivna mediciner (tabletter, sprutor, krämer) lämnas till närmaste apotek för säker destruktion.',
     triggers: [],
+    notesPlaceholder: 'Hjälpmedel återlämnade, mediciner till apoteket, datum…',
   },
 
   {
@@ -832,6 +858,7 @@ function renderPlan() {
   document.getElementById('count-later').textContent = `${later.length} uppgifter`;
 
   updateProgress();
+  renderBills();
 }
 
 let expandedTaskId = null;
@@ -1033,6 +1060,62 @@ function toggleChecklistItem(taskId, key) {
 function autoStartOnNote(taskId) {
   const task = state.tasks.find(t => t.id === taskId);
   if (task && !task.done && !task.started) markTaskStarted(taskId);
+}
+
+// ─── BILLS ───────────────────────────────────
+function loadBills() {
+  try { state.bills = JSON.parse(localStorage.getItem('efterplan_bills')) || []; } catch(e) { state.bills = []; }
+}
+function saveBills() {
+  try { localStorage.setItem('efterplan_bills', JSON.stringify(state.bills)); } catch(e) {}
+}
+function renderBills() {
+  const list = document.getElementById('bills-list');
+  const empty = document.getElementById('bills-empty');
+  if (!list) return;
+  if (state.bills.length === 0) {
+    list.innerHTML = '';
+    empty && empty.classList.remove('hidden');
+    return;
+  }
+  empty && empty.classList.add('hidden');
+  list.innerHTML = state.bills.map(b => `
+    <li class="bill-item${b.paid ? ' paid' : ''}" id="bill-${b.id}">
+      <button class="bill-check" onclick="toggleBillPaid('${b.id}')" aria-label="${b.paid ? 'Markera som obetald' : 'Markera som betald'}"></button>
+      <div class="bill-info">
+        <span class="bill-desc">${b.desc}</span>
+        ${b.amount ? `<span class="bill-amount">${b.amount} kr</span>` : ''}
+      </div>
+      <button class="bill-delete" onclick="deleteBill('${b.id}')" aria-label="Ta bort">×</button>
+    </li>`).join('');
+}
+function showBillForm() {
+  document.getElementById('bill-form').classList.remove('hidden');
+  document.getElementById('bill-desc-input').focus();
+}
+function hideBillForm() {
+  document.getElementById('bill-form').classList.add('hidden');
+  document.getElementById('bill-desc-input').value = '';
+  document.getElementById('bill-amount-input').value = '';
+}
+function submitBill() {
+  const desc = document.getElementById('bill-desc-input').value.trim();
+  if (!desc) return;
+  const amount = document.getElementById('bill-amount-input').value.trim();
+  state.bills.push({ id: Date.now().toString(), desc, amount: amount || '', paid: false });
+  saveBills();
+  renderBills();
+  hideBillForm();
+  track('Bill Added');
+}
+function toggleBillPaid(id) {
+  const b = state.bills.find(b => b.id === id);
+  if (b) { b.paid = !b.paid; saveBills(); renderBills(); }
+}
+function deleteBill(id) {
+  state.bills = state.bills.filter(b => b.id !== id);
+  saveBills();
+  renderBills();
 }
 
 function markTaskStarted(taskId) {
@@ -1959,6 +2042,7 @@ function handlePaywallCTA() {
       Object.assign(state, JSON.parse(saved));
       buildTasks();
       loadTaskState();
+      loadBills();
       renderPlan();
       showScreen('screen-plan');
       return;

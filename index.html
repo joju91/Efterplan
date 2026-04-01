@@ -84,7 +84,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
-  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="style.css?v=11" />
 </head>
 <body>
 
@@ -448,6 +448,24 @@
         </div>
       </div>
 
+      <!-- Räkningar (T067) -->
+      <section class="bills-section" id="bills-section">
+        <div class="bills-header">
+          <h2 class="section-title">Räkningar</h2>
+          <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
+        </div>
+        <div class="bill-form hidden" id="bill-form">
+          <input type="text" id="bill-desc-input" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
+          <input type="number" id="bill-amount-input" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
+          <div class="bill-form-actions">
+            <button class="btn-primary" onclick="submitBill()">Lägg till</button>
+            <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
+          </div>
+        </div>
+        <ul id="bills-list" class="bills-list"></ul>
+        <p class="bills-empty hidden" id="bills-empty">Inga räkningar registrerade än.</p>
+      </section>
+
       <!-- Avslutningsmeddelande längst ner (visas när alla uppgifter är klara) -->
       <div id="plan-done-footer" class="plan-done-footer hidden">
         <div class="plan-done-icon" aria-hidden="true">✓</div>
@@ -789,7 +807,7 @@
   </div>
 </div>
 
-<script src="app.js?v=10"></script>
+<script src="app.js?v=11"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

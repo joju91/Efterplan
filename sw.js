@@ -1,5 +1,5 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v8';
+const CACHE = 'efterplan-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,9 @@ const ASSETS = [
   './app.js',
   './manifest.json',
   './icon.svg',
+  './checklista-dodsbo.html',
+  './bouppteckning-guide.html',
+  './vad-gora-nar-nagon-dor.html',
 ];
 
 self.addEventListener('install', e => {
