@@ -84,7 +84,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
-  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="style.css?v=12" />
 </head>
 <body>
 
@@ -370,7 +370,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: PLAN (Dashboard)
 ════════════════════════════════════════════ -->
-<div id="screen-plan" class="screen" tabindex="-1">
+<div id="screen-plan" class="screen" role="main" tabindex="-1">
 
   <!-- Nav -->
   <nav class="nav nav-light nav-plan">
@@ -455,8 +455,9 @@
           <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
         </div>
         <div class="bill-form hidden" id="bill-form">
-          <input type="text" id="bill-desc-input" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
-          <input type="number" id="bill-amount-input" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
+          <input type="text" id="bill-desc-input" aria-label="Beskrivning" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
+          <input type="number" id="bill-amount-input" aria-label="Belopp i kronor" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
+          <p class="form-error hidden" id="err-bills" role="alert"></p>
           <div class="bill-form-actions">
             <button class="btn-primary" onclick="submitBill()">Lägg till</button>
             <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
@@ -488,7 +489,7 @@
           <p class="plan-sub">Välj vad du behöver — vi skriver det åt dig.</p>
         </div>
         <button class="doc-bulk-cta" onclick="showDocForm('bulk')">
-          <span class="doc-bulk-icon">⚡</span>
+          <span class="doc-bulk-icon" aria-hidden="true">⚡</span>
           <div class="doc-bulk-text">
             <span class="doc-bulk-title">Avsluta flera tjänster på en gång</span>
             <span class="doc-bulk-sub">Lägg till alla abonnemang — vi skriver alla brev åt dig</span>
@@ -497,32 +498,32 @@
         </button>
         <div class="doc-type-grid">
           <button class="doc-type-btn" onclick="showDocForm('letter')">
-            <span class="doc-icon">✉</span>
+            <span class="doc-icon" aria-hidden="true">✉</span>
             <span class="doc-type-title">Uppsägningsbrev</span>
             <span class="doc-type-sub">Avsluta ett abonnemang</span>
           </button>
           <button class="doc-type-btn" onclick="showDocForm('bank')">
-            <span class="doc-icon">🏦</span>
+            <span class="doc-icon" aria-hidden="true">🏦</span>
             <span class="doc-type-title">Till banken</span>
             <span class="doc-type-sub">Meddela banken om dödsfallet</span>
           </button>
           <button class="doc-type-btn" onclick="showDocForm('annons')">
-            <span class="doc-icon">📰</span>
+            <span class="doc-icon" aria-hidden="true">📰</span>
             <span class="doc-type-title">Dödsannons</span>
             <span class="doc-type-sub">Formulera ett minnesvärigt meddelande</span>
           </button>
           <button class="doc-type-btn" onclick="showDocForm('forsakring')">
-            <span class="doc-icon">🛡</span>
+            <span class="doc-icon" aria-hidden="true">🛡</span>
             <span class="doc-type-title">Till försäkringsbolaget</span>
             <span class="doc-type-sub">Meddela försäkringsbolaget om dödsfallet</span>
           </button>
           <button class="doc-type-btn hidden" id="doc-btn-skatteverket" onclick="showDocForm('skatteverket')">
-            <span class="doc-icon">🏛</span>
+            <span class="doc-icon" aria-hidden="true">🏛</span>
             <span class="doc-type-title">Skatteverket</span>
             <span class="doc-type-sub">Avsluta F-skatt / enskild firma</span>
           </button>
           <button class="doc-type-btn hidden" id="doc-btn-fullmakt" onclick="showDocForm('fullmakt')">
-            <span class="doc-icon">📋</span>
+            <span class="doc-icon" aria-hidden="true">📋</span>
             <span class="doc-type-title">Fullmakt</span>
             <span class="doc-type-sub">Ge en person rätt att företräda dödsboet</span>
           </button>
@@ -770,7 +771,7 @@
     <p class="modal-sub">Namn används för arbetsfördelning och för att bestämma vem som ansvarar för vad.</p>
     <div id="modal-participant-list" style="margin-bottom:12px"></div>
     <div class="ob-participant-add">
-      <input type="text" id="ob-participant-input" class="text-input" placeholder="Lägg till namn…" autocomplete="off"
+      <input type="text" id="ob-participant-input" aria-label="Deltagarens namn" class="text-input" placeholder="Lägg till namn…" autocomplete="off"
         onkeydown="if(event.key==='Enter'){event.preventDefault();addParticipant()}" />
       <button class="btn-ghost btn-sm" onclick="addParticipant()">Lägg till</button>
     </div>
@@ -807,7 +808,7 @@
   </div>
 </div>
 
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

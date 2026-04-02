@@ -1100,7 +1100,13 @@ function hideBillForm() {
 }
 function submitBill() {
   const desc = document.getElementById('bill-desc-input').value.trim();
-  if (!desc) return;
+  const errEl = document.getElementById('err-bills');
+  if (!desc) {
+    if (errEl) { errEl.textContent = 'Ange en beskrivning.'; errEl.classList.remove('hidden'); }
+    document.getElementById('bill-desc-input').focus();
+    return;
+  }
+  if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
   const amount = document.getElementById('bill-amount-input').value.trim();
   state.bills.push({ id: Date.now().toString(), desc, amount: amount || '', paid: false });
   saveBills();
@@ -1438,6 +1444,7 @@ function undoTaskDoneManual(taskId) {
 
 // ─── MODALS ───────────────────────────────────
 let _modalPrevFocus = null;
+let _completionPrevFocus = null;
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 function openModal(id) {
@@ -1476,6 +1483,10 @@ function _trapFocus(e) {
   const last  = focusable[focusable.length - 1];
   if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
   else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+
+function _coEscHandler(e) {
+  if (e.key === 'Escape') closeCompletionOverlay();
 }
 
 // ─── TABS ────────────────────────────────────
@@ -1998,12 +2009,16 @@ function showCompletionOverlay() {
   const overlay = document.getElementById('completion-overlay');
   if (!overlay || overlay.dataset.shown === '1') return;
   overlay.dataset.shown = '1';
+  _completionPrevFocus = document.activeElement;
   const nameEl = document.getElementById('co-name');
   if (nameEl && state.name) {
     nameEl.textContent = 'Du har tagit dig igenom allt för ' + state.name + '.';
   }
   overlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
+  const first = overlay.querySelector(FOCUSABLE);
+  if (first) setTimeout(() => first.focus(), 50);
+  overlay.addEventListener('keydown', _coEscHandler);
   track('Plan Completed');
 }
 
@@ -2011,7 +2026,9 @@ function closeCompletionOverlay() {
   const overlay = document.getElementById('completion-overlay');
   if (!overlay) return;
   overlay.classList.add('hidden');
+  overlay.removeEventListener('keydown', _coEscHandler);
   document.body.style.overflow = '';
+  if (_completionPrevFocus) { _completionPrevFocus.focus(); _completionPrevFocus = null; }
 }
 
 // ─── PDF / PRINT ─────────────────────────────
