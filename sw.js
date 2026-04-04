@@ -1,5 +1,5 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v11';
+const CACHE = 'efterplan-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,9 @@ const ASSETS = [
   './app.js',
   './manifest.json',
   './icon.svg',
+  './og.png',
+  './robots.txt',
+  './sitemap.xml',
   './checklista-dodsbo.html',
   './bouppteckning-guide.html',
   './vad-gora-nar-nagon-dor.html',
