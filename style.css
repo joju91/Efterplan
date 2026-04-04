@@ -2146,7 +2146,9 @@ body {
 .task-expand-phone--secondary {
   background: var(--accent-light);
   color: var(--accent);
-  border-color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 4px 12px;
 }
 .task-expand-phone--secondary:hover {
   background: var(--accent);
