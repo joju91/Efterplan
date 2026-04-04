@@ -248,9 +248,15 @@ function generatePlan() {
   state.name     = document.getElementById('deceased-name').value.trim();
   state.personnr = document.getElementById('deceased-personnr').value.trim();
   buildTasks();
+  loadTaskState(); // bevara progress/assignees vid "Ändra svar"
+  // Auto-tilldela person1 till uppgifter som saknar ansvarig
+  if (state.participants.length > 0) {
+    state.tasks.forEach(t => { if (!t.assignee) t.assignee = state.participants[0]; });
+  }
   loadBills();
   renderPlan();
   saveState();
+  saveTaskState(); // spara default-tilldelningar
   track('Plan Generated', { relation: state.relation || 'okänd', ansvar: state.ansvar || 'okänd' });
   showScreen('screen-plan');
 }
@@ -978,6 +984,10 @@ function toggleTask(taskId) {
     if (prev)     prev.classList.add('hidden');
     if (prevChev) prevChev.classList.remove('open');
     if (prevCard) { prevCard.classList.remove('expanded'); prevCard.setAttribute('aria-expanded', 'false'); }
+    // Återställ badge för tidigare öppnad uppgift
+    const prevTask = state.tasks.find(t => t.id === expandedTaskId);
+    const prevBadge = document.getElementById(`assignee-badge-${expandedTaskId}`);
+    if (prevBadge && prevTask?.assignee) prevBadge.classList.remove('hidden');
   }
 
   if (isOpen) { expandedTaskId = null; return; }
@@ -989,6 +999,8 @@ function toggleTask(taskId) {
   if (el)   el.classList.remove('hidden');
   if (chev) chev.classList.add('open');
   if (card) { card.classList.add('expanded'); card.setAttribute('aria-expanded', 'true'); }
+  // Dölj badge när uppgiften är expanderad (syns i pickern istället)
+  document.getElementById(`assignee-badge-${taskId}`)?.classList.add('hidden');
 }
 
 function updateProgress() {

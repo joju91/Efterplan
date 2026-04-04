@@ -275,6 +275,9 @@ body {
   color: var(--accent);
   font-weight: 600;
   margin-bottom: 16px;
+  /* h1 reset — behåller eyebrow-utseendet oavsett tagg */
+  line-height: 1.2;
+  padding: 0;
 }
 .landing-headline {
   font-size: clamp(1.35rem, 3.5vw, 1.9rem);
@@ -2134,8 +2137,16 @@ body {
 }
 .co-body {
   font-size: 1rem; color: var(--text-soft);
-  line-height: 1.75; margin-bottom: 32px;
+  line-height: 1.75; margin-bottom: 20px;
 }
+.co-next-steps {
+  list-style: none; padding: 0; margin: 0 0 28px;
+  text-align: left;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.co-next-steps li { font-size: 0.9rem; color: var(--text-soft); padding-left: 18px; position: relative; }
+.co-next-steps li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+.co-link { color: var(--accent); text-decoration: underline; }
 .co-actions { display: flex; flex-direction: column; gap: 10px; }
 .co-pdf-btn  { width: 100%; }
 .co-close-btn { width: 100%; font-size: 0.9rem; color: var(--text-muted); }

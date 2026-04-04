@@ -84,7 +84,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=14" />
 </head>
 <body>
 
@@ -108,8 +108,8 @@
   <div class="landing-hero">
     <div class="landing-content">
       <p class="landing-brand">Efterplan</p>
-      <p class="landing-eyebrow">För det som blir kvar när någon är borta</p>
-      <h1 class="landing-headline">Du tar hand om det som betyder något.<br>Vi hjälper dig med resten.</h1>
+      <h1 class="landing-eyebrow">Vad gör man när någon dör?</h1>
+      <h2 class="landing-headline">Du tar hand om det som betyder något.<br>Vi hjälper dig med resten.</h2>
       <p class="landing-sub">Svar på vad du ska göra, i vilken ordning — och färdiga brev att skicka direkt.</p>
       <ul class="landing-payoff">
         <li>En prioriterad checklista anpassad efter din situation</li>
@@ -801,6 +801,11 @@
       Steg för steg, uppgift för uppgift.<br>
       Nu kan du lämna det praktiska bakom dig.
     </p>
+    <ul class="co-next-steps">
+      <li>Spara planen som PDF för dina egna arkiv</li>
+      <li>Dela PDF:en med övriga som var inblandade</li>
+      <li>Läs mer: <a href="./vad-gora-nar-nagon-dor.html" class="co-link">Vad gör man när någon dör?</a></li>
+    </ul>
     <div class="co-actions">
       <button class="btn-primary co-pdf-btn" onclick="printPlan()">Spara som PDF</button>
       <button class="btn-ghost co-close-btn" onclick="closeCompletionOverlay()">Tillbaka till planen</button>
@@ -808,7 +813,7 @@
   </div>
 </div>
 
-<script src="app.js?v=12"></script>
+<script src="app.js?v=14"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
