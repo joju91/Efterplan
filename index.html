@@ -88,7 +88,7 @@
 </head>
 <body>
 
-<a href="#screen-plan" class="skip-link">Hoppa till innehållet</a>
+<a href="#screen-landing" class="skip-link">Hoppa till innehållet</a>
 
 <div id="offline-banner" class="offline-banner" role="alert" aria-live="polite">
   Ingen uppkoppling just nu — dina ändringar sparas ändå lokalt.
@@ -351,6 +351,7 @@
         <h2 class="ob-title">Vilket namn har den som avled?</h2>
         <p class="ob-hint">Det gör planen och breven lite mer personliga.</p>
         <input type="text" id="deceased-name" class="ob-text-input" placeholder="Förnamn Efternamn" autocomplete="off"
+          aria-label="Den avlidnes förnamn och efternamn"
           onkeydown="if(event.key==='Enter') obGoTo(6)" />
         <p class="ob-skip">Frivilligt — du kan hoppa över detta.</p>
         <button class="ob-next-btn" onclick="obGoTo(6)">Nästa →</button>
@@ -364,6 +365,7 @@
         <h2 class="ob-title">Personnummer?</h2>
         <p class="ob-hint">Vi fyller i det automatiskt i alla brev du genererar — sparar tid. Annars kan du fylla i det manuellt direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
         <input type="text" id="deceased-personnr" class="ob-text-input" placeholder="ÅÅÅÅMMDD-XXXX" autocomplete="off"
+          aria-label="Den avlidnes personnummer" inputmode="numeric"
           onkeydown="if(event.key==='Enter') generatePlan()" />
         <button class="ob-next-btn" onclick="generatePlan()">Visa min plan →</button>
       </div>

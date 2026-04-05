@@ -1995,6 +1995,21 @@ body {
   .plan-print-btn { bottom: 24px; right: 24px; width: 48px; height: 48px; }
 }
 
+/* ── Tablet (601–1023px) ── */
+@media (min-width: 601px) and (max-width: 1023px) {
+  .plan-wrap { padding: 24px 32px 100px; }
+  .seo-article { max-width: 660px; }
+}
+
+/* ── Desktop large (1024px+) ── */
+@media (min-width: 1024px) {
+  .plan-wrap { max-width: 860px; padding: 40px 40px 80px; }
+  .nav { padding: 20px 60px; }
+  .nav-plan { padding: 16px 60px; }
+  .plan-tabs { max-width: 860px; padding: 0 40px; }
+  .seo-article { max-width: 740px; }
+}
+
 /* ═══════════════════════════════════════════
    PAYWALL CARD
 ════════════════════════════════════════════ */

@@ -959,10 +959,21 @@ function renderTaskList(containerId, tasks, nextTaskId) {
     cardEl.setAttribute('role', 'button');
     cardEl.setAttribute('aria-expanded', 'false');
     cardEl.setAttribute('aria-controls', `expand-${task.id}`);
+    cardEl.setAttribute('aria-label', task.title);
     cardEl.addEventListener('click', () => toggleTask(task.id));
     cardEl.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTask(task.id); }
     });
+
+    const checkEl = wrap.querySelector('.task-check');
+    checkEl.setAttribute('role', 'checkbox');
+    checkEl.setAttribute('aria-checked', task.done ? 'true' : 'false');
+    checkEl.setAttribute('aria-label', `Markera "${task.title}" som klar`);
+
+    if (task.notesPlaceholder && !task.done) {
+      const notesEl = wrap.querySelector(`#notes-${task.id}`);
+      if (notesEl) notesEl.setAttribute('aria-label', `Anteckningar för ${task.title}`);
+    }
 
     // staggered entrance animation
     wrap.style.animationDelay = `${i * 35}ms`;
