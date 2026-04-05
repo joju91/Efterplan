@@ -2315,3 +2315,7 @@ body {
 .seo-cta { background: var(--accent-light, #f0f4f8); padding: 24px; border-radius: var(--radius); text-align: center; margin: 40px 0; }
 .seo-cta p { margin-bottom: 12px; font-weight: 600; }
 .seo-footer { text-align: center; padding: 24px; color: var(--text-soft); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px; }
+.seo-footer-links { font-size: 0.8rem; margin-top: 6px; opacity: 0.8; }
+.seo-footer-links a { color: inherit; }
+.landing-footer-links { font-size: 0.8rem; margin-top: 6px; opacity: 0.7; }
+.landing-footer-links a { color: inherit; }
