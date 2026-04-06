@@ -13,7 +13,7 @@ const ASSETS = [
   './checklista-dodsbo.html',
   './bouppteckning-guide.html',
   './vad-gora-nar-nagon-dor.html',
-  './begravning-kostnad.html',
+  './vad-kostar-en-begravning.html',
   './arvskifte-guide.html',
   './efterlevandepension.html',
 ];
