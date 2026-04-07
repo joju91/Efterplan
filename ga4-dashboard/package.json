@@ -1,0 +1,16 @@
+﻿{
+  "name": "efterplan-ga4-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GA4 dashboard for efterplan.se",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "googleapis": "^144.0.0"
+  }
+}

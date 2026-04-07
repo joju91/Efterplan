@@ -1,0 +1,76 @@
+﻿<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Efterplan GA4 Dashboard</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <main class="layout">
+    <header class="header">
+      <div>
+        <p class="badge">GA4</p>
+        <h1>Efterplan Analytics Dashboard</h1>
+        <p class="sub">Data direkt från Google Analytics 4 för efterplan.se</p>
+      </div>
+      <label class="control">
+        Period
+        <select id="daysSelect">
+          <option value="7">Senaste 7 dagar</option>
+          <option value="30" selected>Senaste 30 dagar</option>
+          <option value="90">Senaste 90 dagar</option>
+        </select>
+      </label>
+    </header>
+
+    <section class="cards" id="cards"></section>
+
+    <section class="panel kpi-panel">
+      <h2>KPI (T037)</h2>
+      <div class="cards kpi-cards" id="kpiCards"></div>
+      <p id="kpiMeta" class="kpi-meta"></p>
+    </section>
+
+    <section class="panel chart-panel">
+      <h2>Trafik över tid</h2>
+      <canvas id="trafficChart" height="110"></canvas>
+    </section>
+
+    <section class="grid-two">
+      <article class="panel">
+        <h2>Topp-sidor</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Sida</th>
+              <th>Visningar</th>
+              <th>Sessioner</th>
+            </tr>
+          </thead>
+          <tbody id="pagesTable"></tbody>
+        </table>
+      </article>
+
+      <article class="panel">
+        <h2>Topp-events</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Antal</th>
+              <th>Användare</th>
+            </tr>
+          </thead>
+          <tbody id="eventsTable"></tbody>
+        </table>
+      </article>
+    </section>
+
+    <p id="status" class="status"></p>
+  </main>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
