@@ -1,12 +1,12 @@
-/* ═══════════════════════════════════════════
-   EFTERPLAN — App Logic
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   EFTERPLAN â€” App Logic
    MVP v1.0
-════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-// ─── FEATURE FLAGS ───────────────────────────
+// â”€â”€â”€ FEATURE FLAGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PAYWALL_ENABLED = false; // set true when Stripe is wired up
 
-// ─── STATE ───────────────────────────────────
+// â”€â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const state = {
   relation:            null,
   testamente:          false,
@@ -22,13 +22,13 @@ const state = {
   name:                '',
   personnr:            '',
   participants:        [],
-  participantPersonnr: {}, // name → personnr
-  taskChecklists:      {}, // taskId → {key: bool}
+  participantPersonnr: {}, // name â†’ personnr
+  taskChecklists:      {}, // taskId â†’ {key: bool}
   tasks:               [],
   bills:               [],
 };
 
-// ─── SCREENS ─────────────────────────────────
+// â”€â”€â”€ SCREENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -37,11 +37,20 @@ function showScreen(id) {
 
 function goToLanding() { showScreen('screen-landing'); }
 
-// ─── ANALYTICS ───────────────────────────────
-// Plausible custom events — safe noop if script hasn't loaded
+// â”€â”€â”€ ANALYTICS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Plausible custom events â€” safe noop if script hasn't loaded
 function track(event, props) {
   if (typeof window.plausible === 'function') {
     window.plausible(event, props ? { props } : undefined);
+  }
+
+  if (typeof window.gtag === 'function') {
+    const gaEvent = String(event || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 40) || 'custom_event';
+    window.gtag('event', gaEvent, props || {});
   }
 }
 
@@ -56,14 +65,14 @@ function startOnboarding() {
 }
 
 function editAnswers() {
-  const confirmed = window.confirm('Vill du ändra dina svar? Planen uppdateras när du är klar — dina anteckningar och markeringar behålls.');
+  const confirmed = window.confirm('Vill du Ã¤ndra dina svar? Planen uppdateras nÃ¤r du Ã¤r klar â€” dina anteckningar och markeringar behÃ¥lls.');
   if (!confirmed) return;
   startOnboarding();
   obPrefillAnswers();
 }
 
 function obPrefillAnswers() {
-  // Step 1 — relation
+  // Step 1 â€” relation
   document.querySelectorAll('#ob-step-1 .ob-choice').forEach(btn => {
     btn.classList.toggle('selected', btn.dataset.val === state.relation);
   });
@@ -71,11 +80,11 @@ function obPrefillAnswers() {
     const nb = document.querySelector('#ob-step-1 .ob-next-btn');
     if (nb) nb.disabled = false;
   }
-  // Step 2 — checkboxes
+  // Step 2 â€” checkboxes
   document.querySelectorAll('#ob-step-2 input[type="checkbox"]').forEach(cb => {
     cb.checked = !!state[cb.dataset.key];
   });
-  // Step 3 — ansvar
+  // Step 3 â€” ansvar
   document.querySelectorAll('#ob-step-3 .ob-choice').forEach(btn => {
     btn.classList.toggle('selected', btn.dataset.val === state.ansvar);
   });
@@ -83,7 +92,7 @@ function obPrefillAnswers() {
     const nb = document.querySelector('#ob-step-3 .ob-next-btn');
     if (nb) nb.disabled = false;
   }
-  // Step 4 — participants (if returning to edit)
+  // Step 4 â€” participants (if returning to edit)
   const selfInput = document.getElementById('ob-self-name');
   if (selfInput) selfInput.value = state.participants?.[0] || '';
   // Render others (index 1+) as chips
@@ -93,15 +102,15 @@ function obPrefillAnswers() {
   state.participants = _others;
   renderObParticipantList();
   state.participants = _savedP;
-  // Step 5 — name
+  // Step 5 â€” name
   const nameEl = document.getElementById('deceased-name');
   if (nameEl) nameEl.value = state.name || '';
-  // Step 6 — personnr
+  // Step 6 â€” personnr
   const pnrEl = document.getElementById('deceased-personnr');
   if (pnrEl) pnrEl.value = state.personnr || '';
 }
 
-// ─── ONBOARDING (conversational) ─────────────
+// â”€â”€â”€ ONBOARDING (conversational) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let OB_TOTAL = 5;
 let obCurrentStep = 1;
 
@@ -135,7 +144,7 @@ function obChoose(btn) {
   btn.closest('.ob-choices').querySelectorAll('.ob-choice').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 
-  // Enable the Nästa button for this step
+  // Enable the NÃ¤sta button for this step
   const step = btn.closest('.ob-step');
   const nextBtn = step?.querySelector('.ob-next-btn');
   if (nextBtn) nextBtn.disabled = false;
@@ -155,7 +164,7 @@ function obGoTo(step) {
   }
 }
 
-const OB_FOCUS_IDS = { 4: 'ob-self-name', 5: 'deceased-name' };  /* tangentbordet ska inte öppnas automatiskt på personnr-steget */
+const OB_FOCUS_IDS = { 4: 'ob-self-name', 5: 'deceased-name' };  /* tangentbordet ska inte Ã¶ppnas automatiskt pÃ¥ personnr-steget */
 
 function obShowStep(step) {
   const el = document.getElementById(`ob-step-${step}`);
@@ -168,7 +177,7 @@ function obShowStep(step) {
   const labelEl = el.querySelector('.ob-label');
   if (labelEl) {
     const logicalStep = (OB_TOTAL === 5 && step >= 5) ? step - 1 : step;
-    const suffix = step === 6 ? ' — helt frivilligt' : '';
+    const suffix = step === 6 ? ' â€” helt frivilligt' : '';
     labelEl.textContent = `Steg ${logicalStep} av ${OB_TOTAL}${suffix}`;
   }
   if (OB_FOCUS_IDS[step]) {
@@ -233,7 +242,7 @@ function renderObParticipantList() {
   const list = document.getElementById('ob-participant-list');
   if (!list) return;
   list.innerHTML = (state.participants || []).map((name, i) =>
-    `<span class="ob-participant-chip">${name} <button class="ob-participant-remove" type="button" onclick="obRemoveParticipant(${i})" aria-label="Ta bort ${name}">×</button></span>`
+    `<span class="ob-participant-chip">${name} <button class="ob-participant-remove" type="button" onclick="obRemoveParticipant(${i})" aria-label="Ta bort ${name}">Ã—</button></span>`
   ).join('');
 }
 
@@ -248,7 +257,7 @@ function generatePlan() {
   state.name     = document.getElementById('deceased-name').value.trim();
   state.personnr = document.getElementById('deceased-personnr').value.trim();
   buildTasks();
-  loadTaskState(); // bevara progress/assignees vid "Ändra svar"
+  loadTaskState(); // bevara progress/assignees vid "Ã„ndra svar"
   // Auto-tilldela person1 till uppgifter som saknar ansvarig
   if (state.participants.length > 0) {
     state.tasks.forEach(t => { if (!t.assignee) t.assignee = state.participants[0]; });
@@ -257,460 +266,460 @@ function generatePlan() {
   renderPlan();
   saveState();
   saveTaskState(); // spara default-tilldelningar
-  track('Plan Generated', { relation: state.relation || 'okänd', ansvar: state.ansvar || 'okänd' });
+  track('Plan Generated', { relation: state.relation || 'okÃ¤nd', ansvar: state.ansvar || 'okÃ¤nd' });
   showScreen('screen-plan');
 }
 
-// ─── RULE ENGINE ─────────────────────────────
+// â”€â”€â”€ RULE ENGINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Each task: id, title, desc, urgency, time, link, phone?, triggers, hasDoc?, notesPlaceholder?
 const TASK_LIBRARY = [
 
-  // ── ALWAYS ─────────────────────────────────
+  // â”€â”€ ALWAYS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'konstatera_dodsfall',
-    title: 'Konstatera dödsfallet',
-    desc: '<strong>Om dödsfallet var oväntat eller plötsligt — ring 112 omedelbart.</strong><br><br>Om personen avled hemma efter en längre tids sjukdom ringer du jourhavande läkare via 1177 — de skickar en läkare som utfärdar dödsbeviset. Utan ett utfärdat dödsbevis kan inget annat steg påbörjas.',
+    title: 'Konstatera dÃ¶dsfallet',
+    desc: '<strong>Om dÃ¶dsfallet var ovÃ¤ntat eller plÃ¶tsligt â€” ring 112 omedelbart.</strong><br><br>Om personen avled hemma efter en lÃ¤ngre tids sjukdom ringer du jourhavande lÃ¤kare via 1177 â€” de skickar en lÃ¤kare som utfÃ¤rdar dÃ¶dsbeviset. Utan ett utfÃ¤rdat dÃ¶dsbevis kan inget annat steg pÃ¥bÃ¶rjas.',
     urgency: 'today',
     time: 'Direkt',
     phone: '112',
     phone2: '1177',
     triggers: [],
-    notesPlaceholder: 'Noterat klockslag, vem som kontaktades…',
+    notesPlaceholder: 'Noterat klockslag, vem som kontaktadesâ€¦',
   },
   {
-    id: 'narmaste_anhörig',
-    title: 'Meddela närstående',
-    desc: 'Det här sker i etapper — du behöver inte nå alla på en gång. Börja med de allra närmaste: familj och nära vänner. Övriga kan meddelas under de kommande dagarna. Det är okej att be någon annan hjälpa till.',
+    id: 'narmaste_anhÃ¶rig',
+    title: 'Meddela nÃ¤rstÃ¥ende',
+    desc: 'Det hÃ¤r sker i etapper â€” du behÃ¶ver inte nÃ¥ alla pÃ¥ en gÃ¥ng. BÃ¶rja med de allra nÃ¤rmaste: familj och nÃ¤ra vÃ¤nner. Ã–vriga kan meddelas under de kommande dagarna. Det Ã¤r okej att be nÃ¥gon annan hjÃ¤lpa till.',
     urgency: 'today',
     time: 'Din tid',
     link: null,
     triggers: [],
-    notesPlaceholder: 'Vem har meddelats, vem återstår…',
+    notesPlaceholder: 'Vem har meddelats, vem Ã¥terstÃ¥râ€¦',
   },
   {
     id: 'begravningsbyra',
-    title: 'Kontakta en begravningsbyrå',
-    desc: 'Begravningsbyrån tar hand om kroppen, sköter registreringen hos Skatteverket och hjälper dig planera ceremonin. Du behöver inte ha alla svar klara när du ringer — de guidar dig. Några alternativ:',
+    title: 'Kontakta en begravningsbyrÃ¥',
+    desc: 'BegravningsbyrÃ¥n tar hand om kroppen, skÃ¶ter registreringen hos Skatteverket och hjÃ¤lper dig planera ceremonin. Du behÃ¶ver inte ha alla svar klara nÃ¤r du ringer â€” de guidar dig. NÃ¥gra alternativ:',
     urgency: 'today',
     time: 'ca 30 min',
     link: null,
     triggers: [],
     resources: [
-      { label: 'Fonus — Sveriges största, hitta byrå nära dig', url: 'https://www.fonus.se' },
-      { label: 'Memorial — rikstäckande kedja', url: 'https://www.memorial.se' },
-      { label: 'SBF — branschförbundets byråsök', url: 'https://www.sbf.se' },
+      { label: 'Fonus â€” Sveriges stÃ¶rsta, hitta byrÃ¥ nÃ¤ra dig', url: 'https://www.fonus.se' },
+      { label: 'Memorial â€” rikstÃ¤ckande kedja', url: 'https://www.memorial.se' },
+      { label: 'SBF â€” branschfÃ¶rbundets byrÃ¥sÃ¶k', url: 'https://www.sbf.se' },
     ],
-    notesPlaceholder: 'Byrå kontaktad, kontaktperson, datum och tid för möte…',
+    notesPlaceholder: 'ByrÃ¥ kontaktad, kontaktperson, datum och tid fÃ¶r mÃ¶teâ€¦',
   },
   {
     id: 'dodsbevis',
-    title: 'Beställ dödsfallsintyg',
-    desc: 'Dödsbeviset utfärdas automatiskt av läkaren. Det du behöver beställa är <strong>dödsfallsintyg med släktutredning</strong> från Skatteverket — det är detta dokument som banker, försäkringsbolag och myndigheter kräver för att du ska få företräda dödsboet. Ha den <em>avlidnas</em> personnummer tillgängligt.',
+    title: 'BestÃ¤ll dÃ¶dsfallsintyg',
+    desc: 'DÃ¶dsbeviset utfÃ¤rdas automatiskt av lÃ¤karen. Det du behÃ¶ver bestÃ¤lla Ã¤r <strong>dÃ¶dsfallsintyg med slÃ¤ktutredning</strong> frÃ¥n Skatteverket â€” det Ã¤r detta dokument som banker, fÃ¶rsÃ¤kringsbolag och myndigheter krÃ¤ver fÃ¶r att du ska fÃ¥ fÃ¶retrÃ¤da dÃ¶dsboet. Ha den <em>avlidnas</em> personnummer tillgÃ¤ngligt.',
     urgency: 'today',
     time: 'ca 15 min',
     link: 'https://www.skatteverket.se/privat/folkbokforing/dodsfall.html',
     phone: '0771-567 567',
     triggers: [],
-    notesPlaceholder: 'Ärendenummer, vem som beställde, förväntat datum…',
+    notesPlaceholder: 'Ã„rendenummer, vem som bestÃ¤llde, fÃ¶rvÃ¤ntat datumâ€¦',
   },
   {
     id: 'nycklar_post',
-    title: 'Säkra nycklar och eftersänd post',
-    desc: 'Ta hand om bostadsnycklar och gör en adressändring för den avlidnes post via adressändring.se. Viktiga brev kan annars gå förlorade.',
+    title: 'SÃ¤kra nycklar och eftersÃ¤nd post',
+    desc: 'Ta hand om bostadsnycklar och gÃ¶r en adressÃ¤ndring fÃ¶r den avlidnes post via adressÃ¤ndring.se. Viktiga brev kan annars gÃ¥ fÃ¶rlorade.',
     urgency: 'today',
     time: 'ca 20 min',
     link: 'https://www.adressandring.se',
     triggers: [],
-    notesPlaceholder: 'Var finns nycklarna? Adressändring gjord hos Postnord?',
+    notesPlaceholder: 'Var finns nycklarna? AdressÃ¤ndring gjord hos Postnord?',
   },
 
-  // ── WEEK ───────────────────────────────────
+  // â”€â”€ WEEK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'begravningsceremoni',
     title: 'Planera begravningsceremonin',
-    desc: 'Bestäm vem i familjen som ansvarar för vad — och se till att någon förmedlar era önskemål till begravningsbyrån.<br><br>Vem ansvarar för musik? Vem håller tal? Vem ordnar minnesstunden? Vem samlar in den avlidnas eventuella önskemål?',
+    desc: 'BestÃ¤m vem i familjen som ansvarar fÃ¶r vad â€” och se till att nÃ¥gon fÃ¶rmedlar era Ã¶nskemÃ¥l till begravningsbyrÃ¥n.<br><br>Vem ansvarar fÃ¶r musik? Vem hÃ¥ller tal? Vem ordnar minnesstunden? Vem samlar in den avlidnas eventuella Ã¶nskemÃ¥l?',
     urgency: 'week',
     time: 'ca 30 min med familjen',
     link: null,
     triggers: [],
-    notesPlaceholder: 'Vem ansvarar för vad — musik, tal, minnesstund, önskemål…',
+    notesPlaceholder: 'Vem ansvarar fÃ¶r vad â€” musik, tal, minnesstund, Ã¶nskemÃ¥lâ€¦',
   },
   {
     id: 'fullmakt_dodsbo',
-    title: 'Upprätta fullmakt för dödsboet',
+    title: 'UpprÃ¤tta fullmakt fÃ¶r dÃ¶dsboet',
     urgency: 'week',
     time: 'ca 30 min',
-    desc: 'När ni är flera som ärver måste normalt alla godkänna varje åtgärd — vilket snabbt blir tungrott. Lösningen är att alla skriver en fullmakt till en person som får agera för er gemensamt: betala räkningar, kontakta banker och hantera löpande ärenden. Fullmakten måste visas upp i original vid bankbesök.',
+    desc: 'NÃ¤r ni Ã¤r flera som Ã¤rver mÃ¥ste normalt alla godkÃ¤nna varje Ã¥tgÃ¤rd â€” vilket snabbt blir tungrott. LÃ¶sningen Ã¤r att alla skriver en fullmakt till en person som fÃ¥r agera fÃ¶r er gemensamt: betala rÃ¤kningar, kontakta banker och hantera lÃ¶pande Ã¤renden. Fullmakten mÃ¥ste visas upp i original vid bankbesÃ¶k.',
     link: null,
-    triggers: ['flera_delägare'],
+    triggers: ['flera_delÃ¤gare'],
     hasDoc: 'fullmakt',
-    assigneeLabel: 'Vem får fullmakten?',
+    assigneeLabel: 'Vem fÃ¥r fullmakten?',
   },
   {
     id: 'bouppteckning',
     title: 'Planera bouppteckningen',
-    desc: 'En bouppteckning är en förteckning över den avlidnes tillgångar och skulder. Den ska vara klar inom 3 månader och skickas till Skatteverket inom 4 månader.<br><br><strong>Är boet litet?</strong> Om tillgångarna knappt täcker begravnings- och bouppteckningskostnaderna kan du istället göra en <em>dödsboanmälan</em> hos kommunens socialtjänst — det är gratis och enklare. Kontakta socialtjänsten för att se om det gäller dig.<br><br><strong>Göra själv:</strong> Möjligt om boet är enkelt (bara bankmedel och lösöre). Kräver två utomstående vittnen som inte är arvingar. Sparar 6 500–15 000 kr.<br><strong>Anlita jurist:</strong> Rekommenderas vid fastighet, företag, testamente eller om arvingarna inte är överens.',
+    desc: 'En bouppteckning Ã¤r en fÃ¶rteckning Ã¶ver den avlidnes tillgÃ¥ngar och skulder. Den ska vara klar inom 3 mÃ¥nader och skickas till Skatteverket inom 4 mÃ¥nader.<br><br><strong>Ã„r boet litet?</strong> Om tillgÃ¥ngarna knappt tÃ¤cker begravnings- och bouppteckningskostnaderna kan du istÃ¤llet gÃ¶ra en <em>dÃ¶dsboanmÃ¤lan</em> hos kommunens socialtjÃ¤nst â€” det Ã¤r gratis och enklare. Kontakta socialtjÃ¤nsten fÃ¶r att se om det gÃ¤ller dig.<br><br><strong>GÃ¶ra sjÃ¤lv:</strong> MÃ¶jligt om boet Ã¤r enkelt (bara bankmedel och lÃ¶sÃ¶re). KrÃ¤ver tvÃ¥ utomstÃ¥ende vittnen som inte Ã¤r arvingar. Sparar 6 500â€“15 000 kr.<br><strong>Anlita jurist:</strong> Rekommenderas vid fastighet, fÃ¶retag, testamente eller om arvingarna inte Ã¤r Ã¶verens.',
     urgency: 'week',
     time: 'Kontakta jurist inom veckan',
     link: null,
     triggers: [],
     resources: [
-      { label: 'Familjens Jurist — rikstäckande, specialiserade på dödsbon', url: 'https://www.familjens-jurist.se' },
-      { label: 'Advokatsamfundet — hitta advokat nära dig', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
+      { label: 'Familjens Jurist â€” rikstÃ¤ckande, specialiserade pÃ¥ dÃ¶dsbon', url: 'https://www.familjens-jurist.se' },
+      { label: 'Advokatsamfundet â€” hitta advokat nÃ¤ra dig', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
     ],
-    notesPlaceholder: 'Jurist kontaktad, offert, datum för förrättning…',
+    notesPlaceholder: 'Jurist kontaktad, offert, datum fÃ¶r fÃ¶rrÃ¤ttningâ€¦',
   },
   {
     id: 'bank_kontakt',
     title: 'Kontakta banken',
-    desc: 'Meddela banken om dödsfallet så att kontona hanteras korrekt. Ha dödsbevis och personnummer redo. Skriv ned vilka banker du känner till nedan — du kan fylla på efterhand.',
+    desc: 'Meddela banken om dÃ¶dsfallet sÃ¥ att kontona hanteras korrekt. Ha dÃ¶dsbevis och personnummer redo. Skriv ned vilka banker du kÃ¤nner till nedan â€” du kan fylla pÃ¥ efterhand.',
     urgency: 'week',
     time: 'ca 30 min',
     link: null,
     triggers: [],
     hasDoc: 'bank',
-    notesPlaceholder: 'Vet du vilka banker? Skriv de du känner till — det är okej att börja med en. (t.ex. Swedbank, SEB, Nordea…)',
+    notesPlaceholder: 'Vet du vilka banker? Skriv de du kÃ¤nner till â€” det Ã¤r okej att bÃ¶rja med en. (t.ex. Swedbank, SEB, Nordeaâ€¦)',
     resources: [
-      { label: 'Swedbank — dödsbo & efterlevande', url: 'https://www.swedbank.se/privat/mer-fran-swedbank/dodsfall.html' },
-      { label: 'SEB — när någon gått bort', url: 'https://seb.se/privat/dodsfall' },
-      { label: 'Nordea — dödsfall och dödsbo', url: 'https://www.nordea.se/privat/livshändelser/dodsfall/' },
-      { label: 'Handelsbanken — dödsfall', url: 'https://www.handelsbanken.se/sv/privat/livet/dodsfall' },
-      { label: 'Länsförsäkringar Bank — dödsfall', url: 'https://www.lansforsakringar.se/privat/bank/dodsfall/' },
-      { label: 'Skandiabanken — dödsfall', url: 'https://www.skandia.se/bank/dodsfall/' },
+      { label: 'Swedbank â€” dÃ¶dsbo & efterlevande', url: 'https://www.swedbank.se/privat/mer-fran-swedbank/dodsfall.html' },
+      { label: 'SEB â€” nÃ¤r nÃ¥gon gÃ¥tt bort', url: 'https://seb.se/privat/dodsfall' },
+      { label: 'Nordea â€” dÃ¶dsfall och dÃ¶dsbo', url: 'https://www.nordea.se/privat/livshÃ¤ndelser/dodsfall/' },
+      { label: 'Handelsbanken â€” dÃ¶dsfall', url: 'https://www.handelsbanken.se/sv/privat/livet/dodsfall' },
+      { label: 'LÃ¤nsfÃ¶rsÃ¤kringar Bank â€” dÃ¶dsfall', url: 'https://www.lansforsakringar.se/privat/bank/dodsfall/' },
+      { label: 'Skandiabanken â€” dÃ¶dsfall', url: 'https://www.skandia.se/bank/dodsfall/' },
     ],
   },
   {
     id: 'forsakringar',
-    title: 'Gå igenom försäkringar',
-    desc: `Försäkringar kan ge stora belopp som riskerar att aldrig sökas — gör en systematisk genomgång.<br><br>
-<strong>TGL (Tjänstegrupplivförsäkring)</strong> — De flesta anställda med kollektivavtal har detta. Begravningshjälp: ~29 400 kr till dödsboet. Grundbelopp till partner/barn: upp till ~350 000 kr. Måste sökas manuellt hos t.ex. Afa, Folksam eller KPA.<br><br>
-<strong>Hitta dolda försäkringar:</strong> Gå igenom bankutdrag efter premiebetalningar. Kontakta arbetsgivare och fackförbund. Ring de fyra stora (Folksam, If, Länsförsäkringar, Trygg-Hansa) och fråga om den avlidne hade engagemang.`,
+    title: 'GÃ¥ igenom fÃ¶rsÃ¤kringar',
+    desc: `FÃ¶rsÃ¤kringar kan ge stora belopp som riskerar att aldrig sÃ¶kas â€” gÃ¶r en systematisk genomgÃ¥ng.<br><br>
+<strong>TGL (TjÃ¤nstegrupplivfÃ¶rsÃ¤kring)</strong> â€” De flesta anstÃ¤llda med kollektivavtal har detta. BegravningshjÃ¤lp: ~29 400 kr till dÃ¶dsboet. Grundbelopp till partner/barn: upp till ~350 000 kr. MÃ¥ste sÃ¶kas manuellt hos t.ex. Afa, Folksam eller KPA.<br><br>
+<strong>Hitta dolda fÃ¶rsÃ¤kringar:</strong> GÃ¥ igenom bankutdrag efter premiebetalningar. Kontakta arbetsgivare och fackfÃ¶rbund. Ring de fyra stora (Folksam, If, LÃ¤nsfÃ¶rsÃ¤kringar, Trygg-Hansa) och frÃ¥ga om den avlidne hade engagemang.`,
     urgency: 'week',
-    time: 'ca 1–2 timmar',
+    time: 'ca 1â€“2 timmar',
     link: null,
     triggers: [],
     hasDoc: 'forsakring',
-    notesPlaceholder: 'Vet du något försäkringsbolag? Skriv det du hittar — ett i taget är bra nog. (t.ex. Folksam, If, Skandia, Afa…)',
+    notesPlaceholder: 'Vet du nÃ¥got fÃ¶rsÃ¤kringsbolag? Skriv det du hittar â€” ett i taget Ã¤r bra nog. (t.ex. Folksam, If, Skandia, Afaâ€¦)',
     resources: [
-      { label: 'Afa Försäkring — TGL och dödsfall', url: 'https://www.afaforsakring.se/privatperson/dodsfall/' },
-      { label: 'Folksam — anmälan vid dödsfall', url: 'https://www.folksam.se/liv-halsa/nar-nagon-dor' },
+      { label: 'Afa FÃ¶rsÃ¤kring â€” TGL och dÃ¶dsfall', url: 'https://www.afaforsakring.se/privatperson/dodsfall/' },
+      { label: 'Folksam â€” anmÃ¤lan vid dÃ¶dsfall', url: 'https://www.folksam.se/liv-halsa/nar-nagon-dor' },
     ],
   },
   {
     id: 'arbetsgivare',
-    title: 'Kontakta arbetsgivaren och fackförbundet',
-    desc: 'Meddela arbetsgivaren om dödsfallet. Be dem bekräfta om den avlidne haft TGL (Tjänstegrupplivförsäkring) via kollektivavtal — detta är en livförsäkring som ger skattefritt engångsbelopp och måste sökas aktivt. Kontakta även fackförbundet, många har egna dödsfallsförsäkringar via t.ex. Bliwa eller Folksam.',
+    title: 'Kontakta arbetsgivaren och fackfÃ¶rbundet',
+    desc: 'Meddela arbetsgivaren om dÃ¶dsfallet. Be dem bekrÃ¤fta om den avlidne haft TGL (TjÃ¤nstegrupplivfÃ¶rsÃ¤kring) via kollektivavtal â€” detta Ã¤r en livfÃ¶rsÃ¤kring som ger skattefritt engÃ¥ngsbelopp och mÃ¥ste sÃ¶kas aktivt. Kontakta Ã¤ven fackfÃ¶rbundet, mÃ¥nga har egna dÃ¶dsfallsfÃ¶rsÃ¤kringar via t.ex. Bliwa eller Folksam.',
     urgency: 'week',
     time: 'ca 30 min',
     link: null,
     triggers: [],
-    notesPlaceholder: 'Arbetsgivare meddelad, TGL bekräftat, fackförbund kontaktat…',
+    notesPlaceholder: 'Arbetsgivare meddelad, TGL bekrÃ¤ftat, fackfÃ¶rbund kontaktatâ€¦',
   },
 
   {
     id: 'forsakringskassan',
-    title: 'Kontakta Försäkringskassan',
-    desc: `Försäkringskassan behöver meddelas om dödsfallet för att stoppa löpande utbetalningar och för att du ska kunna ansöka om förmåner du kan ha rätt till.<br><br>
-<strong>Stoppa automatiskt:</strong> Barnbidrag, bostadsbidrag, sjukpenning och andra bidrag avslutas inte alltid automatiskt — kontakta FK för att undvika återkrav.<br><br>
-<strong>Ansök om:</strong><br>
-— <em>Barnpension</em>: Barn under 20 år kan ha rätt till barnpension om en förälder dör.<br>
-— <em>Efterlevandestöd</em>: Om barnpensionen inte räcker får barnet efterlevandestöd upp till 18 år.<br>
-— <em>Omställningspension</em>: Efterlevande make/registrerad partner kan ansöka om omställningspension i upp till 12 månader.<br><br>
-Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`,
+    title: 'Kontakta FÃ¶rsÃ¤kringskassan',
+    desc: `FÃ¶rsÃ¤kringskassan behÃ¶ver meddelas om dÃ¶dsfallet fÃ¶r att stoppa lÃ¶pande utbetalningar och fÃ¶r att du ska kunna ansÃ¶ka om fÃ¶rmÃ¥ner du kan ha rÃ¤tt till.<br><br>
+<strong>Stoppa automatiskt:</strong> Barnbidrag, bostadsbidrag, sjukpenning och andra bidrag avslutas inte alltid automatiskt â€” kontakta FK fÃ¶r att undvika Ã¥terkrav.<br><br>
+<strong>AnsÃ¶k om:</strong><br>
+â€” <em>Barnpension</em>: Barn under 20 Ã¥r kan ha rÃ¤tt till barnpension om en fÃ¶rÃ¤lder dÃ¶r.<br>
+â€” <em>EfterlevandestÃ¶d</em>: Om barnpensionen inte rÃ¤cker fÃ¥r barnet efterlevandestÃ¶d upp till 18 Ã¥r.<br>
+â€” <em>OmstÃ¤llningspension</em>: Efterlevande make/registrerad partner kan ansÃ¶ka om omstÃ¤llningspension i upp till 12 mÃ¥nader.<br><br>
+Kontakta FK pÃ¥ telefon eller logga in pÃ¥ Mina sidor pÃ¥ forsakringskassan.se.`,
     urgency: 'week',
     time: 'ca 30 min',
     phone: '0771-524 524',
     link: 'https://www.forsakringskassan.se/privatperson/nar-nagon-dor',
     triggers: [],
-    notesPlaceholder: 'Ärenden öppnade, ärendenummer, beviljade förmåner…',
+    notesPlaceholder: 'Ã„renden Ã¶ppnade, Ã¤rendenummer, beviljade fÃ¶rmÃ¥nerâ€¦',
   },
 
-  // ── LATER ──────────────────────────────────
+  // â”€â”€ LATER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'abonnemang',
     title: 'Avsluta abonnemang och prenumerationer',
-    desc: 'Mobil, streaming, tidningar, el, gym — säg upp tjänster en efter en. Använd dokumentgeneratorn för att skapa uppsägningsbrev. Skriv ned det du vet eller hittar nedan.',
+    desc: 'Mobil, streaming, tidningar, el, gym â€” sÃ¤g upp tjÃ¤nster en efter en. AnvÃ¤nd dokumentgeneratorn fÃ¶r att skapa uppsÃ¤gningsbrev. Skriv ned det du vet eller hittar nedan.',
     urgency: 'later',
-    time: 'ca 1–2 timmar',
+    time: 'ca 1â€“2 timmar',
     link: null,
     triggers: [],
     hasDoc: 'bulk',
-    notesPlaceholder: 'Vet du några abonnemang eller tjänster? Notera dem här — du kan fylla på. (t.ex. Telia, Spotify, Netflix, el, gym…)',
+    notesPlaceholder: 'Vet du nÃ¥gra abonnemang eller tjÃ¤nster? Notera dem hÃ¤r â€” du kan fylla pÃ¥. (t.ex. Telia, Spotify, Netflix, el, gymâ€¦)',
   },
   {
     id: 'arvskifte',
-    title: 'Fördela arvet',
-    desc: 'När bouppteckningen är klar och godkänd av Skatteverket delas tillgångarna upp mellan arvingarna — enligt testamente eller enligt lag om inget testamente finns. Görs ofta med hjälp av jurist och kan ta tid om ni är oense.',
+    title: 'FÃ¶rdela arvet',
+    desc: 'NÃ¤r bouppteckningen Ã¤r klar och godkÃ¤nd av Skatteverket delas tillgÃ¥ngarna upp mellan arvingarna â€” enligt testamente eller enligt lag om inget testamente finns. GÃ¶rs ofta med hjÃ¤lp av jurist och kan ta tid om ni Ã¤r oense.',
     urgency: 'later',
-    time: 'Månader efter dödsfallet',
+    time: 'MÃ¥nader efter dÃ¶dsfallet',
     link: null,
     triggers: [],
-    notesPlaceholder: 'Jurist anlitad, arvingar överens, datum för skifte…',
+    notesPlaceholder: 'Jurist anlitad, arvingar Ã¶verens, datum fÃ¶r skifteâ€¦',
   },
   {
     id: 'avsluta_konton',
     title: 'Avsluta digitala konton',
-    desc: `Spara viktiga foton och dokument innan du stänger konton. Varje plattform har egna rutiner:<br><br>
-<strong>Facebook/Instagram:</strong> Kan minnesmärkas eller raderas. Kräver dödsfallsintyg till supporten.<br>
-<strong>Google:</strong> Kontrollera "Hantering av inaktiva konton" — utan förinställningar kan anhöriga begära data via supporten.<br>
-<strong>Apple/iCloud:</strong> Utan en förutbestämd "digital arvskontakt" krävs ofta domstolsbeslut för att få ut foton och filer.<br><br>
-Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in med den avlidnes lösenord, använd de officiella vägarna.`,
+    desc: `Spara viktiga foton och dokument innan du stÃ¤nger konton. Varje plattform har egna rutiner:<br><br>
+<strong>Facebook/Instagram:</strong> Kan minnesmÃ¤rkas eller raderas. KrÃ¤ver dÃ¶dsfallsintyg till supporten.<br>
+<strong>Google:</strong> Kontrollera "Hantering av inaktiva konton" â€” utan fÃ¶rinstÃ¤llningar kan anhÃ¶riga begÃ¤ra data via supporten.<br>
+<strong>Apple/iCloud:</strong> Utan en fÃ¶rutbestÃ¤md "digital arvskontakt" krÃ¤vs ofta domstolsbeslut fÃ¶r att fÃ¥ ut foton och filer.<br><br>
+SÃ¤g Ã¤ven upp betaltjÃ¤nster som Klarna, PayPal, spelkonton â€” logga aldrig in med den avlidnes lÃ¶senord, anvÃ¤nd de officiella vÃ¤garna.`,
     urgency: 'later',
-    time: 'ca 1–2 timmar',
+    time: 'ca 1â€“2 timmar',
     link: null,
     triggers: [],
     checklist: [
       { key: 'facebook',  label: 'Facebook / Instagram' },
       { key: 'google',    label: 'Google-konto (Gmail, Drive, Foton)' },
       { key: 'apple',     label: 'Apple / iCloud' },
-      { key: 'email',     label: 'Övrig e-post' },
+      { key: 'email',     label: 'Ã–vrig e-post' },
       { key: 'klarna',    label: 'Klarna' },
       { key: 'paypal',    label: 'PayPal' },
       { key: 'streaming', label: 'Streaming (Spotify, Netflix m.fl.)' },
       { key: 'gaming',    label: 'Spelkonton' },
     ],
-    notesPlaceholder: 'Övriga konton att avsluta…',
+    notesPlaceholder: 'Ã–vriga konton att avslutaâ€¦',
   },
   {
     id: 'skattedeklaration',
-    title: 'Dödsboets skattedeklaration',
-    desc: 'Dödsboet är skattskyldigt och kan behöva lämna in en deklaration. Kontakta Skatteverket eller en revisor.',
+    title: 'DÃ¶dsboets skattedeklaration',
+    desc: 'DÃ¶dsboet Ã¤r skattskyldigt och kan behÃ¶va lÃ¤mna in en deklaration. Kontakta Skatteverket eller en revisor.',
     urgency: 'later',
-    time: 'Senast 2 maj efter dödsåret',
+    time: 'Senast 2 maj efter dÃ¶dsÃ¥ret',
     link: 'https://www.skatteverket.se',
     triggers: [],
-    notesPlaceholder: 'Deklaration inlämnad, revisor anlitad, datum…',
+    notesPlaceholder: 'Deklaration inlÃ¤mnad, revisor anlitad, datumâ€¦',
   },
 
-  // ── CONDITIONAL: Fastighet ─────────────────
+  // â”€â”€ CONDITIONAL: Fastighet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'fastighet_boende',
     title: 'Besluta om bostadens framtid',
-    desc: 'Ska bostaden säljas, övertas av anhörig, eller hyras ut? Ta detta beslut med alla delägare i boet.',
+    desc: 'Ska bostaden sÃ¤ljas, Ã¶vertas av anhÃ¶rig, eller hyras ut? Ta detta beslut med alla delÃ¤gare i boet.',
     urgency: 'week',
     time: 'Diskussion med familjen',
     link: null,
     triggers: ['fastighet'],
-    notesPlaceholder: 'Beslut om bostaden, kontaktad mäklare eller arvinge…',
+    notesPlaceholder: 'Beslut om bostaden, kontaktad mÃ¤klare eller arvingeâ€¦',
   },
   {
     id: 'bostadsratt_brf',
-    title: 'Kontakta bostadsrättsföreningen',
-    desc: 'Meddela föreningen om dödsfallet och fråga vad som gäller för överlåtelse av bostadsrätten till arvinge eller försäljning. BRF:en behöver godkänna en ny ägare och har egna rutiner för detta.',
+    title: 'Kontakta bostadsrÃ¤ttsfÃ¶reningen',
+    desc: 'Meddela fÃ¶reningen om dÃ¶dsfallet och frÃ¥ga vad som gÃ¤ller fÃ¶r Ã¶verlÃ¥telse av bostadsrÃ¤tten till arvinge eller fÃ¶rsÃ¤ljning. BRF:en behÃ¶ver godkÃ¤nna en ny Ã¤gare och har egna rutiner fÃ¶r detta.',
     urgency: 'week',
     time: 'ca 20 min',
     link: null,
     triggers: ['fastighet'],
-    notesPlaceholder: 'BRF kontaktad, kontaktperson, beslut om överlåtelse…',
+    notesPlaceholder: 'BRF kontaktad, kontaktperson, beslut om Ã¶verlÃ¥telseâ€¦',
   },
   {
     id: 'lagfart',
-    title: 'Ansök om lagfart',
-    desc: 'När en fastighet ärvs måste den nya ägaren ansöka om lagfart hos Lantmäteriet. Ansökan ska göras inom 3 månader från att bouppteckningen registrerats hos Skatteverket. Stämpelskatten är 1,5 % av fastighetens taxeringsvärde, plus en expeditionsavgift på 825 kr.',
+    title: 'AnsÃ¶k om lagfart',
+    desc: 'NÃ¤r en fastighet Ã¤rvs mÃ¥ste den nya Ã¤garen ansÃ¶ka om lagfart hos LantmÃ¤teriet. AnsÃ¶kan ska gÃ¶ras inom 3 mÃ¥nader frÃ¥n att bouppteckningen registrerats hos Skatteverket. StÃ¤mpelskatten Ã¤r 1,5 % av fastighetens taxeringsvÃ¤rde, plus en expeditionsavgift pÃ¥ 825 kr.',
     urgency: 'later',
     time: 'ca 30 min online',
     link: 'https://www.lantmateriet.se/sv/fastigheter/agande-och-rattigheter/lagfart/',
     triggers: ['fastighet'],
-    notesPlaceholder: 'Ansökan skickad, datum, stämpelskatt beräknad…',
+    notesPlaceholder: 'AnsÃ¶kan skickad, datum, stÃ¤mpelskatt berÃ¤knadâ€¦',
   },
 
-  // ── CONDITIONAL: Hyresrätt ────────────────
+  // â”€â”€ CONDITIONAL: HyresrÃ¤tt â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'hyresratt_uppsagning',
-    title: 'Säg upp hyreskontrakt',
+    title: 'SÃ¤g upp hyreskontrakt',
     urgency: 'today',
-    time: 'Gör inom 1 månad — annars löper kontraktet vidare',
-    desc: 'Hyreskontrakt upphör inte automatiskt vid dödsfall. Säg upp direkt till hyresvärden skriftligen — om det görs inom en månad från dödsfallet är uppsägningstiden normalt en månad. Väntar du längre löper vanlig uppsägningstid (ofta 3 månader). Ha dödsbevis redo.',
+    time: 'GÃ¶r inom 1 mÃ¥nad â€” annars lÃ¶per kontraktet vidare',
+    desc: 'Hyreskontrakt upphÃ¶r inte automatiskt vid dÃ¶dsfall. SÃ¤g upp direkt till hyresvÃ¤rden skriftligen â€” om det gÃ¶rs inom en mÃ¥nad frÃ¥n dÃ¶dsfallet Ã¤r uppsÃ¤gningstiden normalt en mÃ¥nad. VÃ¤ntar du lÃ¤ngre lÃ¶per vanlig uppsÃ¤gningstid (ofta 3 mÃ¥nader). Ha dÃ¶dsbevis redo.',
     link: null,
     triggers: ['hyresratt'],
     hasDoc: 'letter',
   },
 
-  // ── CONDITIONAL: Företag ───────────────────
+  // â”€â”€ CONDITIONAL: FÃ¶retag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'foretag_bolagsverket',
-    title: 'Meddela Bolagsverket om dödsfall',
-    desc: 'Om den avlidne hade ett aktiebolag eller enskild firma behöver styrelse/dödsbo meddela Bolagsverket.',
+    title: 'Meddela Bolagsverket om dÃ¶dsfall',
+    desc: 'Om den avlidne hade ett aktiebolag eller enskild firma behÃ¶ver styrelse/dÃ¶dsbo meddela Bolagsverket.',
     urgency: 'week',
     time: 'ca 1 timme',
     link: 'https://www.bolagsverket.se',
     phone: '0771-670 670',
     triggers: ['foretag'],
-    notesPlaceholder: 'Anmälan skickad, ärendenummer, datum…',
+    notesPlaceholder: 'AnmÃ¤lan skickad, Ã¤rendenummer, datumâ€¦',
   },
   {
     id: 'foretag_avveckling',
-    title: 'Planera avveckling eller överlåtelse av företaget',
-    desc: 'Ska bolaget avvecklas, säljas, eller tas över av en arvinge? Detta är komplext och tidskänsligt — anlita revisor och jurist tidigt.<br><br><strong>Om det finns aktiva kunder eller uppdrag:</strong> Dödsboet tar automatiskt över ägarens rättigheter och skyldigheter. Kontakta kunderna och informera om dödsfallet — var transparent om vad som händer. Kan pågående avtal inte fullföljas, meddela motparten snarast och diskutera avslut i god anda.<br><br><strong>Praktiska steg nu:</strong><br>1. Kontakta företagets revisor och redovisningskonsult direkt.<br>2. Säkerställ att löpande räkningar, löner och moms hanteras — betalstopp sker inte automatiskt.<br>3. Meddela Bolagsverket om dödsfallet (se uppgiften ovan).<br>4. Använd <em>Dokument → Skatteverket</em> härifrån för att begära avregistrering av F-skatt.',
+    title: 'Planera avveckling eller Ã¶verlÃ¥telse av fÃ¶retaget',
+    desc: 'Ska bolaget avvecklas, sÃ¤ljas, eller tas Ã¶ver av en arvinge? Detta Ã¤r komplext och tidskÃ¤nsligt â€” anlita revisor och jurist tidigt.<br><br><strong>Om det finns aktiva kunder eller uppdrag:</strong> DÃ¶dsboet tar automatiskt Ã¶ver Ã¤garens rÃ¤ttigheter och skyldigheter. Kontakta kunderna och informera om dÃ¶dsfallet â€” var transparent om vad som hÃ¤nder. Kan pÃ¥gÃ¥ende avtal inte fullfÃ¶ljas, meddela motparten snarast och diskutera avslut i god anda.<br><br><strong>Praktiska steg nu:</strong><br>1. Kontakta fÃ¶retagets revisor och redovisningskonsult direkt.<br>2. SÃ¤kerstÃ¤ll att lÃ¶pande rÃ¤kningar, lÃ¶ner och moms hanteras â€” betalstopp sker inte automatiskt.<br>3. Meddela Bolagsverket om dÃ¶dsfallet (se uppgiften ovan).<br>4. AnvÃ¤nd <em>Dokument â†’ Skatteverket</em> hÃ¤rifrÃ¥n fÃ¶r att begÃ¤ra avregistrering av F-skatt.',
     urgency: 'week',
     time: 'Kontakta revisor',
     link: null,
     triggers: ['foretag'],
-    notesPlaceholder: 'Revisor kontaktad, pågående avtal identifierade, åtgärder…',
+    notesPlaceholder: 'Revisor kontaktad, pÃ¥gÃ¥ende avtal identifierade, Ã¥tgÃ¤rderâ€¦',
   },
 
-  // ── CONDITIONAL: Skulder ──────────────────
+  // â”€â”€ CONDITIONAL: Skulder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'skulder_inventering',
     title: 'Inventera skulder noggrant',
-    desc: 'Samla en komplett bild av lån, krediter och obetalda räkningar. Skulder betalas av dödsboet innan arv utbetalas.<br><br><strong>Viktigt:</strong> Begravnings- och bouppteckningskostnader prioriteras före alla andra skulder. Om boet inte räcker till kontaktar du borgenärerna och begär anstånd tills bouppteckningen är klar. Du som anhörig är <em>inte</em> personligt betalningsansvarig för den avlidnes skulder.',
+    desc: 'Samla en komplett bild av lÃ¥n, krediter och obetalda rÃ¤kningar. Skulder betalas av dÃ¶dsboet innan arv utbetalas.<br><br><strong>Viktigt:</strong> Begravnings- och bouppteckningskostnader prioriteras fÃ¶re alla andra skulder. Om boet inte rÃ¤cker till kontaktar du borgenÃ¤rerna och begÃ¤r anstÃ¥nd tills bouppteckningen Ã¤r klar. Du som anhÃ¶rig Ã¤r <em>inte</em> personligt betalningsansvarig fÃ¶r den avlidnes skulder.',
     urgency: 'week',
-    time: 'ca 1–2 timmar',
+    time: 'ca 1â€“2 timmar',
     link: null,
     triggers: ['skulder'],
-    notesPlaceholder: 'Skulder listade, kontakter till borgenärer, belopp…',
+    notesPlaceholder: 'Skulder listade, kontakter till borgenÃ¤rer, beloppâ€¦',
   },
   {
     id: 'skulder_kronofogden',
     title: 'Kontrollera skulder hos Kronofogden',
-    desc: 'Du kan begära ett skuldsaldo direkt hos Kronofogden för att se om det finns registrerade skulder.',
+    desc: 'Du kan begÃ¤ra ett skuldsaldo direkt hos Kronofogden fÃ¶r att se om det finns registrerade skulder.',
     urgency: 'week',
     time: 'ca 15 min',
     link: 'https://www.kronofogden.se',
     phone: '0771-73 73 00',
     triggers: ['skulder'],
-    notesPlaceholder: 'Kontroll utförd, datum, eventuella skulder noterade…',
+    notesPlaceholder: 'Kontroll utfÃ¶rd, datum, eventuella skulder noteradeâ€¦',
   },
 
-  // ── CONDITIONAL: Utland ───────────────────
+  // â”€â”€ CONDITIONAL: Utland â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'utland_juridik',
-    title: 'Hämta juridisk rådgivning för utlandstillgångar',
-    desc: 'Tillgångar i annat land — bankkonto, bostad, pension — lyder under det landets lagar och kräver separat utredning. EU:s arvsförordning (nr 650/2012) gäller om den hemmahörande i Sverige dog inom EU, men utanför EU gäller det ländets egna regler.<br><br><strong>Börja med dessa steg:</strong><br>1. Kontakta banken i det andra landet och meddela dödsfallet.<br>2. Anlita en jurist specialiserad på internationell arvsrätt — fråga begravningsbyrån eller Advokatsamfundet.<br>3. Hör med Utrikesdepartementet om konsulär hjälp vid bostad eller tillgångar utanför EU.<br>4. Se till att bouppteckningen täcker utlandstillgångarna — en svensk bouppteckning räcker ofta inom EU, men ibland krävs en lokal kopia.',
+    title: 'HÃ¤mta juridisk rÃ¥dgivning fÃ¶r utlandstillgÃ¥ngar',
+    desc: 'TillgÃ¥ngar i annat land â€” bankkonto, bostad, pension â€” lyder under det landets lagar och krÃ¤ver separat utredning. EU:s arvsfÃ¶rordning (nr 650/2012) gÃ¤ller om den hemmahÃ¶rande i Sverige dog inom EU, men utanfÃ¶r EU gÃ¤ller det lÃ¤ndets egna regler.<br><br><strong>BÃ¶rja med dessa steg:</strong><br>1. Kontakta banken i det andra landet och meddela dÃ¶dsfallet.<br>2. Anlita en jurist specialiserad pÃ¥ internationell arvsrÃ¤tt â€” frÃ¥ga begravningsbyrÃ¥n eller Advokatsamfundet.<br>3. HÃ¶r med Utrikesdepartementet om konsulÃ¤r hjÃ¤lp vid bostad eller tillgÃ¥ngar utanfÃ¶r EU.<br>4. Se till att bouppteckningen tÃ¤cker utlandstillgÃ¥ngarna â€” en svensk bouppteckning rÃ¤cker ofta inom EU, men ibland krÃ¤vs en lokal kopia.',
     urgency: 'week',
     time: 'Kontakta jurist',
     link: null,
     triggers: ['utland'],
     resources: [
-      { label: 'Advokatsamfundet — hitta specialist i internationell arvsrätt', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
-      { label: 'UD — konsulär hjälp vid dödsfall utomlands', url: 'https://www.swedenabroad.se/sv/om-utlandet-for-svenska-medborgare/konsulart-bistand/' },
+      { label: 'Advokatsamfundet â€” hitta specialist i internationell arvsrÃ¤tt', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
+      { label: 'UD â€” konsulÃ¤r hjÃ¤lp vid dÃ¶dsfall utomlands', url: 'https://www.swedenabroad.se/sv/om-utlandet-for-svenska-medborgare/konsulart-bistand/' },
     ],
-    notesPlaceholder: 'Land och tillgång, jurist kontaktad, datum…',
+    notesPlaceholder: 'Land och tillgÃ¥ng, jurist kontaktad, datumâ€¦',
   },
 
-  // ── CONDITIONAL: Minderårigt barn ─────────
+  // â”€â”€ CONDITIONAL: MinderÃ¥rigt barn â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'minderarig_goman',
-    title: 'Utred om god man behövs för minderårigt barn',
-    desc: 'Om ett minderårigt barn är delägare i dödsboet kan en god man behöva utses för att representera barnet. En förälder kan inte ensam företräda sitt barn i ett dödsbo där de själva är delägare — det uppstår en intressekonflikt.<br><br>Kontakta <strong>överförmyndaren i din kommun</strong> — det är de som hanterar detta. Du hittar dem via din kommuns hemsida (sök "överförmyndare [kommunens namn]"). Be om en handläggningstid direkt — processen kan ta några veckor.',
+    title: 'Utred om god man behÃ¶vs fÃ¶r minderÃ¥rigt barn',
+    desc: 'Om ett minderÃ¥rigt barn Ã¤r delÃ¤gare i dÃ¶dsboet kan en god man behÃ¶va utses fÃ¶r att representera barnet. En fÃ¶rÃ¤lder kan inte ensam fÃ¶retrÃ¤da sitt barn i ett dÃ¶dsbo dÃ¤r de sjÃ¤lva Ã¤r delÃ¤gare â€” det uppstÃ¥r en intressekonflikt.<br><br>Kontakta <strong>Ã¶verfÃ¶rmyndaren i din kommun</strong> â€” det Ã¤r de som hanterar detta. Du hittar dem via din kommuns hemsida (sÃ¶k "Ã¶verfÃ¶rmyndare [kommunens namn]"). Be om en handlÃ¤ggningstid direkt â€” processen kan ta nÃ¥gra veckor.',
     urgency: 'today',
-    time: 'Kontakta överförmyndaren',
+    time: 'Kontakta Ã¶verfÃ¶rmyndaren',
     link: null,
     triggers: ['minderarig'],
     resources: [
-      { label: 'Sveriges Kommuner och Regioner — hitta din överförmyndare', url: 'https://skr.se/skr/demokratiledningstyrning/valmaktfordelning/overformyndare.html' },
+      { label: 'Sveriges Kommuner och Regioner â€” hitta din Ã¶verfÃ¶rmyndare', url: 'https://skr.se/skr/demokratiledningstyrning/valmaktfordelning/overformyndare.html' },
     ],
-    notesPlaceholder: 'Överförmyndare kontaktad, kommun, handläggare, datum…',
+    notesPlaceholder: 'Ã–verfÃ¶rmyndare kontaktad, kommun, handlÃ¤ggare, datumâ€¦',
   },
 
-  // ── CONDITIONAL: Make/maka ────────────────
+  // â”€â”€ CONDITIONAL: Make/maka â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'make_pension',
     title: 'Kontrollera efterlevandepension',
-    desc: 'Som make/maka kan du ha rätt till efterlevandepension. Kontakta Pensionsmyndigheten och eventuella tjänstepensionsbolag.',
+    desc: 'Som make/maka kan du ha rÃ¤tt till efterlevandepension. Kontakta Pensionsmyndigheten och eventuella tjÃ¤nstepensionsbolag.',
     urgency: 'week',
     time: 'ca 30 min',
     link: 'https://www.pensionsmyndigheten.se',
     phone: '0771-776 776',
     triggers: ['make'],
-    notesPlaceholder: 'Kontaktad Pensionsmyndigheten, ärendenummer, tjänstepensionsbolag…',
+    notesPlaceholder: 'Kontaktad Pensionsmyndigheten, Ã¤rendenummer, tjÃ¤nstepensionsbolagâ€¦',
   },
   {
     id: 'make_bostadsratt',
-    title: 'Kontrollera bostadsrättens framtid',
-    desc: 'Om ni bodde i bostadsrätt ihop — kontakta bostadsrättsföreningen om hur överlåtelse eller fortsatt boende hanteras.',
+    title: 'Kontrollera bostadsrÃ¤ttens framtid',
+    desc: 'Om ni bodde i bostadsrÃ¤tt ihop â€” kontakta bostadsrÃ¤ttsfÃ¶reningen om hur Ã¶verlÃ¥telse eller fortsatt boende hanteras.',
     urgency: 'week',
     time: 'ca 30 min',
     link: null,
     triggers: ['make'],
-    notesPlaceholder: 'BRF kontaktad, beslut om boende eller överlåtelse…',
+    notesPlaceholder: 'BRF kontaktad, beslut om boende eller Ã¶verlÃ¥telseâ€¦',
   },
 
-  // ── CONDITIONAL: Testamente ───────────────
+  // â”€â”€ CONDITIONAL: Testamente â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'testamente_oppna',
-    title: 'Öppna och bevittna testamentet',
-    desc: 'Testamentet ska delges alla arvingar. Ta hjälp av en jurist om du är osäker på hur detta görs korrekt.',
+    title: 'Ã–ppna och bevittna testamentet',
+    desc: 'Testamentet ska delges alla arvingar. Ta hjÃ¤lp av en jurist om du Ã¤r osÃ¤ker pÃ¥ hur detta gÃ¶rs korrekt.',
     urgency: 'week',
     time: 'ca 1 timme',
     link: null,
     triggers: ['testamente'],
-    notesPlaceholder: 'Testamente delgivet, datum, eventuell jurist anlitad…',
+    notesPlaceholder: 'Testamente delgivet, datum, eventuell jurist anlitadâ€¦',
   },
 
-  // ── CONDITIONAL: Inget testamente ─────────
+  // â”€â”€ CONDITIONAL: Inget testamente â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'inget_testamente_koll',
     title: 'Kontrollera om testamente kan finnas',
-    desc: 'Kolla i den avlidnes papper, bankfack och hos jurister. Det är vanligare än man tror att testamenten hittas senare.',
+    desc: 'Kolla i den avlidnes papper, bankfack och hos jurister. Det Ã¤r vanligare Ã¤n man tror att testamenten hittas senare.',
     urgency: 'week',
     time: 'ca 1 timme',
     link: null,
     triggers: ['inget_testamente'],
-    notesPlaceholder: 'Kontrollerat papper, bankfack, jurister — resultat…',
+    notesPlaceholder: 'Kontrollerat papper, bankfack, jurister â€” resultatâ€¦',
   },
 
-  // ── CONDITIONAL: Fordon ───────────────────
+  // â”€â”€ CONDITIONAL: Fordon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'fordon_transport',
-    title: 'Byt ägare på fordon',
+    title: 'Byt Ã¤gare pÃ¥ fordon',
     urgency: 'later',
     time: 'ca 30 min + posthantering',
-    desc: 'Fordon i ett dödsbo kräver en manuell process — de digitala tjänsterna hos Transportstyrelsen fungerar inte när säljaren är avliden. Använd registreringsbevisets gula del (Del 2) i original. En dödsboföreträdare skriver under i nuvarande ägares ställe. Den nye ägaren måste teckna trafikförsäkring från ägarbytesdagen.',
+    desc: 'Fordon i ett dÃ¶dsbo krÃ¤ver en manuell process â€” de digitala tjÃ¤nsterna hos Transportstyrelsen fungerar inte nÃ¤r sÃ¤ljaren Ã¤r avliden. AnvÃ¤nd registreringsbevisets gula del (Del 2) i original. En dÃ¶dsbofÃ¶retrÃ¤dare skriver under i nuvarande Ã¤gares stÃ¤lle. Den nye Ã¤garen mÃ¥ste teckna trafikfÃ¶rsÃ¤kring frÃ¥n Ã¤garbytesdagen.',
     link: 'https://www.transportstyrelsen.se/sv/vagtrafik/fordon/agarbyte/',
     triggers: ['fordon'],
-    notesPlaceholder: 'Fordon, ny ägare, registreringsbevis del 2 skickat…',
+    notesPlaceholder: 'Fordon, ny Ã¤gare, registreringsbevis del 2 skickatâ€¦',
   },
 
-  // ── CONDITIONAL: Husdjur ──────────────────
+  // â”€â”€ CONDITIONAL: Husdjur â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'husdjur_omplacering',
-    title: 'Ordna omsorg för husdjur',
+    title: 'Ordna omsorg fÃ¶r husdjur',
     urgency: 'week',
     time: 'Din tid',
-    desc: 'Husdjur är juridiskt lös egendom och hanteras i bouppteckning och testamente. Om den avlidne hade hund måste ägarbyte registreras i Jordbruksverkets hundregister av den nya ägaren. Behöver djuret omplaceras finns djurhem och uppfödare som kan hjälpa till.',
+    desc: 'Husdjur Ã¤r juridiskt lÃ¶s egendom och hanteras i bouppteckning och testamente. Om den avlidne hade hund mÃ¥ste Ã¤garbyte registreras i Jordbruksverkets hundregister av den nya Ã¤garen. BehÃ¶ver djuret omplaceras finns djurhem och uppfÃ¶dare som kan hjÃ¤lpa till.',
     link: 'https://www.jordbruksverket.se/djur/hundar-katter-och-harliga-djur/hundar/registrera-din-hund',
     triggers: ['husdjur'],
-    notesPlaceholder: 'Djurets namn, ny ägare kontaktad, ägarbyte registrerat…',
+    notesPlaceholder: 'Djurets namn, ny Ã¤gare kontaktad, Ã¤garbyte registreratâ€¦',
   },
 
-  // ── ALWAYS: Hjälpmedel och mediciner ──────
+  // â”€â”€ ALWAYS: HjÃ¤lpmedel och mediciner â”€â”€â”€â”€â”€â”€
   {
     id: 'hjalpmedel_mediciner',
-    title: 'Återlämna hjälpmedel och mediciner',
+    title: 'Ã…terlÃ¤mna hjÃ¤lpmedel och mediciner',
     urgency: 'week',
     time: 'ca 30 min',
-    desc: 'Rullstol, säng, lyft och andra medicintekniska produkter är ofta lån från regionen och ska återlämnas rengjorda. Större hjälpmedel hämtas ofta kostnadsfritt — ring regionen eller kommunen. Överblivna mediciner (tabletter, sprutor, krämer) lämnas till närmaste apotek för säker destruktion.',
+    desc: 'Rullstol, sÃ¤ng, lyft och andra medicintekniska produkter Ã¤r ofta lÃ¥n frÃ¥n regionen och ska Ã¥terlÃ¤mnas rengjorda. StÃ¶rre hjÃ¤lpmedel hÃ¤mtas ofta kostnadsfritt â€” ring regionen eller kommunen. Ã–verblivna mediciner (tabletter, sprutor, krÃ¤mer) lÃ¤mnas till nÃ¤rmaste apotek fÃ¶r sÃ¤ker destruktion.',
     triggers: [],
-    notesPlaceholder: 'Hjälpmedel återlämnade, mediciner till apoteket, datum…',
+    notesPlaceholder: 'HjÃ¤lpmedel Ã¥terlÃ¤mnade, mediciner till apoteket, datumâ€¦',
   },
 
   {
     id: 'sorgstod',
-    title: 'Ta hand om dig själv',
-    desc: `Det praktiska tar tid och energi — men sorgen kräver sin egen plats.<br><br>
-Du behöver inte ha allt under kontroll. Det är normalt att känna sig utmattad, arg, lättad, tom eller allt på en gång.<br><br>
-<strong>Prata med någon:</strong><br>
-— <em>1177 Sorgelinjen</em>: Ring 1177 och be om att bli kopplad till sorgestöd.<br>
-— <em>SPES</em> (Suicidprevention och efterlevandestöd): spes.se, för dig som förlorat någon till självmord.<br>
-— <em>Kyrkans stöd</em>: Oavsett tro erbjuder Svenska kyrkan samtalsstöd — kontakta närmaste kyrka.<br><br>
-Det finns ingen tidsgräns för sorg, och du behöver inte vara klar.`,
+    title: 'Ta hand om dig sjÃ¤lv',
+    desc: `Det praktiska tar tid och energi â€” men sorgen krÃ¤ver sin egen plats.<br><br>
+Du behÃ¶ver inte ha allt under kontroll. Det Ã¤r normalt att kÃ¤nna sig utmattad, arg, lÃ¤ttad, tom eller allt pÃ¥ en gÃ¥ng.<br><br>
+<strong>Prata med nÃ¥gon:</strong><br>
+â€” <em>1177 Sorgelinjen</em>: Ring 1177 och be om att bli kopplad till sorgestÃ¶d.<br>
+â€” <em>SPES</em> (Suicidprevention och efterlevandestÃ¶d): spes.se, fÃ¶r dig som fÃ¶rlorat nÃ¥gon till sjÃ¤lvmord.<br>
+â€” <em>Kyrkans stÃ¶d</em>: Oavsett tro erbjuder Svenska kyrkan samtalsstÃ¶d â€” kontakta nÃ¤rmaste kyrka.<br><br>
+Det finns ingen tidsgrÃ¤ns fÃ¶r sorg, och du behÃ¶ver inte vara klar.`,
     urgency: 'later',
     time: 'Din tid',
     link: 'https://www.1177.se/liv-halsa/psykisk-halsa/sorg/',
     triggers: [],
-    notesPlaceholder: 'Vad hjälper dig just nu? Är det någon du vill ringa?',
+    notesPlaceholder: 'Vad hjÃ¤lper dig just nu? Ã„r det nÃ¥gon du vill ringa?',
   },
 
-  // ── ALWAYS: Bostadsavveckling ──────────────
+  // â”€â”€ ALWAYS: Bostadsavveckling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: 'bostadsavveckling',
-    title: 'Töm och städa bostaden',
+    title: 'TÃ¶m och stÃ¤da bostaden',
     urgency: 'later',
-    time: 'Dagar–veckor',
-    desc: 'Samordna med övriga arvingar vad som sparas, säljas eller skänks bort. Gör det i god tid — en tom bostad säljs snabbare och minskar löpande hyra eller avgift som annars belastar dödsboet.<br><br><strong>Donera / sälja:</strong> Stadsmissionen, Myrorna och Erikshjälpen hämtar möbler och kläder kostnadsfritt. Blocket och Facebook Marketplace fungerar bra för lösa föremål. Begravningsbyrån kan rekommendera lokala aktörer.<br><br><strong>Anlita städhjälp:</strong> Specialiserade dödsboföretag hanterar hel tömning och städ. Typisk kostnad: 5 000–20 000 kr beroende på bostadens storlek. Betalas ur dödsboets tillgångar.<br><br><strong>RUT-avdraget gäller inte dödsbo</strong> — dödsboet är en juridisk person och Skatteverket medger inte skattereduktion.',
+    time: 'Dagarâ€“veckor',
+    desc: 'Samordna med Ã¶vriga arvingar vad som sparas, sÃ¤ljas eller skÃ¤nks bort. GÃ¶r det i god tid â€” en tom bostad sÃ¤ljs snabbare och minskar lÃ¶pande hyra eller avgift som annars belastar dÃ¶dsboet.<br><br><strong>Donera / sÃ¤lja:</strong> Stadsmissionen, Myrorna och ErikshjÃ¤lpen hÃ¤mtar mÃ¶bler och klÃ¤der kostnadsfritt. Blocket och Facebook Marketplace fungerar bra fÃ¶r lÃ¶sa fÃ¶remÃ¥l. BegravningsbyrÃ¥n kan rekommendera lokala aktÃ¶rer.<br><br><strong>Anlita stÃ¤dhjÃ¤lp:</strong> Specialiserade dÃ¶dsbofÃ¶retag hanterar hel tÃ¶mning och stÃ¤d. Typisk kostnad: 5 000â€“20 000 kr beroende pÃ¥ bostadens storlek. Betalas ur dÃ¶dsboets tillgÃ¥ngar.<br><br><strong>RUT-avdraget gÃ¤ller inte dÃ¶dsbo</strong> â€” dÃ¶dsboet Ã¤r en juridisk person och Skatteverket medger inte skattereduktion.',
     triggers: [],
-    notesPlaceholder: 'Vad ska sparas, säljas, skänkas? Kontakter till städfirma…',
+    notesPlaceholder: 'Vad ska sparas, sÃ¤ljas, skÃ¤nkas? Kontakter till stÃ¤dfirmaâ€¦',
   },
 ];
 
@@ -724,7 +733,7 @@ function buildTasks() {
   if (state.testamente)  triggers.add('testamente');
   if (!state.testamente) triggers.add('inget_testamente');
   if (state.relation === 'make') triggers.add('make');
-  if (state.ansvar === 'flera') triggers.add('flera_delägare');
+  if (state.ansvar === 'flera') triggers.add('flera_delÃ¤gare');
   if (state.fordon)      triggers.add('fordon');
   if (state.husdjur)     triggers.add('husdjur');
   if (state.hyresratt)   triggers.add('hyresratt');
@@ -736,7 +745,7 @@ function buildTasks() {
   loadTaskState();
 }
 
-// ─── NOTES (cached) ──────────────────────────
+// â”€â”€â”€ NOTES (cached) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _notesCache = null;
 
 function _getNotes() {
@@ -781,14 +790,14 @@ function loadTaskState() {
   } catch(e) {}
 }
 
-// ─── PARTICIPANTS NAV ─────────────────────────
+// â”€â”€â”€ PARTICIPANTS NAV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderParticipants() {
   const container = document.getElementById('plan-participants');
   if (!container) return;
   const participants = state.participants || [];
   const deceased = state.name ? state.name.trim() : '';
 
-  // Deceased first (different style — primary chip)
+  // Deceased first (different style â€” primary chip)
   const deceasedChip = deceased
     ? `<span class="plan-participant-chip plan-participant-chip--deceased"
          title="${deceased}">${deceased.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>`
@@ -800,39 +809,39 @@ function renderParticipants() {
   }).join('');
 
   container.innerHTML = deceasedChip + chips +
-    `<button class="plan-participant-add-btn" onclick="openModal('modal-participants')" title="Lägg till deltagare" aria-label="Lägg till deltagare">+</button>`;
+    `<button class="plan-participant-add-btn" onclick="openModal('modal-participants')" title="LÃ¤gg till deltagare" aria-label="LÃ¤gg till deltagare">+</button>`;
 }
 
-// ─── RENDER PLAN ─────────────────────────────
+// â”€â”€â”€ RENDER PLAN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderPlan() {
   renderParticipants();
   const name = state.name;
   document.getElementById('plan-title').textContent =
     name ? `${name}s efterplan` : 'Din efterplan';
   document.getElementById('plan-sub').textContent =
-    'Uppdateras allteftersom du går vidare. Det finns inget fel sätt att börja.';
+    'Uppdateras allteftersom du gÃ¥r vidare. Det finns inget fel sÃ¤tt att bÃ¶rja.';
 
   const defEl = document.getElementById('plan-dodsbo-def');
   if (defEl) {
     const n = state.name || 'den som gick bort';
-    defEl.textContent = `Dödsboet är ett tillfälligt begrepp för allt ${n} lämnade efter sig — tillgångar och skulder. Det upphör när allt är fördelat.`;
+    defEl.textContent = `DÃ¶dsboet Ã¤r ett tillfÃ¤lligt begrepp fÃ¶r allt ${n} lÃ¤mnade efter sig â€” tillgÃ¥ngar och skulder. Det upphÃ¶r nÃ¤r allt Ã¤r fÃ¶rdelat.`;
   }
 
   const today  = state.tasks.filter(t => t.urgency === 'today');
   const week   = state.tasks.filter(t => t.urgency === 'week');
   const later  = state.tasks.filter(t => t.urgency === 'later');
 
-  // ── Börja här-kort ──────────────────────────
+  // â”€â”€ BÃ¶rja hÃ¤r-kort â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const firstTask = state.tasks.find(t => !t.done);
   const startEl   = document.getElementById('start-here');
   if (startEl) {
     if (firstTask) {
       startEl.innerHTML = `
         <div>
-          <div class="start-here-label">Börja här</div>
+          <div class="start-here-label">BÃ¶rja hÃ¤r</div>
           <div class="start-here-title">${firstTask.title}</div>
         </div>
-        <div class="start-here-arrow">›</div>`;
+        <div class="start-here-arrow">â€º</div>`;
       startEl.classList.remove('hidden');
       startEl.onclick = () => {
         // Make sure we're on plan tab, open the task
@@ -879,7 +888,7 @@ function renderTaskList(containerId, tasks, nextTaskId) {
     wrap.id = `task-wrap-${task.id}`;
 
     const linkHtml = task.link
-      ? `<a class="task-expand-link" href="${task.link}" target="_blank" rel="noopener">Öppna ${task.link.replace('https://www.', '')} ↗</a>`
+      ? `<a class="task-expand-link" href="${task.link}" target="_blank" rel="noopener">Ã–ppna ${task.link.replace('https://www.', '')} â†—</a>`
       : '';
 
     const phoneHtml = task.phone
@@ -892,7 +901,7 @@ function renderTaskList(containerId, tasks, nextTaskId) {
 
     const resourcesHtml = task.resources?.length
       ? `<div class="task-resources">${task.resources.map(r =>
-          `<a class="task-resource-link" href="${r.url}" target="_blank" rel="noopener">${r.label} ↗</a>`
+          `<a class="task-resource-link" href="${r.url}" target="_blank" rel="noopener">${r.label} â†—</a>`
         ).join('')}</div>`
       : '';
 
@@ -903,26 +912,26 @@ function renderTaskList(containerId, tasks, nextTaskId) {
 
     const checklistHtml = task.checklist?.length ? renderTaskChecklist(task) : '';
 
-    const notifyHtml = task.id === 'narmaste_anhörig' ? renderNotifyList() : '';
+    const notifyHtml = task.id === 'narmaste_anhÃ¶rig' ? renderNotifyList() : '';
 
     const docHtml = task.hasDoc && !task.done
-      ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('docs');showDocForm('${task.hasDoc}')">Generera dokument →</button>`
+      ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('docs');showDocForm('${task.hasDoc}')">Generera dokument â†’</button>`
       : '';
 
     const doneHtml = task.done
-      ? `<span class="task-expand-done">Klar ✓</span>
+      ? `<span class="task-expand-done">Klar âœ“</span>
          <button class="task-expand-undo-btn" onclick="event.stopPropagation();undoTaskDoneManual('${task.id}')">Markera som ej klar</button>`
       : task.started
       ? `<button class="task-expand-btn" onclick="event.stopPropagation();markTaskDone('${task.id}')">Markera som klar</button>`
-      : `<button class="task-expand-start-btn" onclick="event.stopPropagation();markTaskStarted('${task.id}')">Påbörjad</button>
+      : `<button class="task-expand-start-btn" onclick="event.stopPropagation();markTaskStarted('${task.id}')">PÃ¥bÃ¶rjad</button>
          <button class="task-expand-btn" onclick="event.stopPropagation();markTaskDone('${task.id}')">Markera som klar</button>`;
 
     const isNext = !task.done && task.id === nextTaskId;
     const cardClass = task.done ? ' done' : task.started ? ' started' : (isNext ? ' task-card--next' : '');
     const checkClass = task.done ? ' checked' : task.started ? ' started' : '';
-    const nextBadge = isNext ? `<span class="task-next-badge">Nästa steg</span>` : '';
+    const nextBadge = isNext ? `<span class="task-next-badge">NÃ¤sta steg</span>` : '';
     const startedBadge = task.started && !task.done
-      ? `<span class="task-started-badge">Påbörjad</span>`
+      ? `<span class="task-started-badge">PÃ¥bÃ¶rjad</span>`
       : '';
     const assigneeBadge = task.assignee
       ? `<span class="task-assignee-badge" id="assignee-badge-${task.id}">${task.assignee}</span>`
@@ -935,7 +944,7 @@ function renderTaskList(containerId, tasks, nextTaskId) {
           <div class="task-title">${task.title}${nextBadge}</div>
           <div class="task-time">${task.time}${startedBadge}${assigneeBadge}</div>
         </div>
-        <div class="task-chevron" id="chevron-${task.id}" aria-hidden="true">›</div>
+        <div class="task-chevron" id="chevron-${task.id}" aria-hidden="true">â€º</div>
       </div>
       <div class="task-expand hidden" id="expand-${task.id}">
         <div class="task-expand-desc">${task.desc}</div>
@@ -972,7 +981,7 @@ function renderTaskList(containerId, tasks, nextTaskId) {
 
     if (task.notesPlaceholder && !task.done) {
       const notesEl = wrap.querySelector(`#notes-${task.id}`);
-      if (notesEl) notesEl.setAttribute('aria-label', `Anteckningar för ${task.title}`);
+      if (notesEl) notesEl.setAttribute('aria-label', `Anteckningar fÃ¶r ${task.title}`);
     }
 
     // staggered entrance animation
@@ -995,7 +1004,7 @@ function toggleTask(taskId) {
     if (prev)     prev.classList.add('hidden');
     if (prevChev) prevChev.classList.remove('open');
     if (prevCard) { prevCard.classList.remove('expanded'); prevCard.setAttribute('aria-expanded', 'false'); }
-    // Återställ badge för tidigare öppnad uppgift
+    // Ã…terstÃ¤ll badge fÃ¶r tidigare Ã¶ppnad uppgift
     const prevTask = state.tasks.find(t => t.id === expandedTaskId);
     const prevBadge = document.getElementById(`assignee-badge-${expandedTaskId}`);
     if (prevBadge && prevTask?.assignee) prevBadge.classList.remove('hidden');
@@ -1010,7 +1019,7 @@ function toggleTask(taskId) {
   if (el)   el.classList.remove('hidden');
   if (chev) chev.classList.add('open');
   if (card) { card.classList.add('expanded'); card.setAttribute('aria-expanded', 'true'); }
-  // Dölj badge när uppgiften är expanderad (syns i pickern istället)
+  // DÃ¶lj badge nÃ¤r uppgiften Ã¤r expanderad (syns i pickern istÃ¤llet)
   document.getElementById(`assignee-badge-${taskId}`)?.classList.add('hidden');
 }
 
@@ -1029,18 +1038,18 @@ function updateProgress() {
   if (done === total) {
     summaryEl.innerHTML = `<strong>${total} av ${total}</strong> uppgifter klara`;
     if (completionEl) completionEl.classList.add('visible');
-    document.getElementById('plan-sub').textContent = 'Du har gått igenom allt. Ta ett djupt andetag.';
+    document.getElementById('plan-sub').textContent = 'Du har gÃ¥tt igenom allt. Ta ett djupt andetag.';
     setTimeout(showCompletionOverlay, 600);
   } else {
     summaryEl.innerHTML = `<strong>${done} av ${total}</strong> uppgifter klara`;
     if (completionEl) completionEl.classList.remove('visible');
   }
 
-  // ── Plan-done footer ─────────────────────────
+  // â”€â”€ Plan-done footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const doneFooter = document.getElementById('plan-done-footer');
   if (doneFooter) doneFooter.classList.toggle('hidden', done !== total);
 
-  // ── Section-done badges ───────────────────────
+  // â”€â”€ Section-done badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   ['today', 'week', 'later'].forEach(section => {
     const urgencyMap = { today: 'today', week: 'week', later: 'later' };
     const sectionTasks = state.tasks.filter(t => t.urgency === urgencyMap[section]);
@@ -1051,7 +1060,7 @@ function updateProgress() {
   });
 }
 
-// ─── TASK CHECKLIST ────────────────────────────
+// â”€â”€â”€ TASK CHECKLIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderTaskChecklist(task) {
   const saved = (state.taskChecklists || {})[task.id] || {};
   const items = task.checklist.map(item => {
@@ -1085,7 +1094,7 @@ function autoStartOnNote(taskId) {
   if (task && !task.done && !task.started) markTaskStarted(taskId);
 }
 
-// ─── BILLS ───────────────────────────────────
+// â”€â”€â”€ BILLS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function loadBills() {
   try { state.bills = JSON.parse(localStorage.getItem('efterplan_bills')) || []; } catch(e) { state.bills = []; }
 }
@@ -1109,7 +1118,7 @@ function renderBills() {
         <span class="bill-desc">${b.desc}</span>
         ${b.amount ? `<span class="bill-amount">${b.amount} kr</span>` : ''}
       </div>
-      <button class="bill-delete" onclick="deleteBill('${b.id}')" aria-label="Ta bort">×</button>
+      <button class="bill-delete" onclick="deleteBill('${b.id}')" aria-label="Ta bort">Ã—</button>
     </li>`).join('');
 }
 function showBillForm() {
@@ -1163,11 +1172,11 @@ function markTaskStarted(taskId) {
   if (timeEl && !timeEl.querySelector('.task-started-badge')) {
     const badge = document.createElement('span');
     badge.className = 'task-started-badge';
-    badge.textContent = 'Påbörjad';
+    badge.textContent = 'PÃ¥bÃ¶rjad';
     timeEl.appendChild(badge);
   }
 
-  // Swap start button → only "Markera som klar" remains
+  // Swap start button â†’ only "Markera som klar" remains
   const actionsEl = document.querySelector(`#expand-${taskId} .task-expand-actions`);
   if (actionsEl) {
     const docBtn = actionsEl.querySelector('.task-expand-doc');
@@ -1197,8 +1206,8 @@ function markTaskDone(taskId) {
   showUndoToast(taskId);
 }
 
-// ─── ASSIGNEES ────────────────────────────────
-// Single source of truth: state.participants — same list used for task
+// â”€â”€â”€ ASSIGNEES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Single source of truth: state.participants â€” same list used for task
 // assignment and notify notifier. Add people via the + button in the nav.
 function _getAssignees() {
   return state.participants || [];
@@ -1236,7 +1245,7 @@ function _buildAssigneePickerInner(taskId) {
   if (!assignees.length) {
     return `<button class="assignee-add-hint"
               onclick="event.stopPropagation();openModal('modal-participants')"
-              title="Lägg till deltagare">+ Lägg till deltagare</button>`;
+              title="LÃ¤gg till deltagare">+ LÃ¤gg till deltagare</button>`;
   }
   return assignees.map(n =>
     `<button class="assignee-chip${n === current ? ' selected' : ''}"
@@ -1256,7 +1265,7 @@ function renderAssigneePicker(taskId) {
   </div>`;
 }
 
-// ─── PARTICIPANTS ──────────────────────────────
+// â”€â”€â”€ PARTICIPANTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function _getParticipants() {
   return state.participants || [];
 }
@@ -1285,21 +1294,21 @@ function removeParticipant(name) {
   _refreshAllAssigneePickers();
 }
 function _refreshParticipantList() {
-  // Onboarding list — simple chips
+  // Onboarding list â€” simple chips
   const obList = document.getElementById('ob-participant-list');
   if (obList) {
     obList.innerHTML = (state.participants || []).map(name =>
       `<div class="ob-participant-chip">
         <span>${name}</span>
-        <button onclick="removeParticipant('${name.replace(/'/g, "\\'")}')" aria-label="Ta bort ${name}">×</button>
+        <button onclick="removeParticipant('${name.replace(/'/g, "\\'")}')" aria-label="Ta bort ${name}">Ã—</button>
       </div>`
     ).join('');
   }
-  // Modal list — with optional personnr input
+  // Modal list â€” with optional personnr input
   const modalList = document.getElementById('modal-participant-list');
   if (modalList) {
     if (!(state.participants || []).length) {
-      modalList.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">Inga deltagare tillagda ännu.</p>';
+      modalList.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">Inga deltagare tillagda Ã¤nnu.</p>';
       return;
     }
     modalList.innerHTML = (state.participants || []).map(name => {
@@ -1308,10 +1317,10 @@ function _refreshParticipantList() {
       return `<div class="modal-participant-item">
         <div class="modal-participant-row">
           <span class="modal-participant-name">${name}</span>
-          <button class="modal-participant-remove" onclick="removeParticipant('${safeN}')" aria-label="Ta bort ${name}">×</button>
+          <button class="modal-participant-remove" onclick="removeParticipant('${safeN}')" aria-label="Ta bort ${name}">Ã—</button>
         </div>
         <input type="text" class="participant-personnr-input"
-               placeholder="Personnummer (valfritt — för fullmakter)"
+               placeholder="Personnummer (valfritt â€” fÃ¶r fullmakter)"
                value="${personnr}"
                onchange="saveParticipantPersonnr('${safeN}', this.value)" />
       </div>`;
@@ -1325,7 +1334,7 @@ function saveParticipantPersonnr(name, val) {
   saveState();
 }
 
-// ─── NOTIFY LIST ──────────────────────────────
+// â”€â”€â”€ NOTIFY LIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function _getNotifyList() {
   try { return JSON.parse(localStorage.getItem('efterplan_notify_list') || '[]'); } catch(e) { return []; }
 }
@@ -1379,7 +1388,7 @@ function _refreshNotifyList() {
 function _buildNotifyListInner() {
   const list = _getNotifyList();
   const participants = _getParticipants();
-  if (!list.length) return '<p class="notify-empty">Inga tillagda än</p>';
+  if (!list.length) return '<p class="notify-empty">Inga tillagda Ã¤n</p>';
   return list.map(p => {
     const safeId = p.id;
     const notifierSelect = participants.length > 0
@@ -1393,12 +1402,12 @@ function _buildNotifyListInner() {
       <div class="notify-person${p.notified ? ' notified' : ''}">
         <button class="notify-check${p.notified ? ' checked' : ''}"
           onclick="event.stopPropagation();toggleNotified('${safeId}')"
-          aria-label="Markera ${p.name} som meddelad">${p.notified ? '✓' : ''}</button>
+          aria-label="Markera ${p.name} som meddelad">${p.notified ? 'âœ“' : ''}</button>
         <span class="notify-name">${p.name}</span>
         ${notifierSelect}
         <button class="notify-remove"
           onclick="event.stopPropagation();removeNotifyPerson('${safeId}')"
-          aria-label="Ta bort ${p.name}">×</button>
+          aria-label="Ta bort ${p.name}">Ã—</button>
       </div>`;
   }).join('');
 }
@@ -1409,7 +1418,7 @@ function renderNotifyList() {
   const counterText = list.length ? `${done} av ${list.length} meddelade` : '';
   return `<div class="notify-list-section">
     <div class="notify-list-header">
-      <span class="notify-list-label">Att underrätta</span>
+      <span class="notify-list-label">Att underrÃ¤tta</span>
       <span class="notify-counter" id="notify-counter">${counterText}</span>
     </div>
     <div class="notify-list-items" id="notify-list-container">
@@ -1417,15 +1426,15 @@ function renderNotifyList() {
     </div>
     <div class="notify-add-row">
       <input class="notify-new-input" id="notify-new-input" type="text"
-        placeholder="Lägg till person…"
+        placeholder="LÃ¤gg till personâ€¦"
         onclick="event.stopPropagation()"
         onkeydown="if(event.key==='Enter'){event.stopPropagation();addNotifyPerson();}" />
-      <button class="notify-add-btn" onclick="event.stopPropagation();addNotifyPerson()">Lägg till</button>
+      <button class="notify-add-btn" onclick="event.stopPropagation();addNotifyPerson()">LÃ¤gg till</button>
     </div>
   </div>`;
 }
 
-// ─── UNDO TOAST ───────────────────────────────
+// â”€â”€â”€ UNDO TOAST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _undoTaskId  = null;
 let _undoTimer   = null;
 
@@ -1465,7 +1474,7 @@ function undoTaskDoneManual(taskId) {
   renderPlan();
 }
 
-// ─── MODALS ───────────────────────────────────
+// â”€â”€â”€ MODALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _modalPrevFocus = null;
 let _completionPrevFocus = null;
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -1512,7 +1521,7 @@ function _coEscHandler(e) {
   if (e.key === 'Escape') closeCompletionOverlay();
 }
 
-// ─── TABS ────────────────────────────────────
+// â”€â”€â”€ TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function switchTab(name) {
   document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.plan-tab-content').forEach(t => t.classList.remove('active'));
@@ -1521,7 +1530,7 @@ function switchTab(name) {
   window.scrollTo(0, 0);
 }
 
-// ─── SENDER INFO PERSISTENCE ─────────────────
+// â”€â”€â”€ SENDER INFO PERSISTENCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function saveSenderInfo(name, email) {
   try {
     if (name)  localStorage.setItem('efterplan_sender_name',  name);
@@ -1535,14 +1544,14 @@ function getSenderInfo() {
   };
 }
 function getRelationLabel() {
-  const map = { partner: 'Make/Maka', foralder: 'Barn', syskon: 'Syskon', barn: 'Förälder', annan: '' };
+  const map = { partner: 'Make/Maka', foralder: 'Barn', syskon: 'Syskon', barn: 'FÃ¶rÃ¤lder', annan: '' };
   return map[state.relation] || '';
 }
 
-// ─── DOCUMENT GENERATOR ──────────────────────
+// â”€â”€â”€ DOCUMENT GENERATOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getDocContext() {
   return {
-    deceased: state.name     || '[NAMN PÅ AVLIDEN]',
+    deceased: state.name     || '[NAMN PÃ… AVLIDEN]',
     personnr: state.personnr || '[PERSONNUMMER]',
     today:    formatDate(new Date()),
   };
@@ -1622,7 +1631,7 @@ function backToDocChooser() {
   window.scrollTo(0, 0);
 }
 
-// ─── BULK UPPSÄGNING ──────────────────────────
+// â”€â”€â”€ BULK UPPSÃ„GNING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _bulkRowId = 0;
 
 function initBulkForm() {
@@ -1640,9 +1649,9 @@ function addBulkRow() {
   row.className = 'bulk-row';
   row.id = `brow-${id}`;
   row.innerHTML = `
-    <input type="text" class="text-input bulk-name" placeholder="Tjänst (t.ex. Spotify, Telia, Netflix…)" />
+    <input type="text" class="text-input bulk-name" placeholder="TjÃ¤nst (t.ex. Spotify, Telia, Netflixâ€¦)" />
     <input type="text" class="text-input bulk-custnr" placeholder="Kundnr (valfritt)" />
-    <button class="bulk-remove" onclick="removeBulkRow(${id})" aria-label="Ta bort">✕</button>`;
+    <button class="bulk-remove" onclick="removeBulkRow(${id})" aria-label="Ta bort">âœ•</button>`;
   document.getElementById('bulk-rows').appendChild(row);
 }
 
@@ -1657,9 +1666,9 @@ function generateBulkLetters() {
   clearFormError('err-bulk');
   if (!sender || !email) { showFormError('err-bulk', 'Fyll i ditt namn och din e-post.'); return; }
 
-  // Show loading state — lets browser repaint before synchronous work
+  // Show loading state â€” lets browser repaint before synchronous work
   const genBtn = document.querySelector('#doc-form-bulk .btn-primary');
-  if (genBtn) { genBtn.disabled = true; genBtn.textContent = 'Förbereder brev…'; }
+  if (genBtn) { genBtn.disabled = true; genBtn.textContent = 'FÃ¶rbereder brevâ€¦'; }
   requestAnimationFrame(() => setTimeout(() => _doGenerateBulk(sender, email, genBtn), 0));
 }
 
@@ -1672,13 +1681,13 @@ function _doGenerateBulk(sender, email, genBtn) {
     const custnr = row.querySelector('.bulk-custnr').value.trim();
     if (name) services.push({ name, custnr });
   });
-  if (services.length === 0) { showFormError('err-bulk', 'Lägg till minst en tjänst med namn.'); return; }
+  if (services.length === 0) { showFormError('err-bulk', 'LÃ¤gg till minst en tjÃ¤nst med namn.'); return; }
 
   const { deceased, personnr, today } = getDocContext();
 
   const letters = services.map(({ name, custnr }) => ({
     service: name,
-    text: `${sender}\n${email}\n\n${today}\n\nTill: ${name}\nÄrende: Avslutning av abonnemang — dödsfall${custnr ? '\nKundnummer: ' + custnr : ''}\n\nHej,\n\nJag kontaktar er angående abonnemanget som tillhörde ${deceased} (personnr ${personnr}), som tyvärr har gått bort.\n\nJag ber er härmed avsluta abonnemanget snarast möjligt och begär återbetalning för eventuell förbetald period efter avslutsdatum.\n\nJag bifogar dödsbevis och är tillgänglig för frågor via e-post.\n\nVänligen bekräfta avslut skriftligen.\n\nMed vänliga hälsningar,\n\n${sender}\n${email}`,
+    text: `${sender}\n${email}\n\n${today}\n\nTill: ${name}\nÃ„rende: Avslutning av abonnemang â€” dÃ¶dsfall${custnr ? '\nKundnummer: ' + custnr : ''}\n\nHej,\n\nJag kontaktar er angÃ¥ende abonnemanget som tillhÃ¶rde ${deceased} (personnr ${personnr}), som tyvÃ¤rr har gÃ¥tt bort.\n\nJag ber er hÃ¤rmed avsluta abonnemanget snarast mÃ¶jligt och begÃ¤r Ã¥terbetalning fÃ¶r eventuell fÃ¶rbetald period efter avslutsdatum.\n\nJag bifogar dÃ¶dsbevis och Ã¤r tillgÃ¤nglig fÃ¶r frÃ¥gor via e-post.\n\nVÃ¤nligen bekrÃ¤fta avslut skriftligen.\n\nMed vÃ¤nliga hÃ¤lsningar,\n\n${sender}\n${email}`,
   }));
 
   const container = document.getElementById('bulk-letters-list');
@@ -1699,8 +1708,8 @@ function _doGenerateBulk(sender, email, genBtn) {
   document.getElementById('doc-chooser').classList.add('hidden');
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
   document.getElementById('doc-result-bulk').classList.remove('hidden');
-  if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Skapa alla brev →'; }
-  track('Doc Generated', { title: 'Bulk uppsägning', count: String(services.length) });
+  if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Skapa alla brev â†’'; }
+  track('Doc Generated', { title: 'Bulk uppsÃ¤gning', count: String(services.length) });
   window.scrollTo(0, 0);
 }
 
@@ -1719,31 +1728,31 @@ function generateLetter() {
   const sender  = document.getElementById('letter-sender').value.trim();
   const email   = document.getElementById('letter-email').value.trim();
   clearFormError('err-letter');
-  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i de obligatoriska fÃ¤lten (mÃ¤rkta med *).'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
   const custnrLine = custnr ? `\nKundnummer: ${custnr}` : '';
 
-  showDocResult('Uppsägningsbrev — ' + service, `${sender}
+  showDocResult('UppsÃ¤gningsbrev â€” ' + service, `${sender}
 ${email}
 
 ${today}
 
 Till: ${service}
-Ärende: Avslutning av abonnemang — dödsfall${custnrLine}
+Ã„rende: Avslutning av abonnemang â€” dÃ¶dsfall${custnrLine}
 
 Hej,
 
-Jag kontaktar er angående abonnemanget som tillhörde ${deceased} (personnr ${personnr}), som tyvärr har gått bort.
+Jag kontaktar er angÃ¥ende abonnemanget som tillhÃ¶rde ${deceased} (personnr ${personnr}), som tyvÃ¤rr har gÃ¥tt bort.
 
-Jag ber er härmed avsluta abonnemanget snarast möjligt och begär återbetalning för eventuell förbetald period efter avslutsdatum.
+Jag ber er hÃ¤rmed avsluta abonnemanget snarast mÃ¶jligt och begÃ¤r Ã¥terbetalning fÃ¶r eventuell fÃ¶rbetald period efter avslutsdatum.
 
-Jag bifogar dödsbevis och är tillgänglig för eventuella frågor via e-post.
+Jag bifogar dÃ¶dsbevis och Ã¤r tillgÃ¤nglig fÃ¶r eventuella frÃ¥gor via e-post.
 
-Vänligen bekräfta avslut skriftligen.
+VÃ¤nligen bekrÃ¤fta avslut skriftligen.
 
-Med vänliga hälsningar,
+Med vÃ¤nliga hÃ¤lsningar,
 
 ${sender}
 ${email}`);
@@ -1755,7 +1764,7 @@ function generateBank() {
   const relation = document.getElementById('bank-relation').value.trim();
   const email    = document.getElementById('bank-email').value.trim();
   clearFormError('err-bank');
-  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i de obligatoriska fÃ¤lten (mÃ¤rkta med *).'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -1766,23 +1775,23 @@ ${email}
 ${today}
 
 Till: ${bank}
-Ärende: Dödsfallsnotifiering — begäran om kontospärr och tillgångsinformation
+Ã„rende: DÃ¶dsfallsnotifiering â€” begÃ¤ran om kontospÃ¤rr och tillgÃ¥ngsinformation
 
 Hej,
 
-Jag skriver till er med anledning av att ${deceased} (personnr ${personnr}) har gått bort. Jag är ${relation} och representerar dödsboet.
+Jag skriver till er med anledning av att ${deceased} (personnr ${personnr}) har gÃ¥tt bort. Jag Ã¤r ${relation} och representerar dÃ¶dsboet.
 
-Jag begär härmed att:
+Jag begÃ¤r hÃ¤rmed att:
 
-1. Samtliga konton tillhörande ${deceased} spärras tills bouppteckning är genomförd.
-2. En förteckning över befintliga konton och tillgångar skickas till mig.
-3. Ni bekräftar skriftligen att ni tagit emot detta meddelande.
+1. Samtliga konton tillhÃ¶rande ${deceased} spÃ¤rras tills bouppteckning Ã¤r genomfÃ¶rd.
+2. En fÃ¶rteckning Ã¶ver befintliga konton och tillgÃ¥ngar skickas till mig.
+3. Ni bekrÃ¤ftar skriftligen att ni tagit emot detta meddelande.
 
-Dödsbevis bifogas detta brev. Ytterligare dokumentation (bouppteckning, fullmakt) skickas så snart det är tillgängligt.
+DÃ¶dsbevis bifogas detta brev. Ytterligare dokumentation (bouppteckning, fullmakt) skickas sÃ¥ snart det Ã¤r tillgÃ¤ngligt.
 
-För frågor, kontakta mig på angiven e-postadress.
+FÃ¶r frÃ¥gor, kontakta mig pÃ¥ angiven e-postadress.
 
-Med vänliga hälsningar,
+Med vÃ¤nliga hÃ¤lsningar,
 
 ${sender}
 ${relation} till ${deceased}
@@ -1795,7 +1804,7 @@ function generateForsakring() {
   const relation = document.getElementById('fors-relation').value.trim();
   const email    = document.getElementById('fors-email').value.trim();
   clearFormError('err-forsakring');
-  if (!bolag || !sender || !relation || !email) { showFormError('err-forsakring', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!bolag || !sender || !relation || !email) { showFormError('err-forsakring', 'Fyll i de obligatoriska fÃ¤lten (mÃ¤rkta med *).'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -1806,21 +1815,21 @@ ${email}
 ${today}
 
 Till: ${bolag}
-Ärende: Dödsfallsanmälan — begäran om utredning av försäkringar
+Ã„rende: DÃ¶dsfallsanmÃ¤lan â€” begÃ¤ran om utredning av fÃ¶rsÃ¤kringar
 
 Hej,
 
-Jag kontaktar er för att anmäla att ${deceased} (personnr ${personnr}) har gått bort.
+Jag kontaktar er fÃ¶r att anmÃ¤la att ${deceased} (personnr ${personnr}) har gÃ¥tt bort.
 
-Jag är ${relation} och ber er:
+Jag Ã¤r ${relation} och ber er:
 
-1. Bekräfta vilka försäkringar som fanns hos er på den avlidnes namn.
-2. Informera om eventuell utbetalning av livförsäkring eller begravningsförsäkring.
-3. Avsluta löpande försäkringar från och med dödsdatum.
+1. BekrÃ¤fta vilka fÃ¶rsÃ¤kringar som fanns hos er pÃ¥ den avlidnes namn.
+2. Informera om eventuell utbetalning av livfÃ¶rsÃ¤kring eller begravningsfÃ¶rsÃ¤kring.
+3. Avsluta lÃ¶pande fÃ¶rsÃ¤kringar frÃ¥n och med dÃ¶dsdatum.
 
-Dödsbevis bifogas. Kontakta mig för ytterligare dokumentation.
+DÃ¶dsbevis bifogas. Kontakta mig fÃ¶r ytterligare dokumentation.
 
-Med vänliga hälsningar,
+Med vÃ¤nliga hÃ¤lsningar,
 
 ${sender}
 ${relation} till ${deceased}
@@ -1839,22 +1848,22 @@ function generateAnnons() {
   clearFormError('err-annons');
   if (!name) { showFormError('err-annons', 'Ange den avlidnes namn.'); return; }
 
-  const lifeSpan  = (born && died) ? `${born} – ${died}` : (died ? `Avled ${died}` : '');
+  const lifeSpan  = (born && died) ? `${born} â€“ ${died}` : (died ? `Avled ${died}` : '');
   const memLine   = memory ? `\n${memory}\n` : '';
-  const survLine  = survivors ? `\nEfterlämnas av ${survivors}.` : '';
+  const survLine  = survivors ? `\nEfterlÃ¤mnas av ${survivors}.` : '';
   const funLine   = funeral ? `\nBegravning: ${funeral}.` : '\nBegravning meddelas i god tid.';
   const ovrigtLine = ovrigt ? `\n\n${ovrigt}` : '';
 
-  showDocResult('Dödsannons — ' + name, `${name}
+  showDocResult('DÃ¶dsannons â€” ' + name, `${name}
 ${lifeSpan}
 ${memLine}${survLine}
 ${funLine}
 
-Sörjd och saknad.${ovrigtLine}`.trim());
+SÃ¶rjd och saknad.${ovrigtLine}`.trim());
 }
 
 function showDocResult(title, text, emailSubject) {
-  track('Doc Generated', { title: title.split(' — ')[0] });
+  track('Doc Generated', { title: title.split(' â€” ')[0] });
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
   document.getElementById('doc-chooser').classList.add('hidden');
   document.getElementById('result-title').textContent = title;
@@ -1875,19 +1884,19 @@ function generateSkatteverket() {
   const relation = document.getElementById('skv-relation').value.trim();
   const email    = document.getElementById('skv-email').value.trim();
   clearFormError('err-skatteverket');
-  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i de obligatoriska fÃ¤lten (mÃ¤rkta med *).'); return; }
 
   const { deceased, personnr, today } = getDocContext();
 
   const arendeTexts = {
-    intyg:    { subject: 'Begäran om dödsfallsintyg och personbevis för dödsbo', body: `Jag kontaktar er för att begära dödsfallsintyg och personbevis avseende dödsboet efter ${deceased} (personnr ${personnr}), som gick bort nyligen.\n\nDokumenten behövs för dödsboets räkning i samband med bouppteckning och kontakt med banker och myndigheter.\n\nJag är ${relation} och dödsbodelägare. Vänligen skicka handlingarna till angiven e-postadress, eller meddela hur ansökan görs via er e-tjänst.` },
-    fskatt:   { subject: 'Begäran om avslut av F-skatt — dödsfall', body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gått bort och att den av hen bedrivna enskilda näringsverksamheten därmed ska avslutas.\n\nJag ber er avregistrera F-skatten och eventuell mervärdesskatt (moms) med dödsdatum som slutdatum.\n\nJag är ${relation} och företräder dödsboet. Dödsbevis bifogas. Kontakta mig för ytterligare dokumentation.` },
-    slutskatt: { subject: 'Begäran om information om slutlig skatt — dödsfall', body: `Jag kontaktar er angående slutlig skatt för ${deceased} (personnr ${personnr}), som har gått bort.\n\nJag ber er bekräfta om det finns kvarsstående skattefordringar eller skatteåterbäring att reglera, samt hur dödsboet ska gå till väga.\n\nJag är ${relation} och dödsbodelägare. Vänligen kontakta mig på angiven e-postadress.` },
+    intyg:    { subject: 'BegÃ¤ran om dÃ¶dsfallsintyg och personbevis fÃ¶r dÃ¶dsbo', body: `Jag kontaktar er fÃ¶r att begÃ¤ra dÃ¶dsfallsintyg och personbevis avseende dÃ¶dsboet efter ${deceased} (personnr ${personnr}), som gick bort nyligen.\n\nDokumenten behÃ¶vs fÃ¶r dÃ¶dsboets rÃ¤kning i samband med bouppteckning och kontakt med banker och myndigheter.\n\nJag Ã¤r ${relation} och dÃ¶dsbodelÃ¤gare. VÃ¤nligen skicka handlingarna till angiven e-postadress, eller meddela hur ansÃ¶kan gÃ¶rs via er e-tjÃ¤nst.` },
+    fskatt:   { subject: 'BegÃ¤ran om avslut av F-skatt â€” dÃ¶dsfall', body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gÃ¥tt bort och att den av hen bedrivna enskilda nÃ¤ringsverksamheten dÃ¤rmed ska avslutas.\n\nJag ber er avregistrera F-skatten och eventuell mervÃ¤rdesskatt (moms) med dÃ¶dsdatum som slutdatum.\n\nJag Ã¤r ${relation} och fÃ¶retrÃ¤der dÃ¶dsboet. DÃ¶dsbevis bifogas. Kontakta mig fÃ¶r ytterligare dokumentation.` },
+    slutskatt: { subject: 'BegÃ¤ran om information om slutlig skatt â€” dÃ¶dsfall', body: `Jag kontaktar er angÃ¥ende slutlig skatt fÃ¶r ${deceased} (personnr ${personnr}), som har gÃ¥tt bort.\n\nJag ber er bekrÃ¤fta om det finns kvarsstÃ¥ende skattefordringar eller skatteÃ¥terbÃ¤ring att reglera, samt hur dÃ¶dsboet ska gÃ¥ till vÃ¤ga.\n\nJag Ã¤r ${relation} och dÃ¶dsbodelÃ¤gare. VÃ¤nligen kontakta mig pÃ¥ angiven e-postadress.` },
   };
 
   const { subject, body } = arendeTexts[arende];
 
-  showDocResult(`Skatteverket — ${subject}`, `${sender}\n${email}\n\n${today}\n\nTill: Skatteverket\nÄrende: ${subject}\n\nHej,\n\n${body}\n\nMed vänliga hälsningar,\n\n${sender}\n${relation} till ${deceased}\n${email}`, subject);
+  showDocResult(`Skatteverket â€” ${subject}`, `${sender}\n${email}\n\n${today}\n\nTill: Skatteverket\nÃ„rende: ${subject}\n\nHej,\n\n${body}\n\nMed vÃ¤nliga hÃ¤lsningar,\n\n${sender}\n${relation} till ${deceased}\n${email}`, subject);
 }
 
 
@@ -1897,33 +1906,33 @@ function generateFullmakt() {
   const agent    = document.getElementById('fullmakt-agent').value.trim();
   const relation = document.getElementById('fullmakt-relation').value.trim();
   clearFormError('err-fullmakt');
-  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i de obligatoriska fÃ¤lten (mÃ¤rkta med *).'); return; }
 
   const { deceased, personnr, today } = getDocContext();
   const grantors = grantor2 ? `${grantor1} och ${grantor2}` : grantor1;
   const agentLine = relation ? `${agent} (${relation})` : agent;
 
-  showDocResult('Fullmakt — dödsbo', `FULLMAKT
-Utfärdad: ${today}
+  showDocResult('Fullmakt â€” dÃ¶dsbo', `FULLMAKT
+UtfÃ¤rdad: ${today}
 
-Vi, undertecknade dödsbodelägare efter ${deceased} (personnr ${personnr}), ger härmed
+Vi, undertecknade dÃ¶dsbodelÃ¤gare efter ${deceased} (personnr ${personnr}), ger hÃ¤rmed
 
   ${agentLine}
 
-fullmakt att för dödsboets räkning:
+fullmakt att fÃ¶r dÃ¶dsboets rÃ¤kning:
 
-• Kontakta och företräda dödsboet gentemot banker och finansinstitut
-• Begära kontoinformation och genomföra betalningar ur dödsboets medel
-• Teckna dödsboets namn i löpande ärenden
-• Kontakta myndigheter (Skatteverket, Kronofogden m.fl.) å dödsboets vägnar
-• Säga upp avtal och abonnemang tillhörande ${deceased}
+â€¢ Kontakta och fÃ¶retrÃ¤da dÃ¶dsboet gentemot banker och finansinstitut
+â€¢ BegÃ¤ra kontoinformation och genomfÃ¶ra betalningar ur dÃ¶dsboets medel
+â€¢ Teckna dÃ¶dsboets namn i lÃ¶pande Ã¤renden
+â€¢ Kontakta myndigheter (Skatteverket, Kronofogden m.fl.) Ã¥ dÃ¶dsboets vÃ¤gnar
+â€¢ SÃ¤ga upp avtal och abonnemang tillhÃ¶rande ${deceased}
 
-Fullmakten gäller tills dödsboet är avslutat och ska uppvisas i original vid bankbesök.
+Fullmakten gÃ¤ller tills dÃ¶dsboet Ã¤r avslutat och ska uppvisas i original vid bankbesÃ¶k.
 
 
 ______________________________    ______________________________
 ${grantors}
-Dödsbodelägare                    Datum och ort`);
+DÃ¶dsbodelÃ¤gare                    Datum och ort`);
 }
 
 
@@ -1937,7 +1946,7 @@ function printBulkLetters() {
     `<div style="page-break-after:${i < letters.length - 1 ? 'always' : 'auto'};white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.8;padding:40px 50px;">${letter}</div>`
   ).join('');
   const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Brev — dödsbo</title></head><body>${pages}</body></html>`);
+  win.document.write(`<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Brev â€” dÃ¶dsbo</title></head><body>${pages}</body></html>`);
   win.document.close();
   win.focus();
   win.print();
@@ -1952,7 +1961,7 @@ function copyDocument() {
   });
 }
 
-// ─── STATE SNAPSHOT (for localStorage) ───────
+// â”€â”€â”€ STATE SNAPSHOT (for localStorage) â”€â”€â”€â”€â”€â”€â”€
 function getShareableState() {
   return {
     relation:   state.relation,
@@ -1978,7 +1987,7 @@ function toggleMemoryPhrase(btn) {
 }
 
 
-// ─── FORM VALIDATION ─────────────────────────
+// â”€â”€â”€ FORM VALIDATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showFormError(errId, msg) {
   const el = document.getElementById(errId);
   if (!el) return;
@@ -1991,7 +2000,7 @@ function clearFormError(errId) {
   if (el) el.classList.add('hidden');
 }
 
-// ─── UTILS ────────────────────────────────────
+// â”€â”€â”€ UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatDate(date) {
   return date.toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -2008,15 +2017,15 @@ function copyToClipboard(text, onDone) {
   });
 }
 
-// ─── PERSIST ─────────────────────────────────
+// â”€â”€â”€ PERSIST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function saveState() {
-  // Save locally with personnr (own device only — never shared)
+  // Save locally with personnr (own device only â€” never shared)
   const toSave = { ...getShareableState(), personnr: state.personnr };
   try { localStorage.setItem('efterplan_state', JSON.stringify(toSave)); } catch(e) {}
 }
 
-// ─── INIT ─────────────────────────────────────
-// ─── OFFLINE DETECTION ───────────────────────
+// â”€â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€â”€ OFFLINE DETECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function initOfflineBanner() {
   const banner = document.getElementById('offline-banner');
   if (!banner) return;
@@ -2027,7 +2036,7 @@ function saveState() {
   if (!navigator.onLine) show();
 })();
 
-// ─── COMPLETION OVERLAY ──────────────────────
+// â”€â”€â”€ COMPLETION OVERLAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showCompletionOverlay() {
   const overlay = document.getElementById('completion-overlay');
   if (!overlay || overlay.dataset.shown === '1') return;
@@ -2035,7 +2044,7 @@ function showCompletionOverlay() {
   _completionPrevFocus = document.activeElement;
   const nameEl = document.getElementById('co-name');
   if (nameEl && state.name) {
-    nameEl.textContent = 'Du har tagit dig igenom allt för ' + state.name + '.';
+    nameEl.textContent = 'Du har tagit dig igenom allt fÃ¶r ' + state.name + '.';
   }
   overlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
@@ -2054,13 +2063,13 @@ function closeCompletionOverlay() {
   if (_completionPrevFocus) { _completionPrevFocus.focus(); _completionPrevFocus = null; }
 }
 
-// ─── PDF / PRINT ─────────────────────────────
+// â”€â”€â”€ PDF / PRINT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function printPlan() {
   track('Plan Printed');
   window.print();
 }
 
-// ─── PAYWALL ─────────────────────────────────
+// â”€â”€â”€ PAYWALL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function initPaywall() {
   const card = document.getElementById('paywall-card');
   if (!card) return;
@@ -2068,12 +2077,12 @@ function printPlan() {
 })();
 
 function handlePaywallCTA() {
-  // Placeholder — wire Stripe Checkout URL here when ready
+  // Placeholder â€” wire Stripe Checkout URL here when ready
   track('Paywall CTA Clicked');
-  alert('Betalning är inte aktiverat ännu — kom tillbaka snart!');
+  alert('Betalning Ã¤r inte aktiverat Ã¤nnu â€” kom tillbaka snart!');
 }
 
-// ─── INIT ─────────────────────────────────────
+// â”€â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function init() {
   // Restore own plan from localStorage
   try {
