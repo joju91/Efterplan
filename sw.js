@@ -1,5 +1,5 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v13';
+const CACHE = 'efterplan-v14';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,9 @@ const ASSETS = [
   './manifest.json',
   './icon.svg',
   './og.png',
+  './favicon.png',
+  './icon-192.png',
+  './icon-512.png',
   './robots.txt',
   './sitemap.xml',
   './checklista-dodsbo.html',
@@ -16,6 +19,8 @@ const ASSETS = [
   './vad-kostar-en-begravning.html',
   './arvskifte-guide.html',
   './efterlevandepension.html',
+  './testamente-guide.html',
+  './dodsbo-bostadsratt.html',
 ];
 
 self.addEventListener('install', e => {
