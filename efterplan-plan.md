@@ -122,6 +122,24 @@ Tidig organisk trafik. Poster bör vara informativa, inte reklam.
 
 ---
 
+---
+
+### Produkt / UX
+
+#### ✅ Auto-scroll till nästa uppgift (klar)
+När användaren markerar en uppgift som klar scrollar appen automatiskt till nästa ej-avklarade uppgift (350ms delay för att animationen ska synas). Kortet öppnas inte automatiskt — för aggressivt i en sorgapp.
+
+#### ✅ Förtroendeband på planvyn (klar)
+Synligt band under uppgiftslistan: "Kostnadsfritt · Ingen registrering · Dina uppgifter lämnar aldrig din enhet". Bygger förtroende utan att kräva betalflöde.
+
+#### Nöjd-kund-garanti (backlogg — kräver Stripe)
+Pengarna-tillbaka-garanti aktiveras när `PAYWALL_ENABLED = true` och Netlify Functions är kopplade. Lägg till badge på betalvyn.
+
+#### Google Customer Reviews-stämpel (backlogg — kräver Stripe)
+Google Guaranteed / Customer Reviews kräver faktiska transaktioner. Aktiveras tillsammans med Stripe. Structured data (schema.org) är redan på plats.
+
+---
+
 ## Prioriteringsöversikt
 
 | Åtgärd | Tid | SEO-effekt | Svårighet |

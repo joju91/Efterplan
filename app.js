@@ -1204,6 +1204,15 @@ function markTaskDone(taskId) {
 
   updateProgress();
   showUndoToast(taskId);
+
+  // Scroll to next uncompleted task
+  const next = state.tasks.find(t => !t.done);
+  if (next) {
+    setTimeout(() => {
+      const el = document.getElementById(`task-card-${next.id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 350);
+  }
 }
 
 // ─── ASSIGNEES ────────────────────────────────
