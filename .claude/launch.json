@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Closure (static)",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "python -m http.server $PORT --directory 'C:/Users/joju9/OneDrive/Dokument/Kaascha/Efterplan'"],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}
