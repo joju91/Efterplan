@@ -27,7 +27,7 @@ Senast uppdaterad: april 2026
 | fullmakt-dodsbo.html | fullmakt dödsfall | 1 500 | ✅ Byggt |
 | bankkonto-dodsfall.html | bankkonto dödsfall | 2 500 | ✅ Byggt |
 
-**Estimerad total organisk räckvidd med 23 sidor: ~55 000 sök/mån**
+**Estimerad total organisk räckvidd med 26 sidor: ~65 000 sök/mån**
 
 ---
 
@@ -45,7 +45,7 @@ Senast uppdaterad: april 2026
 | Google Search Console — verifiera + skicka sitemap | ⬜ Manuell uppgift |
 | Core Web Vitals — mät och optimera | ⬜ Backlogg |
 | BreadcrumbList schema på nya sidor | ✅ Klar |
-| BreadcrumbList schema på befintliga sidor | ⬜ Backlogg |
+| BreadcrumbList schema på alla sidor | ✅ Klar |
 
 ---
 
@@ -104,3 +104,6 @@ Potentiella sidor att bygga om trafikdata bekräftar efterfrågan:
 | begravning-utomlands.html | begravning utlandet | 800 | ✅ Byggt |
 | digital-dodsbo.html | digitalt dödsbo | 1 000 | ✅ Byggt |
 | dodsbo-bil.html | dödsbo bil | 1 000 | ✅ Byggt |
+| begravningsbyraa.html | begravningsbyrå | 5 000 | ✅ Byggt |
+| dodsbo-fastighet.html | dödsbo fastighet / sälja hus dödsbo | 3 500 | ✅ Byggt |
+| boutredningsman.html | boutredningsman | 2 000 | ✅ Byggt |
