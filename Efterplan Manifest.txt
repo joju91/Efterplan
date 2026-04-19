@@ -1,0 +1,9 @@
+Syfte: Hjälpa människor i en svår tid att strukturera och hantera praktiska göromål efter att en anhörig gått bort. Allt som inte myndigheter eller begravningsbyrå hanterar. Ej terapi eller samtalsstöd, endast praktiska saker.
+
+Mål: Minimal praktisk insats och minimal energiåtgång för användaren.
+Vision: Den anhörige loggar in med bank-id, den avlidnes uppgifter hämtas automatiskt, åtgärder föreslås och den anhörige godkänner allt i ett klick.
+
+
+Hårda riktlinjer:
+Tonen ska vara varm, hjälpsam, tydlig, pålitlig.
+Tjänsten ska byggas och drivas med minimal token-kostnad. Om det är otvetydigt befogat får undantag göras.
