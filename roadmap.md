@@ -2,7 +2,7 @@
 
 
 
-Start at \*\*T001\*\*. Do not proceed until the current ticket is fully completed.  
+Start at \*\*T001\*\*. Do not proceed until the current ticket is fully completed.
 
 Each step improves the product or the company in a meaningful way.
 
@@ -14,17 +14,17 @@ Each step improves the product or the company in a meaningful way.
 
 \## Legend
 
-\- ☐ Not started  
+\- ☐ Not started
 
-\- ⧖ In progress  
+\- ⧖ In progress
 
-\- ✔ Completed  
+\- ✔ Completed
 
-\- x Skipped / Not needed  
+\- x Skipped / Not needed
 
-\- Priority: 🔴 Critical · 🟠 Important · 🟡 Medium · 🟢 Low  
+\- Priority: 🔴 Critical · 🟠 Important · 🟡 Medium · 🟢 Low
 
-\- Type: Dev · Design · Content · Research · Infra · Bolag · QA · Legal · Iteration · SEO · Distribution · Partnership · Analytics · PR · Growth  
+\- Type: Dev · Design · Content · Research · Infra · Bolag · QA · Legal · Iteration · SEO · Distribution · Partnership · Analytics · PR · Growth
 
 
 
@@ -32,7 +32,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# ⚙️ FAS 1 — FOUNDATION  
+\# ⚙️ FAS 1 — FOUNDATION
 
 💡 Everything else is blocked until this is done.
 
@@ -58,7 +58,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 📱 FAS 2 — BUILD THE CORE  
+\# 📱 FAS 2 — BUILD THE CORE
 
 💡 The core \*is\* the product.
 
@@ -86,7 +86,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# ✍️ FAS 3 — CONTENT  
+\# ✍️ FAS 3 — CONTENT
 
 💡 Content \*is\* the product.
 
@@ -112,7 +112,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 📐 FAS 4 — MOBILE‑FIRST UX  
+\# 📐 FAS 4 — MOBILE‑FIRST UX
 
 💡 Mobile first. Desktop is a bonus.
 
@@ -138,7 +138,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 🛡️ FAS 4.5 — UX POLISH \& ACCESSIBILITY  
+\# 🛡️ FAS 4.5 — UX POLISH \& ACCESSIBILITY
 
 💡 Must be done before soft launch.
 
@@ -164,7 +164,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 🚀 FAS 5 — TRUST \& SOFT LAUNCH  
+\# 🚀 FAS 5 — TRUST \& SOFT LAUNCH
 
 💡 Launch open and free. Real users give real data.
 
@@ -192,7 +192,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 💰 FAS 6 — MONETIZATION  
+\# 💰 FAS 6 — MONETIZATION
 
 💡 Don’t add paywall until usage is proven.
 
@@ -220,7 +220,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 🏢 FAS 7 — COMPANY \& OPS  
+\# 🏢 FAS 7 — COMPANY \& OPS
 
 💡 Infrastructure that scales.
 
@@ -244,7 +244,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 🔍 FAS 8 — SEO  
+\# 🔍 FAS 8 — SEO
 
 💡 SEO takes 3–6 months.
 
@@ -263,6 +263,9 @@ Each step improves the product or the company in a meaningful way.
 | T041 | FAQ structured data | Fas 8 | 🏢 Company Plan | 🟡 | Dev | ✔ |
 
 | T042 | Core Web Vitals | Fas 8 | 📱 App Plan | 🟡 | Dev | ✔ |
+| T084 | Fix mobile PageSpeed: eliminera redirect chain + reduce unused JS (mål LCP <2.5s) | Fas 8 | SEO Audit | 🟠 | Dev | ☐ |
+| T085 | Lägg till Organization schema (Identity Schema) på index-sidan | Fas 8 | SEO Audit | 🟡 | Dev | ☐ |
+| T086 | Ta bort plain text email — ersätt med kontaktformulär eller obfuskerad mailto | Fas 8 | SEO Audit | 🟡 | Dev | ☐ |
 
 
 
@@ -270,7 +273,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 📣 FAS 9 — DISTRIBUTION  
+\# 📣 FAS 9 — DISTRIBUTION
 
 💡 Start with free channels.
 
@@ -294,7 +297,7 @@ Each step improves the product or the company in a meaningful way.
 
 
 
-\# 📈 FAS 10 — OPTIMIZE \& GROW  
+\# 📈 FAS 10 — OPTIMIZE \& GROW
 
 💡 Only optimize what works.
 
@@ -396,11 +399,11 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|---------|
 
-| T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | x |
 
-| T071 | Publish landing page “dodsbo‑checklista‑7‑dagar” | 2026‑04‑14 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T071 | Publish landing page “dodsbo‑checklista‑7‑dagar” | 2026‑04‑14 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
 
-| T072 | Publish “bouppteckning‑tidslinje” + FAQ schema | 2026‑04‑15 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T072 | Publish “bouppteckning‑tidslinje” + FAQ schema | 2026‑04‑15 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
 
 | T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ☐ |
 
@@ -423,4 +426,5 @@ Each step improves the product or the company in a meaningful way.
 | T082 | Optimize top 3 landing pages | 2026‑05‑05 | Fas 11 | SEO | 🟡 | SEO | ☐ |
 
 | T083 | Weekly KPI review + new 14‑day plan | 2026‑05‑06 | Fas 11 | Growth | 🟡 | Growth | ☐ |
+| T087 | Länkbyggnad: identifiera 10 relevanta sajter för gästinlägg/omnämnanden (begravning, juridik, ekonomi) | 2026‑05‑10 | Fas 11 | SEO Audit | 🟠 | SEO | ☐ |
 
