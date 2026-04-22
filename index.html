@@ -44,6 +44,14 @@
   }
   </script>
 
+  <!-- Schema.org: Organization -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization",
+  "name":"Efterplan","url":"https://efterplan.se",
+  "description":"Gratis verktyg som guidar anhöriga genom praktiska göromål efter ett dödsfall.",
+  "areaServed":"SE","inLanguage":"sv"}
+  </script>
+
   <!-- Schema.org: FAQ -->
   <script type="application/ld+json">
   {
@@ -107,22 +115,6 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Efterplan", "item": "https://efterplan.se/" }
     ]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Efterplan",
-    "url": "https://efterplan.se",
-    "description": "Gratis verktyg som guidar anhöriga genom praktiska göromål efter ett dödsfall.",
-    "areaServed": "SE",
-    "inLanguage": "sv",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "email": "jonas.soderstrom43@gmail.com",
-      "contactType": "customer support"
-    }
   }
   </script>
 </head>
@@ -215,7 +207,8 @@
   <section class="landing-section" id="section-om">
     <h2>Om Efterplan</h2>
     <p>Efterplan byggdes för att göra en av livets svåraste perioder lite lättare att navigera. Vi hjälper dig strukturera det praktiska — utan att du ska behöva söka information på egen hand i sorgen.</p>
-    <p>Har du frågor, hittat något fel eller vill ge feedback? Hör av dig: <a class="landing-contact-link" href="mailto:hej@efterplan.se">hej@efterplan.se</a></p>
+    <p>Har du frågor, hittat något fel eller vill ge feedback? Hör av dig: <a class="landing-contact-link" href="#" data-mail="jonas.soderstrom43" data-domain="gmail.com"
+       onclick="this.href='mailto:'+this.dataset.mail+'@'+this.dataset.domain">Kontakt</a></p>
     <p class="legal-disclaimer">Efterplan ger inte juridisk rådgivning. Informationen är av generell karaktär och baserad på svenska förhållanden. Vid tveksamheter — konsultera en jurist eller begravningsbyrå.</p>
   </section>
 
