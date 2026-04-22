@@ -431,3 +431,46 @@ Each step improves the product or the company in a meaningful way.
 | T090 | SEO-sida: laglott | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 | T091 | SEO-sida: saga-upp-hyresratt-dodsbo | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
+---
+
+## Sprint 3 — Tillväxt & Kvalitet
+
+### T092 — SEO: tomma-dodsbo.html
+Bygg ny SEO-sida för sökordet "tomma dödsbo" (hög sökvolym).
+Följ samma mall som T089–T091: Article/FAQPage/Breadcrumb schema, interna länkar, CTA till huvudverktyget, /om.html i footer.
+Uppdatera sitemap. Submita till GSC.
+
+---
+
+### T093 — Konvertering: CTA/funnel-optimering
+Analysera GA4-data för dropout-punkter i flödet.
+Testa och justera CTA-text, placering och antal steg.
+Mål: öka andelen användare som når slutet av checklistan.
+
+---
+
+### T094 — Outreach-uppföljning
+Följ upp obesvarade mejl från tidigare outreach-batch.
+Prioritet: hitta rätt journalist på Aftonbladet och skicka pitch.
+Logga svar i outreach-logg.
+
+---
+
+### T095 — Kvalitetsstämplar & certifikat
+Identifiera relevanta svenska kvalitetsmärken, certifieringar eller trovärdighetsmarkörer lämpliga för efterplan.se (t.ex. Trygg E-handel, GDPR-märkning, branschorganisationer).
+Ansök och integrera godkända märken synligt på sidan.
+
+---
+
+### T096 — Mobilwebb & app-funktionalitet
+Säkerställ att efterplan.se fungerar korrekt i mobilwebbläsare (iOS Safari, Android Chrome).
+Testa hela flödet i mobil. Åtgärda layoutbrytningar, klickzoner och formulär.
+Kontrollera även PWA-möjligheter om relevant.
+
+---
+
+### T097 — Centrera layout i browser
+Säkerställ att sidans innehåll centreras korrekt i bredare webbläsarfönster (desktop).
+Kontrollera max-width och margin: auto på root-containern.
+Testa i Chrome, Firefox, Safari vid 1440px+ bredd.
+
