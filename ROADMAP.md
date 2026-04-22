@@ -313,7 +313,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ✔ |
 
-| T050 | PDF export | Fas 10 | 📱 App Plan | 🟡 | Dev | ☐ |
+| T050 | PDF export | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
 
 | T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ☐ |
 
