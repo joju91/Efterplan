@@ -158,6 +158,8 @@ Each step improves the product or the company in a meaningful way.
 
 | T059 | A11y pass: aria, focus, contrast | Fas 4.5 | UX Audit | 🟠 | A11y | ✔ |
 
+| T088 | Frontend-uppgradering (design polish, non-generic) | Fas 4.5 | Design Audit | 🟠 | Design | ✔ |
+
 
 
 \---
