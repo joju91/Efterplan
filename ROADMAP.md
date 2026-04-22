@@ -102,7 +102,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T014 | Deterministic order — system chooses | Fas 3 | 📋 Manifest | 🔴 | Logic | ✔ |
 
-| T015 | Validate step order with 2–3 real relatives | Fas 3 | 📋 Manifest | 🔴 | Research | ☐ |
+| T015 | Validate step order with 2–3 real relatives | Fas 3 | 📋 Manifest | 🔴 | Research | x |
 
 | T016 | Adjust order and text based on interviews | Fas 3 | 📋 Manifest | 🔴 | Content | ☐ |
 
@@ -128,7 +128,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T019 | Build expand view (“See all steps”) | Fas 4 | 📱 App Plan | 🟠 | Dev | ✔ |
 
-| T020 | Test on real mobile (iOS + Android) | Fas 4 | 📱 App Plan | 🔴 | QA | ☐ |
+| T020 | Test on real mobile (iOS + Android) | Fas 4 | 📱 App Plan | 🔴 | QA | x |
 
 | T021 | Ensure loading < 1s on 4G | Fas 4 | 📱 App Plan | 🟠 | QA | ✔ |
 
@@ -180,11 +180,11 @@ Each step improves the product or the company in a meaningful way.
 
 | T024 | End‑to‑end test | Fas 5 | 📱 App Plan | 🔴 | QA | ✔ |
 
-| T025 | Publish MVP on domain — all free | Fas 5 | 🏢 Company Plan | 🔴 | Launch | ☐ |
+| T025 | Publish MVP on domain — all free | Fas 5 | 🏢 Company Plan | 🔴 | Launch | x |
 
-| T026 | Share with 5 target users, collect feedback | Fas 5 | 📋 Manifest | 🔴 | Research | ☐ |
+| T026 | Share with 5 target users, collect feedback | Fas 5 | 📋 Manifest | 🔴 | Research | x |
 
-| T027 | Iterate on top 3 confusion points | Fas 5 | 📋 Manifest | 🔴 | Iteration | ☐ |
+| T027 | Iterate on top 3 confusion points | Fas 5 | 📋 Manifest | 🔴 | Iteration | x |
 
 
 
@@ -230,7 +230,7 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|
 
-| T034 | Set up Bokio or Fortnox | Fas 7 | 🏢 Company Plan | 🟠 | Bolag | ☐ |
+| T034 | Set up Bokio or Fortnox | Fas 7 | 🏢 Company Plan | 🟠 | Bolag | x |
 
 | T035 | Install Plausible Analytics | Fas 7 | 🏢 Company Plan | 🟠 | Infra | ✔ |
 
@@ -309,7 +309,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T047 | Analyze drop‑off | Fas 10 | 🏢 Company Plan | 🔴 | Analytics | ☐ |
 
-| T048 | A/B test price | Fas 10 | 🏢 Company Plan | 🟠 | Growth | ☐ |
+| T048 | A/B test price | Fas 10 | 🏢 Company Plan | 🟠 | Growth | x |
 
 | T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ✔ |
 
