@@ -449,6 +449,7 @@
           <div class="progress-bar-fill" id="progress-bar-fill"></div>
         </div>
         <div class="progress-summary" id="progress-summary" aria-live="polite"></div>
+        <button class="btn-print-inline" onclick="printPlan()">Skriv ut / Spara som PDF</button>
       </div>
 
       <div class="completion-message" id="completion-message" role="status">
@@ -473,20 +474,22 @@
           <div class="task-list" id="tasks-today"></div>
         </div>
 
-        <div class="task-section" id="section-week">
+        <div class="task-section section--coming" id="section-week">
           <div class="section-header">
             <span class="section-dot dot-yellow" id="dot-week"></span>
             <h2 class="section-title">Denna vecka</h2>
+            <span class="section-coming-tag">Fler steg visas här</span>
             <span class="section-count" id="count-week"></span>
             <span class="section-done-badge hidden" id="badge-week">✓ Klar</span>
           </div>
           <div class="task-list" id="tasks-week"></div>
         </div>
 
-        <div class="task-section" id="section-later">
+        <div class="task-section section--coming" id="section-later">
           <div class="section-header">
             <span class="section-dot dot-grey" id="dot-later"></span>
             <h2 class="section-title">Senare</h2>
+            <span class="section-coming-tag">Fler steg visas här</span>
             <span class="section-count" id="count-later"></span>
             <span class="section-done-badge hidden" id="badge-later">✓ Klar</span>
           </div>

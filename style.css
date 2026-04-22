@@ -2056,31 +2056,52 @@ body {
    PRINT / PDF EXPORT
 ════════════════════════════════════════════ */
 @media print {
-  /* Hide everything except the plan screen */
+  /* Show only the plan tab content */
   body > *:not(#screen-plan) { display: none !important; }
   #screen-plan { display: block !important; }
+  #tabcontent-plan { display: block !important; }
+  #tabcontent-docs { display: none !important; }
 
-  /* Hide interactive chrome */
+  /* Hide all interactive chrome */
   .nav, .plan-tabs-bar, .bottom-nav,
-  .plan-print-btn, .plan-fab,
-  .btn-ghost, .task-expand-actions,
-  .undo-toast, .offline-banner,
-  .skip-link, #completion-message { display: none !important; }
+  .plan-print-btn, .plan-fab, .btn-ghost,
+  .task-expand-actions, .task-chevron,
+  .undo-toast, .offline-banner, .trust-band,
+  .bills-section, .start-here,
+  .skip-link, #completion-message,
+  .section-coming-tag { display: none !important; }
 
   /* Reset colors for legibility on paper */
   body { background: #fff; color: #000; }
-  .task-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+
+  /* Force-show all task descriptions (expanded state) */
+  .task-expand,
+  .task-expand.hidden { display: block !important; }
+  .task-expand-desc { font-size: 0.8rem; color: #333; margin-bottom: 6px; }
+  .task-expand-link, .task-expand-phone { font-size: 0.75rem; }
+
+  /* Restore full opacity on coming sections */
+  .section--coming .task-list { opacity: 1; }
+
+  /* Task card layout for print */
+  .task-wrap { break-inside: avoid; margin-bottom: 10px; }
+  .task-card { box-shadow: none; border: 1px solid #ccc; border-radius: 0; margin-bottom: 0; }
+  .task-card.done { opacity: 0.5; }
+  .task-expand { border: 1px solid #ccc; border-top: none; border-radius: 0; padding: 8px 12px; }
+
+  /* Section headers */
+  .task-section { display: block !important; }
   .section-header { border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 8px; }
   .task-title { font-size: 0.9rem; }
 
-  /* Show all task sections regardless of tab */
-  .task-section { display: block !important; }
+  /* Page breaks between sections */
+  .task-section { page-break-inside: avoid; }
+  #section-week, #section-later { page-break-before: auto; }
 
-  /* Expand all tasks slightly */
-  .task-card { margin-bottom: 6px; }
-
-  /* Remove rounded corners and shadows */
-  .task-card, .plan-header, .progress-wrap { border-radius: 0; box-shadow: none; }
+  /* Print header */
+  .plan-header { border-bottom: 2px solid #ccc; padding-bottom: 12px; margin-bottom: 16px; }
+  .plan-title { font-size: 1.2rem; }
+  .progress-bar-wrap, .progress-summary { display: none !important; }
 
   /* Footer with URL */
   #screen-plan::after {
@@ -2334,6 +2355,38 @@ body {
 .bill-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; background: #fff; }
 .bill-amount-input { max-width: 160px; }
 .bill-form-actions { display: flex; gap: 8px; }
+
+/* ═══ PDF PRINT BUTTON (T050) ════════════════ */
+.btn-print-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-print-inline::before { content: '⬇'; font-size: 0.72rem; }
+.btn-print-inline:hover { background: var(--accent); color: #fff; }
+
+/* ═══ FREE PREVIEW (T030) ════════════════════ */
+.section--coming .task-list { opacity: 0.55; }
+.section-coming-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  background: var(--bg-secondary, #f0f0ed);
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
 
 /* ═══ SEO PAGES (T061) ════════════════════════ */
 .seo-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border); }
