@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bouppteckning tidslinje — alla deadlines du måste hålla 2026 | Efterplan</title>
+  <meta name="description" content="Visuell tidslinje för bouppteckning: när ska den göras, vad händer vecka för vecka och vilka deadlines gäller? Komplett guide med 3- och 4-månadersgränserna.">
+  <link rel="canonical" href="https://efterplan.se/bouppteckning-tidslinje.html">
+  <meta property="og:title" content="Bouppteckning tidslinje — alla deadlines du måste hålla">
+  <meta property="og:description" content="Visuell tidslinje: när ska bouppteckning göras, vilka deadlines gäller och vad händer om du missar dem?">
+  <meta property="og:url" content="https://efterplan.se/bouppteckning-tidslinje.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://efterplan.se/og.png">
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="style.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T1T40TYPQB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-T1T40TYPQB');
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Bouppteckning tidslinje — alla deadlines du måste hålla",
+    "inLanguage": "sv",
+    "datePublished": "2026-04-22",
+    "dateModified": "2026-04-22",
+    "author": { "@type": "Organization", "name": "Efterplan", "url": "https://efterplan.se" },
+    "publisher": { "@type": "Organization", "name": "Efterplan", "url": "https://efterplan.se" },
+    "image": "https://efterplan.se/og.png",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://efterplan.se/bouppteckning-tidslinje.html" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "När ska bouppteckning göras?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Bouppteckningen ska förrättas (mötet hållas) inom 3 månader från dödsdagen. Den färdiga handlingen ska sedan skickas till Skatteverket för registrering inom 4 månader från dödsdagen. Räkna alltid från dödsdagen — inte från begravningen." }
+      },
+      {
+        "@type": "Question",
+        "name": "Vad händer om man missar 3-månadersgränsen för bouppteckning?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Om du inte hinner kan du ansöka om anstånd hos Skatteverket innan tidsgränsen löper ut. Missar du utan anstånd kan Skatteverket förelägga dödsboet att inkomma med bouppteckning — i värsta fall med vite. Kontakta Skatteverket i god tid om du ser att du inte hinner." }
+      },
+      {
+        "@type": "Question",
+        "name": "Räknas tidsgränsen från dödsdagen eller begravningsdagen?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Tidsgränsen räknas alltid från dödsdagen — inte från begravningsdagen. Det är ett vanligt misstag att tro att man har 3 månader från begravningen. Om personen dog den 1 januari ska bouppteckningen vara förrättad senast den 1 april." }
+      },
+      {
+        "@type": "Question",
+        "name": "Kan man göra bouppteckning snabbare än 3 månader?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Ja, det finns ingen minimigräns. Om boet är enkelt (bara bankmedel och lösöre, inga fastigheter eller tvister) kan bouppteckningen göras på 2–4 veckor. En snabb bouppteckning frigör möjligheten att avsluta bankkonton, sälja bostad och fördela arvet tidigare." }
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Efterplan", "item": "https://efterplan.se/" },
+      { "@type": "ListItem", "position": 2, "name": "Bouppteckning guide", "item": "https://efterplan.se/bouppteckning-guide.html" },
+      { "@type": "ListItem", "position": 3, "name": "Bouppteckning tidslinje", "item": "https://efterplan.se/bouppteckning-tidslinje.html" }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ── Tidslinje ── */
+    .tidslinje {
+      position: relative;
+      margin: 36px 0 40px;
+      padding-left: 36px;
+    }
+    .tidslinje::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: linear-gradient(to bottom, #2C4A6E 0%, #d1dae8 100%);
+      border-radius: 2px;
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .tl-item:last-child {
+      margin-bottom: 0;
+    }
+    .tl-dot {
+      position: absolute;
+      left: -29px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #2C4A6E;
+      box-sizing: border-box;
+    }
+    .tl-item--deadline .tl-dot {
+      background: #2C4A6E;
+      width: 16px;
+      height: 16px;
+      left: -30px;
+      top: 3px;
+    }
+    .tl-item--hard .tl-dot {
+      background: #B91C1C;
+      border-color: #B91C1C;
+      width: 16px;
+      height: 16px;
+      left: -30px;
+      top: 3px;
+    }
+    .tl-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #718096;
+      margin-bottom: 2px;
+    }
+    .tl-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1C2333;
+      margin-bottom: 4px;
+    }
+    .tl-item--deadline .tl-title,
+    .tl-item--hard .tl-title {
+      color: #2C4A6E;
+    }
+    .tl-item--hard .tl-title {
+      color: #B91C1C;
+    }
+    .tl-desc {
+      font-size: 0.88rem;
+      color: #555;
+      line-height: 1.55;
+      margin: 0;
+    }
+    .tl-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
+      text-transform: uppercase;
+    }
+    .tl-badge--deadline {
+      background: #e8eef5;
+      color: #2C4A6E;
+    }
+    .tl-badge--hard {
+      background: #fee2e2;
+      color: #B91C1C;
+    }
+
+    /* ── Deadline-box ── */
+    .deadline-box {
+      display: flex;
+      gap: 16px;
+      margin: 32px 0;
+      flex-wrap: wrap;
+    }
+    .deadline-card {
+      flex: 1;
+      min-width: 180px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      border: 1.5px solid #d1dae8;
+      background: #f7f9fc;
+    }
+    .deadline-card--red {
+      border-color: #fca5a5;
+      background: #fff5f5;
+    }
+    .deadline-card__label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #718096;
+      margin-bottom: 4px;
+    }
+    .deadline-card__value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #2C4A6E;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .deadline-card--red .deadline-card__value {
+      color: #B91C1C;
+    }
+    .deadline-card__sub {
+      font-size: 0.8rem;
+      color: #718096;
+    }
+  </style>
+</head>
+<body>
+  <nav class="seo-nav">
+    <span class="logo-text">Efterplan</span>
+    <a href="/" class="btn-primary">Skapa din plan →</a>
+  </nav>
+
+  <main class="seo-main">
+    <article class="seo-article">
+      <h1>Bouppteckning tidslinje — när ska den göras?</h1>
+
+      <p>Det finns två hårda deadlines för bouppteckning som du måste hålla. Missar du dem riskerar du vite från Skatteverket — och du kan inte fördela arvet. Den här sidan ger dig en visuell tidslinje över exakt vad som ska hända och när.</p>
+
+      <h2>De två deadlines du måste hålla</h2>
+
+      <div class="deadline-box">
+        <div class="deadline-card">
+          <div class="deadline-card__label">Deadline 1 — Förrättning</div>
+          <div class="deadline-card__value">3 månader</div>
+          <div class="deadline-card__sub">Mötet ska hållas senast 3 månader efter dödsdagen</div>
+        </div>
+        <div class="deadline-card deadline-card--red">
+          <div class="deadline-card__label">Deadline 2 — Inlämning</div>
+          <div class="deadline-card__value">4 månader</div>
+          <div class="deadline-card__sub">Handlingen ska vara hos Skatteverket senast 4 månader efter dödsdagen</div>
+        </div>
+      </div>
+
+      <p><strong>Viktigt:</strong> Båda tidsgränserna räknas från <em>dödsdagen</em> — inte från begravningsdagen, inte från när du fick reda på det. Det är ett vanligt misstag som kan kosta tid och pengar.</p>
+
+      <h2>Tidslinje — vecka för vecka</h2>
+
+      <div class="tidslinje">
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Dag 1</div>
+          <div class="tl-title">Dödsfallet inträffar — klockan börjar ticka</div>
+          <p class="tl-desc">Från och med dödsdagen löper 3- och 4-månadersgränserna. Kontakta en begravningsbyrå samma dag — de hjälper till med registreringen hos Skatteverket och kan rekommendera jurister för bouppteckning.</p>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Vecka 1</div>
+          <div class="tl-title">Beställ dödsfallsintyg och kontakta jurist</div>
+          <p class="tl-desc">Beställ dödsfallsintyg med släktutredning från Skatteverket (0771-567 567) — det krävs för att påbörja bouppteckning. Ta kontakt med jurist eller börja planera om du vill göra den själv. Kontakta banken och be om saldouppgifter per dödsdagen.</p>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Vecka 2–4</div>
+          <div class="tl-title">Inventera tillgångar och skulder</div>
+          <p class="tl-desc">Samla in uppgifter om allt den avlidne ägde och var skyldig på dödsdagen: bankkonton, värdepapper, fastigheter, fordon, lösöre av värde, lån och krediter. Kontakta banker, fondbolag och Lantmäteriet för officiella värden.</p>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Vecka 4–8</div>
+          <div class="tl-title">Boka datum och kalla dödsbodelägare</div>
+          <p class="tl-desc">Bestäm datum för bouppteckningsförrättningen och kalla alla dödsbodelägare. De har rätt att närvara men måste inte. Se till att två utomstående vittnen (som inte är arvingar) kan närvara. Om jurist anlitas sköter den normalt detta.</p>
+        </div>
+
+        <div class="tl-item tl-item--deadline">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Månad 3 <span class="tl-badge tl-badge--deadline">Deadline</span></div>
+          <div class="tl-title">Håll bouppteckningsförrättningen</div>
+          <p class="tl-desc">Mötet där bouppteckningen genomförs formellt med vittnen. Bouppgivaren (normalt make/maka eller sambo) redogör för tillgångar och skulder. Alla dödsbodelägare ska ha kallats i god tid. Räkna ut ditt datum: dödsdagen + 3 månader.</p>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Vecka efter förrättning</div>
+          <div class="tl-title">Upprätta och granska handlingen</div>
+          <p class="tl-desc">Sammanställ det officiella dokumentet, kontrollera att alla uppgifter stämmer och att rätt blankett används (Skatteverkets SKV 4600). Alla dödsbodelägare och vittnen ska skriva under.</p>
+        </div>
+
+        <div class="tl-item tl-item--hard">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Månad 4 <span class="tl-badge tl-badge--hard">Sista dag</span></div>
+          <div class="tl-title">Skicka bouppteckning till Skatteverket</div>
+          <p class="tl-desc">Den undertecknade handlingen skickas per post till Skatteverket för registrering. Skicka med tillräcklig marginal — räkna inte med sista dagen. Räkna ut ditt datum: dödsdagen + 4 månader.</p>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Månad 4–6</div>
+          <div class="tl-title">Skatteverket registrerar bouppteckningen</div>
+          <p class="tl-desc">Handläggningstiden hos Skatteverket varierar. När bouppteckningen är registrerad kan du gå vidare med arvskifte, ansöka om lagfart vid fastighetsarv och avsluta bankkonton.</p>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Månad 4 och framåt</div>
+          <div class="tl-title">Arvskifte och avslut av dödsboet</div>
+          <p class="tl-desc">När bouppteckningen är registrerad fördelas tillgångarna enligt testamente eller lag. Arvskiftet kan ta allt från veckor till år beroende på om arvingarna är överens. Dödsboet upphör när allt är fördelat och avslutat.</p>
+        </div>
+
+      </div>
+
+      <h2>Vad händer om du missar deadlinen?</h2>
+      <p>Om du ser att du inte hinner med 3-månadersgränsen — kontakta Skatteverket och ansök om anstånd <em>innan</em> tidsgränsen löper ut. Skatteverket beviljar normalt anstånd om det finns godtagbara skäl (sjukdom, svårt att nå arvingar i utlandet, komplicerat bo).</p>
+      <p>Missar du utan att ha ansökt om anstånd kan Skatteverket förelägga dödsboet att komma in med bouppteckning — i värsta fall med ett vite. Bankkonton, fastighetsförsäljningar och arvskifte är blockerade tills bouppteckningen är registrerad.</p>
+
+      <h2>Tidslinje i korthet</h2>
+      <ul>
+        <li><strong>Dag 1:</strong> Dödsfallet — 3- och 4-månadersgränserna börjar löpa</li>
+        <li><strong>Vecka 1:</strong> Beställ dödsfallsintyg, kontakta jurist, kontakta bank</li>
+        <li><strong>Vecka 2–8:</strong> Inventera tillgångar och skulder, boka förrättning</li>
+        <li><strong>Månad 3 (deadline):</strong> Håll bouppteckningsförrättningen</li>
+        <li><strong>Månad 4 (sista dag):</strong> Skicka in handlingen till Skatteverket</li>
+        <li><strong>Månad 4+:</strong> Registrering, arvskifte, lagfart, avslut av dödsbo</li>
+      </ul>
+
+      <p>Vill du ha en fullständig guide om vad bouppteckning är, vad det kostar och hur du gör den? Läs <a href="./bouppteckning-guide.html">vår kompletta bouppteckningsguide</a>.</p>
+
+      <h2>Vanliga frågor</h2>
+
+      <h3>När ska bouppteckning göras?</h3>
+      <p>Bouppteckningsförrättningen (mötet) ska hållas inom 3 månader från dödsdagen. Den färdiga handlingen ska vara hos Skatteverket inom 4 månader från dödsdagen. Räkna alltid från dödsdagen — inte från begravningen.</p>
+
+      <h3>Vad händer om man missar 3-månadersgränsen?</h3>
+      <p>Ansök om anstånd hos Skatteverket i god tid innan gränsen löper ut. Missar du utan anstånd kan Skatteverket förelägga dödsboet — i värsta fall med vite. Kontakta Skatteverket direkt om du ser att du inte hinner.</p>
+
+      <h3>Räknas tidsgränsen från dödsdagen eller begravningsdagen?</h3>
+      <p>Alltid från dödsdagen. Begravningsdagen spelar ingen roll juridiskt. Om personen dog den 15 januari är 3-månadersgränsen den 15 april och 4-månadersgränsen den 15 maj.</p>
+
+      <h3>Kan man göra bouppteckning snabbare än 3 månader?</h3>
+      <p>Ja. Det finns ingen minimigräns — om boet är enkelt kan allt vara klart på 2–4 veckor. En snabb bouppteckning låser upp möjligheten att avsluta konton, sälja bostad och fördela arvet så fort som möjligt.</p>
+
+      <div class="seo-cta">
+        <p>Få en personlig tidplan för bouppteckning baserad på din situation</p>
+        <a href="/" class="btn-primary">Skapa din Efterplan gratis →</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="seo-footer">
+    <p>© 2026 Efterplan · <a href="/">Tillbaka till appen</a> · Ej juridisk rådgivning</p>
+    <p class="seo-footer-links">
+      <a href="./bouppteckning-guide.html">Bouppteckning guide</a> &nbsp;·&nbsp;
+      <a href="./checklista-dodsbo.html">Checklista dödsbo</a> &nbsp;·&nbsp;
+      <a href="./dodsbo-checklista-7-dagar.html">Checklista 7 dagar</a> &nbsp;·&nbsp;
+      <a href="./vad-gora-nar-nagon-dor.html">Vad gör man när någon dör?</a> &nbsp;·&nbsp;
+      <a href="./arvskifte-guide.html">Arvskifte guide</a> &nbsp;·&nbsp;
+      <a href="./dodsbo-skulder.html">Dödsbo skulder</a> &nbsp;·&nbsp;
+      <a href="./bankkonto-dodsfall.html">Bankkonto vid dödsfall</a>
+    </p>
+  </footer>
+</body>
+</html>
