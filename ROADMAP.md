@@ -283,7 +283,7 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|
 
-| T043 | Flashback post | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ☐ |
+| T043 | Flashback post | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ⧖ |
 
 | T044 | Facebook groups | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ☐ |
 
@@ -399,13 +399,13 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|---------|
 
-| T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | x |
+| T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
 | T071 | Publish landing page “dodsbo‑checklista‑7‑dagar” | 2026‑04‑14 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
 
 | T072 | Publish “bouppteckning‑tidslinje” + FAQ schema | 2026‑04‑15 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
 
-| T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ⧖ |
+| T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ✔ |
 
 | T074 | Flashback post + log responses | 2026‑04‑20 | Fas 11 | Distribution | 🟡 | Distribution | ⧖ |
 
