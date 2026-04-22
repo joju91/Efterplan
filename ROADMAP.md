@@ -311,7 +311,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T048 | A/B test price | Fas 10 | 🏢 Company Plan | 🟠 | Growth | ☐ |
 
-| T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ☐ |
+| T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ✔ |
 
 | T050 | PDF export | Fas 10 | 📱 App Plan | 🟡 | Dev | ☐ |
 
