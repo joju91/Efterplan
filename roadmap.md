@@ -427,4 +427,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T083 | Weekly KPI review + new 14‑day plan | 2026‑05‑06 | Fas 11 | Growth | 🟡 | Growth | ☐ |
 | T087 | Länkbyggnad: identifiera 10 relevanta sajter för gästinlägg/omnämnanden (begravning, juridik, ekonomi) | 2026‑05‑10 | Fas 11 | SEO Audit | 🟠 | SEO | ☐ |
+| T089 | SEO-sida: dodsfallsintyg | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T090 | SEO-sida: laglott | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T091 | SEO-sida: saga-upp-hyresratt-dodsbo | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
