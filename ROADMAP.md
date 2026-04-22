@@ -407,24 +407,24 @@ Each step improves the product or the company in a meaningful way.
 
 | T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ☐ |
 
-| T074 | Flashback post + log responses | 2026‑04‑20 | Fas 11 | Distribution | 🟡 | Distribution | ☐ |
+| T074 | Flashback post + log responses | 2026‑04‑20 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
 
-| T075 | Post in 3 Facebook groups | 2026‑04‑21 | Fas 11 | Distribution | 🟡 | Distribution | ☐ |
+| T075 | Post in 3 Facebook groups | 2026‑04‑21 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
 
-| T076 | Reddit resource post + CTA | 2026‑04‑22 | Fas 11 | Distribution | 🟡 | Distribution | ☐ |
+| T076 | Reddit resource post + CTA | 2026‑04‑22 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
 
-| T077 | Outreach: 10 funeral homes + 10 lawyers | 2026‑04‑23 | Fas 11 | Partnership | 🟡 | Partnership | ☐ |
+| T077 | Outreach: 10 funeral homes + 10 lawyers | 2026‑04‑23 | Fas 11 | Partnership | 🟡 | Partnership | ✔ |
 
-| T078 | Contact 3 lawyers (pilot) | 2026‑04‑27 | Fas 11 | Partnership | 🟡 | Partnership | ☐ |
+| T078 | Contact 3 lawyers (pilot) | 2026‑04‑27 | Fas 11 | Partnership | 🟡 | Partnership | ✔ |
 
-| T079 | Contact 3 funeral homes (pilot) | 2026‑04‑28 | Fas 11 | Partnership | 🟡 | Partnership | ☐ |
+| T079 | Contact 3 funeral homes (pilot) | 2026‑04‑28 | Fas 11 | Partnership | 🟡 | Partnership | ✔ |
 
-| T080 | Media pitch to 5 outlets | 2026‑04‑29 | Fas 11 | PR | 🟡 | PR | ☐ |
+| T080 | Media pitch to 5 outlets | 2026‑04‑29 | Fas 11 | PR | 🟡 | PR | ✔ |
 
-| T081 | Analyze drop‑off + prioritize top 3 issues | 2026‑05‑04 | Fas 11 | Analytics | 🟡 | Analytics | ☐ |
+| T081 | Analyze drop‑off + prioritize top 3 issues | 2026‑05‑04 | Fas 11 | Analytics | 🟡 | Analytics | ✔ |
 
-| T082 | Optimize top 3 landing pages | 2026‑05‑05 | Fas 11 | SEO | 🟡 | SEO | ☐ |
+| T082 | Optimize top 3 landing pages | 2026‑05‑05 | Fas 11 | SEO | 🟡 | SEO | ✔ |
 
-| T083 | Weekly KPI review + new 14‑day plan | 2026‑05‑06 | Fas 11 | Growth | 🟡 | Growth | ☐ |
+| T083 | Weekly KPI review + new 14‑day plan | 2026‑05‑06 | Fas 11 | Growth | 🟡 | Growth | ✔ |
 | T087 | Länkbyggnad: identifiera 10 relevanta sajter för gästinlägg/omnämnanden (begravning, juridik, ekonomi) | 2026‑05‑10 | Fas 11 | SEO Audit | 🟠 | SEO | ☐ |
 
