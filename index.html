@@ -109,6 +109,22 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Efterplan",
+    "url": "https://efterplan.se",
+    "description": "Gratis verktyg som guidar anhöriga genom praktiska göromål efter ett dödsfall.",
+    "areaServed": "SE",
+    "inLanguage": "sv",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "jonas.soderstrom43@gmail.com",
+      "contactType": "customer support"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -125,7 +141,7 @@
   <nav class="nav">
     <div class="logo">Efterplan</div>
     <div class="nav-landing-links">
-      <a href="#section-om" class="nav-text-link">Om</a>
+      <a href="/om.html" class="nav-text-link">Om</a>
       <a href="#section-integritet" class="nav-text-link">Integritet</a>
     </div>
   </nav>
@@ -218,9 +234,10 @@
 
   <footer class="landing-footer">
     <p>© 2026 Efterplan &nbsp;·&nbsp;
-       <a href="mailto:hej@efterplan.se">Kontakt</a> &nbsp;·&nbsp;
+       <a href="#" data-mail="jonas.soderstrom43" data-domain="gmail.com"
+          onclick="this.href='mailto:'+this.dataset.mail+'@'+this.dataset.domain">Kontakt</a> &nbsp;·&nbsp;
        <a href="#section-integritet">Integritet</a> &nbsp;·&nbsp;
-       <a href="#section-om">Om</a>
+       <a href="/om.html">Om</a>
     </p>
     <p class="landing-footer-links">
       <a href="./vad-gora-nar-nagon-dor.html">Vad gör man när någon dör?</a> &nbsp;·&nbsp;
