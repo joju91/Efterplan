@@ -283,7 +283,7 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|
 
-| T043 | Flashback post | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ⧖ |
+| T043 | Flashback post | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | x |
 
 | T044 | Facebook groups | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ☐ |
 
