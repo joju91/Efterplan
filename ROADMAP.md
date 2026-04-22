@@ -405,11 +405,11 @@ Each step improves the product or the company in a meaningful way.
 
 | T072 | Publish “bouppteckning‑tidslinje” + FAQ schema | 2026‑04‑15 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
 
-| T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ☐ |
+| T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ⧖ |
 
-| T074 | Flashback post + log responses | 2026‑04‑20 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
+| T074 | Flashback post + log responses | 2026‑04‑20 | Fas 11 | Distribution | 🟡 | Distribution | ⧖ |
 
-| T075 | Post in 3 Facebook groups | 2026‑04‑21 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
+| T075 | Post in 3 Facebook groups | 2026‑04‑21 | Fas 11 | Distribution | 🟡 | Distribution | ⧖ |
 
 | T076 | Reddit resource post + CTA | 2026‑04‑22 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
 
