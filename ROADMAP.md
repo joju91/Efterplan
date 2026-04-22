@@ -263,7 +263,7 @@ Each step improves the product or the company in a meaningful way.
 | T041 | FAQ structured data | Fas 8 | 🏢 Company Plan | 🟡 | Dev | ✔ |
 
 | T042 | Core Web Vitals | Fas 8 | 📱 App Plan | 🟡 | Dev | ✔ |
-| T084 | Fix mobile PageSpeed: eliminera redirect chain + reduce unused JS (mål LCP <2.5s) | Fas 8 | SEO Audit | 🟠 | Dev | ☐ |
+| T084 | Fix mobile PageSpeed: eliminera redirect chain + reduce unused JS (mål LCP <2.5s) | Fas 8 | SEO Audit | 🟠 | Dev | ✔ |
 | T085 | Lägg till Organization schema (Identity Schema) på index-sidan | Fas 8 | SEO Audit | 🟡 | Dev | ✔ |
 | T086 | Ta bort plain text email — ersätt med kontaktformulär eller obfuskerad mailto | Fas 8 | SEO Audit | 🟡 | Dev | ✔ |
 
@@ -401,9 +401,9 @@ Each step improves the product or the company in a meaningful way.
 
 | T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
-| T071 | Publish landing page “dodsbo‑checklista‑7‑dagar” | 2026‑04‑14 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
+| T071 | Publish landing page “dodsbo‑checklista‑7‑dagar” | 2026‑04‑14 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
-| T072 | Publish “bouppteckning‑tidslinje” + FAQ schema | 2026‑04‑15 | Fas 11 | SEO Sprint | 🟡 | SEO | ☐ |
+| T072 | Publish “bouppteckning‑tidslinje” + FAQ schema | 2026‑04‑15 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
 | T073 | Set up dashboard: traffic → onboarding → plan generated | 2026‑04‑16 | Fas 11 | Analytics Sprint | 🟡 | Analytics | ✔ |
 
