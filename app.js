@@ -5,6 +5,7 @@
 
 // ─── FEATURE FLAGS ───────────────────────────
 const PAYWALL_ENABLED = false; // set true when Stripe is wired up
+const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked when PAYWALL_ENABLED
 
 // ─── STATE ───────────────────────────────────
 const state = {
@@ -858,9 +859,9 @@ function renderPlan() {
   }
 
   const nextTaskId = firstTask?.id;
-  renderTaskList('tasks-today', today,  nextTaskId);
-  renderTaskList('tasks-week',  week,   nextTaskId);
-  renderTaskList('tasks-later', later,  nextTaskId);
+  renderTaskList('tasks-today', today, nextTaskId, 0);
+  renderTaskList('tasks-week',  week,  nextTaskId, today.length);
+  renderTaskList('tasks-later', later, nextTaskId, today.length + week.length);
 
   // Show Skatteverket doc button only if deceased had a company (F-skatt relevant)
   const skvBtn = document.getElementById('doc-btn-skatteverket');
@@ -878,14 +879,55 @@ function renderPlan() {
 
 let expandedTaskId = null;
 
-function renderTaskList(containerId, tasks, nextTaskId) {
+function buildPreviewCTACard() {
+  const cta = document.createElement('div');
+  cta.className = 'preview-cta-card';
+  cta.innerHTML = `
+    <div class="preview-cta-lock" aria-hidden="true">🔒</div>
+    <h3 class="preview-cta-title">Lås upp hela planen</h3>
+    <p class="preview-cta-desc">Du har sett de första ${PREVIEW_STEPS} stegen. Lås upp alla återstående uppgifter — engångsbetalning, ingen prenumeration.</p>
+    <button class="btn-primary preview-cta-btn" onclick="handlePreviewCTA()">Lås upp — 149 kr</button>
+  `;
+  return cta;
+}
+
+function handlePreviewCTA() {
+  track('Preview CTA Clicked');
+  handlePaywallCTA();
+}
+
+function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
 
   tasks.forEach((task, i) => {
+    const globalIdx = globalOffset + i;
+    const isLocked  = PAYWALL_ENABLED && globalIdx >= PREVIEW_STEPS;
+
+    // T030: insert preview CTA once, right before the first locked task
+    if (PAYWALL_ENABLED && globalIdx === PREVIEW_STEPS) {
+      container.appendChild(buildPreviewCTACard());
+    }
+
     const wrap = document.createElement('div');
     wrap.className = 'task-wrap';
     wrap.id = `task-wrap-${task.id}`;
+
+    if (isLocked) {
+      wrap.innerHTML = `
+        <div class="task-card task-card--locked" id="task-card-${task.id}" aria-disabled="true">
+          <div class="task-check" aria-hidden="true"></div>
+          <div class="task-body">
+            <div class="task-title">${task.title}</div>
+            <div class="task-time">${task.time}</div>
+          </div>
+          <div class="task-lock" aria-hidden="true">🔒</div>
+        </div>`;
+      wrap.style.animationDelay = `${i * 35}ms`;
+      wrap.classList.add('task-anim-in');
+      container.appendChild(wrap);
+      return;
+    }
 
     const linkHtml = task.link
       ? `<a class="task-expand-link" href="${task.link}" target="_blank" rel="noopener">Öppna ${task.link.replace('https://www.', '')} ↗</a>`

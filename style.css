@@ -2053,6 +2053,59 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   T030 — LOCKED TASK CARD + PREVIEW CTA
+════════════════════════════════════════════ */
+.task-card--locked {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+  background: #F4F4F2;
+  border-style: dashed;
+}
+.task-card--locked:hover { border-color: inherit; box-shadow: none; }
+.task-card--locked .task-check { background: #DDD; border-color: #CCC; }
+.task-card--locked .task-title,
+.task-card--locked .task-time { color: var(--text-muted); }
+.task-lock {
+  margin-left: auto;
+  padding-right: 4px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.preview-cta-card {
+  border: 1.5px solid #C8D6E5;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, #EDF2F7 0%, #F8F7F5 100%);
+  padding: 24px 20px;
+  text-align: center;
+  margin: 14px 0 18px;
+}
+.preview-cta-lock {
+  font-size: 1.75rem;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+.preview-cta-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.preview-cta-desc {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.preview-cta-btn {
+  width: 100%;
+  max-width: 240px;
+  padding: 12px 20px;
+  font-size: 0.92rem;
+}
+
+/* ═══════════════════════════════════════════
    PRINT / PDF EXPORT
 ════════════════════════════════════════════ */
 @media print {
@@ -2069,7 +2122,11 @@ body {
   .undo-toast, .offline-banner, .trust-band,
   .bills-section, .start-here,
   .skip-link, #completion-message,
-  .section-coming-tag { display: none !important; }
+  .section-coming-tag,
+  .preview-cta-card, .task-lock { display: none !important; }
+
+  /* Unlock locked tasks for print so paid users get a clean export */
+  .task-card--locked { opacity: 1 !important; background: #fff !important; border-style: solid !important; }
 
   /* Reset colors for legibility on paper */
   body { background: #fff; color: #000; }

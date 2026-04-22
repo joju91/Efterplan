@@ -206,7 +206,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T029 | Decide paywall point | Fas 6 | 📱 App Plan | 🔴 | Decision | x |
 
-| T030 | Build free preview (steps 1–5 open) | Fas 6 | 📱 App Plan | 🔴 | Dev | ☐ |
+| T030 | Build free preview (steps 1–5 open) | Fas 6 | 📱 App Plan | 🔴 | Dev | ✔ |
 
 | T031 | Build payment flow: Stripe Checkout → unlock | Fas 6 | 📱 App Plan | 🔴 | Dev | x |
 
