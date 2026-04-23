@@ -431,15 +431,26 @@ Each step improves the product or the company in a meaningful way.
 | T090 | SEO-sida: laglott | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 | T091 | SEO-sida: saga-upp-hyresratt-dodsbo | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
----
+\---
 
-## Sprint 3 — Tillväxt & Kvalitet
+\# 🚀 FAS 12 — SPRINT 3: GROWTH & QUALITY
 
-### T092 — SEO: tomma-dodsbo.html
-Bygg ny SEO-sida för sökordet "tomma dödsbo" (hög sökvolym).
-Följ samma mall som T089–T091: Article/FAQPage/Breadcrumb schema, interna länkar, CTA till huvudverktyget, /om.html i footer.
-Uppdatera sitemap. Submita till GSC.
+| ID | Task | Phase | Source | Priority | Type | Status |
 
----
+|----|------|--------|---------|----------|--------|---------|
 
-### T093
+| T092 | SEO: tomma-dodsbo.html | Fas 12 | Sprint 3 | 🟡 | SEO | ✔ |
+
+| T093 | Konvertering: CTA/funnel-optimering | Fas 12 | Sprint 3 | 🟡 | Growth | ☐ |
+
+| T094 | Outreach-uppföljning | Fas 12 | Sprint 3 | 🟡 | Partnership | ☐ |
+
+| T095 | Kvalitetsstämplar & certifikat | Fas 12 | Sprint 3 | 🟡 | Dev | ✔ |
+
+| T096 | Mobilwebb & app-funktionalitet | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
+
+| T097 | Centrera layout i browser | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
+
+Openai Codex will review your result when you are done.
+
+Openai Codex will review your result when you are done.
