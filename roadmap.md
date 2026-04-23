@@ -423,4 +423,28 @@ Each step improves the product or the company in a meaningful way.
 | T082 | Optimize top 3 landing pages | 2026‑05‑05 | Fas 11 | SEO | 🟡 | SEO | ☐ |
 
 | T083 | Weekly KPI review + new 14‑day plan | 2026‑05‑06 | Fas 11 | Growth | 🟡 | Growth | ☐ |
+| T087 | Länkbyggnad: identifiera 10 relevanta sajter för gästinlägg/omnämnanden (begravning, juridik, ekonomi) | 2026‑05‑10 | Fas 11 | SEO Audit | 🟠 | SEO | ☐ |
+| T089 | SEO-sida: dodsfallsintyg | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T090 | SEO-sida: laglott | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+| T091 | SEO-sida: saga-upp-hyresratt-dodsbo | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
+
+\---
+
+\# 🚀 FAS 12 — SPRINT 3 GROWTH & QUALITY
+
+| ID | Task | Phase | Source | Priority | Type | Status |
+
+|----|------|--------|---------|----------|--------|---------|
+
+| T092 | SEO: tomma-dodsbo.html | Fas 12 | Sprint 3 | 🟡 | SEO | ✔ |
+
+| T093 | Konvertering: CTA/funnel-optimering | Fas 12 | Sprint 3 | 🟡 | Growth | ☐ |
+
+| T094 | Outreach-uppföljning | Fas 12 | Sprint 3 | 🟡 | Partnership | ☐ |
+
+| T095 | Kvalitetsstämplar & certifikat | Fas 12 | Sprint 3 | 🟡 | Dev | ✔ |
+
+| T096 | Mobilwebb & app-funktionalitet | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
+
+| T097 | Centrera layout i browser | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
 
