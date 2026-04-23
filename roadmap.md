@@ -236,7 +236,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T036 | Configure analytics events | Fas 7 | 🏢 Company Plan | 🟠 | Infra | ✔ |
 
-| T037 | KPI dashboard | Fas 7 | 🏢 Company Plan | 🟠 | Analytics | x |
+| T037 | KPI dashboard | Fas 7 | 🏢 Company Plan | 🟠 | Analytics | ✔ |
 
 
 
@@ -343,7 +343,7 @@ Each step improves the product or the company in a meaningful way.
 
 | T066 | Bug: tagline truncation on narrow mobile | Fas 4.5 | 📱 App Plan | 🔴 | Design | ✔ |
 
-| T063 | Content: Lantmäteriet 3‑month rule | Fas 4.5 | 📱 App Plan | 🟠 | Content | x |
+| T063 | Content: Lantmäteriet 3‑month rule | Fas 4.5 | 📱 App Plan | 🟠 | Content | ✔ |
 
 
 
@@ -359,11 +359,11 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|
 
-| T060 | Push notifications (7/30/90 days) | Fas 5 | 📱 App Plan | 🟠 | Dev | x |
+| T060 | Push notifications (7/30/90 days) | Fas 5 | 📱 App Plan | 🟠 | Dev | ✔ |
 
-| T061 | 3–4 static SEO landing pages | Fas 5 | 📱 App Plan | 🟠 | Growth | x |
+| T061 | 3–4 static SEO landing pages | Fas 5 | 📱 App Plan | 🟠 | Growth | ✔ |
 
-| T062 | Extended telemetry | Fas 5 | 📱 App Plan | 🟡 | Analytics | x |
+| T062 | Extended telemetry | Fas 5 | 📱 App Plan | 🟡 | Analytics | ✔ |
 
 
 
@@ -379,9 +379,9 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|
 
-| T067 | Bills overview (manual or OCR) | Fas 10 | 📱 App Plan | 🟡 | Dev | x |
+| T067 | Bills overview (manual or OCR) | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
 
-| T068 | Notes field per task | Fas 10 | 📱 App Plan | 🟡 | UX | x |
+| T068 | Notes field per task | Fas 10 | 📱 App Plan | 🟡 | UX | ✔ |
 
 | T069 | Accessibility: voice input (speech‑to‑text) | Fas 10 | 📱 App Plan | 🟢 | UX | ☐ |
 
@@ -399,7 +399,7 @@ Each step improves the product or the company in a meaningful way.
 
 |----|------|--------|---------|----------|--------|---------|---------|
 
-| T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | x |
+| T070 | Verify Search Console + sitemap | 2026‑04‑13 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
 | T071 | Publish landing page “dodsbo‑checklista‑7‑dagar” | 2026‑04‑14 | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 
