@@ -1,9 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#f5f4f0"/>
-  <rect x="0" y="0" width="1200" height="8" fill="#2c4a6e"/>
-  <text x="600" y="220" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="#1a2f45" text-anchor="middle">Efterplan</text>
-  <text x="600" y="285" font-family="Georgia, serif" font-size="26" fill="#2c4a6e" text-anchor="middle">Vad gör man när någon dör?</text>
-  <line x1="460" y1="315" x2="740" y2="315" stroke="#2c4a6e" stroke-width="1.5" opacity="0.3"/>
-  <text x="600" y="370" font-family="Georgia, serif" font-size="20" fill="#666" text-anchor="middle">Personlig checklista · Färdiga brev · Gratis</text>
-  <text x="600" y="430" font-family="Georgia, serif" font-size="18" fill="#888" text-anchor="middle">efterplan.se</text>
+  <!-- Paper background -->
+  <rect width="1200" height="630" fill="#F6F1E7"/>
+
+  <!-- Editorial ornament: ember dash + brand -->
+  <g transform="translate(96,128)">
+    <line x1="0" y1="10" x2="32" y2="10" stroke="#B4552E" stroke-width="2"/>
+    <text x="48" y="18" font-family="Fraunces, Iowan Old Style, Georgia, serif"
+          font-size="24" font-style="italic" font-weight="500" fill="#394156">
+      Efterplan
+    </text>
+  </g>
+
+  <!-- Headline -->
+  <text x="96" y="280" font-family="Fraunces, Iowan Old Style, Georgia, serif"
+        font-size="78" font-weight="420" fill="#14192B" letter-spacing="-2">
+    <tspan x="96" dy="0">Du har precis</tspan>
+    <tspan x="96" dy="92">förlorat någon.</tspan>
+  </text>
+
+  <!-- Sub -->
+  <text x="96" y="480" font-family="Fraunces, Iowan Old Style, Georgia, serif"
+        font-size="30" font-style="italic" fill="#1F3A4E">
+    Vi visar exakt vad du behöver göra.
+  </text>
+
+  <!-- Footer rule + domain -->
+  <line x1="96" y1="548" x2="152" y2="548" stroke="#1F3A4E" stroke-width="1"/>
+  <text x="96" y="586" font-family="IBM Plex Sans, -apple-system, Segoe UI, sans-serif"
+        font-size="22" font-weight="500" fill="#485063" letter-spacing="1">
+    efterplan.se
+  </text>
 </svg>

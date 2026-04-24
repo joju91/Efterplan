@@ -1,4 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#2C4A6E"/>
-  <text x="256" y="352" font-family="system-ui,-apple-system,sans-serif" font-size="288" font-weight="700" text-anchor="middle" fill="white">C</text>
+  <rect width="512" height="512" rx="96" fill="#1F3A4E"/>
+  <g fill="none" stroke="#F6F1E7" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Three rows of lines (text) -->
+    <line x1="220" y1="176" x2="412" y2="176"/>
+    <line x1="220" y1="276" x2="412" y2="276"/>
+    <line x1="220" y1="376" x2="412" y2="376"/>
+    <!-- Empty boxes (rows 2 & 3) -->
+    <rect x="108" y="240" width="72" height="72" rx="10"/>
+    <rect x="108" y="340" width="72" height="72" rx="10"/>
+  </g>
+  <!-- Row 1: filled checkbox + navy check -->
+  <rect x="108" y="140" width="72" height="72" rx="10" fill="#F6F1E7"/>
+  <polyline points="126,178 146,198 174,164"
+            fill="none" stroke="#1F3A4E" stroke-width="18"
+            stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
