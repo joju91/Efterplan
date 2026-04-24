@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-T1T40TYPQB"></script>
+<!-- Google tag (gtag.js) — lazy loaded -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-T1T40TYPQB');
+  window.addEventListener('load', function() {
+    var s = document.createElement('script');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-T1T40TYPQB';
+    s.async = true;
+    document.head.appendChild(s);
+  });
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,6 +42,14 @@
     "inLanguage": "sv",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SEK" }
   }
+  </script>
+
+  <!-- Schema.org: Organization -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization",
+  "name":"Efterplan","url":"https://efterplan.se",
+  "description":"Gratis verktyg som guidar anhöriga genom praktiska göromål efter ett dödsfall.",
+  "areaServed":"SE","inLanguage":"sv"}
   </script>
 
   <!-- Schema.org: FAQ -->
@@ -81,8 +93,8 @@
   </script>
 
   <!-- PWA -->
-  <link rel="manifest" href="manifest.json?v=8" />
-  <meta name="theme-color" content="#2C4A6E" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1F3A4E" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="icon" type="image/png" href="favicon.png" />
 
@@ -94,8 +106,20 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" />
-  <link rel="stylesheet" href="style.css?v=14" />
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
+  <link rel="stylesheet" href="style.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Efterplan", "item": "https://efterplan.se/" }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -112,20 +136,19 @@
   <nav class="nav">
     <div class="logo">Efterplan</div>
     <div class="nav-landing-links">
-      <a href="#section-om" class="nav-text-link">Om</a>
+      <a href="/om.html" class="nav-text-link">Om</a>
       <a href="#section-integritet" class="nav-text-link">Integritet</a>
     </div>
   </nav>
   <div class="landing-hero">
     <div class="landing-content">
       <p class="landing-brand">Efterplan</p>
-      <h1 class="landing-eyebrow">Vad gör man när någon dör?</h1>
-      <h2 class="landing-headline">Du tar hand om det som betyder något.<br>Vi hjälper dig med resten.</h2>
-      <p class="landing-sub">Svar på vad du ska göra, i vilken ordning — och färdiga brev att skicka direkt.</p>
+      <h1 class="landing-eyebrow">Du har precis förlorat någon.</h1>
+      <h2 class="landing-headline">Vi visar <em>exakt</em> vad du behöver göra — ett steg i taget.</h2>
       <ul class="landing-payoff">
-        <li>En prioriterad checklista anpassad efter din situation</li>
-        <li>Färdiga brev till banker, försäkringsbolag och myndigheter</li>
-        <li>Tilldela uppgifter till rätt person om ni är flera</li>
+        <li>Tar 2 minuter att starta</li>
+        <li>Gratis, ingen registrering</li>
+        <li>Rätt ordning — vi bestämmer åt dig</li>
       </ul>
       <button class="btn-primary btn-large" onclick="startOnboarding()">Kom igång — tar 2 minuter</button>
       <p class="landing-note">Gratis att börja. Ingen registrering krävs.</p>
@@ -154,7 +177,7 @@
 
     <div class="faq-item">
       <h3>Ärver man skulder när någon dör?</h3>
-      <p>Nej. Som anhörig ärver du aldrig den avlidnas skulder. Skulder betalas av dödsboet om det finns tillgångar — men din privatekonomi är helt skyddad. Om skulder överstiger tillgångarna kan dödsboet försättas i konkurs, och arvingarna får ingenting men är inte skyldiga att betala. <a href="./checklista-dodsbo.html">Se vår checklista för dödsbo.</a></p>
+      <p>Nej. Som anhörig ärver du aldrig den avlidnas skulder. Skulder betalas av dödsboet om det finns tillgångar — men din privatekonomi är helt skyddad. Om skulder överstiger tillgångarna kan dödsboet försättas i konkurs, och arvingarna får ingenting men är inte skyldiga att betala. <a href="./checklista-dodsbo.html">Se vår checklista för dödsbo</a> eller <a href="./sambo-arv.html">läs om vad som gäller för sambos och arv</a>.</p>
     </div>
 
     <div class="faq-item">
@@ -164,7 +187,7 @@
 
     <div class="faq-item">
       <h3>Vad är arvskifte och hur fungerar det?</h3>
-      <p>Arvskifte är det avtal där dödsboets tillgångar fördelas mellan arvingarna efter att bouppteckningen är registrerad hos Skatteverket. Det görs skriftligt och signeras av alla dödsbodelägare. <a href="./arvskifte-guide.html">Läs vår guide om arvskifte.</a></p>
+      <p>Arvskifte är det avtal där dödsboets tillgångar fördelas mellan arvingarna efter att bouppteckningen är registrerad hos Skatteverket. Det görs skriftligt och signeras av alla dödsbodelägare. Om det finns testamente styr det hur arvet fördelas. <a href="./arvskifte-guide.html">Läs vår guide om arvskifte</a> eller <a href="./testamente-guide.html">om testamente</a>.</p>
     </div>
 
     <div class="faq-item">
@@ -174,7 +197,7 @@
 
     <div class="faq-item">
       <h3>Vad händer med hyresrätten när hyresgästen dör?</h3>
-      <p>Hyreskontrakt upphör inte automatiskt vid dödsfall. Dödsboet måste säga upp kontraktet skriftligt till hyresvärden. Om det görs inom en månad från dödsfallet är uppsägningstiden normalt en månad. Väntar man längre gäller vanlig uppsägningstid (ofta 3 månader), och hyran belastar dödsboet under hela perioden.</p>
+      <p>Hyreskontrakt upphör inte automatiskt vid dödsfall. Dödsboet måste säga upp kontraktet skriftligt till hyresvärden. Om det görs inom en månad från dödsfallet är uppsägningstiden normalt en månad. Väntar man längre gäller vanlig uppsägningstid (ofta 3 månader), och hyran belastar dödsboet under hela perioden. <a href="./tomma-dodsbo.html">Läs vår guide om att tömma dödsbo.</a></p>
     </div>
 
     <div class="faq-item">
@@ -187,7 +210,8 @@
   <section class="landing-section" id="section-om">
     <h2>Om Efterplan</h2>
     <p>Efterplan byggdes för att göra en av livets svåraste perioder lite lättare att navigera. Vi hjälper dig strukturera det praktiska — utan att du ska behöva söka information på egen hand i sorgen.</p>
-    <p>Har du frågor, hittat något fel eller vill ge feedback? Hör av dig: <a class="landing-contact-link" href="mailto:hej@efterplan.se">hej@efterplan.se</a></p>
+    <p>Har du frågor, hittat något fel eller vill ge feedback? Hör av dig: <a class="landing-contact-link" href="#" data-mail="jonas.soderstrom43" data-domain="gmail.com"
+       onclick="this.href='mailto:'+this.dataset.mail+'@'+this.dataset.domain">Kontakt</a></p>
     <p class="legal-disclaimer">Efterplan ger inte juridisk rådgivning. Informationen är av generell karaktär och baserad på svenska förhållanden. Vid tveksamheter — konsultera en jurist eller begravningsbyrå.</p>
   </section>
 
@@ -206,9 +230,10 @@
 
   <footer class="landing-footer">
     <p>© 2026 Efterplan &nbsp;·&nbsp;
-       <a href="mailto:hej@efterplan.se">Kontakt</a> &nbsp;·&nbsp;
+       <a href="#" data-mail="jonas.soderstrom43" data-domain="gmail.com"
+          onclick="this.href='mailto:'+this.dataset.mail+'@'+this.dataset.domain">Kontakt</a> &nbsp;·&nbsp;
        <a href="#section-integritet">Integritet</a> &nbsp;·&nbsp;
-       <a href="#section-om">Om</a>
+       <a href="/om.html">Om</a>
     </p>
     <p class="landing-footer-links">
       <a href="./vad-gora-nar-nagon-dor.html">Vad gör man när någon dör?</a> &nbsp;·&nbsp;
@@ -436,6 +461,7 @@
           <div class="progress-bar-fill" id="progress-bar-fill"></div>
         </div>
         <div class="progress-summary" id="progress-summary" aria-live="polite"></div>
+        <button class="btn-print-inline" onclick="printPlan()">Skriv ut / Spara som PDF</button>
       </div>
 
       <div class="completion-message" id="completion-message" role="status">
@@ -460,20 +486,22 @@
           <div class="task-list" id="tasks-today"></div>
         </div>
 
-        <div class="task-section" id="section-week">
+        <div class="task-section section--coming" id="section-week">
           <div class="section-header">
             <span class="section-dot dot-yellow" id="dot-week"></span>
             <h2 class="section-title">Denna vecka</h2>
+            <span class="section-coming-tag">Fler steg visas här</span>
             <span class="section-count" id="count-week"></span>
             <span class="section-done-badge hidden" id="badge-week">✓ Klar</span>
           </div>
           <div class="task-list" id="tasks-week"></div>
         </div>
 
-        <div class="task-section" id="section-later">
+        <div class="task-section section--coming" id="section-later">
           <div class="section-header">
             <span class="section-dot dot-grey" id="dot-later"></span>
             <h2 class="section-title">Senare</h2>
+            <span class="section-coming-tag">Fler steg visas här</span>
             <span class="section-count" id="count-later"></span>
             <span class="section-done-badge hidden" id="badge-later">✓ Klar</span>
           </div>
@@ -855,7 +883,7 @@
   </div>
 </div>
 
-<script src="app.js?v=15"></script>
+<script src="app.js?v=16" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
