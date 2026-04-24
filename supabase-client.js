@@ -3,7 +3,10 @@
 // window.efterplanAuth. Silently no-ops if SUPABASE_CONFIG is empty, so the
 // static site keeps working offline for signed-out users.
 
-const SUPABASE_CONFIG = { url: "", anonKey: "" };
+const SUPABASE_CONFIG = {
+  url: "https://vjupkemzpnrahdsljenl.supabase.co",
+  anonKey: "sb_publishable_8eZKlNPSB5gH0gDYO8pb0Q__5w2kYs3"
+};
 
 (function () {
   'use strict';
