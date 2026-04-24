@@ -1,7 +1,7 @@
-<!-- Efterplan — Share modal snippet (T052)
-     Self-contained. Paste the entire contents of this file into index.html
-     just before </body>, after the auth-modal snippet. Opened by a button
-     with id="open-share" (wired in index.html).
+<!-- Efterplan — Share modal snippet (T052 + edit mode)
+     Self-contained. This file is the source of truth; the same markup is
+     inlined into index.html just before </body>, after the auth-modal snippet.
+     Opened by a button with id="open-share" (wired in index.html).
      Requires: supabase-client.js loaded before this markup.
 -->
 <div id="share-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
@@ -11,28 +11,55 @@
       <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('share-modal').classList.add('hidden')">✕</button>
     </div>
 
-    <p class="modal-sub">Skapa en skrivskyddad länk som du kan skicka till en anhörig. De ser planen men kan inte ändra något.</p>
-
-    <!-- No token yet -->
-    <div id="share-view-none">
-      <button type="button" id="share-create-btn" class="btn-primary" style="width:100%;">Skapa delningslänk</button>
-      <p id="share-create-status" class="modal-sub" style="margin-top:12px;min-height:1.2em;"></p>
-    </div>
-
-    <!-- Active token -->
-    <div id="share-view-active" class="hidden">
-      <label for="share-url-input" class="sr-only">Delningslänk</label>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input type="text" id="share-url-input" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
-        <button type="button" id="share-copy-btn" class="btn-ghost btn-sm">Kopiera</button>
-      </div>
-      <p id="share-copy-status" class="modal-sub" style="min-height:1.2em;margin-bottom:12px;"></p>
-      <button type="button" id="share-revoke-btn" class="btn-ghost btn-sm" style="width:100%;">Sluta dela</button>
-    </div>
+    <p class="modal-sub">Skicka en länk till en anhörig. Välj om de ska kunna se planen eller också bocka av uppgifter.</p>
 
     <!-- Not signed in -->
     <div id="share-view-signedout" class="hidden">
       <p class="modal-sub">Du behöver vara inloggad för att dela din plan. Öppna <strong>Mitt konto</strong> och logga in med e-post.</p>
+    </div>
+
+    <div id="share-view-main">
+      <!-- Read-only section -->
+      <section class="share-section" data-kind="read">
+        <h3 class="share-section-title">Skrivskyddad länk</h3>
+        <p class="share-section-sub">Mottagaren ser planen men kan inte ändra något.</p>
+
+        <div class="share-none" data-kind="read">
+          <button type="button" class="btn-ghost btn-sm share-create-btn" data-kind="read" style="width:100%;">Skapa läs-länk</button>
+        </div>
+
+        <div class="share-active hidden" data-kind="read">
+          <label class="sr-only" for="share-url-read">Läslänk</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input type="text" id="share-url-read" class="share-url-input" data-kind="read" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
+            <button type="button" class="btn-ghost btn-sm share-copy-btn" data-kind="read">Kopiera</button>
+          </div>
+          <button type="button" class="btn-ghost btn-sm share-revoke-btn" data-kind="read" style="width:100%;">Sluta dela läs-länken</button>
+        </div>
+
+        <p class="share-status modal-sub" data-kind="read" style="min-height:1.2em;margin-top:8px;"></p>
+      </section>
+
+      <!-- Edit section -->
+      <section class="share-section" data-kind="edit" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+        <h3 class="share-section-title">Redigerbar länk</h3>
+        <p class="share-section-sub">Mottagaren kan <strong>bocka av uppgifter</strong> — inget annat. Ingen inloggning krävs, så dela bara med personer du litar på.</p>
+
+        <div class="share-none" data-kind="edit">
+          <button type="button" class="btn-ghost btn-sm share-create-btn" data-kind="edit" style="width:100%;">Skapa redigeringslänk</button>
+        </div>
+
+        <div class="share-active hidden" data-kind="edit">
+          <label class="sr-only" for="share-url-edit">Redigeringslänk</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input type="text" id="share-url-edit" class="share-url-input" data-kind="edit" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
+            <button type="button" class="btn-ghost btn-sm share-copy-btn" data-kind="edit">Kopiera</button>
+          </div>
+          <button type="button" class="btn-ghost btn-sm share-revoke-btn" data-kind="edit" style="width:100%;">Sluta dela redigeringslänken</button>
+        </div>
+
+        <p class="share-status modal-sub" data-kind="edit" style="min-height:1.2em;margin-top:8px;"></p>
+      </section>
     </div>
   </div>
 </div>
@@ -40,38 +67,39 @@
 <script>
 (function () {
   'use strict';
-  const modal         = document.getElementById('share-modal');
-  const viewNone      = document.getElementById('share-view-none');
-  const viewActive    = document.getElementById('share-view-active');
-  const viewSignedOut = document.getElementById('share-view-signedout');
-  const createBtn     = document.getElementById('share-create-btn');
-  const createStatus  = document.getElementById('share-create-status');
-  const urlInput      = document.getElementById('share-url-input');
-  const copyBtn       = document.getElementById('share-copy-btn');
-  const copyStatus    = document.getElementById('share-copy-status');
-  const revokeBtn     = document.getElementById('share-revoke-btn');
+  const modal       = document.getElementById('share-modal');
+  const viewMain    = document.getElementById('share-view-main');
+  const viewSignout = document.getElementById('share-view-signedout');
 
   function urlFor(token) {
     return window.location.origin + '/?share=' + encodeURIComponent(token);
   }
-
+  function $kind(sel, kind) {
+    return modal.querySelector(sel + '[data-kind="' + kind + '"]');
+  }
   function showSignedOut() {
-    viewNone.classList.add('hidden');
-    viewActive.classList.add('hidden');
-    viewSignedOut.classList.remove('hidden');
+    viewMain.classList.add('hidden');
+    viewSignout.classList.remove('hidden');
   }
-  function showNone() {
-    viewSignedOut.classList.add('hidden');
-    viewActive.classList.add('hidden');
-    viewNone.classList.remove('hidden');
-    createStatus.textContent = '';
+  function showMain() {
+    viewSignout.classList.add('hidden');
+    viewMain.classList.remove('hidden');
   }
-  function showActive(token) {
-    viewSignedOut.classList.add('hidden');
-    viewNone.classList.add('hidden');
-    viewActive.classList.remove('hidden');
-    urlInput.value = urlFor(token);
-    copyStatus.textContent = '';
+  function renderKind(kind, token) {
+    const none   = $kind('.share-none', kind);
+    const active = $kind('.share-active', kind);
+    const input  = $kind('.share-url-input', kind);
+    const status = $kind('.share-status', kind);
+    if (token) {
+      none.classList.add('hidden');
+      active.classList.remove('hidden');
+      input.value = urlFor(token);
+    } else {
+      active.classList.add('hidden');
+      none.classList.remove('hidden');
+      input.value = '';
+    }
+    status.textContent = '';
   }
 
   async function refresh() {
@@ -81,51 +109,73 @@
     }
     const user = await window.efterplanAuth.getCurrentUser();
     if (!user) { showSignedOut(); return; }
-    const token = await window.efterplanAuth.getActiveShareToken();
-    if (token) showActive(token); else showNone();
+    showMain();
+    const tokens = await window.efterplanAuth.getActiveShareTokens();
+    renderKind('read', tokens.read);
+    renderKind('edit', tokens.edit);
   }
 
-  createBtn.addEventListener('click', async function () {
-    createStatus.textContent = 'Skapar länk…';
-    try {
-      // Ensure the plan exists remotely before creating a token.
-      window.dispatchEvent(new Event('efterplan:state-changed'));
-      await new Promise(r => setTimeout(r, 2200));
-      const token = await window.efterplanAuth.createShareToken();
-      showActive(token);
-    } catch (err) {
-      createStatus.textContent = 'Kunde inte skapa länk: ' + (err && err.message || err);
-    }
-  });
-
-  copyBtn.addEventListener('click', function () {
-    urlInput.select();
-    navigator.clipboard.writeText(urlInput.value).then(() => {
-      copyStatus.textContent = 'Kopierat!';
-      setTimeout(() => { copyStatus.textContent = ''; }, 2000);
-    }).catch(() => {
-      document.execCommand('copy');
-      copyStatus.textContent = 'Kopierat!';
+  modal.querySelectorAll('.share-create-btn').forEach(btn => {
+    btn.addEventListener('click', async function () {
+      const kind   = btn.getAttribute('data-kind');
+      const status = $kind('.share-status', kind);
+      status.textContent = 'Skapar länk…';
+      try {
+        window.dispatchEvent(new Event('efterplan:state-changed'));
+        await new Promise(r => setTimeout(r, 2200));
+        const token = await window.efterplanAuth.createShareToken(kind);
+        renderKind(kind, token);
+      } catch (err) {
+        status.textContent = 'Kunde inte skapa länk: ' + (err && err.message || err);
+      }
     });
   });
 
-  revokeBtn.addEventListener('click', async function () {
-    const token = urlInput.value.split('share=')[1];
-    if (!token) return;
-    revokeBtn.textContent = 'Avaktiverar…';
-    try {
-      await window.efterplanAuth.revokeShareToken(decodeURIComponent(token));
-      showNone();
-    } catch (err) {
-      createStatus.textContent = 'Kunde inte avaktivera: ' + (err && err.message || err);
-    } finally {
-      revokeBtn.textContent = 'Sluta dela';
-    }
+  modal.querySelectorAll('.share-copy-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const kind   = btn.getAttribute('data-kind');
+      const input  = $kind('.share-url-input', kind);
+      const status = $kind('.share-status', kind);
+      input.select();
+      const done = () => {
+        status.textContent = 'Kopierat!';
+        setTimeout(() => { status.textContent = ''; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(done).catch(() => {
+          document.execCommand('copy'); done();
+        });
+      } else {
+        document.execCommand('copy'); done();
+      }
+    });
+  });
+
+  modal.querySelectorAll('.share-revoke-btn').forEach(btn => {
+    btn.addEventListener('click', async function () {
+      const kind   = btn.getAttribute('data-kind');
+      const input  = $kind('.share-url-input', kind);
+      const status = $kind('.share-status', kind);
+      const url    = input.value;
+      if (!url) return;
+      const token  = decodeURIComponent(url.split('share=')[1] || '');
+      if (!token) return;
+      const original = btn.textContent;
+      btn.textContent = 'Avaktiverar…';
+      try {
+        await window.efterplanAuth.revokeShareToken(token);
+        renderKind(kind, null);
+      } catch (err) {
+        status.textContent = 'Kunde inte avaktivera: ' + (err && err.message || err);
+      } finally {
+        btn.textContent = original;
+      }
+    });
   });
 
   window.addEventListener('efterplan:auth-changed', refresh);
-  document.getElementById('open-share') && document.getElementById('open-share')
-    .addEventListener('click', refresh);
+  const openShareBtn = document.getElementById('open-share');
+  if (openShareBtn) openShareBtn.addEventListener('click', refresh);
 
   refresh();
 })();

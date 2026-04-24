@@ -194,21 +194,21 @@ const SUPABASE_CONFIG = {
     return data;
   }
 
-  async function createShareToken(planId) {
+  async function createShareToken(kind) {
     await initSupabase();
     if (!client || !currentUser) throw new Error('Inte inloggad');
-    let pid = planId;
-    if (!pid) {
-      const plan = await loadPlan();
-      pid = plan && plan.id;
-    }
+    const k = kind === 'edit' ? 'edit' : 'read';
+    const plan = await loadPlan();
+    const pid = plan && plan.id;
     if (!pid) throw new Error('Ingen plan att dela');
-    // Reactivate an existing token for this plan if present, so users don't
+    // Reactivate an existing token of this kind if present, so users don't
     // accumulate dead tokens when they toggle sharing on/off.
     const { data: existing } = await client
       .from('share_tokens')
       .select('token, active')
       .eq('plan_id', pid)
+      .eq('kind', k)
+      .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
     if (existing) {
@@ -219,7 +219,7 @@ const SUPABASE_CONFIG = {
     }
     const { data, error } = await client
       .from('share_tokens')
-      .insert({ plan_id: pid })
+      .insert({ plan_id: pid, kind: k })
       .select('token')
       .single();
     if (error) throw error;
@@ -232,19 +232,21 @@ const SUPABASE_CONFIG = {
     await client.from('share_tokens').update({ active: false }).eq('token', token);
   }
 
-  async function getActiveShareToken() {
+  async function getActiveShareTokens() {
     await initSupabase();
-    if (!client || !currentUser) return null;
+    const out = { read: null, edit: null };
+    if (!client || !currentUser) return out;
     const plan = await loadPlan();
-    if (!plan) return null;
+    if (!plan) return out;
     const { data } = await client
       .from('share_tokens')
-      .select('token')
+      .select('token, kind')
       .eq('plan_id', plan.id)
-      .eq('active', true)
-      .limit(1)
-      .maybeSingle();
-    return data ? data.token : null;
+      .eq('active', true);
+    (data || []).forEach(r => {
+      if (r.kind === 'read' || r.kind === 'edit') out[r.kind] = r.token;
+    });
+    return out;
   }
 
   async function getSharedPlan(token) {
@@ -252,6 +254,25 @@ const SUPABASE_CONFIG = {
     if (!client) return null;
     const { data, error } = await client.rpc('get_shared_plan', { token_in: token });
     if (error) { console.warn('[efterplan] getSharedPlan', error); return null; }
+    if (!data) return null;
+    // RPC returns { state_json, kind, plan_id }. state_json is a JSON-encoded
+    // object whose values may themselves be JSON strings (e.g. efterplan_tasks).
+    return {
+      state_json: data.state_json || null,
+      kind: data.kind || 'read',
+      plan_id: data.plan_id || null,
+    };
+  }
+
+  async function toggleSharedTask(token, taskId, done) {
+    await initSupabase();
+    if (!client) throw new Error('Supabase inte konfigurerad');
+    const { data, error } = await client.rpc('toggle_shared_task', {
+      token_in: token,
+      task_id_in: taskId,
+      done_in: !!done,
+    });
+    if (error) throw error;
     return data;
   }
 
@@ -270,11 +291,17 @@ const SUPABASE_CONFIG = {
     const token = params.get('share');
     if (!token) return;
     initSupabase().then(() => getSharedPlan(token)).then(data => {
-      if (!data) return;
-      window.__efterplanSharedState = data;
-      window.dispatchEvent(new CustomEvent('efterplan:shared-loaded', { detail: data }));
-      const banner = document.getElementById('shared-banner');
-      if (banner) banner.classList.remove('hidden');
+      if (!data || !data.state_json) return;
+      const payload = {
+        state: data.state_json,
+        kind: data.kind || 'read',
+        token: token,
+        plan_id: data.plan_id || null,
+      };
+      window.__efterplanShared = payload;
+      // Legacy alias (pre-edit-mode consumers).
+      window.__efterplanSharedState = data.state_json;
+      window.dispatchEvent(new CustomEvent('efterplan:shared-loaded', { detail: payload }));
     }).catch(() => { /* swallow */ });
   }
 
@@ -288,8 +315,9 @@ const SUPABASE_CONFIG = {
     loadPlan,
     createShareToken,
     revokeShareToken,
-    getActiveShareToken,
+    getActiveShareTokens,
     getSharedPlan,
+    toggleSharedTask,
     syncToSupabase,
     isConfigured,
   };

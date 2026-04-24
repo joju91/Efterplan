@@ -173,9 +173,9 @@ Each step improves the product or the company in a meaningful way.
 | T048 | A/B test price | Fas 10 | 🏢 Company Plan | 🟠 | Growth | ☐ |
 | T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ✔ |
 | T050 | PDF export | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
-| T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ⧖ Kod klar — kräver Supabase-projekt + credentials i supabase-client.js |
-| T052 | Sharing feature | Fas 10 | 📱 App Plan | 🟡 | Dev | ⧖ Kräver T051-konfig |
-| T053 | Account system | Fas 10 | 📱 App Plan | 🟢 | Dev | ⧖ Kräver T051-konfig |
+| T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ✔ |
+| T052 | Sharing feature | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
+| T053 | Account system | Fas 10 | 📱 App Plan | 🟢 | Dev | ✔ |
 | T054 | Automation: letters, authorities | Fas 10 | 📱 App Plan | 🟢 | Dev | ✔ |
 
 ---
@@ -247,3 +247,4 @@ Each step improves the product or the company in a meaningful way.
 | T096 | Mobilwebb & app-funktionalitet | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
 | T097 | Centrera layout i browser | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
 | T098 | Meta title/description: /checklista-dodsbo (174 visningar, 0 klick) | Fas 12 | SEO Sprint | 🔴 | SEO | ✔ |
+| T099 | Delning till anhöriga: två länktyper (läs + redigerbar). Redigerbar länk låter anhöriga bocka av uppgifter utan inloggning, via security-definer RPC som bara rör efterplan_tasks. Ägarspecifik UI döljs för delade besökare. | Fas 12 | Sprint 3 | 🟠 | Dev | ✔ |
