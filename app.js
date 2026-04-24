@@ -765,6 +765,7 @@ const saveTaskNote = _debounce(function(taskId, value) {
   const notes = _getNotes();
   notes[taskId] = value;
   try { localStorage.setItem('efterplan_notes', JSON.stringify(notes)); } catch(e) {}
+  try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
   if (value.length > 0) track('Note Saved', { task: taskId });
 }, 400);
 
@@ -776,6 +777,7 @@ function saveTaskState() {
   const saved = {};
   state.tasks.forEach(t => { saved[t.id] = { done: t.done, started: t.started, assignee: t.assignee || null }; });
   try { localStorage.setItem('efterplan_tasks', JSON.stringify(saved)); } catch(e) {}
+  try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
 
 function loadTaskState() {
@@ -1142,6 +1144,7 @@ function loadBills() {
 }
 function saveBills() {
   try { localStorage.setItem('efterplan_bills', JSON.stringify(state.bills)); } catch(e) {}
+  try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
 function renderBills() {
   const list = document.getElementById('bills-list');
@@ -1391,6 +1394,7 @@ function _getNotifyList() {
 }
 function _saveNotifyList(list) {
   try { localStorage.setItem('efterplan_notify_list', JSON.stringify(list)); } catch(e) {}
+  try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
 function _genNotifyId() {
   return Math.random().toString(36).slice(2, 10);
@@ -2073,6 +2077,7 @@ function saveState() {
   // Save locally with personnr (own device only — never shared)
   const toSave = { ...getShareableState(), personnr: state.personnr };
   try { localStorage.setItem('efterplan_state', JSON.stringify(toSave)); } catch(e) {}
+  try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
 
 // ─── INIT ─────────────────────────────────────

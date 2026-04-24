@@ -1,0 +1,132 @@
+<!-- Efterplan — Share modal snippet (T052)
+     Self-contained. Paste the entire contents of this file into index.html
+     just before </body>, after the auth-modal snippet. Opened by a button
+     with id="open-share" (wired in index.html).
+     Requires: supabase-client.js loaded before this markup.
+-->
+<div id="share-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title" id="share-modal-title">Dela min plan</h2>
+      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('share-modal').classList.add('hidden')">✕</button>
+    </div>
+
+    <p class="modal-sub">Skapa en skrivskyddad länk som du kan skicka till en anhörig. De ser planen men kan inte ändra något.</p>
+
+    <!-- No token yet -->
+    <div id="share-view-none">
+      <button type="button" id="share-create-btn" class="btn-primary" style="width:100%;">Skapa delningslänk</button>
+      <p id="share-create-status" class="modal-sub" style="margin-top:12px;min-height:1.2em;"></p>
+    </div>
+
+    <!-- Active token -->
+    <div id="share-view-active" class="hidden">
+      <label for="share-url-input" class="sr-only">Delningslänk</label>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input type="text" id="share-url-input" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
+        <button type="button" id="share-copy-btn" class="btn-ghost btn-sm">Kopiera</button>
+      </div>
+      <p id="share-copy-status" class="modal-sub" style="min-height:1.2em;margin-bottom:12px;"></p>
+      <button type="button" id="share-revoke-btn" class="btn-ghost btn-sm" style="width:100%;">Sluta dela</button>
+    </div>
+
+    <!-- Not signed in -->
+    <div id="share-view-signedout" class="hidden">
+      <p class="modal-sub">Du behöver vara inloggad för att dela din plan. Öppna <strong>Mitt konto</strong> och logga in med e-post.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const modal         = document.getElementById('share-modal');
+  const viewNone      = document.getElementById('share-view-none');
+  const viewActive    = document.getElementById('share-view-active');
+  const viewSignedOut = document.getElementById('share-view-signedout');
+  const createBtn     = document.getElementById('share-create-btn');
+  const createStatus  = document.getElementById('share-create-status');
+  const urlInput      = document.getElementById('share-url-input');
+  const copyBtn       = document.getElementById('share-copy-btn');
+  const copyStatus    = document.getElementById('share-copy-status');
+  const revokeBtn     = document.getElementById('share-revoke-btn');
+
+  function urlFor(token) {
+    return window.location.origin + '/?share=' + encodeURIComponent(token);
+  }
+
+  function showSignedOut() {
+    viewNone.classList.add('hidden');
+    viewActive.classList.add('hidden');
+    viewSignedOut.classList.remove('hidden');
+  }
+  function showNone() {
+    viewSignedOut.classList.add('hidden');
+    viewActive.classList.add('hidden');
+    viewNone.classList.remove('hidden');
+    createStatus.textContent = '';
+  }
+  function showActive(token) {
+    viewSignedOut.classList.add('hidden');
+    viewNone.classList.add('hidden');
+    viewActive.classList.remove('hidden');
+    urlInput.value = urlFor(token);
+    copyStatus.textContent = '';
+  }
+
+  async function refresh() {
+    if (!window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
+      showSignedOut();
+      return;
+    }
+    const user = await window.efterplanAuth.getCurrentUser();
+    if (!user) { showSignedOut(); return; }
+    const token = await window.efterplanAuth.getActiveShareToken();
+    if (token) showActive(token); else showNone();
+  }
+
+  createBtn.addEventListener('click', async function () {
+    createStatus.textContent = 'Skapar länk…';
+    try {
+      // Ensure the plan exists remotely before creating a token.
+      window.dispatchEvent(new Event('efterplan:state-changed'));
+      await new Promise(r => setTimeout(r, 2200));
+      const token = await window.efterplanAuth.createShareToken();
+      showActive(token);
+    } catch (err) {
+      createStatus.textContent = 'Kunde inte skapa länk: ' + (err && err.message || err);
+    }
+  });
+
+  copyBtn.addEventListener('click', function () {
+    urlInput.select();
+    navigator.clipboard.writeText(urlInput.value).then(() => {
+      copyStatus.textContent = 'Kopierat!';
+      setTimeout(() => { copyStatus.textContent = ''; }, 2000);
+    }).catch(() => {
+      document.execCommand('copy');
+      copyStatus.textContent = 'Kopierat!';
+    });
+  });
+
+  revokeBtn.addEventListener('click', async function () {
+    const token = urlInput.value.split('share=')[1];
+    if (!token) return;
+    revokeBtn.textContent = 'Avaktiverar…';
+    try {
+      await window.efterplanAuth.revokeShareToken(decodeURIComponent(token));
+      showNone();
+    } catch (err) {
+      createStatus.textContent = 'Kunde inte avaktivera: ' + (err && err.message || err);
+    } finally {
+      revokeBtn.textContent = 'Sluta dela';
+    }
+  });
+
+  window.addEventListener('efterplan:auth-changed', refresh);
+  document.getElementById('open-share') && document.getElementById('open-share')
+    .addEventListener('click', refresh);
+
+  refresh();
+})();
+</script>

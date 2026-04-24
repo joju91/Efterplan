@@ -1,0 +1,128 @@
+<!-- Efterplan — Auth modal snippet (T053)
+     Self-contained. Paste the entire contents of this file into index.html
+     just before </body>. The modal is hidden by default and opened by a
+     button with id="open-auth" (wired in index.html).
+     Requires: supabase-client.js loaded before this markup.
+-->
+<div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title" id="auth-modal-title">Mitt konto</h2>
+      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('auth-modal').classList.add('hidden')">✕</button>
+    </div>
+
+    <!-- Logged-out view -->
+    <div id="auth-view-out">
+      <p class="modal-sub">Logga in för att synka din plan mellan enheter. Vi skickar en engångslänk till din e-post — inget lösenord behövs.</p>
+      <form id="auth-magic-form" autocomplete="on">
+        <label for="auth-email" class="sr-only">E-postadress</label>
+        <input type="email" id="auth-email" name="email" required autocomplete="email" placeholder="din@epost.se" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:1rem;margin-bottom:12px;">
+        <button type="submit" class="btn-primary" style="width:100%;">Skicka inloggningslänk</button>
+      </form>
+      <p id="auth-status" class="modal-sub" style="margin-top:12px;min-height:1.2em;"></p>
+    </div>
+
+    <!-- Logged-in view -->
+    <div id="auth-view-in" class="hidden">
+      <p class="modal-sub">Inloggad som <strong id="auth-email-display"></strong>.</p>
+      <div style="padding:14px;background:var(--grey-bg,#f5f5f5);border-radius:12px;margin-bottom:16px;">
+        <div id="auth-progress" style="font-weight:600;">— av — steg klara</div>
+        <div id="auth-last-sync" class="modal-sub" style="margin:4px 0 0;">Senaste synk: —</div>
+      </div>
+      <button type="button" id="auth-sync-btn" class="btn-ghost btn-sm" style="width:100%;margin-bottom:8px;">Synka nu</button>
+      <button type="button" id="auth-signout-btn" class="btn-ghost btn-sm" style="width:100%;">Logga ut</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const modal       = document.getElementById('auth-modal');
+  const viewOut     = document.getElementById('auth-view-out');
+  const viewIn      = document.getElementById('auth-view-in');
+  const form        = document.getElementById('auth-magic-form');
+  const status      = document.getElementById('auth-status');
+  const emailIn     = document.getElementById('auth-email');
+  const emailDisp   = document.getElementById('auth-email-display');
+  const progressEl  = document.getElementById('auth-progress');
+  const lastSyncEl  = document.getElementById('auth-last-sync');
+  const syncBtn     = document.getElementById('auth-sync-btn');
+  const signoutBtn  = document.getElementById('auth-signout-btn');
+
+  function render(user) {
+    if (user) {
+      viewOut.classList.add('hidden');
+      viewIn.classList.remove('hidden');
+      emailDisp.textContent = user.email || '';
+      refreshProgress();
+      refreshLastSync();
+    } else {
+      viewIn.classList.add('hidden');
+      viewOut.classList.remove('hidden');
+    }
+  }
+
+  function refreshProgress() {
+    try {
+      const tasks = JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
+      const total = Object.keys(tasks).length;
+      const done  = Object.values(tasks).filter(v => v === true).length;
+      progressEl.textContent = total
+        ? `${done} av ${total} steg klara`
+        : 'Ingen plan ännu — starta från startsidan.';
+    } catch (_) { progressEl.textContent = '—'; }
+  }
+
+  function refreshLastSync() {
+    const raw = localStorage.getItem('efterplan_updated_at');
+    if (!raw) { lastSyncEl.textContent = 'Senaste synk: aldrig'; return; }
+    try {
+      const d = new Date(raw);
+      lastSyncEl.textContent = 'Senaste synk: ' + d.toLocaleString('sv-SE');
+    } catch (_) { lastSyncEl.textContent = 'Senaste synk: —'; }
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = emailIn.value.trim();
+    if (!email) return;
+    status.textContent = 'Skickar länk…';
+    try {
+      if (!window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
+        status.textContent = 'Inloggning är inte aktiverad ännu.';
+        return;
+      }
+      const res = await window.efterplanAuth.signInWithMagicLink(email);
+      if (res && res.error) throw res.error;
+      status.textContent = 'Länk skickad — kolla din e-post.';
+    } catch (err) {
+      status.textContent = 'Kunde inte skicka länk: ' + (err && err.message || err);
+    }
+  });
+
+  syncBtn.addEventListener('click', function () {
+    if (!window.efterplanAuth) return;
+    window.dispatchEvent(new Event('efterplan:state-changed'));
+    syncBtn.textContent = 'Synkar…';
+    setTimeout(() => {
+      syncBtn.textContent = 'Synka nu';
+      refreshLastSync();
+    }, 2300);
+  });
+
+  signoutBtn.addEventListener('click', async function () {
+    if (!window.efterplanAuth) return;
+    await window.efterplanAuth.signOut();
+  });
+
+  window.addEventListener('efterplan:auth-changed', e => render(e.detail && e.detail.user));
+
+  // Initial render once supabase client has had a chance to restore session.
+  if (window.efterplanAuth) {
+    window.efterplanAuth.getCurrentUser().then(render).catch(() => render(null));
+  } else {
+    render(null);
+  }
+})();
+</script>
