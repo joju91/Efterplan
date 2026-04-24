@@ -173,9 +173,10 @@ Each step improves the product or the company in a meaningful way.
 | T048 | A/B test price | Fas 10 | 🏢 Company Plan | 🟠 | Growth | ☐ |
 | T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ✔ |
 | T050 | PDF export | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
-| T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ⧖ Kod klar — kräver Supabase-projekt + credentials i supabase-client.js |
-| T052 | Sharing feature | Fas 10 | 📱 App Plan | 🟡 | Dev | ⧖ Kräver T051-konfig |
-| T053 | Account system | Fas 10 | 📱 App Plan | 🟢 | Dev | ⧖ Kräver T051-konfig |
+| T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ✔ |
+| T052 | Sharing feature — läs-länk för anhöriga | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
+| T052b | Sharing: redigerbar länk — anhöriga kan bocka av uppgifter via anon RPC (toggle_shared_task) | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
+| T053 | Account system | Fas 10 | 📱 App Plan | 🟢 | Dev | ✔ |
 | T054 | Automation: letters, authorities | Fas 10 | 📱 App Plan | 🟢 | Dev | ✔ |
 
 ---

@@ -38,10 +38,20 @@ create table if not exists public.share_tokens (
   plan_id    uuid not null references public.plans(id) on delete cascade,
   token      text unique not null default encode(gen_random_bytes(16), 'hex'),
   created_at timestamptz not null default now(),
-  active     boolean not null default true
+  active     boolean not null default true,
+  kind       text not null default 'read' check (kind in ('read','edit'))
 );
 
+-- Backfill for pre-existing rows if kind was added later.
+alter table public.share_tokens
+  add column if not exists kind text not null default 'read'
+  check (kind in ('read','edit'));
+
 create index if not exists share_tokens_plan_id_idx on public.share_tokens(plan_id);
+
+-- One active token per (plan, kind). Inactive tokens may linger for history.
+create unique index if not exists share_tokens_plan_kind_active_key
+  on public.share_tokens(plan_id, kind) where active = true;
 
 -- ───────────────────────────────────────────────
 -- Triggers
@@ -196,7 +206,7 @@ create policy share_tokens_delete_own on public.share_tokens
 
 -- ───────────────────────────────────────────────
 -- Anonymous shared-plan read (bypasses RLS on plans)
--- Returns the plan's state_json only when the token is active.
+-- Returns the plan's state_json and the token kind when active.
 -- ───────────────────────────────────────────────
 
 create or replace function public.get_shared_plan(token_in text)
@@ -205,7 +215,11 @@ language sql
 security definer
 set search_path = public
 as $$
-  select p.state_json::jsonb
+  select jsonb_build_object(
+    'state_json', p.state_json::jsonb,
+    'kind',       st.kind,
+    'plan_id',    p.id
+  )
   from public.share_tokens st
   join public.plans p on p.id = st.plan_id
   where st.token = token_in
@@ -214,3 +228,83 @@ as $$
 $$;
 
 grant execute on function public.get_shared_plan(text) to anon, authenticated;
+
+-- ───────────────────────────────────────────────
+-- Anonymous task-toggle for edit-kind tokens.
+-- Only touches the `efterplan_tasks` key of plans.state_json
+-- and the matching row in task_completions. No other fields change.
+-- ───────────────────────────────────────────────
+
+create or replace function public.toggle_shared_task(
+  token_in text,
+  task_id_in text,
+  done_in boolean
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_plan_id uuid;
+  v_state   jsonb;
+  v_tasks   jsonb;
+  v_entry   jsonb;
+begin
+  -- Resolve an active edit token to its plan.
+  select st.plan_id into v_plan_id
+  from public.share_tokens st
+  where st.token = token_in
+    and st.active = true
+    and st.kind   = 'edit'
+  limit 1;
+
+  if v_plan_id is null then
+    raise exception 'invalid_or_readonly_token';
+  end if;
+
+  if task_id_in is null or length(task_id_in) = 0 or length(task_id_in) > 128 then
+    raise exception 'invalid_task_id';
+  end if;
+
+  select p.state_json::jsonb into v_state
+  from public.plans p
+  where p.id = v_plan_id
+  for update;
+
+  -- efterplan_tasks is stored as a JSON string inside the outer state_json.
+  v_tasks := coalesce((v_state->>'efterplan_tasks')::jsonb, '{}'::jsonb);
+  v_entry := coalesce(v_tasks->task_id_in, '{}'::jsonb);
+
+  if jsonb_typeof(v_entry) <> 'object' then
+    v_entry := '{}'::jsonb;
+  end if;
+
+  v_entry := v_entry || jsonb_build_object('done', done_in);
+  if done_in then
+    v_entry := v_entry || jsonb_build_object('started', true);
+  end if;
+
+  v_tasks := v_tasks || jsonb_build_object(task_id_in, v_entry);
+  v_state := v_state || jsonb_build_object('efterplan_tasks', v_tasks::text);
+
+  update public.plans
+     set state_json = v_state::text
+   where id = v_plan_id;
+
+  if done_in then
+    insert into public.task_completions (plan_id, task_id)
+    values (v_plan_id, task_id_in)
+    on conflict (plan_id, task_id) do nothing;
+  else
+    delete from public.task_completions
+     where plan_id = v_plan_id
+       and task_id = task_id_in;
+  end if;
+
+  return jsonb_build_object('ok', true, 'task_id', task_id_in, 'done', done_in);
+end;
+$$;
+
+grant execute on function public.toggle_shared_task(text, text, boolean)
+  to anon, authenticated;

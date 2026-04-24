@@ -1608,6 +1608,30 @@ body {
   z-index: 100;
 }
 .shared-banner.hidden { display: none; }
+.shared-banner[data-mode="edit"] {
+  background: #1f6f3a;
+}
+
+/* Hide owner-only UI for read-only and edit visitors */
+body.shared-read .owner-only,
+body.shared-edit .owner-only { display: none !important; }
+body.shared-read .task-expand-actions,
+body.shared-read .task-expand-notes,
+body.shared-read .task-expand-doc,
+body.shared-read .task-expand-assignee,
+body.shared-read .task-expand-start-btn,
+body.shared-read .task-expand-btn,
+body.shared-read .task-expand-undo-btn { display: none !important; }
+body.shared-read .task-check { pointer-events: none; }
+
+/* Edit mode: allow task checkboxes + done/undo buttons, hide everything else */
+body.shared-edit .task-expand-notes,
+body.shared-edit .task-expand-doc,
+body.shared-edit .task-expand-assignee { display: none !important; }
+
+/* Paywall + bills + notify panels hidden for shared viewers */
+body.shared-read #paywall-card,
+body.shared-edit #paywall-card { display: none !important; }
 
 /* ─── STARTED TASK STATE ─────────────────────── */
 .task-card.started {

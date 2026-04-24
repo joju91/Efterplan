@@ -7,6 +7,20 @@
 const PAYWALL_ENABLED = false; // set true when Stripe is wired up
 const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked when PAYWALL_ENABLED
 
+// ─── SHARED MODE ─────────────────────────────
+// When someone opens ?share=TOKEN the plan is rendered from Supabase instead
+// of localStorage. mode='read' disables all mutations; mode='edit' routes
+// task checkbox toggles through the toggle_shared_task RPC.
+const SHARED = {
+  mode:       'owner', // 'owner' | 'read' | 'edit'
+  token:      null,
+  taskMap:    null,    // overrides localStorage efterplan_tasks when set
+  notifyList: null,    // overrides localStorage efterplan_notify_list
+};
+function isOwnerMode()  { return SHARED.mode === 'owner'; }
+function isReadOnly()   { return SHARED.mode === 'read'; }
+function isSharedEdit() { return SHARED.mode === 'edit'; }
+
 // ─── STATE ───────────────────────────────────
 const state = {
   relation:            null,
@@ -66,6 +80,7 @@ function startOnboarding() {
 }
 
 function editAnswers() {
+  if (!isOwnerMode()) return;
   const confirmed = window.confirm('Vill du ändra dina svar? Planen uppdateras när du är klar — dina anteckningar och markeringar behålls.');
   if (!confirmed) return;
   startOnboarding();
@@ -762,6 +777,7 @@ function _debounce(fn, ms) {
 }
 
 const saveTaskNote = _debounce(function(taskId, value) {
+  if (!isOwnerMode()) return;
   const notes = _getNotes();
   notes[taskId] = value;
   try { localStorage.setItem('efterplan_notes', JSON.stringify(notes)); } catch(e) {}
@@ -774,6 +790,7 @@ function getTaskNote(taskId) {
 }
 
 function saveTaskState() {
+  if (!isOwnerMode()) return; // shared viewers never touch localStorage
   const saved = {};
   state.tasks.forEach(t => { saved[t.id] = { done: t.done, started: t.started, assignee: t.assignee || null }; });
   try { localStorage.setItem('efterplan_tasks', JSON.stringify(saved)); } catch(e) {}
@@ -782,9 +799,11 @@ function saveTaskState() {
 
 function loadTaskState() {
   try {
-    const saved = JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
+    const source = SHARED.taskMap
+      ? SHARED.taskMap
+      : JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
     state.tasks = state.tasks.map(t => {
-      const s = saved[t.id];
+      const s = source[t.id];
       if (!s) return t;
       // Backward-compat: old format stored a boolean
       if (typeof s === 'boolean') return { ...t, done: s, started: false };
@@ -1143,6 +1162,7 @@ function loadBills() {
   try { state.bills = JSON.parse(localStorage.getItem('efterplan_bills')) || []; } catch(e) { state.bills = []; }
 }
 function saveBills() {
+  if (!isOwnerMode()) return;
   try { localStorage.setItem('efterplan_bills', JSON.stringify(state.bills)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
@@ -1176,6 +1196,7 @@ function hideBillForm() {
   document.getElementById('bill-amount-input').value = '';
 }
 function submitBill() {
+  if (!isOwnerMode()) return;
   const desc = document.getElementById('bill-desc-input').value.trim();
   const errEl = document.getElementById('err-bills');
   if (!desc) {
@@ -1192,16 +1213,19 @@ function submitBill() {
   track('Bill Added');
 }
 function toggleBillPaid(id) {
+  if (!isOwnerMode()) return;
   const b = state.bills.find(b => b.id === id);
   if (b) { b.paid = !b.paid; saveBills(); renderBills(); }
 }
 function deleteBill(id) {
+  if (!isOwnerMode()) return;
   state.bills = state.bills.filter(b => b.id !== id);
   saveBills();
   renderBills();
 }
 
 function markTaskStarted(taskId) {
+  if (!isOwnerMode()) return; // shared viewers cannot "start" tasks
   const task = state.tasks.find(t => t.id === taskId);
   if (!task || task.done || task.started) return;
   task.started = true;
@@ -1231,8 +1255,13 @@ function markTaskStarted(taskId) {
 }
 
 function markTaskDone(taskId) {
+  if (isReadOnly()) return;
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
+  if (isSharedEdit()) {
+    _sharedToggleTask(taskId, true);
+    // UI updated below; no localStorage write (saveTaskState no-ops)
+  }
   task.done = true;
   saveTaskState();
   track('Task Complete', { task: taskId, urgency: task.urgency || 'unknown' });
@@ -1271,6 +1300,7 @@ function getTaskAssignee(taskId) {
   return task ? (task.assignee || null) : null;
 }
 function setTaskAssignee(taskId, name) {
+  if (!isOwnerMode()) return;
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
   task.assignee = (task.assignee === name) ? null : name;
@@ -1324,6 +1354,7 @@ function _getParticipants() {
   return state.participants || [];
 }
 function addParticipant() {
+  if (!isOwnerMode()) return;
   const input = document.getElementById('ob-participant-input');
   const name = input?.value.trim();
   if (!name) return;
@@ -1342,6 +1373,7 @@ function _refreshAllAssigneePickers() {
   state.tasks.forEach(t => _refreshAssigneePicker(t.id));
 }
 function removeParticipant(name) {
+  if (!isOwnerMode()) return;
   state.participants = (state.participants || []).filter(n => n !== name);
   saveState();
   _refreshParticipantList();
@@ -1383,6 +1415,7 @@ function _refreshParticipantList() {
 }
 
 function saveParticipantPersonnr(name, val) {
+  if (!isOwnerMode()) return;
   if (!state.participantPersonnr) state.participantPersonnr = {};
   state.participantPersonnr[name] = val.trim();
   saveState();
@@ -1390,9 +1423,11 @@ function saveParticipantPersonnr(name, val) {
 
 // ─── NOTIFY LIST ──────────────────────────────
 function _getNotifyList() {
+  if (SHARED.notifyList) return SHARED.notifyList;
   try { return JSON.parse(localStorage.getItem('efterplan_notify_list') || '[]'); } catch(e) { return []; }
 }
 function _saveNotifyList(list) {
+  if (!isOwnerMode()) return;
   try { localStorage.setItem('efterplan_notify_list', JSON.stringify(list)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
@@ -1505,6 +1540,7 @@ function showUndoToast(taskId) {
 }
 
 function undoTaskDone() {
+  if (isReadOnly()) return;
   if (!_undoTaskId) return;
   clearTimeout(_undoTimer);
   document.getElementById('undo-toast').classList.add('hidden');
@@ -1514,6 +1550,7 @@ function undoTaskDone() {
 
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
+  if (isSharedEdit()) _sharedToggleTask(taskId, false);
   task.done    = false;
   task.started = false;
   saveTaskState();
@@ -1521,12 +1558,34 @@ function undoTaskDone() {
 }
 
 function undoTaskDoneManual(taskId) {
+  if (isReadOnly()) return;
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
+  if (isSharedEdit()) _sharedToggleTask(taskId, false);
   task.done    = false;
   task.started = false;
   saveTaskState();
   renderPlan();
+}
+
+// Push a task toggle to Supabase via the anon RPC. Optimistic — we don't
+// block the UI on success; we surface errors via the shared banner if any.
+function _sharedToggleTask(taskId, done) {
+  if (!SHARED.token || !window.efterplanAuth) return;
+  try {
+    window.efterplanAuth.toggleSharedTask(SHARED.token, taskId, done).catch(err => {
+      _showSharedError('Kunde inte spara ändringen: ' + (err && err.message || err));
+    });
+  } catch (err) {
+    _showSharedError('Kunde inte spara ändringen: ' + (err && err.message || err));
+  }
+}
+
+function _showSharedError(msg) {
+  const banner = document.getElementById('shared-banner');
+  if (!banner) return;
+  const txt = banner.querySelector('.shared-banner-text');
+  if (txt) txt.textContent = msg;
 }
 
 // ─── MODALS ───────────────────────────────────
@@ -2074,6 +2133,7 @@ function copyToClipboard(text, onDone) {
 
 // ─── PERSIST ─────────────────────────────────
 function saveState() {
+  if (!isOwnerMode()) return;
   // Save locally with personnr (own device only — never shared)
   const toSave = { ...getShareableState(), personnr: state.personnr };
   try { localStorage.setItem('efterplan_state', JSON.stringify(toSave)); } catch(e) {}
@@ -2138,8 +2198,74 @@ function handlePaywallCTA() {
   alert('Betalning är inte aktiverat ännu — kom tillbaka snart!');
 }
 
+// ─── SHARED PLAN INIT ────────────────────────
+// Loaded asynchronously by supabase-client.js → efterplan:shared-loaded.
+// Overlays a remote snapshot onto `state` and renders the plan view.
+function applySharedSnapshot(detail) {
+  if (!detail || !detail.state) return;
+  SHARED.mode  = (detail.kind === 'edit') ? 'edit' : 'read';
+  SHARED.token = detail.token || null;
+
+  const parseMaybe = (v, fallback) => {
+    if (v == null) return fallback;
+    if (typeof v !== 'string') return v;
+    try { return JSON.parse(v); } catch (_) { return fallback; }
+  };
+
+  const snap       = detail.state;
+  const stateJson  = parseMaybe(snap.efterplan_state, null);
+  const taskMap    = parseMaybe(snap.efterplan_tasks, {});
+  const notes      = parseMaybe(snap.efterplan_notes, {});
+  const bills      = parseMaybe(snap.efterplan_bills, []);
+  const notifyList = parseMaybe(snap.efterplan_notify_list, []);
+
+  if (stateJson) {
+    // Never trust a remote personnr — strip it even if included.
+    delete stateJson.personnr;
+    Object.assign(state, stateJson);
+  }
+  SHARED.taskMap    = taskMap || {};
+  SHARED.notifyList = Array.isArray(notifyList) ? notifyList : [];
+  _notesCache       = notes || {};
+  state.bills       = Array.isArray(bills) ? bills : [];
+
+  buildTasks();         // respects SHARED.taskMap via loadTaskState
+  renderPlan();
+
+  // Update banner text + mode attribute
+  const banner = document.getElementById('shared-banner');
+  if (banner) {
+    const txt = banner.querySelector('.shared-banner-text');
+    banner.setAttribute('data-mode', SHARED.mode);
+    if (txt) {
+      const who = state.name ? state.name : 'en anhörig';
+      txt.textContent = SHARED.mode === 'edit'
+        ? `Du kan bocka av uppgifter i ${who}s plan. Inget annat sparas.`
+        : 'Du ser en delad plan (skrivskyddad).';
+    }
+    banner.classList.remove('hidden');
+  }
+
+  document.body.classList.add(SHARED.mode === 'edit' ? 'shared-edit' : 'shared-read');
+  showScreen('screen-plan');
+  track('Shared Plan Opened', { mode: SHARED.mode });
+}
+
+window.addEventListener('efterplan:shared-loaded', (e) => {
+  applySharedSnapshot(e.detail);
+});
+
 // ─── INIT ─────────────────────────────────────
 (function init() {
+  // If the URL carries a share token, wait for supabase-client to resolve it
+  // via efterplan:shared-loaded. Don't leak the owner's own localStorage plan
+  // into the view in the meantime.
+  const hasShare = new URLSearchParams(window.location.search).get('share');
+  if (hasShare) {
+    // Leave landing screen visible; applySharedSnapshot will take over.
+    return;
+  }
+
   // Restore own plan from localStorage
   try {
     const saved = localStorage.getItem('efterplan_state');
