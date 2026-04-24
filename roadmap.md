@@ -17,12 +17,16 @@ Each step improves the product or the company in a meaningful way.
 ---
 
 ## ⚠️ STRATEGISKA NOTER (uppdaterad 2026-04-24)
-- **Partnerskap med begravningsbyråer och jurister är inte aktuellt.** T045, T046, T077, T078 är struktna. Konceptet är felaktigt positionerat — efterplan.se är ett självhjälpsverktyg, inte en remisskanal.
-- **T079 (begravningsbyråer)** — ej beslutat. Möjlig länkbyggnad via omnämnanden, ej partnerskap.
-- **T087 länkbyggnad** — fokus på: efterlevandeguiden.se, juristjouren.se, begravningsbolaget.se, hallakonsument.se, konsumenternas.se, minpension.se. Körs i Cowork-session.
-- **T047 + T081** drop-off-analys körs i dedikerad GA4-session.
-- **T082** landningssideoptimering körs via Search Console + Cowork.
-- **T093** CTA/funnel körs i egen session med GA4-data.
+- **Partnerskap med begravningsbyråer och jurister är inte aktuellt.** T045, T046, T077, T078 struktna. Efterplan används INNAN begravningsbyrå kontaktas — flödet går efterplan → byrå, inte tvärtom.
+- **T079** — omdefinierad: betald byrålisting i appen. Affärsmodell (pris, avtal, säljprocess) beslutas av Owner innan exekvering.
+- **T044** — struken. Facebook-grupper bannar reklamlänkar.
+- **T087 länkbyggnad** — hallakonsument.se kontaktad ✔. Övriga 5 struktna (felaktig målgrupp).
+- **T032 (Stripe)** — parkerad tills Code-sessioner klara. Pris: 49 kr engång.
+- **T033** — pricing uppdaterad till 49 kr (testnivå, tidigare 149 kr).
+- **T051/T052/T053** — kod klar men blockerad: kräver (1) skapa Supabase-projekt, (2) kör supabase/schema.sql, (3) stäng av lösenords-auth, (4) fyll i URL + anon key i supabase-client.js. Owner-åtgärd.
+- **Stack:** repot är statiskt HTML + vanilla JS, inte Next.js. Alla Code-ändringar gjorda i rätt stack.
+- **T082 + T098 (meta)** — körs i Claude Code.
+- **T093** CTA/funnel — körs i Claude Code.
 
 ---
 
@@ -116,7 +120,7 @@ Each step improves the product or the company in a meaningful way.
 | T030 | Build free preview (steps 1–5 open) | Fas 6 | 📱 App Plan | 🔴 | Dev | ✔ |
 | T031 | Build payment flow: Stripe Checkout → unlock | Fas 6 | 📱 App Plan | 🔴 | Dev | x |
 | T032 | Test full purchase flow | Fas 6 | 📱 App Plan | 🔴 | QA | ⧖ |
-| T033 | Final pricing model decided | Fas 6 | 🏢 Company Plan | 🔴 | Decision | ✔ |
+| T033 | Final pricing model decided — 49 kr engång (testnivå) | Fas 6 | 🏢 Company Plan | 🔴 | Decision | ✔ |
 
 ---
 
@@ -154,7 +158,7 @@ Each step improves the product or the company in a meaningful way.
 | ID | Task | Phase | Source | Priority | Type | Status |
 |----|------|--------|---------|----------|--------|---------|
 | T043 | Flashback post | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ✔ |
-| T044 | Facebook groups | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | ⧖ |
+| T044 | Facebook groups | Fas 9 | 🏢 Company Plan | 🟠 | Distribution | x |
 | T045 | Contact 3 lawyers | Fas 9 | 🏢 Company Plan | 🟡 | Partnership | x |
 | T046 | Contact 3 funeral homes | Fas 9 | 🏢 Company Plan | 🟡 | Partnership | x |
 
@@ -165,14 +169,14 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Phase | Source | Priority | Type | Status |
 |----|------|--------|---------|----------|--------|---------|
-| T047 | Analyze drop‑off | Fas 10 | 🏢 Company Plan | 🔴 | Analytics | ⧖ |
+| T047 | Analyze drop‑off | Fas 10 | 🏢 Company Plan | 🔴 | Analytics | ⧖ Väntar på ~100 organiska sessioner |
 | T048 | A/B test price | Fas 10 | 🏢 Company Plan | 🟠 | Growth | ☐ |
 | T049 | Improve weakest content | Fas 10 | 📱 App Plan | 🟠 | Content | ✔ |
 | T050 | PDF export | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
-| T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ☐ |
-| T052 | Sharing feature | Fas 10 | 📱 App Plan | 🟡 | Dev | ☐ |
-| T053 | Account system | Fas 10 | 📱 App Plan | 🟢 | Dev | ☐ |
-| T054 | Automation: letters, authorities | Fas 10 | 📱 App Plan | 🟢 | Dev | ☐ |
+| T051 | Supabase: DB + auth | Fas 10 | 📱 App Plan | 🟡 | Infra | ⧖ Kod klar — kräver Supabase-projekt + credentials i supabase-client.js |
+| T052 | Sharing feature | Fas 10 | 📱 App Plan | 🟡 | Dev | ⧖ Kräver T051-konfig |
+| T053 | Account system | Fas 10 | 📱 App Plan | 🟢 | Dev | ⧖ Kräver T051-konfig |
+| T054 | Automation: letters, authorities | Fas 10 | 📱 App Plan | 🟢 | Dev | ✔ |
 
 ---
 
@@ -203,7 +207,7 @@ Each step improves the product or the company in a meaningful way.
 |----|------|--------|---------|----------|--------|---------|
 | T067 | Bills overview (manual or OCR) | Fas 10 | 📱 App Plan | 🟡 | Dev | ✔ |
 | T068 | Notes field per task | Fas 10 | 📱 App Plan | 🟡 | UX | ✔ |
-| T069 | Accessibility: voice input (speech‑to‑text) | Fas 10 | 📱 App Plan | 🟢 | UX | ☐ |
+| T069 | Accessibility: voice input (speech‑to‑text) | Fas 10 | 📱 App Plan | 🟢 | UX | ✔ |
 
 ---
 
@@ -220,12 +224,12 @@ Each step improves the product or the company in a meaningful way.
 | T076 | Reddit resource post + CTA | 2026‑04‑22 | Fas 11 | Distribution | 🟡 | Distribution | ✔ |
 | T077 | Outreach: 10 funeral homes + 10 lawyers | 2026‑04‑23 | Fas 11 | Partnership | 🟡 | Partnership | x |
 | T078 | Contact 3 lawyers (pilot) | 2026‑04‑27 | Fas 11 | Partnership | 🟡 | Partnership | x |
-| T079 | Contact 3 funeral homes (pilot) | 2026‑04‑28 | Fas 11 | Partnership | 🟡 | Partnership | ⧖ |
+| T079 | Betald byrålisting: lägg till sponsrade begravningsbyråer i appen vid relevanta steg. Affärsmodell beslutas av Owner. | 2026‑04‑28 | Fas 11 | Partnership | 🟡 | Partnership | ⧖ |
 | T080 | Media pitch to 5 outlets | 2026‑04‑29 | Fas 11 | PR | 🟡 | PR | ✔ |
-| T081 | Analyze drop‑off + prioritize top 3 issues | 2026‑05‑04 | Fas 11 | Analytics | 🟡 | Analytics | ⧖ |
-| T082 | Optimize top 3 landing pages | 2026‑05‑05 | Fas 11 | SEO | 🟡 | SEO | ⧖ |
+| T081 | Analyze drop‑off + prioritize top 3 issues | 2026‑05‑04 | Fas 11 | Analytics | 🟡 | Analytics | ⧖ Väntar på ~100 organiska sessioner |
+| T082 | Optimize top 3 landing pages | 2026‑05‑05 | Fas 11 | SEO | 🟡 | SEO | ✔ |
 | T083 | Weekly KPI review + new 14‑day plan | 2026‑05‑06 | Fas 11 | Growth | 🟡 | Growth | ✔ |
-| T087 | Länkbyggnad: identifiera relevanta sajter för gästinlägg/omnämnanden (ekonomi, efterlevande) — EJ begravningsbyråer/jurister | 2026‑05‑10 | Fas 11 | SEO Audit | 🟠 | SEO | ⧖ |
+| T087 | Länkbyggnad: hallakonsument.se kontaktad. Övriga struktna (felaktig målgrupp). | 2026‑05‑10 | Fas 11 | SEO Audit | 🟠 | SEO | ✔ |
 | T089 | SEO-sida: dodsfallsintyg | — | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 | T090 | SEO-sida: laglott | — | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
 | T091 | SEO-sida: saga-upp-hyresratt-dodsbo | — | Fas 11 | SEO Sprint | 🟡 | SEO | ✔ |
@@ -237,8 +241,9 @@ Each step improves the product or the company in a meaningful way.
 | ID | Task | Phase | Source | Priority | Type | Status |
 |----|------|--------|---------|----------|--------|---------|
 | T092 | SEO: tomma-dodsbo.html | Fas 12 | Sprint 3 | 🟡 | SEO | ✔ |
-| T093 | Konvertering: CTA/funnel-optimering | Fas 12 | Sprint 3 | 🟡 | Growth | ⧖ |
+| T093 | Konvertering: CTA/funnel-optimering | Fas 12 | Sprint 3 | 🟡 | Growth | ✔ |
 | T094 | Outreach-uppföljning | Fas 12 | Sprint 3 | 🟡 | Partnership | x |
 | T095 | Kvalitetsstämplar & certifikat | Fas 12 | Sprint 3 | 🟡 | Dev | ✔ |
 | T096 | Mobilwebb & app-funktionalitet | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
 | T097 | Centrera layout i browser | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
+| T098 | Meta title/description: /checklista-dodsbo (174 visningar, 0 klick) | Fas 12 | SEO Sprint | 🔴 | SEO | ✔ |
