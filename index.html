@@ -125,6 +125,10 @@
 
 <a href="#screen-landing" class="skip-link">Hoppa till innehållet</a>
 
+<div id="shared-banner" class="shared-banner hidden" role="status">
+  Du ser en delad plan (skrivskyddad).
+</div>
+
 <div id="offline-banner" class="offline-banner" role="alert" aria-live="polite">
   Ingen uppkoppling just nu — dina ändringar sparas ändå lokalt.
 </div>
@@ -438,6 +442,8 @@
     </div>
     <div class="nav-plan-actions">
       <div id="plan-participants" class="plan-participants"></div>
+      <button class="btn-ghost btn-sm" id="open-share" onclick="document.getElementById('share-modal').classList.remove('hidden')">Dela min plan</button>
+      <button class="btn-ghost btn-sm" id="open-auth" onclick="document.getElementById('auth-modal').classList.remove('hidden')">Mitt konto</button>
       <button class="btn-ghost btn-sm" onclick="editAnswers()">Ändra svar</button>
     </div>
   </nav>
@@ -883,6 +889,7 @@
   </div>
 </div>
 
+<script src="supabase-client.js?v=1" defer></script>
 <script src="app.js?v=16" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
@@ -891,5 +898,252 @@
 </script>
 <!-- Analytics: byt ut efterplan.se mot din domän när du registrerat den -->
 <script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>
+
+<!-- ═══════════════════════════════════════════
+     AUTH MODAL (source: auth-modal.html)
+════════════════════════════════════════════ -->
+<div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title" id="auth-modal-title">Mitt konto</h2>
+      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('auth-modal').classList.add('hidden')">✕</button>
+    </div>
+
+    <div id="auth-view-out">
+      <p class="modal-sub">Logga in för att synka din plan mellan enheter. Vi skickar en engångslänk till din e-post — inget lösenord behövs.</p>
+      <form id="auth-magic-form" autocomplete="on">
+        <label for="auth-email" class="sr-only">E-postadress</label>
+        <input type="email" id="auth-email" name="email" required autocomplete="email" placeholder="din@epost.se" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:1rem;margin-bottom:12px;">
+        <button type="submit" class="btn-primary" style="width:100%;">Skicka inloggningslänk</button>
+      </form>
+      <p id="auth-status" class="modal-sub" style="margin-top:12px;min-height:1.2em;"></p>
+    </div>
+
+    <div id="auth-view-in" class="hidden">
+      <p class="modal-sub">Inloggad som <strong id="auth-email-display"></strong>.</p>
+      <div style="padding:14px;background:var(--grey-bg,#f5f5f5);border-radius:12px;margin-bottom:16px;">
+        <div id="auth-progress" style="font-weight:600;">— av — steg klara</div>
+        <div id="auth-last-sync" class="modal-sub" style="margin:4px 0 0;">Senaste synk: —</div>
+      </div>
+      <button type="button" id="auth-sync-btn" class="btn-ghost btn-sm" style="width:100%;margin-bottom:8px;">Synka nu</button>
+      <button type="button" id="auth-signout-btn" class="btn-ghost btn-sm" style="width:100%;">Logga ut</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const viewOut     = document.getElementById('auth-view-out');
+  const viewIn      = document.getElementById('auth-view-in');
+  const form        = document.getElementById('auth-magic-form');
+  const status      = document.getElementById('auth-status');
+  const emailIn     = document.getElementById('auth-email');
+  const emailDisp   = document.getElementById('auth-email-display');
+  const progressEl  = document.getElementById('auth-progress');
+  const lastSyncEl  = document.getElementById('auth-last-sync');
+  const syncBtn     = document.getElementById('auth-sync-btn');
+  const signoutBtn  = document.getElementById('auth-signout-btn');
+
+  function render(user) {
+    if (user) {
+      viewOut.classList.add('hidden');
+      viewIn.classList.remove('hidden');
+      emailDisp.textContent = user.email || '';
+      refreshProgress();
+      refreshLastSync();
+    } else {
+      viewIn.classList.add('hidden');
+      viewOut.classList.remove('hidden');
+    }
+  }
+
+  function refreshProgress() {
+    try {
+      const tasks = JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
+      const total = Object.keys(tasks).length;
+      const done  = Object.values(tasks).filter(v => v === true).length;
+      progressEl.textContent = total
+        ? `${done} av ${total} steg klara`
+        : 'Ingen plan ännu — starta från startsidan.';
+    } catch (_) { progressEl.textContent = '—'; }
+  }
+
+  function refreshLastSync() {
+    const raw = localStorage.getItem('efterplan_updated_at');
+    if (!raw) { lastSyncEl.textContent = 'Senaste synk: aldrig'; return; }
+    try {
+      const d = new Date(raw);
+      lastSyncEl.textContent = 'Senaste synk: ' + d.toLocaleString('sv-SE');
+    } catch (_) { lastSyncEl.textContent = 'Senaste synk: —'; }
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = emailIn.value.trim();
+    if (!email) return;
+    status.textContent = 'Skickar länk…';
+    try {
+      if (!window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
+        status.textContent = 'Inloggning är inte aktiverad ännu.';
+        return;
+      }
+      const res = await window.efterplanAuth.signInWithMagicLink(email);
+      if (res && res.error) throw res.error;
+      status.textContent = 'Länk skickad — kolla din e-post.';
+    } catch (err) {
+      status.textContent = 'Kunde inte skicka länk: ' + (err && err.message || err);
+    }
+  });
+
+  syncBtn.addEventListener('click', function () {
+    if (!window.efterplanAuth) return;
+    window.dispatchEvent(new Event('efterplan:state-changed'));
+    syncBtn.textContent = 'Synkar…';
+    setTimeout(() => {
+      syncBtn.textContent = 'Synka nu';
+      refreshLastSync();
+    }, 2300);
+  });
+
+  signoutBtn.addEventListener('click', async function () {
+    if (!window.efterplanAuth) return;
+    await window.efterplanAuth.signOut();
+  });
+
+  window.addEventListener('efterplan:auth-changed', e => render(e.detail && e.detail.user));
+
+  if (window.efterplanAuth) {
+    window.efterplanAuth.getCurrentUser().then(render).catch(() => render(null));
+  } else {
+    render(null);
+  }
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════
+     SHARE MODAL (source: share-modal.html)
+════════════════════════════════════════════ -->
+<div id="share-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 class="modal-title" id="share-modal-title">Dela min plan</h2>
+      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('share-modal').classList.add('hidden')">✕</button>
+    </div>
+
+    <p class="modal-sub">Skapa en skrivskyddad länk som du kan skicka till en anhörig. De ser planen men kan inte ändra något.</p>
+
+    <div id="share-view-none">
+      <button type="button" id="share-create-btn" class="btn-primary" style="width:100%;">Skapa delningslänk</button>
+      <p id="share-create-status" class="modal-sub" style="margin-top:12px;min-height:1.2em;"></p>
+    </div>
+
+    <div id="share-view-active" class="hidden">
+      <label for="share-url-input" class="sr-only">Delningslänk</label>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input type="text" id="share-url-input" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
+        <button type="button" id="share-copy-btn" class="btn-ghost btn-sm">Kopiera</button>
+      </div>
+      <p id="share-copy-status" class="modal-sub" style="min-height:1.2em;margin-bottom:12px;"></p>
+      <button type="button" id="share-revoke-btn" class="btn-ghost btn-sm" style="width:100%;">Sluta dela</button>
+    </div>
+
+    <div id="share-view-signedout" class="hidden">
+      <p class="modal-sub">Du behöver vara inloggad för att dela din plan. Öppna <strong>Mitt konto</strong> och logga in med e-post.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const viewNone      = document.getElementById('share-view-none');
+  const viewActive    = document.getElementById('share-view-active');
+  const viewSignedOut = document.getElementById('share-view-signedout');
+  const createBtn     = document.getElementById('share-create-btn');
+  const createStatus  = document.getElementById('share-create-status');
+  const urlInput      = document.getElementById('share-url-input');
+  const copyBtn       = document.getElementById('share-copy-btn');
+  const copyStatus    = document.getElementById('share-copy-status');
+  const revokeBtn     = document.getElementById('share-revoke-btn');
+
+  function urlFor(token) {
+    return window.location.origin + '/?share=' + encodeURIComponent(token);
+  }
+
+  function showSignedOut() {
+    viewNone.classList.add('hidden');
+    viewActive.classList.add('hidden');
+    viewSignedOut.classList.remove('hidden');
+  }
+  function showNone() {
+    viewSignedOut.classList.add('hidden');
+    viewActive.classList.add('hidden');
+    viewNone.classList.remove('hidden');
+    createStatus.textContent = '';
+  }
+  function showActive(token) {
+    viewSignedOut.classList.add('hidden');
+    viewNone.classList.add('hidden');
+    viewActive.classList.remove('hidden');
+    urlInput.value = urlFor(token);
+    copyStatus.textContent = '';
+  }
+
+  async function refresh() {
+    if (!window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
+      showSignedOut();
+      return;
+    }
+    const user = await window.efterplanAuth.getCurrentUser();
+    if (!user) { showSignedOut(); return; }
+    const token = await window.efterplanAuth.getActiveShareToken();
+    if (token) showActive(token); else showNone();
+  }
+
+  createBtn.addEventListener('click', async function () {
+    createStatus.textContent = 'Skapar länk…';
+    try {
+      window.dispatchEvent(new Event('efterplan:state-changed'));
+      await new Promise(r => setTimeout(r, 2200));
+      const token = await window.efterplanAuth.createShareToken();
+      showActive(token);
+    } catch (err) {
+      createStatus.textContent = 'Kunde inte skapa länk: ' + (err && err.message || err);
+    }
+  });
+
+  copyBtn.addEventListener('click', function () {
+    urlInput.select();
+    navigator.clipboard.writeText(urlInput.value).then(() => {
+      copyStatus.textContent = 'Kopierat!';
+      setTimeout(() => { copyStatus.textContent = ''; }, 2000);
+    }).catch(() => {
+      document.execCommand('copy');
+      copyStatus.textContent = 'Kopierat!';
+    });
+  });
+
+  revokeBtn.addEventListener('click', async function () {
+    const token = urlInput.value.split('share=')[1];
+    if (!token) return;
+    revokeBtn.textContent = 'Avaktiverar…';
+    try {
+      await window.efterplanAuth.revokeShareToken(decodeURIComponent(token));
+      showNone();
+    } catch (err) {
+      createStatus.textContent = 'Kunde inte avaktivera: ' + (err && err.message || err);
+    } finally {
+      revokeBtn.textContent = 'Sluta dela';
+    }
+  });
+
+  window.addEventListener('efterplan:auth-changed', refresh);
+  const openShareBtn = document.getElementById('open-share');
+  if (openShareBtn) openShareBtn.addEventListener('click', refresh);
+
+  refresh();
+})();
+</script>
 </body>
 </html>
