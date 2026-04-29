@@ -1179,12 +1179,23 @@ function renderBills() {
   list.innerHTML = state.bills.map(b => `
     <li class="bill-item${b.paid ? ' paid' : ''}" id="bill-${b.id}">
       <button class="bill-check" onclick="toggleBillPaid('${b.id}')" aria-label="${b.paid ? 'Markera som obetald' : 'Markera som betald'}"></button>
+      ${b.photo ? `<img class="bill-photo" src="${b.photo}" alt="Foto av räkning" onclick="viewBillPhoto('${b.id}')">` : ''}
       <div class="bill-info">
-        <span class="bill-desc">${b.desc}</span>
-        ${b.amount ? `<span class="bill-amount">${b.amount} kr</span>` : ''}
+        <span class="bill-desc">${escapeHtml(b.desc)}</span>
+        ${b.amount ? `<span class="bill-amount">${escapeHtml(String(b.amount))} kr</span>` : ''}
+        ${b.ocr ? `<span class="bill-ocr">OCR ${escapeHtml(b.ocr)}</span>` : ''}
       </div>
       <button class="bill-delete" onclick="deleteBill('${b.id}')" aria-label="Ta bort">×</button>
     </li>`).join('');
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function viewBillPhoto(id) {
+  const b = state.bills.find(b => b.id === id);
+  if (!b || !b.photo) return;
+  const w = window.open('', '_blank');
+  if (w) w.document.write(`<title>${escapeHtml(b.desc)}</title><body style="margin:0;background:#222;display:grid;place-items:center;min-height:100vh"><img src="${b.photo}" style="max-width:100%;max-height:100vh;object-fit:contain"></body>`);
 }
 function showBillForm() {
   document.getElementById('bill-form').classList.remove('hidden');
@@ -1194,6 +1205,16 @@ function hideBillForm() {
   document.getElementById('bill-form').classList.add('hidden');
   document.getElementById('bill-desc-input').value = '';
   document.getElementById('bill-amount-input').value = '';
+  clearBillPhoto();
+}
+function clearBillPhoto() {
+  const form = document.getElementById('bill-form');
+  if (form) delete form.dataset.photo;
+  if (form) delete form.dataset.ocr;
+  const prev = document.getElementById('bill-photo-preview');
+  if (prev) prev.classList.add('hidden');
+  const img = document.getElementById('bill-photo-preview-img');
+  if (img) img.src = '';
 }
 function submitBill() {
   if (!isOwnerMode()) return;
@@ -1206,7 +1227,10 @@ function submitBill() {
   }
   if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
   const amount = document.getElementById('bill-amount-input').value.trim();
-  state.bills.push({ id: Date.now().toString(), desc, amount: amount || '', paid: false });
+  const form = document.getElementById('bill-form');
+  const photo = (form && form.dataset.photo) || '';
+  const ocr = (form && form.dataset.ocr) || '';
+  state.bills.push({ id: Date.now().toString(), desc, amount: amount || '', paid: false, photo, ocr });
   saveBills();
   renderBills();
   hideBillForm();
@@ -1222,6 +1246,109 @@ function deleteBill(id) {
   state.bills = state.bills.filter(b => b.id !== id);
   saveBills();
   renderBills();
+}
+
+// ─── BILL SCANNING ──────────────────────────
+function setBillScanStatus(msg, isError) {
+  const el = document.getElementById('bill-scan-status');
+  if (!el) return;
+  if (!msg) { el.classList.add('hidden'); el.textContent = ''; return; }
+  el.classList.remove('hidden');
+  el.textContent = msg;
+  el.classList.toggle('bill-scan-status--error', !!isError);
+}
+function loadJsQR() {
+  if (window.jsQR) return Promise.resolve(window.jsQR);
+  if (window.__jsQRLoading) return window.__jsQRLoading;
+  window.__jsQRLoading = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+    s.async = true;
+    s.onload = () => resolve(window.jsQR);
+    s.onerror = () => reject(new Error('Kunde inte ladda QR-läsare'));
+    document.head.appendChild(s);
+  });
+  return window.__jsQRLoading;
+}
+function compressBillImage(dataUrl, maxW, quality) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const ratio = Math.min(maxW / img.width, 1);
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => reject(new Error('Kunde inte läsa bilden'));
+    img.src = dataUrl;
+  });
+}
+function decodeBillQR(dataUrl) {
+  return new Promise(async (resolve) => {
+    let jsQR;
+    try { jsQR = await loadJsQR(); } catch(e) { return resolve(null); }
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width; canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      let data;
+      try { data = ctx.getImageData(0, 0, img.width, img.height); }
+      catch(e) { return resolve(null); }
+      const code = jsQR(data.data, data.width, data.height);
+      if (!code || !code.data) return resolve(null);
+      try {
+        const obj = JSON.parse(code.data);
+        if (obj && (obj.uqr || obj.iref || obj.due)) return resolve(obj);
+      } catch(e) {}
+      resolve({ raw: code.data });
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+async function handleBillScan(event) {
+  if (!isOwnerMode()) return;
+  const file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  setBillScanStatus('Läser räkning…');
+  try {
+    const reader = new FileReader();
+    const rawDataUrl = await new Promise((resolve, reject) => {
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = () => reject(new Error('Kunde inte läsa filen'));
+      reader.readAsDataURL(file);
+    });
+    const compressed = await compressBillImage(rawDataUrl, 1280, 0.7);
+    const qr = await decodeBillQR(rawDataUrl);
+    showBillForm();
+    const form = document.getElementById('bill-form');
+    if (form) form.dataset.photo = compressed;
+    const prev = document.getElementById('bill-photo-preview');
+    const prevImg = document.getElementById('bill-photo-preview-img');
+    if (prev && prevImg) { prevImg.src = compressed; prev.classList.remove('hidden'); }
+    if (qr && (qr.iref || qr.nme || qr.due)) {
+      const desc = qr.nme || 'Räkning';
+      document.getElementById('bill-desc-input').value = desc;
+      if (qr.due) document.getElementById('bill-amount-input').value = String(qr.due);
+      if (qr.iref && form) form.dataset.ocr = String(qr.iref);
+      setBillScanStatus('Hittade fakturadata — kontrollera och spara.');
+      track('Bill Scanned QR');
+    } else {
+      setBillScanStatus('Foto sparat. Skriv beskrivning manuellt.');
+      track('Bill Scanned Photo Only');
+    }
+    setTimeout(() => setBillScanStatus(''), 5000);
+  } catch (err) {
+    console.error('Bill scan error', err);
+    setBillScanStatus('Det gick inte att läsa bilden. Försök igen.', true);
+    setTimeout(() => setBillScanStatus(''), 5000);
+  }
 }
 
 function markTaskStarted(taskId) {

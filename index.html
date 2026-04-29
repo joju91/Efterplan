@@ -117,7 +117,7 @@
         onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
   <link rel="stylesheet" href="style.css?v=3" />
-  <link rel="stylesheet" href="style-tokens.css?v=3" />
+  <link rel="stylesheet" href="style-tokens.css?v=5" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -527,6 +527,37 @@
           </div>
           <div class="task-list" id="tasks-later"></div>
         </div>
+
+        <!-- Räkningar (T067) — placerad efter task-sections, kopplad till "Avsluta abonnemang"-uppgiften -->
+        <section class="bills-section owner-only" id="bills-section">
+          <div class="bills-header">
+            <h2 class="section-title">Räkningar</h2>
+            <div class="bills-header-actions">
+              <button class="btn-ghost bills-scan-btn" onclick="document.getElementById('bill-photo-input').click()" aria-label="Fota räkning">
+                <span aria-hidden="true">📷</span> Fota
+              </button>
+              <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
+            </div>
+          </div>
+          <p class="bills-intro">Räkningar till dödsboet kommer ofta in utan förvarning, och du har inte tillgång till kontots transaktioner — bara rätt att betala. Lista dem här när de dyker upp och bocka av när de är betalda, så tappar du inte koll.</p>
+          <input type="file" id="bill-photo-input" accept="image/*" capture="environment" hidden onchange="handleBillScan(event)">
+          <p class="bill-scan-status hidden" id="bill-scan-status" role="status"></p>
+          <div class="bill-form hidden" id="bill-form">
+            <div class="bill-photo-preview hidden" id="bill-photo-preview">
+              <img id="bill-photo-preview-img" alt="Förhandsvisning av räkning">
+              <button type="button" class="bill-photo-clear" onclick="clearBillPhoto()" aria-label="Ta bort foto">×</button>
+            </div>
+            <input type="text" id="bill-desc-input" aria-label="Beskrivning" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
+            <input type="number" id="bill-amount-input" aria-label="Belopp i kronor" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
+            <p class="form-error hidden" id="err-bills" role="alert"></p>
+            <div class="bill-form-actions">
+              <button class="btn-primary" onclick="submitBill()">Lägg till</button>
+              <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
+            </div>
+          </div>
+          <ul id="bills-list" class="bills-list"></ul>
+          <p class="bills-empty hidden" id="bills-empty">Inga räkningar registrerade än.</p>
+        </section>
       </div>
 
       <!-- Trust band -->
@@ -537,25 +568,6 @@
         <span class="trust-sep" aria-hidden="true">·</span>
         <span>Dina uppgifter lämnar aldrig din enhet</span>
       </div>
-
-      <!-- Räkningar (T067) -->
-      <section class="bills-section owner-only" id="bills-section">
-        <div class="bills-header">
-          <h2 class="section-title">Räkningar</h2>
-          <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
-        </div>
-        <div class="bill-form hidden" id="bill-form">
-          <input type="text" id="bill-desc-input" aria-label="Beskrivning" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
-          <input type="number" id="bill-amount-input" aria-label="Belopp i kronor" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
-          <p class="form-error hidden" id="err-bills" role="alert"></p>
-          <div class="bill-form-actions">
-            <button class="btn-primary" onclick="submitBill()">Lägg till</button>
-            <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
-          </div>
-        </div>
-        <ul id="bills-list" class="bills-list"></ul>
-        <p class="bills-empty hidden" id="bills-empty">Inga räkningar registrerade än.</p>
-      </section>
 
       <!-- Avslutningsmeddelande längst ner (visas när alla uppgifter är klara) -->
       <div id="plan-done-footer" class="plan-done-footer hidden">
@@ -904,7 +916,7 @@
 </div>
 
 <script src="supabase-client.js?v=2" defer></script>
-<script src="app.js?v=17" defer></script>
+<script src="app.js?v=18" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

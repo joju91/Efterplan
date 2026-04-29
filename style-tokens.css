@@ -99,10 +99,105 @@ body {
     padding-top: var(--space-xl);
   }
 }
+.landing-content {
+  max-width: 760px;
+}
 .landing-headline {
   font-size: calc(var(--fs-3xl) * 0.6);
-  line-height: 1.18;
+  line-height: 1.32;
   font-weight: 400;
   font-variation-settings: 'opsz' 144, 'SOFT' 60, 'wght' 400;
-  letter-spacing: -0.012em;
+  letter-spacing: -0.008em;
+  max-width: 38ch;
+}
+@media (min-width: 720px) {
+  .landing-headline { max-width: 42ch; }
+}
+
+/* ─── Räkningar: intro-text under rubrik ─── */
+.bills-intro {
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 0 0 16px;
+  max-width: 60ch;
+}
+
+/* ─── Konsolidera typografi-skala på landing ─── */
+/* Slå ihop nästan-identiska små storlekar till två nivåer:
+   – fs-sm för stödjande UI (eyebrow, nav, payoff)
+   – fs-xs för fin print (note, footer, badges, disclaimer) */
+.nav-text-link {
+  font-size: var(--fs-sm);
+}
+.landing-section .legal-disclaimer,
+.privacy-badge {
+  font-size: var(--fs-xs);
+}
+
+/* ─── Bills: scanning + foto ─── */
+.bills-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bills-scan-btn {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+.bill-scan-status {
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  background: var(--paper-soft);
+  border-radius: var(--radius-sm, 8px);
+}
+.bill-scan-status--error {
+  color: var(--red);
+  background: var(--red-bg);
+}
+.bill-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm, 6px);
+  object-fit: cover;
+  background: var(--paper-soft);
+  flex-shrink: 0;
+  cursor: zoom-in;
+  border: 1px solid var(--rule);
+}
+.bill-photo-preview {
+  position: relative;
+  margin-bottom: 8px;
+}
+.bill-photo-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--rule);
+  object-fit: contain;
+  background: var(--paper-soft);
+}
+.bill-photo-clear {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.bill-ocr {
+  font-size: var(--fs-xs);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
 }
