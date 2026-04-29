@@ -248,3 +248,13 @@ Each step improves the product or the company in a meaningful way.
 | T097 | Centrera layout i browser | Fas 12 | Sprint 3 | 🔴 | Dev | ✔ |
 | T098 | Meta title/description: /checklista-dodsbo (174 visningar, 0 klick) | Fas 12 | SEO Sprint | 🔴 | SEO | ✔ |
 | T099 | Delning till anhöriga: två länktyper (läs + redigerbar). Redigerbar länk låter anhöriga bocka av uppgifter utan inloggning, via security-definer RPC som bara rör efterplan_tasks. Ägarspecifik UI döljs för delade besökare. | Fas 12 | Sprint 3 | 🟠 | Dev | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-04-29
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T100 | Meta description saknas i share-modal.html + auth-modal.html — lägg till `<meta name="description">` i båda filerna | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
+| T101 | Standardisera GA4 event-namn till snake_case i app.js — `'Onboarding Start'` → `'onboarding_start'`, `'Plan Generated'` → `'plan_generated'`, `'Task Complete'` → `'task_completed'` (app.js rad 73, 170, 285, 1267) | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | Analytics | ☐ |
+| T102 | Uppgradera express 4→5 i ga4-dashboard/package.json + verifiera att inga breaking changes påverkar server.js | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
