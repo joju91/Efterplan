@@ -255,6 +255,6 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T100 | Meta description saknas i share-modal.html + auth-modal.html — lägg till `<meta name="description">` i båda filerna | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
-| T101 | Standardisera GA4 event-namn till snake_case i app.js — `'Onboarding Start'` → `'onboarding_start'`, `'Plan Generated'` → `'plan_generated'`, `'Task Complete'` → `'task_completed'` (app.js rad 73, 170, 285, 1267) | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | Analytics | ☐ |
-| T102 | Uppgradera express 4→5 i ga4-dashboard/package.json + verifiera att inga breaking changes påverkar server.js | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T100 | Meta description saknas i share-modal.html + auth-modal.html — false positive: filerna är body-fragment som inlines i index.html, meta-tagg ogiltig där | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | SEO | x |
+| T101 | Standardisera GA4 event-namn till snake_case i app.js — `'Onboarding Start'` → `'onboarding_start'`, `'Plan Generated'` → `'plan_generated'`, `'Task Complete'` → `'task_completed'` (app.js rad 73, 170, 285, 1267). Dashboard server.js dual-querar gamla + nya namn så historisk data bevaras. | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | Analytics | ✔ |
+| T102 | Uppgradera express 4→5 i ga4-dashboard/package.json + verifiera att inga breaking changes påverkar server.js. Express 5.2.1 installerat, smoke-test /api/health → 200 OK. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |

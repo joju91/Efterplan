@@ -217,6 +217,7 @@ app.get("/api/kpis", async (req, res) => {
 
     const trackedEvents = [
       "Plan Generated",
+      "plan_generated",
       "Plan Completed",
       "Paywall CTA Clicked",
       "Purchase",
@@ -224,6 +225,7 @@ app.get("/api/kpis", async (req, res) => {
       "paywall_hit",
       "step_complete",
       "Task Complete",
+      "task_completed",
       "Lead Submitted",
       "lead_generated"
     ];
@@ -264,7 +266,7 @@ app.get("/api/kpis", async (req, res) => {
     }
 
     const completed = events["Plan Completed"];
-    const generated = events["Plan Generated"];
+    const generated = events["Plan Generated"] + events.plan_generated;
     const paywallHits = events["Paywall CTA Clicked"] + events.paywall_hit;
     const leads = events["Lead Submitted"] + events.lead_generated + paywallHits;
     const purchases = events.Purchase + events.purchase;
@@ -277,7 +279,7 @@ app.get("/api/kpis", async (req, res) => {
       days,
       assumptions: {
         paidPriceSek: priceSek,
-        conversion: "Plan Completed / Plan Generated",
+        conversion: "Plan Completed / (Plan Generated + plan_generated)",
         leads: "Lead Submitted + lead_generated + Paywall CTA Clicked + paywall_hit",
         revenue: purchaseRevenue > 0 ? "GA4 purchaseRevenue" : `Purchases x ${priceSek} SEK (estimate)`
       },

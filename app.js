@@ -70,7 +70,7 @@ function track(event, props) {
 }
 
 function startOnboarding() {
-  track('Onboarding Start');
+  track('onboarding_start');
   obCurrentStep = 1;
   document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active', 'exit'));
   document.getElementById('ob-step-1').classList.add('active');
@@ -167,7 +167,7 @@ function obChoose(btn) {
 }
 
 function obGoTo(step) {
-  track('Onboarding Step', { step });
+  track('onboarding_step', { step });
   const current = document.querySelector('.ob-step.active');
   if (current) {
     current.classList.add('exit');
@@ -282,7 +282,7 @@ function generatePlan() {
   renderPlan();
   saveState();
   saveTaskState(); // spara default-tilldelningar
-  track('Plan Generated', { relation: state.relation || 'okänd', ansvar: state.ansvar || 'okänd' });
+  track('plan_generated', { relation: state.relation || 'okänd', ansvar: state.ansvar || 'okänd' });
   showScreen('screen-plan');
 }
 
@@ -1264,7 +1264,7 @@ function markTaskDone(taskId) {
   }
   task.done = true;
   saveTaskState();
-  track('Task Complete', { task: taskId, urgency: task.urgency || 'unknown' });
+  track('task_completed', { task: taskId, urgency: task.urgency || 'unknown' });
 
   const card  = document.getElementById(`task-card-${taskId}`);
   const check = document.getElementById(`check-${taskId}`);
