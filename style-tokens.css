@@ -88,3 +88,21 @@ body {
 .landing-section p a:hover {
   text-decoration-color: var(--ink-teal);
 }
+
+/* ─── Hero: minska top-tomrum + lugnare headline ─── */
+.landing-hero {
+  min-height: auto;
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .landing-hero {
+    padding-top: var(--space-xl);
+  }
+}
+.landing-headline {
+  font-size: calc(var(--fs-3xl) * 0.6);
+  line-height: 1.18;
+  font-weight: 400;
+  font-variation-settings: 'opsz' 144, 'SOFT' 60, 'wght' 400;
+  letter-spacing: -0.012em;
+}
