@@ -1,0 +1,90 @@
+/* ═══════════════════════════════════════════════════════════════
+   EFTERPLAN — Design token override (Redesign 2026)
+   Inkluderas EFTER style.css. Ersätter bara :root-tokens — all
+   komponentlogik i style.css fortsätter fungera oförändrat.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Paper & ink — varmt sand/beige */
+  --paper:        oklch(95% 0.018 85);
+  --paper-soft:   oklch(91% 0.024 80);
+  --paper-card:   oklch(97% 0.012 85);
+  --ink:          oklch(22% 0.02 80);
+  --ink-soft:     oklch(40% 0.015 80);
+  --ink-muted:    oklch(50% 0.012 80);
+  --rule:         oklch(86% 0.022 80);
+  --rule-strong:  oklch(78% 0.028 80);
+
+  /* Primär accent: soft sage */
+  --ink-teal:     oklch(58% 0.07 150);
+  --ink-teal-dk:  oklch(50% 0.075 150);
+  --ink-teal-tn:  oklch(91% 0.03 150);
+
+  /* Sekundär: dämpad varm terrakotta */
+  --ember:        oklch(60% 0.08 50);
+  --ember-dk:     oklch(50% 0.085 50);
+  --ember-tn:     oklch(92% 0.025 60);
+
+  /* Legacy mappings (matchar style.css) */
+  --bg:             var(--paper);
+  --bg-card:        var(--paper-card);
+  --text-primary:   var(--ink);
+  --text-soft:      var(--ink-soft);
+  --text-muted:     var(--ink-muted);
+  --text-secondary: var(--ink-soft);
+  --border:         var(--rule);
+  --accent:         var(--ink-teal);
+  --accent-dark:    var(--ink-teal-dk);
+  --accent-light:   var(--ink-teal-tn);
+
+  --disabled-bg:    oklch(85% 0.018 80);
+  --red:            oklch(48% 0.13 28);
+  --red-bg:         oklch(93% 0.025 28);
+  --yellow:         oklch(50% 0.09 75);
+  --yellow-bg:      oklch(93% 0.04 80);
+  --grey:           var(--ink-muted);
+  --grey-bg:        oklch(91% 0.018 80);
+  --green:          oklch(50% 0.09 150);
+  --danger:         oklch(50% 0.14 28);
+
+  --shadow:    0 1px 2px rgba(60, 50, 30, .04), 0 8px 24px -12px rgba(60, 50, 30, .10);
+  --shadow-sm: 0 1px 2px rgba(60, 50, 30, .05);
+}
+
+body {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(1200px 800px at 85% -10%, oklch(85% 0.04 70 / 0.35), transparent 60%),
+    radial-gradient(900px  700px at -5% 110%, oklch(80% 0.05 150 / 0.18), transparent 55%);
+}
+
+::selection {
+  background: var(--ink-teal);
+  color: var(--paper);
+}
+
+.landing-hero::after,
+.landing-section::before,
+.landing-brand::before {
+  background: var(--ink-teal);
+  opacity: .6;
+}
+
+.privacy-badge {
+  background: var(--paper-card);
+  border-color: var(--rule);
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.landing-footer {
+  background: oklch(28% 0.02 80);
+}
+.landing-footer a:hover {
+  border-bottom-color: var(--ink-teal);
+}
+
+.faq-item p a:hover,
+.landing-section p a:hover {
+  text-decoration-color: var(--ink-teal);
+}
