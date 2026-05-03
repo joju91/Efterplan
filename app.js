@@ -1041,6 +1041,25 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
     checkEl.setAttribute('role', 'checkbox');
     checkEl.setAttribute('aria-checked', task.done ? 'true' : 'false');
     checkEl.setAttribute('aria-label', `Markera "${task.title}" som klar`);
+    checkEl.style.cursor = 'pointer';
+    checkEl.addEventListener('click', e => {
+      e.stopPropagation();
+      if (isReadOnly()) return;
+      const t = state.tasks.find(x => x.id === task.id);
+      if (!t) return;
+      if (t.done) { undoTaskDoneManual(task.id); } else { markTaskDone(task.id); }
+    });
+    checkEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isReadOnly()) return;
+        const t = state.tasks.find(x => x.id === task.id);
+        if (!t) return;
+        if (t.done) { undoTaskDoneManual(task.id); } else { markTaskDone(task.id); }
+      }
+    });
+    checkEl.setAttribute('tabindex', '0');
 
     if (task.notesPlaceholder && !task.done) {
       const notesEl = wrap.querySelector(`#notes-${task.id}`);
