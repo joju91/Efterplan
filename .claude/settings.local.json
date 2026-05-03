@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" status)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" branch --show-current)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" checkout -b redesign-2026)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" status --short)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" diff --stat)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" diff index.html)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" add index.html)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" commit -m \"Mjukare hero-copy + FAQ om begravningsbyrå + SEO keywords i structured data\")",
+      "Bash(ls -la .github/workflows/)",
+      "Bash(ls vercel.json netlify.toml CNAME _config.yml)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" checkout main)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" merge --ff-only redesign-2026)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" log --oneline origin/main..HEAD)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(python -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" add style-tokens.css *.html)",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" commit -m \"Lugnare hero: mindre headline + content-driven height\")",
+      "Bash(git -C \"C:/Users/joju9/OneDrive/Dokument/GitHub/Efterplan\" push)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
+    ]
+  }
+}
