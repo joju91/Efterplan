@@ -1,0 +1,51 @@
+name: Weekly Report
+
+on:
+  schedule:
+    # Måndag 07:00 UTC = 09:00 CEST (sommartid) / 08:00 CET (vintertid)
+    - cron: '0 7 * * 1'
+  workflow_dispatch:  # tillåt manuell körning från Actions-fliken
+
+permissions:
+  contents: write  # behöver kunna pusha rapporten tillbaka till repo
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # behöver hela git-historiken för 7-dagars-aktivitet
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install ga4-dashboard deps
+        working-directory: ga4-dashboard
+        run: npm ci
+
+      - name: Generate weekly report
+        working-directory: ga4-dashboard
+        env:
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+        run: node scripts/weekly-report.mjs
+
+      - name: Commit and push report
+        run: |
+          git config user.name  "efterplan-bot"
+          git config user.email "efterplan-bot@users.noreply.github.com"
+          FILE="veckorapport-$(date -u +%Y-%m-%d).md"
+          if [ -f "$FILE" ]; then
+            git add "$FILE"
+            if git diff --cached --quiet; then
+              echo "Ingen förändring i $FILE — hoppar över commit."
+            else
+              git commit -m "Veckorapport $(date -u +%Y-%m-%d) (auto, GitHub Actions)"
+              git push
+            fi
+          else
+            echo "Ingen rapport-fil hittades."
+            exit 1
+          fi

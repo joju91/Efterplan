@@ -1,45 +1,43 @@
-﻿# Efterplan Veckorapport — 2026-05-04
+# Efterplan Veckorapport — 2026-05-04
 
-> Genererad lokalt av `scripts/weekly-report.ps1` (Windows Task Scheduler).
+> Genererad automatiskt av GitHub Actions (`.github/workflows/weekly-report.yml`).
 
 ---
 
 ## 🔢 Nyckeltal (7 dagar — GA4)
 
-```
-═══ Efterplan — KPIs senaste 7 dagar ═══
-Property:           531365335
-Sessions:           31
-Users:              22
-Engagement rate:    54.8%
+| Mått | Värde |
+|------|-------|
+| Sessions | **31** |
+| Users | 22 |
+| Engagement rate | 54.8% |
+| Organisk andel | 4 (12.9%) |
+| onboarding_start | 4 (12.9% av sessions) |
+| plan_generated | 5 (125.0% av onboarding_start) |
+| task_completed | 3 |
 
-Organic Search:     4  (12.9% av sessions)
-Kanal-fördelning:
-  Direct               27
-  Organic Search       4
+**Kanaler:**
 
-Events:
-  onboarding_start    4   (12.9% av sessions)
-  plan_generated      5  (125.0% av onboarding_start)
-  task_completed      3
-```
+- Direct: 27
+- Organic Search: 4
 
 ## 🟢 Uptime
 
 | Path | Status | Tid |
 |------|--------|-----|
-| `/` | 200 | 0,51s |
-| `/sambo-arv.html` | 200 | 0,08s |
-| `/efterlevandepension.html` | 200 | 0,25s |
-| `/dodsbo-bostadsratt.html` | 200 | 0,05s |
-| `/vad-gora-nar-nagon-dor.html` | 200 | 0,06s |
+| `/` | 200 | 0.75s |
+| `/sambo-arv.html` | 200 | 0.42s |
+| `/efterlevandepension.html` | 200 | 0.49s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.41s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.18s |
 
 ## 📊 Git-aktivitet
 
-- **17** commits, **70** filer ändrade
+- **18** commits, **71** filer ändrade
 
 ### Commits
 
+- `d67cc18 Lokal weekly-report-automation (ersätter Cowork-sandlådan)`
 - `153bd92 ga4-dashboard: weekly-kpis CLI för lokal körning`
 - `4c773ca GSC-indexering klar för 3 URL:er — ta bort pending-fil`
 - `51f3b5d Veckorapport 2026-05-05: sitemap lastmod + ga4 noindex + npm audit fix`
@@ -61,7 +59,7 @@ Events:
 ## 🔧 Teknisk audit
 
 - **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
-- **Live-sajt:** 200 på 0,51s
+- **Live-sajt:** 200 på 0.75s
 
 ## 🗺️ Roadmap-status
 
@@ -70,8 +68,4 @@ Events:
 | ✔ Klara | 79 |
 | ⧖ Pågår | 9 |
 | ☐ Ej startade | 12 |
-
----
-
-*Nästa körning: måndag 2026-05-11 kl 09:00*
 
