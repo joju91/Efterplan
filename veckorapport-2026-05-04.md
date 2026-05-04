@@ -1,93 +1,77 @@
-# Efterplan — 2026-05-04
+﻿# Efterplan Veckorapport — 2026-05-04
 
-🔢 Sessions: N/A (GA4 SAKNAS) | Organisk: N/A | Onboarding: N/A | Plan: N/A
-
-🔧 Uptime: 403 Cloudflare-blockad (extern monitor saknas — T106) | Perf/A11y/SEO: ej mätt | Sårbarheter: 4 moderate i ga4-dashboard (T104 ☐) | Brutna länkar: ej mätt
-   - `ga4-dashboard/public/index.html` rad 8: saknar `<meta name="robots" content="noindex">` — dashboard exponerad för crawlers (T105)
-   - `sitemap.xml`: 32 URLs med `lastmod=2026-04-15`, inaktuellt efter nyare SEO-sidor (T107)
-
-📣 Med 8 pågående tickets och T081 (drop-off-analys) redo att stängas är konverteringsoptimering snabbaste tillväxtvägen — prioritera T081 + stäng T104 (npm-sårbarheter) denna vecka.
-
-🎫 Nya tickets: T105 – noindex ga4-dashboard (#13) | T106 – UptimeRobot (#14) | T107 – sitemap lastmod (#15)
+> Genererad lokalt av `scripts/weekly-report.ps1` (Windows Task Scheduler).
 
 ---
 
-## Roadmap-status
+## 🔢 Nyckeltal (7 dagar — GA4)
 
-| Klara ✔ | Pågår ⧖ | Ej startade ☐ |
-|---------|---------|---------------|
-| 77      | 8       | 11 (inkl. T105–T107) |
-
-### Pågår just nu
-- T015 Validate step order with 2–3 real relatives
-- T016 Adjust order and text based on interviews
-- T026 Share with 5 target users, collect feedback
-- T032 Test full purchase flow
-- T034 Set up Bokio or Fortnox
-- T047 Analyze drop‑off
-- T079 Betald byrålisting
-- T081 Analyze drop‑off + prioritize top 3 issues ← prioritera stänga
-
-### Nästa öppna (gamla)
-- T001 Read the entire Manifest sheet and confirm scope
-- T002 Buy domain: kaascha.se
-- T003 Register company / sole proprietorship + apply for F‑tax
-
----
-
-## DEL 1 — GA4
-
-GA4 SAKNAS — inga credentials i molnsandlådan. Hoppar över DEL 1.
-
----
-
-## DEL 2 — Kodaudit
-
-### Missing meta description
-- `share-modal.html` — false positive (body-fragment, T100 stängd som `x`)
-- `auth-modal.html` — false positive (body-fragment, T100 stängd som `x`)
-- `ga4-dashboard/public/index.html` — intern dashboard, bör ha `noindex` istället → T105 ☐
-
-### TODOs/FIXMEs
-Inga hittade i `.js`/`.html` (grep mot node_modules exkluderad).
-
-### GA4-events i app.js
 ```
-rad 57:  function track(event, props)
-rad 73:  track('onboarding_start')
-rad 170: track('onboarding_step', { step })
-rad 285: track('plan_generated', { relation, ansvar })
-rad 1413: track('task_completed', { task, urgency })
-```
-Alla nyckel-events (onboarding_start, plan_generated, task_completed) är snake_case och implementerade ✔
+═══ Efterplan — KPIs senaste 7 dagar ═══
+Property:           531365335
+Sessions:           31
+Users:              22
+Engagement rate:    54.8%
 
-### Sårbarheter (ga4-dashboard)
-```
-moderate: 4, high: 0, critical: 0
-```
-T103 (googleapis upgrade) ☐ och T104 (npm audit fix) ☐ kvarstår sedan förra veckan.
+Organic Search:     4  (12.9% av sessions)
+Kanal-fördelning:
+  Direct               27
+  Organic Search       4
 
-### Uptime
-HTTP 403 från molnsandlådan — Cloudflare blockerar bot-requests. Sidan är troligen uppe men extern monitor saknas → T106 ☐.
+Events:
+  onboarding_start    4   (12.9% av sessions)
+  plan_generated      5  (125.0% av onboarding_start)
+  task_completed      3
+```
+
+## 🟢 Uptime
+
+| Path | Status | Tid |
+|------|--------|-----|
+| `/` | 200 | 0,51s |
+| `/sambo-arv.html` | 200 | 0,08s |
+| `/efterlevandepension.html` | 200 | 0,25s |
+| `/dodsbo-bostadsratt.html` | 200 | 0,05s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0,06s |
+
+## 📊 Git-aktivitet
+
+- **17** commits, **70** filer ändrade
+
+### Commits
+
+- `153bd92 ga4-dashboard: weekly-kpis CLI för lokal körning`
+- `4c773ca GSC-indexering klar för 3 URL:er — ta bort pending-fil`
+- `51f3b5d Veckorapport 2026-05-05: sitemap lastmod + ga4 noindex + npm audit fix`
+- `11b4708 Premium-paywall: Stripe Checkout + Supabase entitlement`
+- `318bd47 Veckorapport 2026-05-04: auto-tickets T105–T107 + status`
+- `0502e5c Reminder: 3 GSC-indexerings-URL:er blockerades av quota 3 maj — gör 4 maj`
+- `a1ceb08 KRITISK FIX: bryt redirect-loop som hindrade indexering`
+- `27cc1a5 SEO + retention-fix från GA4-analys`
+- `9930e18 Upd`
+- `f37140d Räkningar: flytta sektion + foto/QR-scan + typografi-konsolidering`
+- `3824750 Lugnare hero: mindre headline + content-driven height`
+- `4f3f642 Begravningsbyrå-jämförelse: korrekta aktörer (Fonus, Lavendla, Memoria) + ta bort hallucinerade Fonus-Fenix/EFS`
+- `1d8af21 Mjukare hero-copy + FAQ om begravningsbyrå + SEO keywords i structured data`
+- `611e4a9 Redesign 2026: warm sand background + soft sage accent (token override)`
+- `06173d3 Upd`
+- `14aeae3 Veckorapport-tickets T100-T102`
+- `c19b068 Cowork schedule`
+
+## 🔧 Teknisk audit
+
+- **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
+- **Live-sajt:** 200 på 0,51s
+
+## 🗺️ Roadmap-status
+
+| Status | Antal |
+|--------|-------|
+| ✔ Klara | 79 |
+| ⧖ Pågår | 9 |
+| ☐ Ej startade | 12 |
 
 ---
 
-## DEL 4 — Nya auto-tickets
+*Nästa körning: måndag 2026-05-11 kl 09:00*
 
-| ID | Titel | Issue | Prio | Typ |
-|----|-------|-------|------|-----|
-| T105 | ga4-dashboard/public/index.html saknar noindex | [#13](https://github.com/joju91/Efterplan/issues/13) | 🟠 | SEO |
-| T106 | Sätt upp extern uptime-monitor (UptimeRobot) | [#14](https://github.com/joju91/Efterplan/issues/14) | 🟠 | Dev |
-| T107 | sitemap.xml: uppdatera lastmod-datum | [#15](https://github.com/joju91/Efterplan/issues/15) | 🟡 | SEO |
-
----
-
-## ✅ Åtgärder att godkänna
-
-| # | Åtgärd | Fil | P |
-|---|--------|-----|---|
-| 1 | Lägg till `<meta name="robots" content="noindex, nofollow">` i `<head>` | ga4-dashboard/public/index.html rad 8 | 🟠 |
-| 2 | Skapa UptimeRobot-monitor för https://efterplan.se (5 min intervall, e-post) | — | 🟠 |
-| 3 | Uppdatera `<lastmod>` i sitemap.xml för sidor ändrade efter 2026-04-15 | sitemap.xml | 🟡 |
-| 4 | Stäng T103: `npm install googleapis@latest` i ga4-dashboard | ga4-dashboard/package.json | 🟡 |
-| 5 | Stäng T104: `npm audit fix` i ga4-dashboard (4 moderate vulns) | ga4-dashboard/ | 🟡 |
