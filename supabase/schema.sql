@@ -49,6 +49,24 @@ alter table public.share_tokens
 
 create index if not exists share_tokens_plan_id_idx on public.share_tokens(plan_id);
 
+-- Purchases (Stripe checkout completions). Source of truth for premium access.
+create table if not exists public.purchases (
+  id                    uuid primary key default gen_random_uuid(),
+  stripe_session_id     text unique not null,
+  stripe_customer_id    text,
+  stripe_payment_intent text,
+  email                 text,
+  user_id               text,
+  amount_total          integer,
+  currency              text,
+  livemode              boolean,
+  raw                   jsonb,
+  created_at            timestamptz not null default now()
+);
+
+create index if not exists purchases_email_idx on public.purchases(lower(email));
+create index if not exists purchases_user_id_idx on public.purchases(user_id);
+
 -- One active token per (plan, kind). Inactive tokens may linger for history.
 create unique index if not exists share_tokens_plan_kind_active_key
   on public.share_tokens(plan_id, kind) where active = true;
@@ -99,6 +117,9 @@ alter table public.users            enable row level security;
 alter table public.plans            enable row level security;
 alter table public.task_completions enable row level security;
 alter table public.share_tokens     enable row level security;
+alter table public.purchases        enable row level security;
+-- No anon/authenticated policies on purchases — only the service role
+-- (used by /api/* serverless functions) reads/writes this table.
 
 -- users: select/update own row only
 drop policy if exists users_select_own on public.users;

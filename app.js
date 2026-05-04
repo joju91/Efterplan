@@ -4,8 +4,91 @@
 ════════════════════════════════════════════ */
 
 // ─── FEATURE FLAGS ───────────────────────────
-const PAYWALL_ENABLED = false; // set true when Stripe is wired up
+const PAYWALL_ENABLED = true;  // Stripe is wired (api/create-checkout + webhook)
 const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked when PAYWALL_ENABLED
+
+// ─── PREMIUM ENTITLEMENT ─────────────────────
+// localStorage is the fast path. Server-side source of truth is Supabase
+// (table `purchases`, written by /api/stripe-webhook). Logged-in users and
+// users returning to a known email get auto-restored via /api/check-premium.
+const PREMIUM_KEY        = 'efterplan_premium';
+const PREMIUM_EMAIL_KEY  = 'efterplan_premium_email';
+
+function isPremium() {
+  return localStorage.getItem(PREMIUM_KEY) === '1';
+}
+
+function setPremium(email) {
+  localStorage.setItem(PREMIUM_KEY, '1');
+  if (email) localStorage.setItem(PREMIUM_EMAIL_KEY, email);
+  applyPremiumState();
+}
+
+function clearPremium() {
+  localStorage.removeItem(PREMIUM_KEY);
+  localStorage.removeItem(PREMIUM_EMAIL_KEY);
+  applyPremiumState();
+}
+
+function applyPremiumState() {
+  const premium = isPremium();
+  document.body.classList.toggle('is-premium', premium);
+  const card = document.getElementById('paywall-card');
+  if (card) card.classList.toggle('hidden', !PAYWALL_ENABLED || premium);
+  ['doc-btn-skatteverket', 'doc-btn-fullmakt'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden', PAYWALL_ENABLED && !premium);
+  });
+  // Re-render the plan so locked-task cards reflect the new state.
+  if (typeof renderPlan === 'function' && state && Array.isArray(state.tasks) && state.tasks.length) {
+    try { renderPlan(); } catch (_) { /* renderPlan is fine to skip on landing */ }
+  }
+}
+
+async function checkPremiumServerSide() {
+  let email = localStorage.getItem(PREMIUM_EMAIL_KEY) || '';
+  let userId = '';
+  try {
+    if (window.efterplanAuth && typeof window.efterplanAuth.getCurrentUser === 'function') {
+      const u = await window.efterplanAuth.getCurrentUser();
+      if (u) { userId = u.id || ''; email = email || u.email || ''; }
+    }
+  } catch (_) { /* ignore */ }
+  if (!email && !userId) return;
+  try {
+    const params = new URLSearchParams();
+    if (email)  params.set('email', email);
+    if (userId) params.set('user_id', userId);
+    const r = await fetch(`/api/check-premium?${params.toString()}`);
+    if (!r.ok) return;
+    const data = await r.json();
+    if (data && data.ok && data.premium) setPremium(email);
+  } catch (_) { /* offline ok */ }
+}
+
+async function handlePremiumReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('premium') !== 'success') return;
+  const sessionId = params.get('session_id');
+  if (!sessionId) return;
+  try {
+    const r = await fetch(`/api/verify-checkout?session_id=${encodeURIComponent(sessionId)}`);
+    const data = await r.json();
+    if (data && data.ok) {
+      setPremium(data.email || '');
+      track('Premium Activated');
+      alert('Tack! Premium är upplåst på den här enheten.');
+    } else {
+      alert('Vi kunde inte bekräfta betalningen direkt. Försök ladda om sidan om en stund.');
+    }
+  } catch (_) {
+    alert('Kunde inte verifiera betalningen — kolla din inkorg för Stripe-kvittot.');
+  } finally {
+    // Strip query params so reloads don't re-trigger.
+    const clean = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, '', clean);
+  }
+}
 
 // ─── SHARED MODE ─────────────────────────────
 // When someone opens ?share=TOKEN the plan is rendered from Supabase instead
@@ -923,10 +1006,10 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
 
   tasks.forEach((task, i) => {
     const globalIdx = globalOffset + i;
-    const isLocked  = PAYWALL_ENABLED && globalIdx >= PREVIEW_STEPS;
+    const isLocked  = PAYWALL_ENABLED && !isPremium() && globalIdx >= PREVIEW_STEPS;
 
     // T030: insert preview CTA once, right before the first locked task
-    if (PAYWALL_ENABLED && globalIdx === PREVIEW_STEPS) {
+    if (PAYWALL_ENABLED && !isPremium() && globalIdx === PREVIEW_STEPS) {
       container.appendChild(buildPreviewCTACard());
     }
 
@@ -2333,15 +2416,47 @@ function printPlan() {
 
 // ─── PAYWALL ─────────────────────────────────
 (function initPaywall() {
-  const card = document.getElementById('paywall-card');
-  if (!card) return;
-  if (PAYWALL_ENABLED) card.classList.remove('hidden');
+  applyPremiumState();
+  handlePremiumReturn();
+  // Re-check entitlement when auth state changes (logged-in users get
+  // their premium auto-restored across devices).
+  window.addEventListener('efterplan:auth-changed', () => { checkPremiumServerSide(); });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { checkPremiumServerSide(); });
+  } else {
+    checkPremiumServerSide();
+  }
 })();
 
-function handlePaywallCTA() {
-  // Placeholder — wire Stripe Checkout URL here when ready
+async function handlePaywallCTA() {
   track('Paywall CTA Clicked');
-  alert('Betalning är inte aktiverat ännu — kom tillbaka snart!');
+  if (isPremium()) return;
+  let email = '';
+  let userId = '';
+  try {
+    if (window.efterplanAuth && typeof window.efterplanAuth.getCurrentUser === 'function') {
+      const u = await window.efterplanAuth.getCurrentUser();
+      if (u) { userId = u.id || ''; email = u.email || ''; }
+    }
+  } catch (_) { /* anonymous flow is fine */ }
+  if (!email) email = localStorage.getItem(PREMIUM_EMAIL_KEY) || '';
+
+  try {
+    const r = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, userId }),
+    });
+    const data = await r.json();
+    if (!r.ok || !data || !data.url) {
+      alert('Kunde inte starta betalningen. Försök igen om en stund.');
+      return;
+    }
+    if (email) localStorage.setItem(PREMIUM_EMAIL_KEY, email);
+    window.location.href = data.url;
+  } catch (err) {
+    alert('Något gick fel mot betaltjänsten. Kontrollera din anslutning och försök igen.');
+  }
 }
 
 // ─── SHARED PLAN INIT ────────────────────────

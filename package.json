@@ -1,0 +1,12 @@
+{
+  "name": "efterplan-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vercel serverless functions for Efterplan (Stripe + Supabase). The static site itself has no build step.",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "stripe": "^17.5.0",
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}
