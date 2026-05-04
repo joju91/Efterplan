@@ -27,11 +27,11 @@ export default async function handler(req, res) {
     const { count, error } = await query;
     if (error) {
       console.error('[check-premium]', error);
-      return res.status(500).json({ ok: false, error: 'db_error' });
+      return res.status(500).json({ ok: false, error: 'db_error', detail: error.message, code: error.code, hint: error.hint });
     }
     return res.status(200).json({ ok: true, premium: (count || 0) > 0 });
   } catch (err) {
     console.error('[check-premium]', err);
-    return res.status(500).json({ ok: false, error: 'lookup_failed' });
+    return res.status(500).json({ ok: false, error: 'lookup_failed', detail: err.message });
   }
 }
