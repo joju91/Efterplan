@@ -9,8 +9,9 @@ export function getStripe() {
 
 export function getSupabaseAdmin() {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY missing');
+  // Stöder både nya sb_secret_* och äldre service_role JWT.
+  const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('SUPABASE_URL / SUPABASE_SECRET_KEY missing');
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
