@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write  # behöver kunna pusha rapporten tillbaka till repo
+  issues:   write  # öppnar en issue per rapport så den mejlas till owner
 
 jobs:
   generate:
@@ -49,3 +50,20 @@ jobs:
             echo "Ingen rapport-fil hittades."
             exit 1
           fi
+
+      - name: Open GitHub Issue with report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          FILE="veckorapport-$DATE.md"
+          TITLE="Veckorapport $DATE"
+          # GH:s issue-body har 65k-gräns — våra rapporter är några kB, så det räcker.
+          BODY=$(cat "$FILE")
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" \
+            -d "$(jq -n --arg t "$TITLE" --arg b "$BODY" '{title:$t, body:$b, labels:["veckorapport"]}')" \
+            | jq -r '.html_url // .message'
