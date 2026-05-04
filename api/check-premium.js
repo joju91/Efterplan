@@ -24,22 +24,14 @@ export default async function handler(req, res) {
       query = query.eq('user_id', userId);
     }
 
-    const { count, error, status, statusText } = await query;
+    const { count, error } = await query;
     if (error) {
       console.error('[check-premium]', error);
-      return res.status(500).json({
-        ok: false, error: 'db_error',
-        detail: error.message || '(empty)',
-        code: error.code || null,
-        hint: error.hint || null,
-        status, statusText,
-        keyKind: (process.env.SUPABASE_SECRET_KEY || '').slice(0, 14),
-        urlSet: !!process.env.SUPABASE_URL,
-      });
+      return res.status(500).json({ ok: false, error: 'db_error' });
     }
-    return res.status(200).json({ ok: true, premium: (count || 0) > 0, count });
+    return res.status(200).json({ ok: true, premium: (count || 0) > 0 });
   } catch (err) {
     console.error('[check-premium]', err);
-    return res.status(500).json({ ok: false, error: 'lookup_failed', detail: err.message, stack: (err.stack || '').slice(0, 200) });
+    return res.status(500).json({ ok: false, error: 'lookup_failed' });
   }
 }
