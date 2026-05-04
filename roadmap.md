@@ -260,3 +260,13 @@ Each step improves the product or the company in a meaningful way.
 | T102 | Uppgradera express 4→5 i ga4-dashboard/package.json + verifiera att inga breaking changes påverkar server.js. Express 5.2.1 installerat, smoke-test /api/health → 200 OK. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
 | T103 | Uppgradera googleapis 144→171 i ga4-dashboard/package.json (27 versioner efter, säkerhetsfixar + nya GA4-API-funktioner). Smoke-test `node server.js` + `/api/health` efter upgrade. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
 | T104 | Verifiera 4 moderate npm audit-sårbarheter i ga4-dashboard kvarstår efter T102 (express 4→5). Kör `npm audit` och `npm audit fix` om transitivt beroende. Inga critical/high — låg risk. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-05-04
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T105 | ga4-dashboard/public/index.html saknar `<meta name="robots" content="noindex, nofollow">` — intern admin-dashboard är exponerad utan noindex-direktiv och riskerar att crawlas/indexeras av sökmotorer. Lägg till i `<head>` på rad 8. Fil: ga4-dashboard/public/index.html | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
+| T106 | Extern uptime-monitor saknas — sandbox-hälsocheck blockeras av Cloudflare (HTTP 403), dvs riktiga driftstopp syns inte proaktivt. Sätt upp UptimeRobot (gratis) för https://efterplan.se med e-postvarning till jonas.soderstrom43@gmail.com (kontrollintervall 5 min). | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
+| T107 | sitemap.xml lastmod-datum är inaktuella — flertalet URLs har `2026-04-15` men nyare SEO-sidor (tomma-dodsbo, checklista-dodsbo m.fl.) har lagts till sedan dess. Uppdatera `<lastmod>` för berörda sidor i sitemap.xml. Fil: sitemap.xml | 2026-05-04 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
