@@ -25,18 +25,20 @@
 
 | Path | Status | Tid |
 |------|--------|-----|
-| `/` | 200 | 0.55s |
-| `/sambo-arv.html` | 200 | 0.28s |
-| `/efterlevandepension.html` | 200 | 0.32s |
-| `/dodsbo-bostadsratt.html` | 200 | 0.56s |
-| `/vad-gora-nar-nagon-dor.html` | 200 | 0.23s |
+| `/` | 200 | 0.61s |
+| `/sambo-arv.html` | 200 | 0.44s |
+| `/efterlevandepension.html` | 200 | 0.28s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.16s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.15s |
 
 ## 📊 Git-aktivitet
 
-- **19** commits, **73** filer ändrade
+- **21** commits, **73** filer ändrade
 
 ### Commits
 
+- `38aeb89 Veckorapport: öppna GitHub Issue så rapporten mejlas till owner`
+- `bb03767 Veckorapport 2026-05-04 (auto, GitHub Actions)`
 - `d4d192f Veckorapport: GitHub Actions istället för lokal Task Scheduler`
 - `d67cc18 Lokal weekly-report-automation (ersätter Cowork-sandlådan)`
 - `153bd92 ga4-dashboard: weekly-kpis CLI för lokal körning`
@@ -60,7 +62,7 @@
 ## 🔧 Teknisk audit
 
 - **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
-- **Live-sajt:** 200 på 0.55s
+- **Live-sajt:** 200 på 0.61s
 
 ## 🗺️ Roadmap-status
 
