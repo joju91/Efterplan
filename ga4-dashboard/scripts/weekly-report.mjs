@@ -85,7 +85,7 @@ async function checkUptime() {
   for (const p of pages) {
     const t0 = Date.now();
     try {
-      const r = await fetch(`https://www.efterplan.se${p}`, { redirect: 'follow' });
+      const r = await fetch(`https://efterplan.se${p}`, { redirect: 'follow' });
       out.push({ path: p, code: r.status, time: ((Date.now() - t0) / 1000).toFixed(2) + 's' });
     } catch (e) {
       out.push({ path: p, code: 'ERR', time: '-' });
