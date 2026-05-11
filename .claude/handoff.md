@@ -1,62 +1,69 @@
-# Session Handoff — 2026-04-29
+# Session Handoff — 2026-05-04 19:30
 
 **Projekt:** Efterplan
-**Branch:** main (deployat skarpt via Vercel)
-**Sessionens huvudmål:** Applicera redesign (varmare palett + mjukare ton) på publik sajt, fixa SEO för "fonus"-sökningar, lugna hero-typografin.
+**Branch:** main
+**Sessionens huvudmål:** Aktivera Stripe-premium på efterplan.se + automatisera veckorapporter.
 
 ## Vad sessionen åstadkom
 
-- **Redesign 2026 token-override** via ny `style-tokens.css` — varm sand/beige bakgrund, salviegrön accent ersätter ink-teal, varmare skuggor. Inga ändringar i style.css eller HTML-struktur. Inkluderas via en ny `<link>`-rad i 33 HTML-filer.
-- **Mjukare hero-copy på startsidan** — "Det är mycket på en gång just nu" + "Du behöver inte hålla reda på allt själv. Vi reder ut det praktiska...". Bytt CTA till "Börja här". Aktivt undvikit AI-floskler.
-- **Ny FAQ "Behöver jag en begravningsbyrå?"** på startsidan — generisk, namnger inga byråer öppet.
-- **Begravningsbyrå-sidan ([begravningsbyra.html](../begravningsbyra.html)) omskriven** till ärlig jämförelse: Fonus, Lavendla, Memoria + lokala oberoende + SBF. Tagit bort hallucinerade "Fonus-Fenix/EFS" och felaktig "ägd av KF". Ny sektion "Hur du faktiskt väljer".
-- **SEO-keywords i WebApplication structured data** på index — Fonus, Lavendla, Memoria, Familjens Jurist (osynligt, bara för Google).
-- **Lugnare hero-storlek** — landing-headline 0.6× originalstorleken, lägre vikt, bättre line-height. Hero börjar högt på sidan istället för viewport-centrerat.
-- **Cache-version `style-tokens.css?v=3`** över alla 33 HTML-filer.
-- **Global personlighetsregel sparad** i `~/.claude/CLAUDE.md` (sektion 5): inga px-värden, CSS-properties eller tool-mekanik i chat-svar. Plain language, en-två meningar.
+### Stripe Premium (149 kr engångs)
+- Hela betalflödet kodat och deployat: `api/create-checkout.js`, `api/stripe-webhook.js`, `api/verify-checkout.js`, `api/check-premium.js`, `api/_lib.js`, `package.json`.
+- Frontend-gating i `app.js:1-95` (PAYWALL_ENABLED=true, isPremium/setPremium/handlePremiumReturn).
+- Supabase-schema utökat: `purchases`-tabell (`supabase/schema.sql`).
+- Stripe-resurser skapade i sandbox "Kaascha-sandlåda": Product `prod_USL81FBj55hTJE`, Price `price_1TTQSMKA1rL6TXoyWBQCUCH3` (149 SEK), Webhook → `https://efterplan.se/api/stripe-webhook` med secret `whsec_DUDL7nv1jLOrAraXbRhXDE6r5h3hiDU9`.
+- Vercel env-vars satta (5 st), schema-tabellen kör i Supabase, end-to-end testköp med 4242-kortet **funkade** (Jonas verifierade).
+
+### Veckorapport-automation
+- Migrerat från Cowork-sandlådan → GitHub Actions: `.github/workflows/weekly-report.yml` + `ga4-dashboard/scripts/weekly-report.mjs`.
+- Måndagar 07:00 UTC: hämtar GA4, kollar uptime, läser git, npm audit, roadmap → committar `veckorapport-YYYY-MM-DD.md` + öppnar GitHub Issue (mejlas till Jonas).
+- GitHub Secrets satta: `GA4_PROPERTY_ID`, `GA4_SERVICE_ACCOUNT_JSON`. Repo Watch satt till "All Activity" (via `gh api`).
+- Manuell körning verifierad: [run 25333295682](https://github.com/joju91/Efterplan/actions/runs/25333295682) → success → [Issue #16](https://github.com/joju91/Efterplan/issues/16).
+
+### Veckorapport-fixar (manuella TODO från 2026-05-05-rapporten)
+- T107 sitemap.xml lastmod → `2026-05-04` × 32 URLs.
+- T105 `ga4-dashboard/public/index.html`: meta robots noindex/nofollow.
+- T103/T104 `ga4-dashboard/package.json`: googleapis 144→171.4.0 (npm audit nu 0 sårbarheter).
+- T#3 GSC-indexering manuellt körd av Jonas; pending-fil borttagen.
 
 ## Beslut tagna (med motivering)
 
-- **Token-override istället för style.css-edit** — användaren ville behålla style.css orörd. Override-filen kan slängas eller versioneras separat.
-- **Inga byrå-namn synligt på startsidan** — användaren vill undvika att framstå som promotion. Namnen fick endast finnas på [begravningsbyra.html](../begravningsbyra.html) (där de är legitimt informativa) och i index-ens `keywords`-fält. Förkastat: namnstoppning i meta description.
-- **Memira borttaget från keywords** — det är en ögonklinik, inte begravningsbyrå. Ersatt av Memoria.
-- **Ärlig SEO-bedömning levererad** — användaren fick veta att schema-`keywords` har ~0 ranking-vikt och att riktig "fonus"-ranking kräver namn synligt på sidan (vilket är därför [begravningsbyra.html](../begravningsbyra.html) blev jämförelseguide).
-- **Hero-headline reducerad i två steg** — först 0.8×, användaren tyckte fortfarande "skrikigt", landade på 0.6× + lättare vikt + mjukare letter-spacing.
+- **Server-skapade Checkout Sessions istället för Payment Links** — programmatisk styrning av `client_reference_id` + price från env. Förkastade: Payment Link (manuell setup, mindre kontroll).
+- **Entitlement keyed by email + user_id** — gäst-köp möjligt, men logged-in användare auto-restorar via `/api/check-premium`. Gäster: localStorage, byt-enhet kräver inlogg.
+- **GitHub Actions istället för Windows Task Scheduler** — molnkörning, datorn behöver inte vara på, ingen filkollision. Förkastade: Task Scheduler (krävde laptop på), Cowork (ingen GA4/nätverk).
+- **Supabase nya `sb_secret_*`-format** — `api/_lib.js` läser `SUPABASE_SECRET_KEY` med fallback till `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Nuvarande state
 
-**Filer ändrade i sessionen (alla committade på main):**
-- `style-tokens.css` — ny fil, design-override
-- `index.html` — meta description, structured data keywords, hero-copy, ny FAQ-post + matchande FAQ-schema, ny `<link>`-rad
-- `begravningsbyra.html` — meta-tags, FAQ-schema, jämförelsesektion, dateModified
-- 31 övriga HTML-filer i rooten — endast nya `<link>`-raden för style-tokens
+**Git:** rent på spårade filer, otrackade: `.claude/weekly-report.log`, `efterplan_formular.xlsx`, `prevent_sleep_70min.ps1`, `veckorapport-2026-05-05.md`.
 
-**Git-status:**
-- Branch: `main`
-- Senaste commit: `3824750 Lugnare hero: mindre headline + content-driven height`
-- Pushat och live på efterplan.se via Vercel
-- Ej-committade: `.claude/launch.json` (lokal preview-config — användaren kan committa eller lämna)
-- `redesign-2026`-branchen finns kvar både lokalt och på origin
+**Live-status (test-mode):**
+- ✅ `/api/create-checkout` returnerar Checkout-URL
+- ✅ `/api/check-premium` returnerar `{ok:true, premium:false}` för okänd email
+- ✅ `/api/stripe-webhook` har skrivit purchase-rad (testköpet i webbläsaren gick igenom)
+- ⚠️ Mottagar-namn på Checkout = **"kalkyra"** (samma sandbox används av Jonas andra projekt) — Jonas vill att det står "Efterplan"
 
-**Tickets:** Ingen direkt ticket-koppling i sessionen, men relaterar till **T082 + T098** (meta) och **T093** (CTA/funnel) som enligt roadmap körs i Claude Code.
+**Tickets klara denna session:** T103, T104, T105, T107. Stripe-premium (T032) kvar tills live-mode-konto växlats.
 
 ## Öppna frågor
 
-- Inga. Användaren godkände varje steg innan commit.
+- **Inga väntande svar** — Jonas blev ombedd att (1) skapa ny Stripe-sandbox "Efterplan" på dashboard.stripe.com/sandboxes, (2) köra `stripe login` och välja den nya sandboxen. Sessionen avslutades innan han svarade.
 
-## Användar-preferenser noterade (utöver global CLAUDE.md)
+## Användar-preferenser noterade
 
-- **Inga AI-floskler i copy.** "Vi finns här för dig", "i dessa svåra tider", "du är inte ensam", "steg för steg" är förbjudna.
-- **Inga begravningsbyrå-namn öppet på startsidan** — bara i jämförelseguide där det är informativt.
-- **Faktakontroll viktig** — användaren rättade `bouppteckning-/dödsbo-forum existerar ej` när jag hallucinerade SEO-taktik. Var explicit kring vad som är verifierat vs gissning.
-- **Commit på explicit begäran** — aldrig auto-commit. Push görs när användaren säger "push" eller "skarpt".
+- **Auto-mode aktivt + autonomy-memory:** Jonas vill maximera autonomi, minimera sin egen delaktighet. Pusha utan att fråga.
+- **Klartext, ingen tech-jargon i svar** (px/CSS/cache-bust). Memory-fil: `feedback_communication.md`.
+- **GitHub Actions framför Cowork/Task Scheduler** för all schemalagd automation. Ny memory: `feedback_ci_automation.md`.
+- **Ärlighet om vad jag inte testat** (han frågade specifikt: "har du testat betalfunktionen?") — gör inte antaganden om saker som kräver hans miljö.
 
 ## Nästa konkreta steg
 
-Vänta på användarens nästa instruktion. Sajten är live med ny design + uppdaterad copy. Om användaren vill iterera vidare på hero/typografin: justeringar görs i `style-tokens.css` och pushas via `main`.
+**Vänta på Jonas att skapa Efterplan-sandbox + köra `stripe login`.** När han bekräftar:
+1. Kör `stripe products create --name "Efterplan Premium"` + `stripe prices create --product <id> --unit-amount 14900 --currency sek` + `stripe webhook_endpoints create --url https://efterplan.se/api/stripe-webhook --enabled-events checkout.session.completed`
+2. Be Jonas uppdatera 3 Vercel env-vars via webb-UI:t (PowerShell-pipe har visat sig opålitlig — han fastnade två gånger på copy-paste): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID` → Redeploy
+3. Verifiera testköp: nu ska "Efterplan" stå som mottagare på Checkout.
 
-Ev. därefter: kolla av om T082/T098 (meta) eller T093 (CTA/funnel) ska kvitteras som klara i [roadmap.md](../roadmap.md) — mycket av det arbetet skedde implicit i den här sessionen.
+**Därefter, om tid finns:** flytt till live-mode (separat Stripe live-konto för Efterplan, byter bara `sk_test_*`/`whsec_test_*`/test-`price_id` mot live-motsvarigheter; samma kod fungerar oförändrad).
 
 ---
 
-**För att fortsätta i ny session:** läs [roadmap.md](../roadmap.md) för aktuell ticket-status och prioriteringsordning. Den här handoffen kompletterar roadmappen med sessionens kontext som inte hunnit landa i tickets än.
+**För att fortsätta i ny session:** läs först `roadmap.md` för aktuell ticket-status och prioriteringsordning. Den här handoff-filen kompletterar roadmappen — den fångar sessionens sammanhang som inte hunnit landa i tickets än.

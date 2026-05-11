@@ -267,9 +267,9 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T105 | ga4-dashboard/public/index.html saknar `<meta name="robots" content="noindex, nofollow">` — intern admin-dashboard är exponerad utan noindex-direktiv och riskerar att crawlas/indexeras av sökmotorer. Lägg till i `<head>` på rad 8. Fil: ga4-dashboard/public/index.html | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
+| T105 | ga4-dashboard/public/index.html saknar `<meta name="robots" content="noindex, nofollow">` — intern admin-dashboard är exponerad utan noindex-direktiv och riskerar att crawlas/indexeras av sökmotorer. Lägg till i `<head>` på rad 8. Fil: ga4-dashboard/public/index.html | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | SEO | ✔ |
 | T106 | Extern uptime-monitor saknas — sandbox-hälsocheck blockeras av Cloudflare (HTTP 403), dvs riktiga driftstopp syns inte proaktivt. Sätt upp UptimeRobot (gratis) för https://efterplan.se med e-postvarning till jonas.soderstrom43@gmail.com (kontrollintervall 5 min). | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
-| T107 | sitemap.xml lastmod-datum är inaktuella — flertalet URLs har `2026-04-15` men nyare SEO-sidor (tomma-dodsbo, checklista-dodsbo m.fl.) har lagts till sedan dess. Uppdatera `<lastmod>` för berörda sidor i sitemap.xml. Fil: sitemap.xml | 2026-05-04 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
+| T107 | sitemap.xml lastmod-datum är inaktuella — flertalet URLs har `2026-04-15` men nyare SEO-sidor (tomma-dodsbo, checklista-dodsbo m.fl.) har lagts till sedan dess. Uppdatera `<lastmod>` för berörda sidor i sitemap.xml. Fil: sitemap.xml | 2026-05-04 | Fas 12 | Veckorapport | 🟡 | SEO | ✔ |
 
 ---
 
@@ -277,6 +277,9 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T108 | `"stripe": "^17.5.0"` i package.json är 5 major versioner föråldrat (senaste 22.1.1). Breaking changes i Payment Intents/Checkout. Uppdatera till `^22.1.1`, verifiera `apiVersion`-fältet i `api/_lib.js` och testkör betalflödet i Stripe testmiljö. Fil: package.json, api/_lib.js. | 2026-05-11 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
-| T109 | `"@supabase/supabase-js": "^2.45.4"` är 60 minor versioner bakom senaste (2.105.4). Uppdatera och kör smoke-test av premium-entitlement + delad plan-funktion. Fil: package.json. | 2026-05-11 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
-| T110 | Roadmap-status inkonsekvent: T105 (ga4 noindex) är implementerad sedan commit 51f3b5d (2026-05-05) men markeras fortfarande ☐. Granska T104/T105/T107 mot faktiska commits och uppdatera statusar i roadmap.md. | 2026-05-11 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T108 | Stripe 17.5→22.1.1 — uppgraderad i package.json. apiVersion '2024-11-20.acacia' i api/_lib.js oförändrad. Smoke-test passerat (checkout.sessions.create + webhooks.constructEvent + syntax-check på alla api/*.js). Återstår: Stripe testmiljö-betalning end-to-end. Fil: package.json. | 2026-05-11 | Fas 12 | Veckorapport | 🟠 | Dev | ✔ |
+| T109 | @supabase/supabase-js 2.45→2.105.4 — uppgraderad i package.json. Smoke-test passerat (from/auth/upsert exponerade). Återstår: full smoke-test av premium-entitlement + delad plan i produktion. Fil: package.json. | 2026-05-11 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
+| T110 | Roadmap-status synkad: T105 (ga4 noindex) + T107 (sitemap lastmod) markerade ✔ enligt faktiska commits. | 2026-05-11 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
+| T111 | Sätt upp UptimeRobot (gratis) för https://efterplan.se — Owner-åtgärd. Klart när: monitor aktiv, e-postvarning till jonas.soderstrom43@gmail.com. | 2026-05-11 | Fas 12 | Veckorapport | 🟠 | Infra | ☐ |
+| T112 | Filtrera Jonas IP i GA4 admin (Data Streams → Configure tag settings → Define internal traffic) — Owner-åtgärd. Klart när: egna sessioner exkluderas från rapporter. | 2026-05-11 | Fas 12 | Veckorapport | 🟠 | Analytics | ☐ |
+| T113 | Konfigurera GA4 service-account-credentials i Cowork-sandlådan så veckorapport kan dra GA4-data direkt. Klart när: ga4-service-account.json finns på förväntad sökväg. | 2026-05-11 | Fas 12 | Veckorapport | 🟡 | Infra | ☐ |

@@ -6,7 +6,7 @@
   "description": "Vercel serverless functions for Efterplan (Stripe + Supabase). The static site itself has no build step.",
   "engines": { "node": ">=18" },
   "dependencies": {
-    "stripe": "^17.5.0",
-    "@supabase/supabase-js": "^2.45.4"
+    "stripe": "^22.1.1",
+    "@supabase/supabase-js": "^2.105.4"
   }
 }
