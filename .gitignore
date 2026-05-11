@@ -3,3 +3,7 @@ node_modules/
 .env.local
 .vercel
 .env*.local
+
+# Lokala auto-genererade filer (Cowork / checkmail-skill)
+*.skill
+cowork-veckorapport-*.md
