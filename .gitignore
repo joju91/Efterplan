@@ -7,3 +7,11 @@ node_modules/
 # Lokala auto-genererade filer (Cowork / checkmail-skill)
 *.skill
 cowork-veckorapport-*.md
+
+# Claude Code lokala session-filer (kan innehålla secrets i klartext)
+.claude/handoff.md
+.claude/handoff*.md
+.claude/weekly-report.log
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+secrets-input.txt

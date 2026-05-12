@@ -284,3 +284,11 @@ Each step improves the product or the company in a meaningful way.
 | T112 | GA4 intern-trafik-filter verifierat: regel "Jag själv" (IP 83.233.139.162, traffic_type=internal) + datafilter "Internal Traffic" status=Aktiv, åtgärd=Uteslut. Jonas egna sessioner exkluderas redan från rapporter. | 2026-05-11 | Fas 12 | Veckorapport | 🟠 | Analytics | ✔ |
 | T113 | Konfigurera GA4 service-account-credentials i Cowork-sandlådan så veckorapport kan dra GA4-data direkt. Klart när: ga4-service-account.json finns på förväntad sökväg. | 2026-05-11 | Fas 12 | Veckorapport | 🟡 | Infra | ☐ |
 | T114 | GSC-indexeringsproblem efter canonical-byte (www→apex): lägg till 308-redirect www.efterplan.se→efterplan.se i vercel.json `redirects`-block. Punkt 4b (byt www-canonicals i *.html) och 4c (rensa sitemap.xml) redan klara (commit 265659f + grep `www.efterplan.se` = 0 träffar). Efter deploy: begär omindexering i GSC för 3 drabbade URL:er. | 2026-05-11 | Fas 12 | Veckorapport | 🟠 | SEO | ✔ |
+
+---
+
+## ✅ KLART — Säkerhet 2026-05-12
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T115 | Stripe webhook signing secret roterad efter GitGuardian-läcka. Gammalt `whsec_*` från Kaascha-sandlådan exponerades i `.claude/handoff.md` (PR #21, merge 5e2ba3f, 2026-05-11). Roterad i Stripe Dashboard, nytt värde satt i Vercel env (production + preview), redeployat. `.claude/handoff.md`, `weekly-report.log`, `scheduled_tasks.lock`, `settings.local.json` tillagda i `.gitignore` och untrackade från index. Historik lämnad orörd (test-mode secret, ingen pengarisk efter rotation). | 2026-05-12 | Säkerhet | GitGuardian | 🔴 | Infra | ✔ |
