@@ -53,7 +53,6 @@ Strategic foundation for how the company operates, earns revenue, builds trust, 
 | Company | Register F‑tax / company entity |
 | Payments | Integrate Stripe for payments |
 | Accounting | Set up Bokio or Fortnox |
-| Domain | Register domain (kaascha.se / .com) |
 | Analytics | Install analytics (Plausible / GA4) |
 
 ---

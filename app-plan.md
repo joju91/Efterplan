@@ -2,7 +2,7 @@
 
 
 
-Core structure, logic, content model, monetization, UX principles, trust requirements, and future expansion for the KAASCHA app.
+Core structure, logic, content model, monetization, UX principles, trust requirements, and future expansion for the Efterplan app.
 
 
 

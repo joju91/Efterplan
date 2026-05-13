@@ -1,6 +1,6 @@
 # 🏠 Dashboard — Efterplan
 
-**KAASCHA — EFTERPLAN**  
+**EFTERPLAN**  
 Product · Company · App — unified plan
 
 ---

@@ -36,7 +36,6 @@ Each step improves the product or the company in a meaningful way.
 | ID | Task | Phase | Source | Priority | Type | Status |
 |----|------|--------|---------|----------|--------|-------|
 | T001 | Read the entire Manifest sheet and confirm scope | Fas 1 | 📋 Manifest | 🔴 | Principle | ☐ |
-| T002 | Buy domain: kaascha.se (and .com if available) | Fas 1 | 🏢 Company Plan | 🔴 | Infra | ☐ |
 | T003 | Register company / sole proprietorship + apply for F‑tax | Fas 1 | 🏢 Company Plan | 🔴 | Bolag | ☐ |
 | T004 | Open business bank account (Lunar / Swedbank / Revolut Business) | Fas 1 | 🏢 Company Plan | 🔴 | Bolag | ☐ |
 | T005 | Create GitHub repo + base project setup (Next.js recommended) | Fas 1 | 📱 App Plan | 🔴 | Infra | ✔ |
@@ -102,7 +101,6 @@ Each step improves the product or the company in a meaningful way.
 | ID | Task | Phase | Source | Priority | Type | Status |
 |----|------|--------|---------|----------|--------|-------|
 | T022 | Add disclaimer: "Not legal advice" | Fas 5 | 📱 App Plan | 🔴 | Legal | ✔ |
-| T023 | Write "About Kaascha" | Fas 5 | 🏢 Company Plan | 🟠 | Content | ✔ |
 | T024 | End‑to‑end test | Fas 5 | 📱 App Plan | 🔴 | QA | ✔ |
 | T025 | Publish MVP on domain — all free | Fas 5 | 🏢 Company Plan | 🔴 | Launch | ✔ |
 | T026 | Share with 5 target users, collect feedback | Fas 5 | 📋 Manifest | 🔴 | Research | ⧖ |
