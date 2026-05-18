@@ -266,7 +266,7 @@ Each step improves the product or the company in a meaningful way.
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T105 | ga4-dashboard/public/index.html saknar `<meta name="robots" content="noindex, nofollow">` — intern admin-dashboard är exponerad utan noindex-direktiv och riskerar att crawlas/indexeras av sökmotorer. Lägg till i `<head>` på rad 8. Fil: ga4-dashboard/public/index.html | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | SEO | ✔ |
-| T106 | Extern uptime-monitor saknas — sandbox-hälsocheck blockeras av Cloudflare (HTTP 403), dvs riktiga driftstopp syns inte proaktivt. Sätt upp UptimeRobot (gratis) för https://efterplan.se med e-postvarning till jonas.soderstrom43@gmail.com (kontrollintervall 5 min). | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
+| T106 | Extern uptime-monitor saknas — sandbox-hälsocheck blockeras av Cloudflare (HTTP 403), dvs riktiga driftstopp syns inte proaktivt. Sätt upp UptimeRobot (gratis) för https://efterplan.se med e-postvarning till jonas.soderstrom43@gmail.com (kontrollintervall 5 min). | 2026-05-04 | Fas 12 | Veckorapport | 🟠 | Dev | ✔ |
 | T107 | sitemap.xml lastmod-datum är inaktuella — flertalet URLs har `2026-04-15` men nyare SEO-sidor (tomma-dodsbo, checklista-dodsbo m.fl.) har lagts till sedan dess. Uppdatera `<lastmod>` för berörda sidor i sitemap.xml. Fil: sitemap.xml | 2026-05-04 | Fas 12 | Veckorapport | 🟡 | SEO | ✔ |
 
 ---
@@ -290,3 +290,13 @@ Each step improves the product or the company in a meaningful way.
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T115 | Stripe webhook signing secret roterad efter GitGuardian-läcka. Gammalt `whsec_*` från Kaascha-sandlådan exponerades i `.claude/handoff.md` (PR #21, merge 5e2ba3f, 2026-05-11). Roterad i Stripe Dashboard, nytt värde satt i Vercel env (production + preview), redeployat. `.claude/handoff.md`, `weekly-report.log`, `scheduled_tasks.lock`, `settings.local.json` tillagda i `.gitignore` och untrackade från index. Historik lämnad orörd (test-mode secret, ingen pengarisk efter rotation). | 2026-05-12 | Säkerhet | GitGuardian | 🔴 | Infra | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-05-18
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T116 | UTF-8 BOM i ga4-dashboard/package.json — filen sparad med BOM (EF BB BF) vilket är ogiltigt JSON per RFC 8259. Python json-modulen kraschar med JSONDecodeError vid parsing (reproducerat i veckorapport-körning 2026-05-18). Ta bort BOM: `sed -i '1s/^\xEF\xBB\xBF//' ga4-dashboard/package.json` eller öppna i editor och spara som UTF-8 utan BOM. Fil: ga4-dashboard/package.json rad 1. | 2026-05-18 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
+| T117 | Kvarvarande GA4-events i Title Case — 12 track()-anrop i app.js använder fortfarande Title Case och skapar inkonsistent GA4-data jämfört med core-events (T101 ✔). Berörda: 'Premium Activated' (r79), 'Checkbox Toggle' (r352), 'Note Saved' (r868), 'Preview CTA Clicked' (r999), 'Bill Added' (r1339), 'Bill Scanned QR' (r1443), 'Bill Scanned Photo Only' (r1446), 'Doc Generated' (r2055, r2209), 'Plan Completed' (r2399), 'Plan Printed' (r2413), 'Paywall CTA Clicked' (r2432), 'Shared Plan Opened' (r2512). Byt till snake_case. Fil: app.js. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Analytics | ☐ |
+| T118 | Roadmap-status synkad: T106 (UptimeRobot) markerad ✔ — T111 ✔ bekräftar att UptimeRobot sattes upp 2026-05-11 men T106 stod kvar som ☐. Uppdaterat i detta commit. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
