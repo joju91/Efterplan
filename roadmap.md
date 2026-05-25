@@ -300,3 +300,11 @@ Each step improves the product or the company in a meaningful way.
 | T116 | UTF-8 BOM i ga4-dashboard/package.json — filen sparad med BOM (EF BB BF) vilket är ogiltigt JSON per RFC 8259. Python json-modulen kraschar med JSONDecodeError vid parsing (reproducerat i veckorapport-körning 2026-05-18). Ta bort BOM: `sed -i '1s/^\xEF\xBB\xBF//' ga4-dashboard/package.json` eller öppna i editor och spara som UTF-8 utan BOM. Fil: ga4-dashboard/package.json rad 1. | 2026-05-18 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
 | T117 | Kvarvarande GA4-events i Title Case — 12 track()-anrop i app.js använder fortfarande Title Case och skapar inkonsistent GA4-data jämfört med core-events (T101 ✔). Berörda: 'Premium Activated' (r79), 'Checkbox Toggle' (r352), 'Note Saved' (r868), 'Preview CTA Clicked' (r999), 'Bill Added' (r1339), 'Bill Scanned QR' (r1443), 'Bill Scanned Photo Only' (r1446), 'Doc Generated' (r2055, r2209), 'Plan Completed' (r2399), 'Plan Printed' (r2413), 'Paywall CTA Clicked' (r2432), 'Shared Plan Opened' (r2512). Byt till snake_case. Fil: app.js. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Analytics | ☐ |
 | T118 | Roadmap-status synkad: T106 (UptimeRobot) markerad ✔ — T111 ✔ bekräftar att UptimeRobot sattes upp 2026-05-11 men T106 stod kvar som ☐. Uppdaterat i detta commit. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-05-25
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T119 | om.html saknas i sitemap.xml — "Om Efterplan"-sidan har korrekt canonical (https://efterplan.se/om.html) och meta description men saknas helt i sitemap.xml (0 träffar). Sökmotorer prioriterar inte sidan för crawling. Lägg till `<url>`-block med `<loc>`, `<lastmod>` och `<changefreq>monthly</changefreq>` i sitemap.xml. Fil: sitemap.xml. | 2026-05-25 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
