@@ -256,8 +256,8 @@ Each step improves the product or the company in a meaningful way.
 | T100 | Meta description saknas i share-modal.html + auth-modal.html — false positive: filerna är body-fragment som inlines i index.html, meta-tagg ogiltig där | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | SEO | x |
 | T101 | Standardisera GA4 event-namn till snake_case i app.js — `'Onboarding Start'` → `'onboarding_start'`, `'Plan Generated'` → `'plan_generated'`, `'Task Complete'` → `'task_completed'` (app.js rad 73, 170, 285, 1267). Dashboard server.js dual-querar gamla + nya namn så historisk data bevaras. | 2026-04-29 | Fas 12 | Veckorapport | 🟠 | Analytics | ✔ |
 | T102 | Uppgradera express 4→5 i ga4-dashboard/package.json + verifiera att inga breaking changes påverkar server.js. Express 5.2.1 installerat, smoke-test /api/health → 200 OK. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
-| T103 | Uppgradera googleapis 144→171 i ga4-dashboard/package.json (27 versioner efter, säkerhetsfixar + nya GA4-API-funktioner). Smoke-test `node server.js` + `/api/health` efter upgrade. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
-| T104 | Verifiera 4 moderate npm audit-sårbarheter i ga4-dashboard kvarstår efter T102 (express 4→5). Kör `npm audit` och `npm audit fix` om transitivt beroende. Inga critical/high — låg risk. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T103 | Uppgradera googleapis 144→171 i ga4-dashboard/package.json. Verifierad 2026-05-29: package.json + lockfile båda på 171.4.0. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
+| T104 | Verifiera 4 moderate npm audit-sårbarheter i ga4-dashboard. Status 2026-05-29: 0 sårbarheter i root, 1 moderate kvar i ga4-dashboard (qs DoS, låg reell risk). qs 6.14.2→6.15.2 i lockfile. | 2026-04-29 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
 
 ---
 
@@ -297,8 +297,8 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T116 | UTF-8 BOM i ga4-dashboard/package.json — filen sparad med BOM (EF BB BF) vilket är ogiltigt JSON per RFC 8259. Python json-modulen kraschar med JSONDecodeError vid parsing (reproducerat i veckorapport-körning 2026-05-18). Ta bort BOM: `sed -i '1s/^\xEF\xBB\xBF//' ga4-dashboard/package.json` eller öppna i editor och spara som UTF-8 utan BOM. Fil: ga4-dashboard/package.json rad 1. | 2026-05-18 | Fas 12 | Veckorapport | 🟠 | Dev | ☐ |
-| T117 | Kvarvarande GA4-events i Title Case — 12 track()-anrop i app.js använder fortfarande Title Case och skapar inkonsistent GA4-data jämfört med core-events (T101 ✔). Berörda: 'Premium Activated' (r79), 'Checkbox Toggle' (r352), 'Note Saved' (r868), 'Preview CTA Clicked' (r999), 'Bill Added' (r1339), 'Bill Scanned QR' (r1443), 'Bill Scanned Photo Only' (r1446), 'Doc Generated' (r2055, r2209), 'Plan Completed' (r2399), 'Plan Printed' (r2413), 'Paywall CTA Clicked' (r2432), 'Shared Plan Opened' (r2512). Byt till snake_case. Fil: app.js. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Analytics | ☐ |
+| T116 | UTF-8 BOM borttagen från ga4-dashboard/package.json (EF BB BF). Innehållet oförändrat. Åtgärdat 2026-05-29. | 2026-05-18 | Fas 12 | Veckorapport | 🟠 | Dev | ✔ |
+| T117 | 13 GA4-events i app.js bytta från Title Case till snake_case (premium_activated, checkbox_toggle, note_saved, preview_cta_clicked, bill_added, bill_scanned_qr, bill_scanned_photo_only, doc_generated x2, plan_completed, plan_printed, paywall_cta_clicked, shared_plan_opened). Dashboard server.js dual-querar gamla + nya namn (T101) så historisk data bevaras. Åtgärdat 2026-05-29. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Analytics | ✔ |
 | T118 | Roadmap-status synkad: T106 (UptimeRobot) markerad ✔ — T111 ✔ bekräftar att UptimeRobot sattes upp 2026-05-11 men T106 stod kvar som ☐. Uppdaterat i detta commit. | 2026-05-18 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
 
 ---
@@ -307,4 +307,15 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T119 | om.html saknas i sitemap.xml — "Om Efterplan"-sidan har korrekt canonical (https://efterplan.se/om.html) och meta description men saknas helt i sitemap.xml (0 träffar). Sökmotorer prioriterar inte sidan för crawling. Lägg till `<url>`-block med `<loc>`, `<lastmod>` och `<changefreq>monthly</changefreq>` i sitemap.xml. Fil: sitemap.xml. | 2026-05-25 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
+| T119 | om.html tillagd i sitemap.xml (priority 0.5, monthly). Sajten hade sidan men sitemap missade den. Åtgärdat 2026-05-29. | 2026-05-25 | Fas 12 | Veckorapport | 🟠 | SEO | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-05-29
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T120 | Cache-busting förenat på 33 HTML-sidor: `style.css` → `style.css?v=3` (förut bara index.html versionerad). Eliminerar stale-CSS-risk efter deploy. | 2026-05-29 | Fas 12 | Dagsrapport | 🔴 | Dev | ✔ |
+| T121 | h1-hierarki: index.html har nu exakt en h1 (landing-headline). plan-title och co-title demoteras till h2; landing-eyebrow till p. Två trasiga slut-taggar i WIP rättade samtidigt. | 2026-05-29 | Fas 12 | Dagsrapport | 🟠 | A11y | ✔ |
+| T122 | Tokenisera 135 hårdkodade hex-färger i inline `style=`. Inte påbörjat — kräver designpass mot `style-tokens.css`. | 2026-05-29 | Fas 12 | Dagsrapport | 🟡 | Design | ☐ |
+| T123 | De-inlining: utility-klasser (.u-*) tillagda i style.css och applicerade på auth-modal.html + vad-gora-nar-nagon-dor.html. ~50 nya utility-klasser. Återstår: rulla ut på övriga sidor med inline style=. | 2026-05-29 | Fas 12 | Dagsrapport | 🟢 | Dev | ⧖ |

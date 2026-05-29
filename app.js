@@ -76,7 +76,7 @@ async function handlePremiumReturn() {
     const data = await r.json();
     if (data && data.ok) {
       setPremium(data.email || '');
-      track('Premium Activated');
+      track('premium_activated');
       alert('Tack! Premium är upplåst på den här enheten.');
     } else {
       alert('Vi kunde inte bekräfta betalningen direkt. Försök ladda om sidan om en stund.');
@@ -349,7 +349,7 @@ function updateCheckboxState(key) {
   document.querySelectorAll('#ob-step-2 input[type="checkbox"]').forEach(cb => {
     state[cb.dataset.key] = cb.checked;
   });
-  if (key) track('Checkbox Toggle', { key });
+  if (key) track('checkbox_toggle', { key });
 }
 
 function generatePlan() {
@@ -865,7 +865,7 @@ const saveTaskNote = _debounce(function(taskId, value) {
   notes[taskId] = value;
   try { localStorage.setItem('efterplan_notes', JSON.stringify(notes)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
-  if (value.length > 0) track('Note Saved', { task: taskId });
+  if (value.length > 0) track('note_saved', { task: taskId });
 }, 400);
 
 function getTaskNote(taskId) {
@@ -996,7 +996,7 @@ function buildPreviewCTACard() {
 }
 
 function handlePreviewCTA() {
-  track('Preview CTA Clicked');
+  track('preview_cta_clicked');
   handlePaywallCTA();
 }
 
@@ -1336,7 +1336,7 @@ function submitBill() {
   saveBills();
   renderBills();
   hideBillForm();
-  track('Bill Added');
+  track('bill_added');
 }
 function toggleBillPaid(id) {
   if (!isOwnerMode()) return;
@@ -1440,10 +1440,10 @@ async function handleBillScan(event) {
       if (qr.due) document.getElementById('bill-amount-input').value = String(qr.due);
       if (qr.iref && form) form.dataset.ocr = String(qr.iref);
       setBillScanStatus('Hittade fakturadata — kontrollera och spara.');
-      track('Bill Scanned QR');
+      track('bill_scanned_qr');
     } else {
       setBillScanStatus('Foto sparat. Skriv beskrivning manuellt.');
-      track('Bill Scanned Photo Only');
+      track('bill_scanned_photo_only');
     }
     setTimeout(() => setBillScanStatus(''), 5000);
   } catch (err) {
@@ -2052,7 +2052,7 @@ function _doGenerateBulk(sender, email, genBtn) {
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
   document.getElementById('doc-result-bulk').classList.remove('hidden');
   if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Skapa alla brev →'; }
-  track('Doc Generated', { title: 'Bulk uppsägning', count: String(services.length) });
+  track('doc_generated', { title: 'Bulk uppsägning', count: String(services.length) });
   window.scrollTo(0, 0);
 }
 
@@ -2206,7 +2206,7 @@ Sörjd och saknad.${ovrigtLine}`.trim());
 }
 
 function showDocResult(title, text, emailSubject) {
-  track('Doc Generated', { title: title.split(' — ')[0] });
+  track('doc_generated', { title: title.split(' — ')[0] });
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
   document.getElementById('doc-chooser').classList.add('hidden');
   document.getElementById('result-title').textContent = title;
@@ -2396,7 +2396,7 @@ function showCompletionOverlay() {
   const first = overlay.querySelector(FOCUSABLE);
   if (first) setTimeout(() => first.focus(), 50);
   overlay.addEventListener('keydown', _coEscHandler);
-  track('Plan Completed');
+  track('plan_completed');
 }
 
 function closeCompletionOverlay() {
@@ -2410,7 +2410,7 @@ function closeCompletionOverlay() {
 
 // ─── PDF / PRINT ─────────────────────────────
 function printPlan() {
-  track('Plan Printed');
+  track('plan_printed');
   window.print();
 }
 
@@ -2429,7 +2429,7 @@ function printPlan() {
 })();
 
 async function handlePaywallCTA() {
-  track('Paywall CTA Clicked');
+  track('paywall_cta_clicked');
   if (isPremium()) return;
   let email = '';
   let userId = '';
@@ -2509,7 +2509,7 @@ function applySharedSnapshot(detail) {
 
   document.body.classList.add(SHARED.mode === 'edit' ? 'shared-edit' : 'shared-read');
   showScreen('screen-plan');
-  track('Shared Plan Opened', { mode: SHARED.mode });
+  track('shared_plan_opened', { mode: SHARED.mode });
 }
 
 window.addEventListener('efterplan:shared-loaded', (e) => {
