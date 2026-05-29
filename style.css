@@ -2893,3 +2893,51 @@ body.shared-edit #paywall-card { display: none !important; }
 }
 .landing-footer-links { font-size: 0.8rem; margin-top: 6px; opacity: 0.7; }
 .landing-footer-links a { color: inherit; }
+
+/* Utility classes for moved inline styles */
+.u-padding-8 { padding: 8px; }
+.u-border-1px-solid-ddd { border: 1px solid #ddd; }
+.u-width-full { width: 100%; }
+.u-text-left { text-align: left; }
+.u-padding-8-12 { padding: 8px 12px; }
+.u-margin-1em-0 { margin: 1em 0; }
+.u-margin-bottom-6px { margin-bottom: 6px; }
+.u-border-bottom-1px-solid-eee { border-bottom: 1px solid #eee; }
+.u-border-collapse { border-collapse: collapse; }
+.u-margin-bottom-28px { margin-bottom: 28px; }
+.u-background-f0f0f0 { background: #f0f0f0; }
+.u-margin-bottom-8px { margin-bottom: 8px; }
+.u-border-radius-10px { border-radius: 10px; }
+.u-padding-12-14 { padding: 12px 14px; }
+.u-min-height-1-2em { min-height: 1.2em; }
+.u-margin-top-8px { margin-top: 8px; }
+.u-display-flex { display: flex; }
+.u-flex-1 { flex: 1; }
+.u-margin-top-12px { margin-top: 12px; }
+.u-font-weight-600 { font-weight: 600; }
+.u-margin-top-4px { margin-top: 4px; }
+.u-margin-bottom-8px { margin-bottom: 8px; }
+.u-background-var-grey-bg { background: var(--grey-bg,#f5f5f5); }
+.u-width-80px { width: 80px; }
+.u-margin-top-12px { margin-top: 12px; }
+.u-margin-top-8px { margin-top: 8px; }
+.u-margin-bottom-6px { margin-bottom: 6px; }
+.u-margin-bottom-28px { margin-bottom: 28px; }
+.u-display-flex { display: flex; }
+.u-gap-8 { gap: 8px; }
+.u-margin-bottom-8px { margin-bottom: 8px; }
+.u-font-size-0-9rem { font-size: 0.9rem; }
+.u-border-var-border { border: 1px solid var(--border); }
+.u-font-size-0-9rem { font-size: 0.9rem; }
+.u-max-width-260px { max-width: 260px; }
+
+/* Utility classes for vad-gora-nar-nagon-dor.html */
+.u-font-size-0-95rem { font-size: 0.95rem; }
+.u-margin-1rem-0 { margin: 1rem 0; }
+.u-border-bottom-2px-solid-ddd { border-bottom: 2px solid #ddd; }
+.u-background-f0f4f8 { background: #f0f4f8; }
+.u-border-bottom-1px-solid-eee { border-bottom: 1px solid #eee; }
+.u-background-f0f4f8 { background: #f0f4f8; }
+.u-padding-8-12 { padding: 8px 12px; }
+.u-border-bottom-2px-solid-ddd { border-bottom: 2px solid #ddd; }
+.u-border-bottom-1px-solid-eee { border-bottom: 1px solid #eee; }
