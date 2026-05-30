@@ -194,88 +194,6 @@ const SUPABASE_CONFIG = {
     return data;
   }
 
-  async function createShareToken(kind) {
-    await initSupabase();
-    if (!client || !currentUser) throw new Error('Inte inloggad');
-    const k = kind === 'edit' ? 'edit' : 'read';
-    const plan = await loadPlan();
-    const pid = plan && plan.id;
-    if (!pid) throw new Error('Ingen plan att dela');
-    // Reactivate an existing token of this kind if present, so users don't
-    // accumulate dead tokens when they toggle sharing on/off.
-    const { data: existing } = await client
-      .from('share_tokens')
-      .select('token, active')
-      .eq('plan_id', pid)
-      .eq('kind', k)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (existing) {
-      if (!existing.active) {
-        await client.from('share_tokens').update({ active: true }).eq('token', existing.token);
-      }
-      return existing.token;
-    }
-    const { data, error } = await client
-      .from('share_tokens')
-      .insert({ plan_id: pid, kind: k })
-      .select('token')
-      .single();
-    if (error) throw error;
-    return data.token;
-  }
-
-  async function revokeShareToken(token) {
-    await initSupabase();
-    if (!client) return;
-    await client.from('share_tokens').update({ active: false }).eq('token', token);
-  }
-
-  async function getActiveShareTokens() {
-    await initSupabase();
-    const out = { read: null, edit: null };
-    if (!client || !currentUser) return out;
-    const plan = await loadPlan();
-    if (!plan) return out;
-    const { data } = await client
-      .from('share_tokens')
-      .select('token, kind')
-      .eq('plan_id', plan.id)
-      .eq('active', true);
-    (data || []).forEach(r => {
-      if (r.kind === 'read' || r.kind === 'edit') out[r.kind] = r.token;
-    });
-    return out;
-  }
-
-  async function getSharedPlan(token) {
-    await initSupabase();
-    if (!client) return null;
-    const { data, error } = await client.rpc('get_shared_plan', { token_in: token });
-    if (error) { console.warn('[efterplan] getSharedPlan', error); return null; }
-    if (!data) return null;
-    // RPC returns { state_json, kind, plan_id }. state_json is a JSON-encoded
-    // object whose values may themselves be JSON strings (e.g. efterplan_tasks).
-    return {
-      state_json: data.state_json || null,
-      kind: data.kind || 'read',
-      plan_id: data.plan_id || null,
-    };
-  }
-
-  async function toggleSharedTask(token, taskId, done) {
-    await initSupabase();
-    if (!client) throw new Error('Supabase inte konfigurerad');
-    const { data, error } = await client.rpc('toggle_shared_task', {
-      token_in: token,
-      task_id_in: taskId,
-      done_in: !!done,
-    });
-    if (error) throw error;
-    return data;
-  }
-
   function syncToSupabase() {
     if (syncTimer) clearTimeout(syncTimer);
     syncTimer = setTimeout(async () => {
@@ -286,25 +204,6 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
-  function detectSharedFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('share');
-    if (!token) return;
-    initSupabase().then(() => getSharedPlan(token)).then(data => {
-      if (!data || !data.state_json) return;
-      const payload = {
-        state: data.state_json,
-        kind: data.kind || 'read',
-        token: token,
-        plan_id: data.plan_id || null,
-      };
-      window.__efterplanShared = payload;
-      // Legacy alias (pre-edit-mode consumers).
-      window.__efterplanSharedState = data.state_json;
-      window.dispatchEvent(new CustomEvent('efterplan:shared-loaded', { detail: payload }));
-    }).catch(() => { /* swallow */ });
-  }
-
   // Public API
   window.efterplanAuth = {
     initSupabase,
@@ -313,11 +212,6 @@ const SUPABASE_CONFIG = {
     getCurrentUser,
     savePlan,
     loadPlan,
-    createShareToken,
-    revokeShareToken,
-    getActiveShareTokens,
-    getSharedPlan,
-    toggleSharedTask,
     syncToSupabase,
     isConfigured,
   };
@@ -325,8 +219,8 @@ const SUPABASE_CONFIG = {
   window.addEventListener('efterplan:state-changed', syncToSupabase);
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { initSupabase(); detectSharedFromUrl(); });
+    document.addEventListener('DOMContentLoaded', () => { initSupabase(); });
   } else {
-    initSupabase(); detectSharedFromUrl();
+    initSupabase();
   }
 })();

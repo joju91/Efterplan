@@ -132,10 +132,6 @@
 
 <a href="#screen-landing" class="skip-link">Hoppa till innehållet</a>
 
-<div id="shared-banner" class="shared-banner hidden" role="status" data-mode="read">
-  <span class="shared-banner-text">Du ser en delad plan (skrivskyddad).</span>
-</div>
-
 <div id="offline-banner" class="offline-banner" role="alert" aria-live="polite">
   Ingen uppkoppling just nu — dina ändringar sparas ändå lokalt.
 </div>
@@ -372,65 +368,44 @@
               <span class="ob-check-hint">Hund, katt eller annat djur som behöver ny ägare</span>
             </span>
           </label>
+          <label class="ob-check">
+            <input type="checkbox" data-key="vardepapper" onchange="updateCheckboxState(this.dataset.key)">
+            <span class="ob-check-box"></span>
+            <span class="ob-check-label">Aktier eller fonder
+              <span class="ob-check-hint">Depå, ISK eller kapitalförsäkring med värdepapper</span>
+            </span>
+          </label>
+          <label class="ob-check">
+            <input type="checkbox" data-key="barn" onchange="updateCheckboxState(this.dataset.key)">
+            <span class="ob-check-box"></span>
+            <span class="ob-check-label">Barn under 20 år
+              <span class="ob-check-hint">Biologiskt eller adopterat barn som kan ha rätt till barnpension</span>
+            </span>
+          </label>
         </div>
         <p class="ob-skip">Vet du inte säkert? Hoppa bara vidare — du kan ändra senare.</p>
         <button class="ob-next-btn ob-next-sticky" onclick="obGoTo(3)">Nästa →</button>
       </div>
     </div>
 
-    <!-- Step 3 (fd. steg 4) -->
+    <!-- Step 3 — namn -->
     <div class="ob-step" id="ob-step-3">
       <div class="ob-content">
-        <p class="ob-label">Steg 3 av 5</p>
-        <h2 class="ob-title">Hanterar du det här ensam?</h2>
-        <p class="ob-hint">Syskon, föräldrar, svärmor — alla som delar på det praktiska räknas. Vi lägger till en fullmaktsmall och anpassar planen.</p>
-        <div class="ob-choices">
-          <button class="ob-choice" data-key="ansvar" data-val="ensam" onclick="obChoose(this)">Ja, jag sköter det</button>
-          <button class="ob-choice" data-key="ansvar" data-val="flera" onclick="obChoose(this)">Vi är flera</button>
-        </div>
-        <button class="ob-next-btn" onclick="obAfterAnsvar()" disabled>Nästa →</button>
-      </div>
-    </div>
-
-    <!-- Step 4 — deltagare (visas bara om "vi är flera") -->
-    <div class="ob-step" id="ob-step-4">
-      <div class="ob-content">
-        <p class="ob-label">Steg 4 av 6</p>
-        <h2 class="ob-title">Vilka hjälper till?</h2>
-        <p class="ob-hint">Börja med ditt eget namn, lägg sedan till övriga.</p>
-        <label class="ob-field-label" for="ob-self-name">Ditt namn</label>
-        <input type="text" id="ob-self-name" class="ob-text-input" placeholder="Namn" autocomplete="name"
-          onkeydown="if(event.key==='Enter') document.getElementById('ob-participant-name').focus()" />
-        <label class="ob-field-label" for="ob-participant-name">Övriga som hjälper till</label>
-        <div class="ob-participant-list" id="ob-participant-list"></div>
-        <div class="ob-participant-input-row">
-          <input type="text" id="ob-participant-name" class="ob-text-input" placeholder="Namn" autocomplete="off"
-            onkeydown="if(event.key==='Enter') obAddParticipant()" />
-          <button class="btn-ghost btn-sm" type="button" onclick="obAddParticipant()">+ Lägg till</button>
-        </div>
-        <p class="ob-why">Vi använder detta för att du ska kunna tilldela uppgifter till rätt person.</p>
-        <button class="ob-next-btn" onclick="obSaveParticipantsAndContinue()">Nästa →</button>
-      </div>
-    </div>
-
-    <!-- Step 5 — namn -->
-    <div class="ob-step" id="ob-step-5">
-      <div class="ob-content">
-        <p class="ob-label">Steg 5 av 6</p>
+        <p class="ob-label">Steg 3 av 4</p>
         <h2 class="ob-title">Vilket namn har den som avled?</h2>
         <p class="ob-hint">Det gör planen och breven lite mer personliga.</p>
         <input type="text" id="deceased-name" class="ob-text-input" placeholder="Förnamn Efternamn" autocomplete="off"
           aria-label="Den avlidnes förnamn och efternamn"
-          onkeydown="if(event.key==='Enter') obGoTo(6)" />
+          onkeydown="if(event.key==='Enter') obGoTo(4)" />
         <p class="ob-skip">Frivilligt — du kan hoppa över detta.</p>
-        <button class="ob-next-btn" onclick="obGoTo(6)">Nästa →</button>
+        <button class="ob-next-btn" onclick="obGoTo(4)">Nästa →</button>
       </div>
     </div>
 
-    <!-- Step 6 — personnr -->
-    <div class="ob-step" id="ob-step-6">
+    <!-- Step 4 — personnr -->
+    <div class="ob-step" id="ob-step-4">
       <div class="ob-content">
-        <p class="ob-label">Steg 6 av 6 — helt frivilligt</p>
+        <p class="ob-label">Steg 4 av 4 — helt frivilligt</p>
         <h2 class="ob-title">Personnummer?</h2>
         <p class="ob-hint">Vi fyller i det automatiskt i alla brev du genererar — sparar tid. Annars kan du fylla i det manuellt direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
         <input type="text" id="deceased-personnr" class="ob-text-input" placeholder="ÅÅÅÅMMDD-XXXX" autocomplete="off"
@@ -455,10 +430,8 @@
       <div class="logo-tagline">För det som blir kvar när någon är borta</div>
     </div>
     <div class="nav-plan-actions">
-      <div id="plan-participants" class="plan-participants owner-only"></div>
-      <button class="btn-ghost btn-sm owner-only" id="open-share" onclick="document.getElementById('share-modal').classList.remove('hidden')">Dela min plan</button>
-      <button class="btn-ghost btn-sm owner-only" id="open-auth" onclick="document.getElementById('auth-modal').classList.remove('hidden')">Mitt konto</button>
-      <button class="btn-ghost btn-sm owner-only" onclick="editAnswers()">Ändra svar</button>
+      <button class="btn-ghost btn-sm" id="open-auth" onclick="document.getElementById('auth-modal').classList.remove('hidden')">Mitt konto</button>
+      <button class="btn-ghost btn-sm" onclick="editAnswers()">Ändra svar</button>
     </div>
   </nav>
 
@@ -860,26 +833,6 @@
 
 </div>
 
-<!-- UNDO TOAST -->
-<!-- MODAL: DELTAGARE -->
-<div id="modal-participants" class="modal-overlay hidden"
-     role="dialog" aria-modal="true" aria-labelledby="modal-participants-title"
-     onclick="closeModalIfOutside(event, 'modal-participants')">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <h2 class="modal-title" id="modal-participants-title">Vilka hjälps ni åt?</h2>
-      <button class="modal-close" onclick="closeModal('modal-participants')" aria-label="Stäng">✕</button>
-    </div>
-    <p class="modal-sub">Namn används för arbetsfördelning och för att bestämma vem som ansvarar för vad.</p>
-    <div id="modal-participant-list" style="margin-bottom:12px"></div>
-    <div class="ob-participant-add">
-      <input type="text" id="ob-participant-input" aria-label="Deltagarens namn" class="text-input" placeholder="Lägg till namn…" autocomplete="off"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();addParticipant()}" />
-      <button class="btn-ghost btn-sm" onclick="addParticipant()">Lägg till</button>
-    </div>
-  </div>
-</div>
-
 <div id="undo-toast" class="undo-toast hidden" role="status" aria-live="polite">
   <span>Uppgift markerad som klar.</span>
   <button onclick="undoTaskDone()">Ångra</button>
@@ -1047,185 +1000,5 @@
 })();
 </script>
 
-<!-- ═══════════════════════════════════════════
-     SHARE MODAL (source: share-modal.html)
-════════════════════════════════════════════ -->
-<div id="share-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <h2 class="modal-title" id="share-modal-title">Dela min plan</h2>
-      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('share-modal').classList.add('hidden')">✕</button>
-    </div>
-
-    <p class="modal-sub">Skicka en länk till en anhörig. Välj om de ska kunna se planen eller också bocka av uppgifter.</p>
-
-    <!-- Not signed in -->
-    <div id="share-view-signedout" class="hidden">
-      <p class="modal-sub">Du behöver vara inloggad för att dela din plan. Öppna <strong>Mitt konto</strong> och logga in med e-post.</p>
-    </div>
-
-    <div id="share-view-main">
-      <!-- Read-only section -->
-      <section class="share-section" data-kind="read">
-        <h3 class="share-section-title">Skrivskyddad länk</h3>
-        <p class="share-section-sub">Mottagaren ser planen men kan inte ändra något.</p>
-
-        <div class="share-none" data-kind="read">
-          <button type="button" class="btn-ghost btn-sm share-create-btn" data-kind="read" style="width:100%;">Skapa läs-länk</button>
-        </div>
-
-        <div class="share-active hidden" data-kind="read">
-          <label class="sr-only" for="share-url-read">Läslänk</label>
-          <div class="u-display-flex u-gap-8 u-margin-bottom-8px">
-            <input type="text" id="share-url-read" class="share-url-input" data-kind="read" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
-            <button type="button" class="btn-ghost btn-sm share-copy-btn" data-kind="read">Kopiera</button>
-          </div>
-          <button type="button" class="btn-ghost btn-sm share-revoke-btn" data-kind="read" style="width:100%;">Sluta dela läs-länken</button>
-        </div>
-
-        <p class="share-status modal-sub" data-kind="read" style="min-height:1.2em;margin-top:8px;"></p>
-      </section>
-
-      <!-- Edit section -->
-      <section class="share-section" data-kind="edit" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
-        <h3 class="share-section-title">Redigerbar länk</h3>
-        <p class="share-section-sub">Mottagaren kan <strong>bocka av uppgifter</strong> — inget annat. Ingen inloggning krävs, så dela bara med personer du litar på.</p>
-
-        <div class="share-none" data-kind="edit">
-          <button type="button" class="btn-ghost btn-sm share-create-btn" data-kind="edit" style="width:100%;">Skapa redigeringslänk</button>
-        </div>
-
-        <div class="share-active hidden" data-kind="edit">
-          <label class="sr-only" for="share-url-edit">Redigeringslänk</label>
-          <div class="u-display-flex u-gap-8 u-margin-bottom-8px">
-            <input type="text" id="share-url-edit" class="share-url-input" data-kind="edit" readonly style="flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;background:var(--grey-bg,#f5f5f5);">
-            <button type="button" class="btn-ghost btn-sm share-copy-btn" data-kind="edit">Kopiera</button>
-          </div>
-          <button type="button" class="btn-ghost btn-sm share-revoke-btn" data-kind="edit" style="width:100%;">Sluta dela redigeringslänken</button>
-        </div>
-
-        <p class="share-status modal-sub" data-kind="edit" style="min-height:1.2em;margin-top:8px;"></p>
-      </section>
-    </div>
-  </div>
-</div>
-
-<script>
-(function () {
-  'use strict';
-  const modal       = document.getElementById('share-modal');
-  const viewMain    = document.getElementById('share-view-main');
-  const viewSignout = document.getElementById('share-view-signedout');
-
-  function urlFor(token) {
-    return window.location.origin + '/?share=' + encodeURIComponent(token);
-  }
-  function $kind(sel, kind) {
-    return modal.querySelector(sel + '[data-kind="' + kind + '"]');
-  }
-  function showSignedOut() {
-    viewMain.classList.add('hidden');
-    viewSignout.classList.remove('hidden');
-  }
-  function showMain() {
-    viewSignout.classList.add('hidden');
-    viewMain.classList.remove('hidden');
-  }
-  function renderKind(kind, token) {
-    const none   = $kind('.share-none', kind);
-    const active = $kind('.share-active', kind);
-    const input  = $kind('.share-url-input', kind);
-    const status = $kind('.share-status', kind);
-    if (token) {
-      none.classList.add('hidden');
-      active.classList.remove('hidden');
-      input.value = urlFor(token);
-    } else {
-      active.classList.add('hidden');
-      none.classList.remove('hidden');
-      input.value = '';
-    }
-    status.textContent = '';
-  }
-
-  async function refresh() {
-    if (!window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
-      showSignedOut();
-      return;
-    }
-    const user = await window.efterplanAuth.getCurrentUser();
-    if (!user) { showSignedOut(); return; }
-    showMain();
-    const tokens = await window.efterplanAuth.getActiveShareTokens();
-    renderKind('read', tokens.read);
-    renderKind('edit', tokens.edit);
-  }
-
-  modal.querySelectorAll('.share-create-btn').forEach(btn => {
-    btn.addEventListener('click', async function () {
-      const kind   = btn.getAttribute('data-kind');
-      const status = $kind('.share-status', kind);
-      status.textContent = 'Skapar länk…';
-      try {
-        // Ensure the plan exists remotely before creating a token.
-        window.dispatchEvent(new Event('efterplan:state-changed'));
-        await new Promise(r => setTimeout(r, 2200));
-        const token = await window.efterplanAuth.createShareToken(kind);
-        renderKind(kind, token);
-      } catch (err) {
-        status.textContent = 'Kunde inte skapa länk: ' + (err && err.message || err);
-      }
-    });
-  });
-
-  modal.querySelectorAll('.share-copy-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const kind   = btn.getAttribute('data-kind');
-      const input  = $kind('.share-url-input', kind);
-      const status = $kind('.share-status', kind);
-      input.select();
-      const done = () => {
-        status.textContent = 'Kopierat!';
-        setTimeout(() => { status.textContent = ''; }, 2000);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(input.value).then(done).catch(() => {
-          document.execCommand('copy'); done();
-        });
-      } else {
-        document.execCommand('copy'); done();
-      }
-    });
-  });
-
-  modal.querySelectorAll('.share-revoke-btn').forEach(btn => {
-    btn.addEventListener('click', async function () {
-      const kind   = btn.getAttribute('data-kind');
-      const input  = $kind('.share-url-input', kind);
-      const status = $kind('.share-status', kind);
-      const url    = input.value;
-      if (!url) return;
-      const token  = decodeURIComponent(url.split('share=')[1] || '');
-      if (!token) return;
-      const original = btn.textContent;
-      btn.textContent = 'Avaktiverar…';
-      try {
-        await window.efterplanAuth.revokeShareToken(token);
-        renderKind(kind, null);
-      } catch (err) {
-        status.textContent = 'Kunde inte avaktivera: ' + (err && err.message || err);
-      } finally {
-        btn.textContent = original;
-      }
-    });
-  });
-
-  window.addEventListener('efterplan:auth-changed', refresh);
-  const openShareBtn = document.getElementById('open-share');
-  if (openShareBtn) openShareBtn.addEventListener('click', refresh);
-
-  refresh();
-})();
-</script>
 </body>
 </html>
