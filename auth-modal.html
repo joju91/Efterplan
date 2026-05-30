@@ -97,7 +97,10 @@
       if (res && res.error) throw res.error;
       status.textContent = 'Länk skickad — kolla din e-post.';
     } catch (err) {
-      status.textContent = 'Kunde inte skicka länk: ' + (err && err.message || err);
+      const msg = (err && err.message) || String(err);
+      status.textContent = msg.includes('fetch') || msg.includes('network')
+        ? 'Kunde inte ansluta — försök igen om en stund.'
+        : 'Kunde inte skicka länk. Försök igen.';
     }
   });
 
