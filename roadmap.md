@@ -16,6 +16,26 @@ Each step improves the product or the company in a meaningful way.
 
 ---
 
+## 👤 ÄGARÅTGÄRDER — det som bara du kan göra (uppdaterad 2026-05-30)
+
+Allt som Claude Code kan göra är gjort. Nedan är de blockerare som kräver din aktiva handling.
+Prioritetsordning: gör dem uppifrån och ned.
+
+| # | Ticket | Vad du ska göra | Prioritet |
+|---|--------|-----------------|-----------|
+| 1 | T003 | Registrera enskild firma på verksamt.se + ansök om F-skatt. Tar 1–2 veckor. | 🔴 |
+| 2 | T004 | Öppna företagskonto (Lunar Business rekommenderas — gratis). Kräver registrerat org-nummer. | 🔴 |
+| 3 | T032 | Testa Stripe-betalningsflödet end-to-end: gå till efterplan.se, fyll i onboarding, klicka "Lås upp", betala med Stripes testkort `4242 4242 4242 4242`. Verifiera att planen öppnas efteråt. | 🔴 |
+| 4 | T015 | Testa appen med 2–3 verkliga anhöriga som nyligen hanterat dödsbo. Fråga: vilka steg fattades, vad var oklart? | 🔴 |
+| 5 | T016 | Justera stegordning och text i app.js baserat på intervjuerna från T015. (Claude gör ändringarna — du ger feedbacken.) | 🔴 |
+| 6 | T034 | Sätt upp Bokio (gratis för enskild firma) för bokföring. Koppla företagskontot. | 🟠 |
+| 7 | T113 | GA4 service-account: ladda ner `ga4-service-account.json` från Google Cloud Console och lägg på servern så veckorapporten kan dra data direkt. Jag kan guida om du startar en session. | 🟡 |
+| 8 | T079 | Besluta affärsmodell för betald byrålisting: pris per byrå/månad, hur säljprocessen ska gå till. Inget att bygga förrän beslut är fattat. | 🟡 |
+| 9 | T047/T081 | Drop-off-analys — väntar på ~100 organiska sessioner. Gör ingenting nu, återkom när trafiken ökar. | ⏳ |
+| 10 | T048 | A/B-test pris — väntar på trafik. Gör ingenting nu. | ⏳ |
+
+---
+
 ## ⚠️ STRATEGISKA NOTER (uppdaterad 2026-04-24)
 - **Partnerskap med begravningsbyråer och jurister är inte aktuellt.** T045, T046, T077, T078 struktna. Efterplan används INNAN begravningsbyrå kontaktas — flödet går efterplan → byrå, inte tvärtom.
 - **T079** — omdefinierad: betald byrålisting i appen. Affärsmodell (pris, avtal, säljprocess) beslutas av Owner innan exekvering.
