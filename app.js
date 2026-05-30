@@ -2272,3 +2272,141 @@ async function handlePaywallCTA() {
     startOnboarding();
   }
 })();
+
+// ─── BOUPPTECKNING ────────────────────────────
+const BOPP_KEY = 'efterplan_bouppteckning';
+
+const boppData = {
+  delbagare:  [],  // [{ namn, roll }]
+  tillgangar: [],  // [{ beskrivning, varde }]
+  skulder:    [],  // [{ beskrivning, belopp }]
+};
+
+function boppSave() {
+  try { localStorage.setItem(BOPP_KEY, JSON.stringify(boppData)); } catch(e) {}
+}
+
+function boppLoad() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(BOPP_KEY) || 'null');
+    if (saved) {
+      boppData.delbagare  = saved.delbagare  || [];
+      boppData.tillgangar = saved.tillgangar || [];
+      boppData.skulder    = saved.skulder    || [];
+    }
+  } catch(e) {}
+  boppRender();
+}
+
+function boppRender() {
+  boppRenderSection('delbagare',  'bopp-delbagare-list',  boppRowDelbagare);
+  boppRenderSection('tillgangar', 'bopp-tillgangar-list', boppRowTillgang);
+  boppRenderSection('skulder',    'bopp-skulder-list',    boppRowSkuld);
+  boppUpdateSummary();
+}
+
+function boppRenderSection(key, containerId, rowFn) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  boppData[key].forEach((item, i) => {
+    container.appendChild(rowFn(item, i));
+  });
+  if (boppData[key].length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'bopp-empty';
+    empty.textContent = 'Ingen tillagd ännu.';
+    container.appendChild(empty);
+  }
+}
+
+function boppRowDelbagare(item, i) {
+  const row = document.createElement('div');
+  row.className = 'bopp-row';
+  row.innerHTML = `
+    <input class="bill-input bopp-input-name" type="text" placeholder="Namn" value="${_esc(item.namn)}"
+      oninput="boppData.delbagare[${i}].namn=this.value;boppSave()">
+    <select class="bill-input bopp-select" onchange="boppData.delbagare[${i}].roll=this.value;boppSave()">
+      <option value="arvinge"${item.roll==='arvinge'?' selected':''}>Arvinge</option>
+      <option value="testamentstagare"${item.roll==='testamentstagare'?' selected':''}>Testamentstagare</option>
+      <option value="efterlevande_make"${item.roll==='efterlevande_make'?' selected':''}>Efterlevande make/maka</option>
+      <option value="annan"${item.roll==='annan'?' selected':''}>Annan</option>
+    </select>
+    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort">×</button>`;
+  return row;
+}
+
+function boppRowTillgang(item, i) {
+  const row = document.createElement('div');
+  row.className = 'bopp-row';
+  row.innerHTML = `
+    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Bankkonto Swedbank)" value="${_esc(item.beskrivning)}"
+      oninput="boppData.tillgangar[${i}].beskrivning=this.value;boppSave()">
+    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.varde||''}"
+      oninput="boppData.tillgangar[${i}].varde=this.value;boppSave();boppUpdateSummary()">
+    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort">×</button>`;
+  return row;
+}
+
+function boppRowSkuld(item, i) {
+  const row = document.createElement('div');
+  row.className = 'bopp-row';
+  row.innerHTML = `
+    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Banklån Swedbank)" value="${_esc(item.beskrivning)}"
+      oninput="boppData.skulder[${i}].beskrivning=this.value;boppSave()">
+    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.belopp||''}"
+      oninput="boppData.skulder[${i}].belopp=this.value;boppSave();boppUpdateSummary()">
+    <button class="bopp-remove" onclick="boppRemove('skulder',${i})" aria-label="Ta bort">×</button>`;
+  return row;
+}
+
+function boppAddDelbagare() {
+  boppData.delbagare.push({ namn: '', roll: 'arvinge' });
+  boppSave();
+  boppRenderSection('delbagare', 'bopp-delbagare-list', boppRowDelbagare);
+  const inputs = document.querySelectorAll('#bopp-delbagare-list .bopp-input-name');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function boppAddTillgang() {
+  boppData.tillgangar.push({ beskrivning: '', varde: '' });
+  boppSave();
+  boppRenderSection('tillgangar', 'bopp-tillgangar-list', boppRowTillgang);
+  const inputs = document.querySelectorAll('#bopp-tillgangar-list .bopp-input-name');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function boppAddSkuld() {
+  boppData.skulder.push({ beskrivning: '', belopp: '' });
+  boppSave();
+  boppRenderSection('skulder', 'bopp-skulder-list', boppRowSkuld);
+  const inputs = document.querySelectorAll('#bopp-skulder-list .bopp-input-name');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function boppRemove(key, index) {
+  boppData[key].splice(index, 1);
+  boppSave();
+  boppRender();
+}
+
+function boppUpdateSummary() {
+  const tillgangar = boppData.tillgangar.reduce((s, t) => s + (parseFloat(t.varde) || 0), 0);
+  const skulder    = boppData.skulder.reduce((s, t) => s + (parseFloat(t.belopp) || 0), 0);
+  const netto      = tillgangar - skulder;
+  const fmt = n => n.toLocaleString('sv-SE') + ' kr';
+  const el = id => document.getElementById(id);
+  if (el('bopp-sum-tillgangar')) el('bopp-sum-tillgangar').textContent = fmt(tillgangar);
+  if (el('bopp-sum-skulder'))    el('bopp-sum-skulder').textContent    = fmt(skulder);
+  if (el('bopp-sum-netto')) {
+    el('bopp-sum-netto').textContent = fmt(netto);
+    el('bopp-sum-netto').classList.toggle('bopp-netto-neg', netto < 0);
+  }
+}
+
+function _esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+// Load on init
+document.addEventListener('DOMContentLoaded', () => { boppLoad(); });

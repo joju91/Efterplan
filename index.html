@@ -440,6 +440,7 @@
     <div class="plan-tabs">
       <button class="plan-tab active" id="tab-plan" onclick="switchTab('plan')">Min plan</button>
       <button class="plan-tab" id="tab-docs" onclick="switchTab('docs')">Dokument</button>
+      <button class="plan-tab" id="tab-bopp" onclick="switchTab('bopp')">Bouppteckning</button>
     </div>
   </div>
 
@@ -827,6 +828,60 @@
         </div>
         <p class="copied-msg hidden" id="copied-msg">Kopierat!</p>
       </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: Bouppteckning -->
+  <div class="plan-tab-content" id="tabcontent-bopp">
+    <div class="plan-wrap">
+      <div class="plan-header">
+        <h2 class="plan-title">Bouppteckning</h2>
+        <p class="plan-sub">Lista tillgångar, skulder och dödsbodelägare. Sparas lokalt i din webbläsare.</p>
+      </div>
+
+      <!-- Sammanfattning -->
+      <div class="bopp-summary" id="bopp-summary">
+        <div class="bopp-summary-row">
+          <span>Tillgångar</span><span id="bopp-sum-tillgangar">0 kr</span>
+        </div>
+        <div class="bopp-summary-row">
+          <span>Skulder</span><span id="bopp-sum-skulder">0 kr</span>
+        </div>
+        <div class="bopp-summary-row bopp-summary-net">
+          <span>Nettovärde</span><span id="bopp-sum-netto">0 kr</span>
+        </div>
+      </div>
+
+      <!-- Dödsbodelägare -->
+      <section class="bopp-section">
+        <div class="bopp-section-header">
+          <h3 class="bopp-section-title">Dödsbodelägare</h3>
+          <button class="btn-ghost btn-sm" onclick="boppAddDelbagare()">+ Lägg till</button>
+        </div>
+        <p class="bopp-section-hint">De som har rätt att delta i bouppteckningen — arvingar och eventuella testamentstagare.</p>
+        <div id="bopp-delbagare-list"></div>
+      </section>
+
+      <!-- Tillgångar -->
+      <section class="bopp-section">
+        <div class="bopp-section-header">
+          <h3 class="bopp-section-title">Tillgångar</h3>
+          <button class="btn-ghost btn-sm" onclick="boppAddTillgang()">+ Lägg till</button>
+        </div>
+        <p class="bopp-section-hint">Bank, fastighet, bil, bohag, värdepapper, livförsäkring m.m. Skriv uppskattade belopp — exakta värden fastställs senare.</p>
+        <div id="bopp-tillgangar-list"></div>
+      </section>
+
+      <!-- Skulder -->
+      <section class="bopp-section">
+        <div class="bopp-section-header">
+          <h3 class="bopp-section-title">Skulder</h3>
+          <button class="btn-ghost btn-sm" onclick="boppAddSkuld()">+ Lägg till</button>
+        </div>
+        <p class="bopp-section-hint">Banklån, kreditkort, obetald hyra, skatteskulder m.m. Du ärver inte skulder — de betalas ur dödsboet om det finns tillgångar.</p>
+        <div id="bopp-skulder-list"></div>
+      </section>
 
     </div>
   </div>
