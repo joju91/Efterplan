@@ -2500,6 +2500,21 @@ body {
   max-width: var(--measure);
 }
 
+/* Callout/blockquote-style boxes in SEO articles */
+.seo-callout {
+  background: var(--paper-soft);
+  border-left: 3px solid var(--ink-teal-dk);
+  padding: 1em 1.5em;
+  margin: 1em 0;
+  font-style: italic;
+}
+
+/* Table body cells in SEO articles */
+.seo-article table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
 /* Inline CTA box — editorial, not generic "card" */
 .seo-cta {
   background: var(--paper-soft);
