@@ -90,38 +90,24 @@ async function handlePremiumReturn() {
   }
 }
 
-// ─── SHARED MODE ─────────────────────────────
-// When someone opens ?share=TOKEN the plan is rendered from Supabase instead
-// of localStorage. mode='read' disables all mutations; mode='edit' routes
-// task checkbox toggles through the toggle_shared_task RPC.
-const SHARED = {
-  mode:       'owner', // 'owner' | 'read' | 'edit'
-  token:      null,
-  taskMap:    null,    // overrides localStorage efterplan_tasks when set
-  notifyList: null,    // overrides localStorage efterplan_notify_list
-};
-function isOwnerMode()  { return SHARED.mode === 'owner'; }
-function isReadOnly()   { return SHARED.mode === 'read'; }
-function isSharedEdit() { return SHARED.mode === 'edit'; }
 
 // ─── STATE ───────────────────────────────────
 const state = {
-  relation:            null,
-  testamente:          false,
-  fastighet:           false,
-  foretag:             false,
-  skulder:             false,
-  utland:              false,
-  minderarig:          false,
-  fordon:              false,
-  husdjur:             false,
-  hyresratt:           false,
-  ansvar:              null,
-  name:                '',
-  personnr:            '',
-  participants:        [],
-  participantPersonnr: {}, // name → personnr
-  taskChecklists:      {}, // taskId → {key: bool}
+  relation:       null,
+  testamente:     false,
+  fastighet:      false,
+  foretag:        false,
+  skulder:        false,
+  utland:         false,
+  minderarig:     false,
+  fordon:         false,
+  husdjur:        false,
+  hyresratt:      false,
+  vardepapper:    false,
+  barn:           false,
+  name:           '',
+  personnr:       '',
+  taskChecklists: {}, // taskId → {key: bool}
   tasks:               [],
   bills:               [],
 };
@@ -163,7 +149,6 @@ function startOnboarding() {
 }
 
 function editAnswers() {
-  if (!isOwnerMode()) return;
   const confirmed = window.confirm('Vill du ändra dina svar? Planen uppdateras när du är klar — dina anteckningar och markeringar behålls.');
   if (!confirmed) return;
   startOnboarding();
@@ -183,34 +168,16 @@ function obPrefillAnswers() {
   document.querySelectorAll('#ob-step-2 input[type="checkbox"]').forEach(cb => {
     cb.checked = !!state[cb.dataset.key];
   });
-  // Step 3 — ansvar
-  document.querySelectorAll('#ob-step-3 .ob-choice').forEach(btn => {
-    btn.classList.toggle('selected', btn.dataset.val === state.ansvar);
-  });
-  if (state.ansvar) {
-    const nb = document.querySelector('#ob-step-3 .ob-next-btn');
-    if (nb) nb.disabled = false;
-  }
-  // Step 4 — participants (if returning to edit)
-  const selfInput = document.getElementById('ob-self-name');
-  if (selfInput) selfInput.value = state.participants?.[0] || '';
-  // Render others (index 1+) as chips
-  const _allP = state.participants || [];
-  const _others = _allP.slice(1);
-  const _savedP = state.participants;
-  state.participants = _others;
-  renderObParticipantList();
-  state.participants = _savedP;
-  // Step 5 — name
+  // Step 3 — name
   const nameEl = document.getElementById('deceased-name');
   if (nameEl) nameEl.value = state.name || '';
-  // Step 6 — personnr
+  // Step 4 — personnr
   const pnrEl = document.getElementById('deceased-personnr');
   if (pnrEl) pnrEl.value = state.personnr || '';
 }
 
 // ─── ONBOARDING (conversational) ─────────────
-let OB_TOTAL = 5;
+let OB_TOTAL = 3;
 let obCurrentStep = 1;
 
 function obInitDots() {
@@ -263,7 +230,7 @@ function obGoTo(step) {
   }
 }
 
-const OB_FOCUS_IDS = { 4: 'ob-self-name', 5: 'deceased-name' };  /* tangentbordet ska inte öppnas automatiskt på personnr-steget */
+const OB_FOCUS_IDS = { 3: 'deceased-name' };  /* tangentbordet ska inte öppnas automatiskt på personnr-steget */
 
 function obShowStep(step) {
   const el = document.getElementById(`ob-step-${step}`);
@@ -272,12 +239,11 @@ function obShowStep(step) {
   obCurrentStep = step;
   obUpdateDots(step);
   document.getElementById('ob-back-btn').style.visibility = step === 1 ? 'hidden' : 'visible';
-  // Update label dynamically to reflect logical step number
+  // Update label dynamically
   const labelEl = el.querySelector('.ob-label');
   if (labelEl) {
-    const logicalStep = (OB_TOTAL === 5 && step >= 5) ? step - 1 : step;
-    const suffix = step === 6 ? ' — helt frivilligt' : '';
-    labelEl.textContent = `Steg ${logicalStep} av ${OB_TOTAL}${suffix}`;
+    const suffix = step === 4 ? ' — helt frivilligt' : '';
+    labelEl.textContent = `Steg ${Math.min(step, OB_TOTAL)} av ${OB_TOTAL}${suffix}`;
   }
   if (OB_FOCUS_IDS[step]) {
     setTimeout(() => document.getElementById(OB_FOCUS_IDS[step])?.focus(), 350);
@@ -285,65 +251,15 @@ function obShowStep(step) {
   // Update visual progress bar
   const fillEl = document.getElementById('ob-progress-bar-fill');
   if (fillEl) {
-    const logicalStep = (OB_TOTAL === 5 && step >= 5) ? step - 1 : step;
-    fillEl.style.width = `${Math.round((logicalStep / OB_TOTAL) * 100)}%`;
+    fillEl.style.width = `${Math.round((Math.min(step, OB_TOTAL) / OB_TOTAL) * 100)}%`;
   }
 }
 
 function obBack() {
   if (obCurrentStep === 1) { goToLanding(); return; }
-  // When ensam: step 5 (name) goes back to step 3, skipping participants step 4
-  if (obCurrentStep === 5 && state.ansvar === 'ensam') { obGoTo(3); return; }
   obGoTo(obCurrentStep - 1);
 }
 
-function obAfterAnsvar() {
-  if (state.ansvar === 'flera') {
-    OB_TOTAL = 6;
-    obInitDots();
-    obGoTo(4); // participants step
-  } else {
-    OB_TOTAL = 5;
-    obInitDots();
-    obGoTo(5); // skip participants, go straight to name
-  }
-}
-
-function obSaveParticipantsAndContinue() {
-  const selfName = document.getElementById('ob-self-name')?.value.trim() || '';
-  // others = chips already added
-  const others = state.participants || [];
-  // Build final list: self first, then others (deduped)
-  const all = selfName ? [selfName, ...others.filter(n => n !== selfName)] : others;
-  state.participants = all;
-  obGoTo(5);
-}
-
-function obAddParticipant() {
-  const input = document.getElementById('ob-participant-name');
-  const name = input ? input.value.trim() : '';
-  if (!name) return;
-  if (!state.participants) state.participants = [];
-  if (!state.participants.includes(name)) state.participants.push(name);
-  if (input) input.value = '';
-  renderObParticipantList();
-  renderParticipants();
-}
-
-function obRemoveParticipant(i) {
-  if (!state.participants) return;
-  state.participants.splice(i, 1);
-  renderObParticipantList();
-  renderParticipants();
-}
-
-function renderObParticipantList() {
-  const list = document.getElementById('ob-participant-list');
-  if (!list) return;
-  list.innerHTML = (state.participants || []).map((name, i) =>
-    `<span class="ob-participant-chip">${name} <button class="ob-participant-remove" type="button" onclick="obRemoveParticipant(${i})" aria-label="Ta bort ${name}">×</button></span>`
-  ).join('');
-}
 
 function updateCheckboxState(key) {
   document.querySelectorAll('#ob-step-2 input[type="checkbox"]').forEach(cb => {
@@ -356,16 +272,12 @@ function generatePlan() {
   state.name     = document.getElementById('deceased-name').value.trim();
   state.personnr = document.getElementById('deceased-personnr').value.trim();
   buildTasks();
-  loadTaskState(); // bevara progress/assignees vid "Ändra svar"
-  // Auto-tilldela person1 till uppgifter som saknar ansvarig
-  if (state.participants.length > 0) {
-    state.tasks.forEach(t => { if (!t.assignee) t.assignee = state.participants[0]; });
-  }
+  loadTaskState();
   loadBills();
   renderPlan();
   saveState();
-  saveTaskState(); // spara default-tilldelningar
-  track('plan_generated', { relation: state.relation || 'okänd', ansvar: state.ansvar || 'okänd' });
+  saveTaskState();
+  track('plan_generated', { relation: state.relation || 'okänd' });
   showScreen('screen-plan');
 }
 
@@ -374,6 +286,19 @@ function generatePlan() {
 const TASK_LIBRARY = [
 
   // ── ALWAYS ─────────────────────────────────
+  {
+    id: 'viktiga_dokument',
+    title: 'Hitta viktiga dokument',
+    desc: 'Samla dessa på ett ställe — du behöver dem gång på gång de kommande veckorna:<br><br><strong>Prioritera:</strong><br>— Testamente (bankfack, hos notarie, bland papper)<br>— Dödsfallsintyg när det anländer<br>— Försäkringsbrev (livförsäkring, TGL via arbetsgivare)<br>— Äktenskapsförord eller samboavtal<br>— Bankuppgifter och kontoutdrag<br>— ID-handlingar (pass, körkort)<br>— Fullmakter, avtal och kvitton på lån',
+    urgency: 'today',
+    time: 'ca 1 tim',
+    link: null,
+    triggers: [],
+    resources: [
+      { label: 'Skatteverket — beställ dödsfallsintyg', url: 'https://www.skatteverket.se/privat/folkbokforing/dodsfall.html' },
+    ],
+    notesPlaceholder: 'Vad har du hittat? Var förvaras respektive dokument?',
+  },
   {
     id: 'konstatera_dodsfall',
     title: 'Konstatera dödsfallet',
@@ -450,9 +375,8 @@ const TASK_LIBRARY = [
     time: 'ca 30 min',
     desc: 'När ni är flera som ärver måste normalt alla godkänna varje åtgärd — vilket snabbt blir tungrott. Lösningen är att alla skriver en fullmakt till en person som får agera för er gemensamt: betala räkningar, kontakta banker och hantera löpande ärenden. Fullmakten måste visas upp i original vid bankbesök.',
     link: null,
-    triggers: ['flera_delägare'],
+    triggers: [],
     hasDoc: 'fullmakt',
-    assigneeLabel: 'Vem får fullmakten?',
   },
   {
     id: 'bouppteckning',
@@ -534,6 +458,16 @@ Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`
   },
 
   // ── LATER ──────────────────────────────────
+  {
+    id: 'autogiron_avsluta',
+    title: 'Avsluta autogiron och e-fakturor',
+    desc: 'Löpande betalningsuppdrag fortsätter dra pengar från dödsboets konton tills de aktivt avslutas. Bankerna kan ta fram en fullständig lista över aktiva autogiron kopplade till ett konto.<br><br><strong>Vanliga autogiron att kontrollera:</strong><br>— Hyra / månadsavgift<br>— El, vatten, fjärrvärme<br>— Internet, TV, mobilabonnemang<br>— Streaming (Spotify, Netflix, HBO)<br>— Tidningsprenumerationer<br>— Gymmedlemskap<br>— Larmtjänster<br>— Försäkringspremier<br><br>Be banken om listan via närmaste kontor eller digitalt. Avsluta abonnemangen hos respektive leverantör — banken kan spärra betalningarna men inte avsluta avtalen.',
+    urgency: 'later',
+    time: 'ca 1–2 timmar',
+    link: null,
+    triggers: [],
+    notesPlaceholder: 'Lista från banken mottagen, avslutade abonnemang…',
+  },
   {
     id: 'abonnemang',
     title: 'Avsluta abonnemang och prenumerationer',
@@ -711,6 +645,78 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     notesPlaceholder: 'Överförmyndare kontaktad, kommun, handläggare, datum…',
   },
 
+  // ── CONDITIONAL: Äktenskapsförord / samboavtal ────────────
+  {
+    id: 'aktemanskapsforord',
+    title: 'Kontrollera äktenskapsförord / samboavtal',
+    desc: 'Äktenskapsförord och samboavtal avgör vad som är giftorättsgods (delas lika) respektive enskild egendom (tillfaller ägaren). Det påverkar direkt hur bouppteckningen ska upprättas och vad som ingår i arvet.<br><br><strong>Hitta dokumentet:</strong> Bland papperen hemma, i bankfack, hos den jurist som upprättade det, eller via Skatteverket (äktenskapsregistret).<br><br><strong>Om inget avtal finns:</strong> Hela giftorättsgodset ingår i bouppteckningen — det ska delas lika mellan makarna.',
+    urgency: 'week',
+    time: 'ca 30 min + jurist vid behov',
+    link: null,
+    triggers: ['make'],
+    resources: [
+      { label: 'Skatteverket — äktenskapsregistret', url: 'https://www.skatteverket.se/privat/folkbokforing/aktenskapochpartnerskap/aktenskapsregistret.html' },
+    ],
+    notesPlaceholder: 'Hittat äktenskapsförord? Var? Innehåll och konsekvenser…',
+  },
+
+  // ── ALWAYS: Livförsäkringsersättning ──────
+  {
+    id: 'livforsakring_ansokan',
+    title: 'Ansök om livförsäkringsersättning',
+    desc: 'En livförsäkring betalar ut ett skattefritt belopp vid dödsfall. Ansökan sker <em>inte</em> automatiskt — du måste aktivt kontakta varje försäkringsbolag.<br><br><strong>Tre ställen att leta:</strong><br>1. <em>Privat livförsäkring</em> — hos försäkringsbolaget (Folksam, If, Skandia, Länsförsäkringar m.fl.)<br>2. <em>TGL (Tjänstegrupplivförsäkring)</em> — via arbetsgivaren om den avlidne haft kollektivavtal. Kontakta Afa, Folksam eller KPA beroende på sektor.<br>3. <em>Fackförbundets livförsäkring</em> — många fackförbund har egna livförsäkringar via t.ex. Bliwa eller Folksam<br><br>Du behöver dödsfallsintyg och den förmånstaginges personnummer. Ansök så snart dödsfallsintyget finns.',
+    urgency: 'week',
+    time: 'ca 1 tim per försäkring',
+    link: null,
+    triggers: [],
+    resources: [
+      { label: 'Afa Försäkring — TGL och dödsfall', url: 'https://www.afaforsakring.se/privatperson/dodsfall/' },
+      { label: 'Konsumenternas — jämför livförsäkringar', url: 'https://www.konsumenternas.se/forsakring/livforsakring/' },
+    ],
+    notesPlaceholder: 'Försäkringsbolag kontaktade, ärendenummer, belopp beviljade…',
+  },
+
+  // ── CONDITIONAL: Värdepapper ──────────────
+  {
+    id: 'vardepapper_hantering',
+    title: 'Hantera aktier, fonder och värdepapper',
+    desc: 'Värdepapper och depåkonton ingår i bouppteckningen och ska värderas per dödsdagen.<br><br><strong>Viktiga distinktioner:</strong><br>— <em>ISK och vanlig depå</em>: ingår i dödsboet och fördelas med arvet<br>— <em>Kapitalförsäkring med namngiven förmånstagare</em>: tillfaller förmånstagaren <em>utanför</em> dödsboet — ska ändå noteras i bouppteckningen men fördelas separat<br>— <em>Tjänstepension med förmånstagare</em>: samma princip som kapitalförsäkring<br><br><strong>Steg nu:</strong><br>1. Kontakta banken/mäklaren och meddela dödsfallet<br>2. Begär en innehavsförteckning med värde per dödsdagen<br>3. Kontakta Euroclear om aktier saknar känd depå',
+    urgency: 'week',
+    time: 'ca 1–2 timmar',
+    link: null,
+    triggers: ['vardepapper'],
+    resources: [
+      { label: 'Euroclear — aktieägarregistret', url: 'https://www.euroclear.com/sweden/sv/private-individuals/private-individuals-main.html' },
+    ],
+    notesPlaceholder: 'Depåer och konton identifierade, värden per dödsdagen…',
+  },
+
+  // ── CONDITIONAL: Barnpension ──────────────
+  {
+    id: 'barnpension_ansokan',
+    title: 'Ansök om barnpension',
+    desc: 'Barn under 20 år som förlorat en förälder kan ha rätt till <em>barnpension</em> och <em>efterlevandestöd</em> från Försäkringskassan. Ansökan är inte automatisk — du måste aktivt ansöka.<br><br><strong>Barnpension:</strong> Baseras på den avlidnes livsinkomst. Söks via Försäkringskassan.<br><strong>Efterlevandestöd:</strong> Kompletterande stöd om barnpensionen är låg. Upp till 18 år.<br><strong>Tjänstepension:</strong> Kontrollera om den deceased hade ett efterlevandeskydd för barn i sin tjänstepension.<br><br>Ansök inom 1 år — du kan inte få retroaktiv utbetalning längre tillbaka.',
+    urgency: 'week',
+    time: 'ca 30 min',
+    phone: '0771-524 524',
+    link: 'https://www.forsakringskassan.se/privatperson/nar-nagon-dor/barnpension',
+    triggers: ['barn'],
+    notesPlaceholder: 'Ansökan inlämnad, ärendenummer, beviljade belopp…',
+  },
+
+  // ── CONDITIONAL: Omställningspension ──────
+  {
+    id: 'omstallningspension',
+    title: 'Ansök om omställningspension',
+    desc: 'Som efterlevande make kan du ha rätt till <em>omställningspension</em> i upp till 12 månader. Syftet är att ge ekonomiskt stöd medan du ställer om livet.<br><br><strong>Krav:</strong> Du och den avlidna måste ha bott ihop. Du ska inte vara i ålderspension.<br><strong>Retroaktiv utbetalning ges ej</strong> — ansök snarast efter dödsfallet.<br><br>Kontakta Pensionsmyndigheten för att kontrollera om du har rätt och för att ansöka.',
+    urgency: 'week',
+    time: 'ca 30 min',
+    phone: '0771-776 776',
+    link: 'https://www.pensionsmyndigheten.se/privatperson/nar-nagon-dor/omstallningspension',
+    triggers: ['make'],
+    notesPlaceholder: 'Ansökan inlämnad, ärendenummer, beviljad period…',
+  },
+
   // ── CONDITIONAL: Make/maka ────────────────
   {
     id: 'make_pension',
@@ -832,10 +838,11 @@ function buildTasks() {
   if (state.testamente)  triggers.add('testamente');
   if (!state.testamente) triggers.add('inget_testamente');
   if (state.relation === 'make') triggers.add('make');
-  if (state.ansvar === 'flera') triggers.add('flera_delägare');
   if (state.fordon)      triggers.add('fordon');
   if (state.husdjur)     triggers.add('husdjur');
   if (state.hyresratt)   triggers.add('hyresratt');
+  if (state.vardepapper) triggers.add('vardepapper');
+  if (state.barn)        triggers.add('barn');
 
   state.tasks = TASK_LIBRARY.filter(task =>
     task.triggers.length === 0 || task.triggers.some(t => triggers.has(t))
@@ -860,7 +867,6 @@ function _debounce(fn, ms) {
 }
 
 const saveTaskNote = _debounce(function(taskId, value) {
-  if (!isOwnerMode()) return;
   const notes = _getNotes();
   notes[taskId] = value;
   try { localStorage.setItem('efterplan_notes', JSON.stringify(notes)); } catch(e) {}
@@ -873,53 +879,27 @@ function getTaskNote(taskId) {
 }
 
 function saveTaskState() {
-  if (!isOwnerMode()) return; // shared viewers never touch localStorage
   const saved = {};
-  state.tasks.forEach(t => { saved[t.id] = { done: t.done, started: t.started, assignee: t.assignee || null }; });
+  state.tasks.forEach(t => { saved[t.id] = { done: t.done, started: t.started }; });
   try { localStorage.setItem('efterplan_tasks', JSON.stringify(saved)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
 
 function loadTaskState() {
   try {
-    const source = SHARED.taskMap
-      ? SHARED.taskMap
-      : JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
+    const source = JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
     state.tasks = state.tasks.map(t => {
       const s = source[t.id];
       if (!s) return t;
-      // Backward-compat: old format stored a boolean
       if (typeof s === 'boolean') return { ...t, done: s, started: false };
-      return { ...t, done: s.done || false, started: s.started || false, assignee: s.assignee || null };
+      return { ...t, done: s.done || false, started: s.started || false };
     });
   } catch(e) {}
 }
 
-// ─── PARTICIPANTS NAV ─────────────────────────
-function renderParticipants() {
-  const container = document.getElementById('plan-participants');
-  if (!container) return;
-  const participants = state.participants || [];
-  const deceased = state.name ? state.name.trim() : '';
-
-  // Deceased first (different style — primary chip)
-  const deceasedChip = deceased
-    ? `<span class="plan-participant-chip plan-participant-chip--deceased"
-         title="${deceased}">${deceased.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span>`
-    : '';
-
-  const chips = participants.map(name => {
-    const initials = name.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    return `<span class="plan-participant-chip" title="${name}">${initials}</span>`;
-  }).join('');
-
-  container.innerHTML = deceasedChip + chips +
-    `<button class="plan-participant-add-btn" onclick="openModal('modal-participants')" title="Lägg till deltagare" aria-label="Lägg till deltagare">+</button>`;
-}
 
 // ─── RENDER PLAN ─────────────────────────────
 function renderPlan() {
-  renderParticipants();
   const name = state.name;
   document.getElementById('plan-title').textContent =
     name ? `${name}s efterplan` : 'Din efterplan';
@@ -1079,16 +1059,13 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
     const startedBadge = task.started && !task.done
       ? `<span class="task-started-badge">Påbörjad</span>`
       : '';
-    const assigneeBadge = task.assignee
-      ? `<span class="task-assignee-badge" id="assignee-badge-${task.id}">${task.assignee}</span>`
-      : `<span class="task-assignee-badge hidden" id="assignee-badge-${task.id}"></span>`;
 
     wrap.innerHTML = `
       <div class="task-card${cardClass}" id="task-card-${task.id}">
         <div class="task-check${checkClass}" id="check-${task.id}"></div>
         <div class="task-body">
           <div class="task-title">${task.title}${nextBadge}</div>
-          <div class="task-time">${task.time}${startedBadge}${assigneeBadge}</div>
+          <div class="task-time">${task.time}${startedBadge}</div>
         </div>
         <div class="task-chevron" id="chevron-${task.id}" aria-hidden="true">›</div>
       </div>
@@ -1098,7 +1075,6 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
         ${phoneHtml}
         ${phone2Html}
         ${resourcesHtml}
-        ${(task.id === 'begravningsceremoni' && state.ansvar !== 'flera') ? '' : renderAssigneePicker(task.id)}
         ${notifyHtml}
         ${checklistHtml}
         ${notesHtml}
@@ -1127,7 +1103,6 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
     checkEl.style.cursor = 'pointer';
     checkEl.addEventListener('click', e => {
       e.stopPropagation();
-      if (isReadOnly()) return;
       const t = state.tasks.find(x => x.id === task.id);
       if (!t) return;
       if (t.done) { undoTaskDoneManual(task.id); } else { markTaskDone(task.id); }
@@ -1136,7 +1111,6 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         e.stopPropagation();
-        if (isReadOnly()) return;
         const t = state.tasks.find(x => x.id === task.id);
         if (!t) return;
         if (t.done) { undoTaskDoneManual(task.id); } else { markTaskDone(task.id); }
@@ -1169,10 +1143,6 @@ function toggleTask(taskId) {
     if (prev)     prev.classList.add('hidden');
     if (prevChev) prevChev.classList.remove('open');
     if (prevCard) { prevCard.classList.remove('expanded'); prevCard.setAttribute('aria-expanded', 'false'); }
-    // Återställ badge för tidigare öppnad uppgift
-    const prevTask = state.tasks.find(t => t.id === expandedTaskId);
-    const prevBadge = document.getElementById(`assignee-badge-${expandedTaskId}`);
-    if (prevBadge && prevTask?.assignee) prevBadge.classList.remove('hidden');
   }
 
   if (isOpen) { expandedTaskId = null; return; }
@@ -1184,8 +1154,6 @@ function toggleTask(taskId) {
   if (el)   el.classList.remove('hidden');
   if (chev) chev.classList.add('open');
   if (card) { card.classList.add('expanded'); card.setAttribute('aria-expanded', 'true'); }
-  // Dölj badge när uppgiften är expanderad (syns i pickern istället)
-  document.getElementById(`assignee-badge-${taskId}`)?.classList.add('hidden');
 }
 
 function updateProgress() {
@@ -1264,7 +1232,6 @@ function loadBills() {
   try { state.bills = JSON.parse(localStorage.getItem('efterplan_bills')) || []; } catch(e) { state.bills = []; }
 }
 function saveBills() {
-  if (!isOwnerMode()) return;
   try { localStorage.setItem('efterplan_bills', JSON.stringify(state.bills)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
@@ -1319,7 +1286,6 @@ function clearBillPhoto() {
   if (img) img.src = '';
 }
 function submitBill() {
-  if (!isOwnerMode()) return;
   const desc = document.getElementById('bill-desc-input').value.trim();
   const errEl = document.getElementById('err-bills');
   if (!desc) {
@@ -1339,12 +1305,10 @@ function submitBill() {
   track('bill_added');
 }
 function toggleBillPaid(id) {
-  if (!isOwnerMode()) return;
   const b = state.bills.find(b => b.id === id);
   if (b) { b.paid = !b.paid; saveBills(); renderBills(); }
 }
 function deleteBill(id) {
-  if (!isOwnerMode()) return;
   state.bills = state.bills.filter(b => b.id !== id);
   saveBills();
   renderBills();
@@ -1414,7 +1378,6 @@ function decodeBillQR(dataUrl) {
   });
 }
 async function handleBillScan(event) {
-  if (!isOwnerMode()) return;
   const file = event.target.files && event.target.files[0];
   event.target.value = '';
   if (!file) return;
@@ -1454,7 +1417,6 @@ async function handleBillScan(event) {
 }
 
 function markTaskStarted(taskId) {
-  if (!isOwnerMode()) return; // shared viewers cannot "start" tasks
   const task = state.tasks.find(t => t.id === taskId);
   if (!task || task.done || task.started) return;
   task.started = true;
@@ -1484,13 +1446,8 @@ function markTaskStarted(taskId) {
 }
 
 function markTaskDone(taskId) {
-  if (isReadOnly()) return;
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
-  if (isSharedEdit()) {
-    _sharedToggleTask(taskId, true);
-    // UI updated below; no localStorage write (saveTaskState no-ops)
-  }
   task.done = true;
   saveTaskState();
   track('task_completed', { task: taskId, urgency: task.urgency || 'unknown' });
@@ -1518,145 +1475,12 @@ function markTaskDone(taskId) {
   }
 }
 
-// ─── ASSIGNEES ────────────────────────────────
-// Single source of truth: state.participants — same list used for task
-// assignment and notify notifier. Add people via the + button in the nav.
-function _getAssignees() {
-  return state.participants || [];
-}
-function getTaskAssignee(taskId) {
-  const task = state.tasks.find(t => t.id === taskId);
-  return task ? (task.assignee || null) : null;
-}
-function setTaskAssignee(taskId, name) {
-  if (!isOwnerMode()) return;
-  const task = state.tasks.find(t => t.id === taskId);
-  if (!task) return;
-  task.assignee = (task.assignee === name) ? null : name;
-  saveTaskState();
-  _refreshAssigneePicker(taskId);
-  _refreshAssigneeBadge(taskId);
-}
-function _refreshAssigneePicker(taskId) {
-  const picker = document.getElementById(`assignee-picker-${taskId}`);
-  if (picker) picker.innerHTML = _buildAssigneePickerInner(taskId);
-}
-function _refreshAssigneeBadge(taskId) {
-  const badge = document.getElementById(`assignee-badge-${taskId}`);
-  const task = state.tasks.find(t => t.id === taskId);
-  if (!badge || !task) return;
-  if (task.assignee) {
-    badge.textContent = task.assignee;
-    badge.classList.remove('hidden');
-  } else {
-    badge.classList.add('hidden');
-  }
-}
-function _buildAssigneePickerInner(taskId) {
-  const assignees = _getAssignees();
-  const current = getTaskAssignee(taskId);
-  if (!assignees.length) {
-    return `<button class="assignee-add-hint"
-              onclick="event.stopPropagation();openModal('modal-participants')"
-              title="Lägg till deltagare">+ Lägg till deltagare</button>`;
-  }
-  return assignees.map(n =>
-    `<button class="assignee-chip${n === current ? ' selected' : ''}"
-             onclick="event.stopPropagation();setTaskAssignee('${taskId}','${n.replace(/'/g,"\\'")}')">
-       ${n}
-     </button>`
-  ).join('');
-}
-function renderAssigneePicker(taskId) {
-  const taskDef = TASK_LIBRARY.find(t => t.id === taskId);
-  const label = (taskDef && taskDef.assigneeLabel) || 'Ansvarig';
-  return `<div class="task-assignee-section">
-    <span class="task-assignee-label">${label}</span>
-    <div class="assignee-picker" id="assignee-picker-${taskId}">
-      ${_buildAssigneePickerInner(taskId)}
-    </div>
-  </div>`;
-}
-
-// ─── PARTICIPANTS ──────────────────────────────
-function _getParticipants() {
-  return state.participants || [];
-}
-function addParticipant() {
-  if (!isOwnerMode()) return;
-  const input = document.getElementById('ob-participant-input');
-  const name = input?.value.trim();
-  if (!name) return;
-  if (!state.participants) state.participants = [];
-  if (!state.participants.includes(name)) {
-    state.participants.push(name);
-    saveState();
-  }
-  input.value = '';
-  _refreshParticipantList();
-  renderParticipants();
-  _refreshAllAssigneePickers();
-}
-
-function _refreshAllAssigneePickers() {
-  state.tasks.forEach(t => _refreshAssigneePicker(t.id));
-}
-function removeParticipant(name) {
-  if (!isOwnerMode()) return;
-  state.participants = (state.participants || []).filter(n => n !== name);
-  saveState();
-  _refreshParticipantList();
-  _refreshAllAssigneePickers();
-}
-function _refreshParticipantList() {
-  // Onboarding list — simple chips
-  const obList = document.getElementById('ob-participant-list');
-  if (obList) {
-    obList.innerHTML = (state.participants || []).map(name =>
-      `<div class="ob-participant-chip">
-        <span>${name}</span>
-        <button onclick="removeParticipant('${name.replace(/'/g, "\\'")}')" aria-label="Ta bort ${name}">×</button>
-      </div>`
-    ).join('');
-  }
-  // Modal list — with optional personnr input
-  const modalList = document.getElementById('modal-participant-list');
-  if (modalList) {
-    if (!(state.participants || []).length) {
-      modalList.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">Inga deltagare tillagda ännu.</p>';
-      return;
-    }
-    modalList.innerHTML = (state.participants || []).map(name => {
-      const safeN = name.replace(/'/g, "\\'");
-      const personnr = (state.participantPersonnr || {})[name] || '';
-      return `<div class="modal-participant-item">
-        <div class="modal-participant-row">
-          <span class="modal-participant-name">${name}</span>
-          <button class="modal-participant-remove" onclick="removeParticipant('${safeN}')" aria-label="Ta bort ${name}">×</button>
-        </div>
-        <input type="text" class="participant-personnr-input"
-               placeholder="Personnummer (valfritt — för fullmakter)"
-               value="${personnr}"
-               onchange="saveParticipantPersonnr('${safeN}', this.value)" />
-      </div>`;
-    }).join('');
-  }
-}
-
-function saveParticipantPersonnr(name, val) {
-  if (!isOwnerMode()) return;
-  if (!state.participantPersonnr) state.participantPersonnr = {};
-  state.participantPersonnr[name] = val.trim();
-  saveState();
-}
 
 // ─── NOTIFY LIST ──────────────────────────────
 function _getNotifyList() {
-  if (SHARED.notifyList) return SHARED.notifyList;
   try { return JSON.parse(localStorage.getItem('efterplan_notify_list') || '[]'); } catch(e) { return []; }
 }
 function _saveNotifyList(list) {
-  if (!isOwnerMode()) return;
   try { localStorage.setItem('efterplan_notify_list', JSON.stringify(list)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
@@ -1706,24 +1530,15 @@ function _refreshNotifyList() {
 
 function _buildNotifyListInner() {
   const list = _getNotifyList();
-  const participants = _getParticipants();
   if (!list.length) return '<p class="notify-empty">Inga tillagda än</p>';
   return list.map(p => {
     const safeId = p.id;
-    const notifierSelect = participants.length > 0
-      ? `<select class="notify-notifier-select" onclick="event.stopPropagation()"
-           onchange="event.stopPropagation();setNotifyNotifier('${safeId}',this.value)">
-           <option value="">Vem ringer?</option>
-           ${participants.map(n => `<option value="${n}"${p.notifier === n ? ' selected' : ''}>${n}</option>`).join('')}
-         </select>`
-      : '';
     return `
       <div class="notify-person${p.notified ? ' notified' : ''}">
         <button class="notify-check${p.notified ? ' checked' : ''}"
           onclick="event.stopPropagation();toggleNotified('${safeId}')"
           aria-label="Markera ${p.name} som meddelad">${p.notified ? '✓' : ''}</button>
         <span class="notify-name">${p.name}</span>
-        ${notifierSelect}
         <button class="notify-remove"
           onclick="event.stopPropagation();removeNotifyPerson('${safeId}')"
           aria-label="Ta bort ${p.name}">×</button>
@@ -1769,7 +1584,6 @@ function showUndoToast(taskId) {
 }
 
 function undoTaskDone() {
-  if (isReadOnly()) return;
   if (!_undoTaskId) return;
   clearTimeout(_undoTimer);
   document.getElementById('undo-toast').classList.add('hidden');
@@ -1779,42 +1593,19 @@ function undoTaskDone() {
 
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
-  if (isSharedEdit()) _sharedToggleTask(taskId, false);
-  task.done    = false;
-  task.started = false;
-  saveTaskState();
-  renderPlan();   // full re-render restores accordion, buttons, notes
-}
-
-function undoTaskDoneManual(taskId) {
-  if (isReadOnly()) return;
-  const task = state.tasks.find(t => t.id === taskId);
-  if (!task) return;
-  if (isSharedEdit()) _sharedToggleTask(taskId, false);
   task.done    = false;
   task.started = false;
   saveTaskState();
   renderPlan();
 }
 
-// Push a task toggle to Supabase via the anon RPC. Optimistic — we don't
-// block the UI on success; we surface errors via the shared banner if any.
-function _sharedToggleTask(taskId, done) {
-  if (!SHARED.token || !window.efterplanAuth) return;
-  try {
-    window.efterplanAuth.toggleSharedTask(SHARED.token, taskId, done).catch(err => {
-      _showSharedError('Kunde inte spara ändringen: ' + (err && err.message || err));
-    });
-  } catch (err) {
-    _showSharedError('Kunde inte spara ändringen: ' + (err && err.message || err));
-  }
-}
-
-function _showSharedError(msg) {
-  const banner = document.getElementById('shared-banner');
-  if (!banner) return;
-  const txt = banner.querySelector('.shared-banner-text');
-  if (txt) txt.textContent = msg;
+function undoTaskDoneManual(taskId) {
+  const task = state.tasks.find(t => t.id === taskId);
+  if (!task) return;
+  task.done    = false;
+  task.started = false;
+  saveTaskState();
+  renderPlan();
 }
 
 // ─── MODALS ───────────────────────────────────
@@ -1827,7 +1618,6 @@ function openModal(id) {
   const overlay = document.getElementById(id);
   overlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-  if (id === 'modal-participants') _refreshParticipantList();
   // Focus first focusable element inside
   const first = overlay.querySelector(FOCUSABLE);
   if (first) setTimeout(() => first.focus(), 50);
@@ -2314,9 +2104,12 @@ function getShareableState() {
     skulder:    state.skulder,
     utland:     state.utland,
     minderarig: state.minderarig,
-    ansvar:       state.ansvar,
-    name:         state.name,
-    participants: state.participants || [],
+    fordon:     state.fordon,
+    husdjur:    state.husdjur,
+    hyresratt:  state.hyresratt,
+    vardepapper: state.vardepapper,
+    barn:       state.barn,
+    name:       state.name,
     // personnr intentionally excluded (privacy)
   };
 }
@@ -2362,8 +2155,6 @@ function copyToClipboard(text, onDone) {
 
 // ─── PERSIST ─────────────────────────────────
 function saveState() {
-  if (!isOwnerMode()) return;
-  // Save locally with personnr (own device only — never shared)
   const toSave = { ...getShareableState(), personnr: state.personnr };
   try { localStorage.setItem('efterplan_state', JSON.stringify(toSave)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
@@ -2459,74 +2250,8 @@ async function handlePaywallCTA() {
   }
 }
 
-// ─── SHARED PLAN INIT ────────────────────────
-// Loaded asynchronously by supabase-client.js → efterplan:shared-loaded.
-// Overlays a remote snapshot onto `state` and renders the plan view.
-function applySharedSnapshot(detail) {
-  if (!detail || !detail.state) return;
-  SHARED.mode  = (detail.kind === 'edit') ? 'edit' : 'read';
-  SHARED.token = detail.token || null;
-
-  const parseMaybe = (v, fallback) => {
-    if (v == null) return fallback;
-    if (typeof v !== 'string') return v;
-    try { return JSON.parse(v); } catch (_) { return fallback; }
-  };
-
-  const snap       = detail.state;
-  const stateJson  = parseMaybe(snap.efterplan_state, null);
-  const taskMap    = parseMaybe(snap.efterplan_tasks, {});
-  const notes      = parseMaybe(snap.efterplan_notes, {});
-  const bills      = parseMaybe(snap.efterplan_bills, []);
-  const notifyList = parseMaybe(snap.efterplan_notify_list, []);
-
-  if (stateJson) {
-    // Never trust a remote personnr — strip it even if included.
-    delete stateJson.personnr;
-    Object.assign(state, stateJson);
-  }
-  SHARED.taskMap    = taskMap || {};
-  SHARED.notifyList = Array.isArray(notifyList) ? notifyList : [];
-  _notesCache       = notes || {};
-  state.bills       = Array.isArray(bills) ? bills : [];
-
-  buildTasks();         // respects SHARED.taskMap via loadTaskState
-  renderPlan();
-
-  // Update banner text + mode attribute
-  const banner = document.getElementById('shared-banner');
-  if (banner) {
-    const txt = banner.querySelector('.shared-banner-text');
-    banner.setAttribute('data-mode', SHARED.mode);
-    if (txt) {
-      const who = state.name ? state.name : 'en anhörig';
-      txt.textContent = SHARED.mode === 'edit'
-        ? `Du kan bocka av uppgifter i ${who}s plan. Inget annat sparas.`
-        : 'Du ser en delad plan (skrivskyddad).';
-    }
-    banner.classList.remove('hidden');
-  }
-
-  document.body.classList.add(SHARED.mode === 'edit' ? 'shared-edit' : 'shared-read');
-  showScreen('screen-plan');
-  track('shared_plan_opened', { mode: SHARED.mode });
-}
-
-window.addEventListener('efterplan:shared-loaded', (e) => {
-  applySharedSnapshot(e.detail);
-});
-
 // ─── INIT ─────────────────────────────────────
 (function init() {
-  // If the URL carries a share token, wait for supabase-client to resolve it
-  // via efterplan:shared-loaded. Don't leak the owner's own localStorage plan
-  // into the view in the meantime.
-  const hasShare = new URLSearchParams(window.location.search).get('share');
-  if (hasShare) {
-    // Leave landing screen visible; applySharedSnapshot will take over.
-    return;
-  }
-
   // Restore own plan from localStorage
   try {
     const saved = localStorage.getItem('efterplan_state');
