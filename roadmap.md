@@ -103,7 +103,7 @@ Each step improves the product or the company in a meaningful way.
 | T022 | Add disclaimer: "Not legal advice" | Fas 5 | 📱 App Plan | 🔴 | Legal | ✔ |
 | T024 | End‑to‑end test | Fas 5 | 📱 App Plan | 🔴 | QA | ✔ |
 | T025 | Publish MVP on domain — all free | Fas 5 | 🏢 Company Plan | 🔴 | Launch | ✔ |
-| T026 | Share with 5 target users, collect feedback | Fas 5 | 📋 Manifest | 🔴 | Research | ⧖ |
+| T026 | ~~Share with 5 target users, collect feedback~~ | Fas 5 | 📋 Manifest | 🔴 | Research | x |
 | T027 | Iterate on top 3 confusion points | Fas 5 | 📋 Manifest | 🔴 | Iteration | ☐ |
 
 ---
