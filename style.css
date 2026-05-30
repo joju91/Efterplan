@@ -2092,6 +2092,15 @@ body {
     padding-top: 16px;
     border-top: 1px solid #ddd;
   }
+
+  /* Bouppteckning print mode */
+  body.print-bopp #tabcontent-plan { display: none !important; }
+  body.print-bopp #tabcontent-docs { display: none !important; }
+  body.print-bopp #tabcontent-bopp { display: block !important; }
+  body.print-bopp .btn-print-inline { display: none !important; }
+  body.print-bopp .btn-ghost { display: none !important; }
+  body.print-bopp .bopp-section-hint { font-size: 0.8rem; color: #444; }
+  body.print-bopp .bopp-summary { border: 1px solid #ccc; border-radius: 0; }
 }
 
 /* ═══════════════════════════════════════════

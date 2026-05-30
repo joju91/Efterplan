@@ -177,7 +177,7 @@ function obPrefillAnswers() {
 }
 
 // ─── ONBOARDING (conversational) ─────────────
-let OB_TOTAL = 3;
+let OB_TOTAL = 4;
 let obCurrentStep = 1;
 
 function obInitDots() {
@@ -2203,6 +2203,12 @@ function closeCompletionOverlay() {
 function printPlan() {
   track('plan_printed');
   window.print();
+}
+
+function printBopp() {
+  document.body.classList.add('print-bopp');
+  window.print();
+  document.body.classList.remove('print-bopp');
 }
 
 // ─── PAYWALL ─────────────────────────────────
