@@ -322,3 +322,13 @@ Each step improves the product or the company in a meaningful way.
 | T124 | Skrota delningsfunktionen: ta bort SHARED-objekt, isOwnerMode/isReadOnly/isSharedEdit, assignee/participants-system, share-modal, supabase share-API. Onboarding 6→4 steg. Rensa ~1 090 rader kod (app.js, index.html, style.css, supabase-client.js). — 2026-05-30 | 2026-05-30 | Fas 12 | Session | 🔴 | Dev | ✔ |
 | T125 | 7 nya tasks: viktiga_dokument (today, alltid), aktemanskapsforord (week, make), livforsakring_ansokan (week, alltid), vardepapper_hantering (week, vardepapper), barnpension_ansokan (week, barn), omstallningspension (week, make), autogiron_avsluta (later, alltid). 2 nya onboarding-checkboxar: vardepapper + barn. — 2026-05-30 | 2026-05-30 | Fas 12 | Session | 🟠 | Content | ✔ |
 | T126 | Bouppteckning-formulär: ny tab i plan-skärmen med tre sektioner (dödsbodelägare, tillgångar, skulder). Sammanfattningsrad med nettovärde. localStorage-persistens via `efterplan_bouppteckning`. — 2026-05-30 | 2026-05-30 | Fas 12 | Session | 🟠 | Dev | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-06-01
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T127 | Engelska "deceased" i barnpension_ansokan-beskrivning — app.js rad 698 innehåller `"den deceased hade ett efterlevandeskydd"`. Byt till `"den avlidne hade"`. Tillagd i T125-commit 59ddcde. | 2026-06-01 | Fas 12 | Veckorapport | 🟠 | Content | ☐ |
+| T128 | Sitemap lastmod stale — sitemap.xml visar `lastmod>2026-05-04` för flertalet sidor (bouppteckning-guide.html, vad-gora-nar-nagon-dor.html, arvskifte-guide.html m.fl.) men dessa sidor har uppdaterats i commits sedan dess. Uppdatera lastmod-datum per `git log --format="%ai" -- <fil>` för respektive URL. Fil: sitemap.xml. | 2026-06-01 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
+| T129 | share-modal.html överblivet spöke — T124 dokumenterade att share-modal skrotades (commit 59ddcde) men filen share-modal.html (183 rader) finns kvar i repot. Inga referenser i index.html eller app.js. Ta bort filen. Fil: share-modal.html. | 2026-06-01 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
