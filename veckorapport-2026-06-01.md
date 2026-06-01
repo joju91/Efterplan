@@ -1,71 +1,60 @@
-# Efterplan — 2026-06-01
+# Efterplan Veckorapport — 2026-06-01
+
+> Genererad automatiskt av GitHub Actions (`.github/workflows/weekly-report.yml`).
+
+---
 
 ## 🔢 Nyckeltal (7 dagar — GA4)
 
-GA4 SAKNAS — credentials ej tillgängliga i molnsandlådan (ingen GA4-connector ansluten).
+| Mått | Värde |
+|------|-------|
+| Sessions | **28** |
+| Users | 27 |
+| Engagement rate | 32.1% |
+| Organisk andel | 11 (39.3%) |
+| onboarding_start | 1 (3.6% av sessions) |
+| plan_generated | 2 (200.0% av onboarding_start) |
+| task_completed | 0 |
 
----
+**Kanaler:**
+
+- Direct: 17
+- Organic Search: 11
+- Unassigned: 1
+
+## 🟢 Uptime
+
+| Path | Status | Tid |
+|------|--------|-----|
+| `/` | 200 | 0.19s |
+| `/sambo-arv.html` | 200 | 0.08s |
+| `/efterlevandepension.html` | 200 | 0.02s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.19s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.04s |
+
+## 📊 Git-aktivitet
+
+- **6** commits, **43** filer ändrade
+
+### Commits
+
+- `913bddf Veckorapport 2026-06-01: auto-tickets T127–T129 + status`
+- `c5c2b29 Roadmap: T026 struken (begravningsbyråer är inte en kanal)`
+- `a6234b7 T126: Bouppteckning-formulär — ny tab med tillgångar, skulder, dödsbodelägare`
+- `8bcd1d5 Roadmap: T124 + T125 klara`
+- `59ddcde Skrota delningsfunktionen, lägg till 7 nya tasks och 2 onboarding-frågor`
+- `f0f6d8c Tech tickets cleanup 2026-05-29: T103/T104/T106/T116/T117/T119/T120/T121 (#32)`
 
 ## 🔧 Teknisk audit
 
-| Kontroll | Resultat |
-|----------|----------|
-| Uptime | 403 (Cloudflare blockerar sandbox-IP — förra veckans GitHub Actions visade 200 OK) |
-| ga4-dashboard vulns | 0 critical · 0 high · 0 moderate · 0 low |
-| TODOs/FIXMEs | 0 |
-| Saknade meta descriptions | share-modal.html, auth-modal.html (T100: false positives, body-fragment), ga4-dashboard/public/index.html (har noindex — OK) |
-
-**Kodfynd:**
-- `app.js:698` — Engelska ord i svensk text: `"den deceased hade ett efterlevandeskydd"` → ska vara `"den avlidne hade"` (T127)
-- `share-modal.html` — 183 rader orphan-fil kvar i repot trots att delningsfunktionen skrotades i T124 (commit 59ddcde, 2026-05-30) (T129)
-
----
+- **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
+- **Live-sajt:** 200 på 0.19s
 
 ## 🗺️ Roadmap-status
 
-| Status | Antal | Δ vs 2026-05-25 |
-|--------|-------|----------------|
-| ✔ Klara | 97 | +4 |
-| ⧖ Pågår | 8 | −1 |
-| ☐ Ej startade | 7 | −6 |
+| Status | Antal |
+|--------|-------|
+| ✔ Klara | 102 |
+| ⧖ Pågår | 9 |
+| ☐ Ej startade | 12 |
 
-**Pågår:**
-- T015 — Validate step order with 2–3 real relatives
-- T016 — Adjust order and text based on interviews
-- T032 — Test full purchase flow
-- T034 — Set up Bokio or Fortnox
-- T047 — Analyze drop‑off
-- T079 — Betald byrålisting
-- T081 — Analyze drop‑off + prioritize top 3 issues
-- T123 — De-inlining (index.html har 38 inline styles kvar)
-
-**Nästa öppna:**
-- T001 — Read the entire Manifest sheet and confirm scope
-- T003 — Register company / sole proprietorship + apply for F‑tax
-- T004 — Open business bank account
-
----
-
-## 📣 Marknadsinsikt
-
-Med 97 avklarade tasks, 4-stegs onboarding och 7 nya livsrelevanta uppgifter tillagda (barnpension, värdepapper, äktenskapsförord m.fl.) är innehållsdjupet nu tillräckligt för organisk söktrafik — prioritera T128 (sitemap lastmod) så Google snabbt crawlar om de uppdaterade sidorna och rankar det nya innehållet.
-
----
-
-## 🎫 Nya tickets
-
-| ID | Titel | Prioritet | GitHub |
-|----|-------|-----------|--------|
-| T127 | Engelska "deceased" i barnpension_ansokan (app.js:698) | 🟠 | [#33](https://github.com/joju91/Efterplan/issues/33) |
-| T128 | Sitemap lastmod stale (sitemap.xml) | 🟠 | [#34](https://github.com/joju91/Efterplan/issues/34) |
-| T129 | share-modal.html överblivet spöke | 🟡 | [#35](https://github.com/joju91/Efterplan/issues/35) |
-
----
-
-## ✅ Åtgärder att godkänna
-
-| # | Åtgärd | Fil | P |
-|---|--------|-----|---|
-| 1 | Byt `"den deceased hade"` → `"den avlidne hade"` | app.js:698 | 🟠 |
-| 2 | Uppdatera `<lastmod>` per git-datum för alla sidor | sitemap.xml | 🟠 |
-| 3 | Ta bort orphan-filen | share-modal.html | 🟡 |
