@@ -1,76 +1,56 @@
-# Efterplan — 2026-06-08
+# Efterplan Veckorapport — 2026-06-08
 
-🔢 Sessions: GA4 SAKNAS | Organisk: — | Onboarding: — | Plan: —
+> Genererad automatiskt av GitHub Actions (`.github/workflows/weekly-report.yml`).
 
-🔧 Uptime: HTTP 403 (Vercel Bot Protection?) | Sårbarheter: 0 (ga4-dashboard) | TODOs: 0
-   - `app.js:698` — synlig engelska kvarstår: "den deceased hade ett efterlevandeskydd" (T127 öppen)
-   - `package-lock.json` saknas i repo-root; @supabase/supabase-js + stripe visas som MISSING (T130)
+---
 
-📣 Bouppteckning-formuläret (T126) är live och SEO-grunden är stark (97 klara tickets) — högst värde denna vecka: åtgärda T127 (engelska i synlig task-text, en rads fix i app.js:698) och T128 (sitemap lastmod) för att maximera GSC-crawlfrekvens.
+## 🔢 Nyckeltal (7 dagar — GA4)
 
-🎫 Nya tickets: T130 – package-lock.json saknas (#37) | T131 – HTTP 403 live-check (#38) | T132 – weekly-report.yml committar ej roadmap.md (#39)
+| Mått | Värde |
+|------|-------|
+| Sessions | **21** |
+| Users | 20 |
+| Engagement rate | 28.6% |
+| Organisk andel | 8 (38.1%) |
+| onboarding_start | 0 (0.0% av sessions) |
+| plan_generated | 0 (0.0% av onboarding_start) |
+| task_completed | 0 |
 
-## Roadmap-status
+**Kanaler:**
 
-| | Antal |
-|---|---|
-| ✔ Klara | 97 |
-| ⧖ Pågår | 8 |
-| ☐ Ej startade | 10 (+3 nya) |
+- Direct: 13
+- Organic Search: 8
+- Unassigned: 1
 
-**Pågående (⧖):**
-- T015 Validate step order with 2–3 real relatives
-- T016 Adjust order and text based on interviews
-- T032 Test full purchase flow
-- T034 Set up Bokio or Fortnox
-- T047 Analyze drop-off
-- T079 Betald byrålisting
-- T081 Analyze drop-off + prioritize top 3 issues
-- T123 De-inlining utility-klasser (återstår: övriga sidor)
+## 🟢 Uptime
 
-**Nästa öppna (prioritet):**
-- T127 Engelska "deceased" i barnpension_ansokan — app.js:698 (en rads fix)
-- T128 Sitemap lastmod stale (bouppteckning-guide, vad-gora-nar-nagon-dor, arvskifte-guide m.fl.)
-- T129 share-modal.html överblivet spöke — ta bort filen
+| Path | Status | Tid |
+|------|--------|-----|
+| `/` | 200 | 0.18s |
+| `/sambo-arv.html` | 200 | 0.10s |
+| `/efterlevandepension.html` | 200 | 0.05s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.08s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.05s |
 
-## DEL 1 — GA4
+## 📊 Git-aktivitet
 
-GA4 SAKNAS — hoppades över. (Konfigurera GA4-credentials: T113)
+- **2** commits, **3** filer ändrade
 
-## DEL 2 — Kodaudit
+### Commits
 
-| Check | Resultat |
-|---|---|
-| Missing meta (HTML) | 3 filer (share-modal.html, auth-modal.html — partials, ej standalone; ga4-dashboard/public/index.html) |
-| TODOs/FIXMEs | 0 |
-| GA4 events | Korrekt — onboarding_start, plan_generated, checkbox_toggle m.fl. i app.js |
-| Sårbarheter (ga4-dashboard) | 0 |
-| npm outdated (root) | @supabase/supabase-js MISSING, stripe MISSING (package-lock.json saknas) |
-| Live-check | 403 Forbidden (Vercel Bot Protection?) |
+- `7347304 Veckorapport 2026-06-08: auto-tickets T130–T132 + status`
+- `0c0ed57 Veckorapport 2026-06-01 (auto, GitHub Actions)`
 
-**Öppna tickets sedan förra rapporten (fortfarande ej åtgärdade):**
-- T127 ☐ — "den deceased" i app.js:698
-- T128 ☐ — sitemap.xml lastmod stale (bouppteckning-guide.html, vad-gora-nar-nagon-dor.html, arvskifte-guide.html — git-lastmod 2026-05-29, sitemap visar 2026-05-04)
-- T129 ☐ — share-modal.html (183 rader) finns kvar trots T124 (inga referenser i index.html/app.js)
+## 🔧 Teknisk audit
 
-## DEL 3 — Marknadsinsikt
+- **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
+- **Live-sajt:** 200 på 0.18s
 
-Sajten har nu en komplett bouppteckning-guide + interaktivt formulär, vilket är ett starkt SEO-ankare för en av de mest sökta dödsbo-frågorna. Konkret åtgärd denna vecka: åtgärda T127 (1 rads fix) + T128 (sitemap lastmod) — båda är snabba wins som direkt påverkar GSC-indexering och användarupplevelse.
+## 🗺️ Roadmap-status
 
-## DEL 4 — Nya auto-tickets
+| Status | Antal |
+|--------|-------|
+| ✔ Klara | 102 |
+| ⧖ Pågår | 9 |
+| ☐ Ej startade | 15 |
 
-| ID | Titel | Issue | Prioritet |
-|----|-------|-------|-----------|
-| T130 | package-lock.json saknas i repo-root | #37 | 🟡 |
-| T131 | HTTP 403 vid automatisk live-check | #38 | 🟠 |
-| T132 | weekly-report.yml committar inte roadmap.md | #39 | 🟡 |
-
-## ✅ Åtgärder att godkänna
-
-| # | Åtgärd | Fil | P |
-|---|--------|-----|---|
-| 1 | Fixa T127: byt "the deceased" → "den avlidne" | app.js:698 | 🟠 |
-| 2 | Uppdatera sitemap lastmod (T128) | sitemap.xml | 🟠 |
-| 3 | Ta bort share-modal.html (T129) | share-modal.html | 🟡 |
-| 4 | Kör npm install + committa package-lock.json (T130) | package.json | 🟡 |
-| 5 | Verifiera Vercel Bot Protection-nivå (T131) | Vercel Dashboard | 🟠 |
