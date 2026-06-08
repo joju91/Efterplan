@@ -332,3 +332,13 @@ Each step improves the product or the company in a meaningful way.
 | T127 | Engelska "deceased" i barnpension_ansokan-beskrivning — app.js rad 698 innehåller `"den deceased hade ett efterlevandeskydd"`. Byt till `"den avlidne hade"`. Tillagd i T125-commit 59ddcde. | 2026-06-01 | Fas 12 | Veckorapport | 🟠 | Content | ☐ |
 | T128 | Sitemap lastmod stale — sitemap.xml visar `lastmod>2026-05-04` för flertalet sidor (bouppteckning-guide.html, vad-gora-nar-nagon-dor.html, arvskifte-guide.html m.fl.) men dessa sidor har uppdaterats i commits sedan dess. Uppdatera lastmod-datum per `git log --format="%ai" -- <fil>` för respektive URL. Fil: sitemap.xml. | 2026-06-01 | Fas 12 | Veckorapport | 🟠 | SEO | ☐ |
 | T129 | share-modal.html överblivet spöke — T124 dokumenterade att share-modal skrotades (commit 59ddcde) men filen share-modal.html (183 rader) finns kvar i repot. Inga referenser i index.html eller app.js. Ta bort filen. Fil: share-modal.html. | 2026-06-01 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-06-08
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T130 | package-lock.json saknas i repo-root: `npm outdated` visar @supabase/supabase-js och stripe som MISSING. Kör `npm install` i repo-root och committa package-lock.json. ga4-dashboard/ har sin egen package-lock.json och påverkas inte. Fil: package.json (root). | 2026-06-08 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T131 | HTTP 403 vid automatisk live-check: efterplan.se svarar 403 Forbidden för alla automatiserade requests (WebFetch + Python urllib). Trolig orsak: Vercel Bot Protection. Verifiera att UptimeRobot (T111) fortfarande når sajten och justera Bot Protection-nivå i Vercel Dashboard om nödvändigt. Fil: Vercel Dashboard → Security. | 2026-06-08 | Fas 12 | Veckorapport | 🟠 | Infra | ☐ |
+| T132 | weekly-report.yml committar inte roadmap.md: Actions-workflow (`.github/workflows/weekly-report.yml`) gör `git add "$FILE"` för enbart veckorapporten — roadmap-uppdateringar och GitHub Issues-skapande saknas i det automatiserade flödet. Utöka weekly-report.mjs eller lägg till steg i yml för att inkludera roadmap.md vid ändringar. Fil: .github/workflows/weekly-report.yml. | 2026-06-08 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
