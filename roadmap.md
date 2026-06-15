@@ -342,3 +342,12 @@ Each step improves the product or the company in a meaningful way.
 | T130 | package-lock.json saknas i repo-root: `npm outdated` visar @supabase/supabase-js och stripe som MISSING. Kör `npm install` i repo-root och committa package-lock.json. ga4-dashboard/ har sin egen package-lock.json och påverkas inte. Fil: package.json (root). | 2026-06-08 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
 | T131 | HTTP 403 vid automatisk live-check: efterplan.se svarar 403 Forbidden för alla automatiserade requests (WebFetch + Python urllib). Trolig orsak: Vercel Bot Protection. Verifiera att UptimeRobot (T111) fortfarande når sajten och justera Bot Protection-nivå i Vercel Dashboard om nödvändigt. Fil: Vercel Dashboard → Security. | 2026-06-08 | Fas 12 | Veckorapport | 🟠 | Infra | ☐ |
 | T132 | weekly-report.yml committar inte roadmap.md: Actions-workflow (`.github/workflows/weekly-report.yml`) gör `git add "$FILE"` för enbart veckorapporten — roadmap-uppdateringar och GitHub Issues-skapande saknas i det automatiserade flödet. Utöka weekly-report.mjs eller lägg till steg i yml för att inkludera roadmap.md vid ändringar. Fil: .github/workflows/weekly-report.yml. | 2026-06-08 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-06-15
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T133 | bouppteckning_saved analytics saknas — `boppSave()` (app.js:2286) kallar inte `track()`. Bouppteckning-formuläret (T126, shipad 2026-05-30) genererar inga GA4-events, dvs. vi kan inte mäta hur många användare aktiverar funktionen. Lägg till `track('bouppteckning_saved', { delbagare: boppData.delbagare.length, tillgangar: boppData.tillgangar.length, skulder: boppData.skulder.length })` i `boppSave()`. Fil: app.js:2286. | 2026-06-15 | Fas 12 | Veckorapport | 🟠 | Analytics | ☐ |
+| T134 | ga4-dashboard/public/index.html saknar meta description — `grep -rL 'meta name="description"'` flaggar dashboardens index-sida. Lägg till `<meta name="description" content="Efterplan GA4-dashboard — intern analys">` i `<head>`. Fil: ga4-dashboard/public/index.html. | 2026-06-15 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
