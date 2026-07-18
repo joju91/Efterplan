@@ -351,3 +351,27 @@ Each step improves the product or the company in a meaningful way.
 |----|------|------|-------|--------|----------|------|--------|
 | T133 | bouppteckning_saved analytics saknas — `boppSave()` (app.js:2286) kallar inte `track()`. Bouppteckning-formuläret (T126, shipad 2026-05-30) genererar inga GA4-events, dvs. vi kan inte mäta hur många användare aktiverar funktionen. Lägg till `track('bouppteckning_saved', { delbagare: boppData.delbagare.length, tillgangar: boppData.tillgangar.length, skulder: boppData.skulder.length })` i `boppSave()`. Fil: app.js:2286. | 2026-06-15 | Fas 12 | Veckorapport | 🟠 | Analytics | ☐ |
 | T134 | ga4-dashboard/public/index.html saknar meta description — `grep -rL 'meta name="description"'` flaggar dashboardens index-sida. Lägg till `<meta name="description" content="Efterplan GA4-dashboard — intern analys">` i `<head>`. Fil: ga4-dashboard/public/index.html. | 2026-06-15 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
+
+---
+
+# 🧭 STRATEGISESSION — 2026-07-18
+
+💡 Prioriterat: en sak i taget. Bygg T135 (deadline-motor) klart innan T136 påbörjas.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T135 | Deadline-motor: räkna ut lagstadgade frister automatiskt från dödsdatum (redan insamlat i onboarding steg 3) och visa som konkreta kalenderdatum i "Denna vecka"/"Senare"-sektionerna, inte bara fristtext. Beräkna: bouppteckningsfrist (dödsdatum + 3 mån), inlämning Skatteverket (dödsdatum + 4 mån), dödsboanmälan vid litet bo (dödsdatum + 2 mån — verifiera exakt kommunregel), hyresuppsägning-rekommendation om "hyrde sin bostad" valdes i onboarding (inom 1 mån för kortare uppsägningstid). | 2026-07-18 | Fas 12 | Session | 🔴 | Dev | ☐ |
+| T136 | Påminnelsemejl om deadlines — återanvänder T135:s datumberäkningar + befintlig e-postinfra (Supabase-inloggning/synk finns redan, se T051-T053). Skicka mejl X veckor innan bouppteckningsfrist och innan inlämningsfrist. Måste kunna stängas av frivilligt, ej tvingande. Bygg efter T135. | 2026-07-18 | Fas 12 | Session | 🟡 | Dev | ☐ |
+
+---
+
+## 💡 MÖJLIGA EXPANSIONER (ej prioriterade, ej påbörjade — en sak i taget, bygg T135/T136 färdigt först)
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T137 | Arvsfördelningslogik i bouppteckningsmodulen (utökar T126): lägg till särkullbarns rätt till direkt arvslott (med möjlighet till arvsavstående enligt 3 kap 9 § ÄB), laglottsberäkning vid testamente (halva legala arvslotten), sambo-bodelning (endast samboegendom, inte hela boet). | 2026-07-18 | Fas 12 | Session | 🟢 | Dev | ☐ |
+| T138 | Arvskiftesavtal som dokumentgenerator — idag finns bara arvskifte-guide.html (informationstext), inget genererbart avtal. Bygg i samma stil som befintliga brev (fullmakt, F-skatt etc): tillgångar, fördelning mellan delägare, signaturfält. Bygg efter T137 är klar. | 2026-07-18 | Fas 12 | Session | 🟢 | Dev | ☐ |
+| T139 | Brev till hyresvärd (uppsägning hyresrätt vid dödsfall) — guide finns (tomma-dodsbo.html), inget brev. | 2026-07-18 | Fas 12 | Session | 🟢 | Content | ☐ |
+| T140 | Brev till Pensionsmyndigheten för efterlevandepension — guide finns (efterlevandepension.html), inget brev. | 2026-07-18 | Fas 12 | Session | 🟢 | Content | ☐ |
+| T141 | ⚠️ Delad länk mellan dödsbodelägare — KONFLIKT MED T124: delningsfunktionen skrotades medvetet 2026-05-30 ("Onboarding 6→4 steg", ~1090 rader kod borttagna). Bygg INTE utan ett nytt uttryckligt beslut som river upp T124. Om det ändå prioriteras: lös utan central serverlagring av känslig data (kryptera state i URL eller motsvarande), inte samma modell som skrotades. | 2026-07-18 | Fas 12 | Session | 🟢 | Dev | ☐ |
+| T142 | Digitalt arv-modul (sociala medier, Google, Apple) — FAQ finns redan på startsidan, ingen guidad sektion eller brevmallar per plattform. | 2026-07-18 | Fas 12 | Session | 🟢 | Content | ☐ |
