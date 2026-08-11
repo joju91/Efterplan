@@ -34,7 +34,7 @@ This repository contains structured documentation extracted from the planning sh
 
 \- \*\*One decision per step\*\* — Cognitive load is always minimized  
 
-\- \*\*No AI in runtime\*\* — Deterministic logic in the core flow  
+\- \*\*No AI in the core flow\*\* — The checklist, prioritization, and deadline logic stay deterministic. Assistive AI is allowed outside the core flow (e.g. document categorization) when it measurably reduces the user's time/energy spent versus a deterministic alternative — see roadmap.md, T145 (2026-08-11).  
 
 \- \*\*Copy is action\*\* — Clear, directive language (“Do this now”)  
 

@@ -277,7 +277,7 @@
     <!-- Step 1 -->
     <div class="ob-step active" id="ob-step-1">
       <div class="ob-content">
-        <p class="ob-label">Steg 1 av 5</p>
+        <p class="ob-label">Steg 1 av 4</p>
         <h2 class="ob-title">Vem har gått bort?</h2>
         <p class="ob-hint">Det hjälper oss förstå vad som behöver göras.</p>
         <p class="ob-reassure">Du kan inte göra fel — vi guidar dig hela vägen.</p>
@@ -295,7 +295,7 @@
     <!-- Step 2 (fd. steg 3) -->
     <div class="ob-step" id="ob-step-2">
       <div class="ob-content">
-        <p class="ob-label">Steg 2 av 5</p>
+        <p class="ob-label">Steg 2 av 4</p>
         <h2 class="ob-title">Gäller något av detta?</h2>
         <p class="ob-hint">Välj allt som stämmer. Du kan alltid ändra senare.</p>
         <div class="ob-checks">
@@ -396,8 +396,16 @@
         <p class="ob-hint">Det gör planen och breven lite mer personliga.</p>
         <input type="text" id="deceased-name" class="ob-text-input" placeholder="Förnamn Efternamn" autocomplete="off"
           aria-label="Den avlidnes förnamn och efternamn"
-          onkeydown="if(event.key==='Enter') obGoTo(4)" />
+          onkeydown="if(event.key==='Enter') document.getElementById('deceased-date').focus()" />
         <p class="ob-skip">Frivilligt — du kan hoppa över detta.</p>
+
+        <p class="ob-check-group-label">När gick personen bort?</p>
+        <p class="ob-hint">Så kan vi räkna ut bouppteckningsfrist, Skatteverket-frist m.fl. som riktiga datum åt dig — annars visar vi ungefärlig text istället.</p>
+        <input type="date" id="deceased-date" class="ob-text-input" autocomplete="off"
+          aria-label="Dödsdatum"
+          onkeydown="if(event.key==='Enter') obGoTo(4)" />
+        <p class="ob-skip">Frivilligt — du kan lägga till det senare.</p>
+
         <button class="ob-next-btn" onclick="obGoTo(4)">Nästa →</button>
       </div>
     </div>
@@ -441,6 +449,7 @@
       <button class="plan-tab active" id="tab-plan" onclick="switchTab('plan')">Min plan</button>
       <button class="plan-tab" id="tab-docs" onclick="switchTab('docs')">Dokument</button>
       <button class="plan-tab" id="tab-bopp" onclick="switchTab('bopp')">Bouppteckning</button>
+      <button class="plan-tab" id="tab-arkiv" onclick="switchTab('arkiv')">🗂 Arkiv</button>
     </div>
   </div>
 
@@ -883,6 +892,36 @@
         <div id="bopp-skulder-list"></div>
       </section>
 
+    </div>
+  </div>
+
+  <!-- TAB: Arkiv (Dokumentcentral, T143–T148) -->
+  <div class="plan-tab-content" id="tabcontent-arkiv">
+    <div class="plan-wrap">
+      <div class="plan-header">
+        <h2 class="plan-title">Arkiv</h2>
+        <p class="plan-sub">Ett ställe att spara papper du får från myndigheter, banker och försäkringsbolag — så du slipper leta reda på dem igen om de behövs längre fram (t.ex. vid bouppteckningen). Fota, så föreslår vi kategori och namn åt dig. Sparas bara lokalt i din webbläsare, precis som resten av planen.</p>
+      </div>
+
+      <div class="arkiv-actions">
+        <button class="btn-ghost arkiv-scan-btn" onclick="document.getElementById('doc-photo-input').click()" aria-label="Fota dokument">
+          <span aria-hidden="true">📷</span> Fota dokument
+        </button>
+      </div>
+      <input type="file" id="doc-photo-input" accept="image/*" capture="environment" hidden onchange="handleDocumentScan(event)">
+      <p class="arkiv-scan-status hidden" id="doc-scan-status" role="status"></p>
+
+      <div class="arkiv-filters" id="arkiv-filters">
+        <button class="arkiv-filter-btn active" data-filter="alla" onclick="setDocumentFilter('alla')">Alla</button>
+        <button class="arkiv-filter-btn" data-filter="viktig" onclick="setDocumentFilter('viktig')">Viktiga</button>
+        <button class="arkiv-filter-btn" data-filter="mellan" onclick="setDocumentFilter('mellan')">Kanske</button>
+        <button class="arkiv-filter-btn" data-filter="onodig" onclick="setDocumentFilter('onodig')">Onödiga</button>
+      </div>
+
+      <ul id="arkiv-list" class="arkiv-list"></ul>
+      <p class="arkiv-empty hidden" id="arkiv-empty">Inga dokument tillagda än — fota det första papperet som dyker upp.</p>
+
+      <p class="arkiv-privacy-note">Dokumenten lämnar aldrig din enhet — ingen AI-tjänst sparar bilden, den används bara för att föreslå kategori och namn. Rensar du webbläsarens data försvinner de, så ta gärna en skärmdump av det som är viktigt innan du gör det.</p>
     </div>
   </div>
 

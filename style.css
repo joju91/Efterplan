@@ -2287,6 +2287,48 @@ body {
 .bill-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; padding: 12px; background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border); }
 .bill-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; background: #fff; }
 .bill-amount-input { max-width: 160px; }
+
+/* ═══ ARKIV / DOKUMENTCENTRAL (T143–T148) ═══ */
+.arkiv-actions { margin-bottom: 4px; }
+.arkiv-scan-status { font-size: 0.85rem; color: var(--text-soft); margin: 6px 0 4px; }
+.arkiv-scan-status--error { color: var(--red); }
+.arkiv-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 16px; }
+.arkiv-filter-btn {
+  padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 20px;
+  background: var(--bg-card); color: var(--text-soft); font-size: 0.82rem; font-weight: 500;
+  cursor: pointer; transition: var(--transition); font-family: var(--font);
+}
+.arkiv-filter-btn:hover { border-color: var(--accent); }
+.arkiv-filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.arkiv-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.arkiv-item { display: flex; gap: 12px; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); align-items: flex-start; }
+.arkiv-thumb { width: 52px; height: 52px; object-fit: cover; border-radius: var(--radius-sm); flex-shrink: 0; cursor: pointer; background: var(--bg); border: 1px solid var(--border); }
+.arkiv-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.arkiv-badge-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1px; }
+.arkiv-category-badge {
+  font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  background: var(--accent-light); color: var(--accent-dark); white-space: nowrap;
+}
+.arkiv-dup-badge {
+  font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  background: var(--yellow-bg); color: var(--yellow); white-space: nowrap;
+}
+.arkiv-item--dup { border-color: var(--yellow); }
+.arkiv-name { font-size: 0.92rem; font-weight: 600; background: none; border: none; padding: 0; font-family: var(--font); color: var(--text-primary); width: 100%; }
+.arkiv-name:focus { outline: none; border-bottom: 1.5px solid var(--accent); }
+.arkiv-meta { font-size: 0.78rem; color: var(--text-muted); }
+.arkiv-flags { display: flex; gap: 4px; margin-top: 4px; }
+.arkiv-flag-btn {
+  font-size: 0.72rem; padding: 3px 9px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: none; color: var(--text-soft); cursor: pointer; transition: var(--transition); font-family: var(--font);
+}
+.arkiv-flag-btn.active[data-flag="viktig"] { background: var(--green); border-color: var(--green); color: #fff; }
+.arkiv-flag-btn.active[data-flag="mellan"] { background: var(--yellow); border-color: var(--yellow); color: #fff; }
+.arkiv-flag-btn.active[data-flag="onodig"] { background: var(--grey); border-color: var(--grey); color: #fff; }
+.arkiv-delete { background: none; border: none; color: var(--text-soft); font-size: 1.2rem; cursor: pointer; min-width: 36px; min-height: 36px; flex-shrink: 0; }
+.arkiv-delete:hover { color: var(--red); }
+.arkiv-empty { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 16px 0; }
+.arkiv-privacy-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }
 .bill-form-actions { display: flex; gap: 8px; }
 
 /* ═══ PDF PRINT BUTTON (T050) ════════════════ */
