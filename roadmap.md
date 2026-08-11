@@ -193,7 +193,7 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Phase | Source | Priority | Type | Status |
 |----|------|--------|---------|----------|--------|-------|
-| T060 | Push notifications (7/30/90 days) | Fas 5 | 📱 App Plan | 🟠 | Dev | ✔ |
+| T060 | Push notifications (7/30/90 days) — rättad 2026-08-11: koden finns bara på oihopslagen branch `origin/codex/t060-checkpoints` (commit c4039e5), inte på `main`. Mätt från plan-skapande, inte dödsdatum — ej samma datumlogik som T135. Merga eller bygg om innan T136 antar att den finns. | Fas 5 | 📱 App Plan | 🟠 | Dev | ⧖ |
 | T061 | 3–4 static SEO landing pages | Fas 5 | 📱 App Plan | 🟠 | Growth | ✔ |
 | T062 | Extended telemetry | Fas 5 | 📱 App Plan | 🟡 | Analytics | ✔ |
 
@@ -360,7 +360,7 @@ Each step improves the product or the company in a meaningful way.
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T135 | Deadline-motor: räkna ut lagstadgade frister automatiskt från dödsdatum (redan insamlat i onboarding steg 3) och visa som konkreta kalenderdatum i "Denna vecka"/"Senare"-sektionerna, inte bara fristtext. Beräkna: bouppteckningsfrist (dödsdatum + 3 mån), inlämning Skatteverket (dödsdatum + 4 mån), dödsboanmälan vid litet bo (dödsdatum + 2 mån — verifiera exakt kommunregel), hyresuppsägning-rekommendation om "hyrde sin bostad" valdes i onboarding (inom 1 mån för kortare uppsägningstid). | 2026-07-18 | Fas 12 | Session | 🔴 | Dev | ☐ |
+| T135 | Deadline-motor: räkna ut lagstadgade frister automatiskt från dödsdatum och visa som konkreta kalenderdatum. Byggd 2026-08-11: **dödsdatum fanns inte i onboarding trots vad tickettexten antog** — nytt frivilligt datumfält tillagt i steg 3 (`index.html`, `state.deathDate`). Ny motor `addMonths()`/`addDays()`/`applyDeadlines()` i `app.js` beräknar bouppteckningsfrist (+3 mån) och Skatteverket-inlämning (+4 mån) som datum på `bouppteckning`-kortet, samt hyresuppsägning (+30 dagar) på `hyresratt_uppsagning`-kortet. Dödsboanmälan (+2 mån) hålls medvetet mjuk ("runt … eller tidigare") eftersom exakt kommunregel fortfarande är overifierad — en falskt exakt deadline hade skapat onödig stress. Sidofix: `OB_TOTAL` var felaktigt satt till 3 trots 4 onboarding-steg (fel antal progress-dots) — rättat till 4. | 2026-07-18 | Fas 12 | Session | 🔴 | Dev | ✔ |
 | T136 | Påminnelsemejl om deadlines — återanvänder T135:s datumberäkningar + befintlig e-postinfra (Supabase-inloggning/synk finns redan, se T051-T053). Skicka mejl X veckor innan bouppteckningsfrist och innan inlämningsfrist. Måste kunna stängas av frivilligt, ej tvingande. Bygg efter T135. | 2026-07-18 | Fas 12 | Session | 🟡 | Dev | ☐ |
 
 ---
@@ -375,3 +375,74 @@ Each step improves the product or the company in a meaningful way.
 | T140 | Brev till Pensionsmyndigheten för efterlevandepension — guide finns (efterlevandepension.html), inget brev. | 2026-07-18 | Fas 12 | Session | 🟢 | Content | ☐ |
 | T141 | ⚠️ Delad länk mellan dödsbodelägare — KONFLIKT MED T124: delningsfunktionen skrotades medvetet 2026-05-30 ("Onboarding 6→4 steg", ~1090 rader kod borttagna). Bygg INTE utan ett nytt uttryckligt beslut som river upp T124. Om det ändå prioriteras: lös utan central serverlagring av känslig data (kryptera state i URL eller motsvarande), inte samma modell som skrotades. | 2026-07-18 | Fas 12 | Session | 🟢 | Dev | ☐ |
 | T142 | Digitalt arv-modul (sociala medier, Google, Apple) — FAQ finns redan på startsidan, ingen guidad sektion eller brevmallar per plattform. | 2026-07-18 | Fas 12 | Session | 🟢 | Content | ☐ |
+
+---
+
+# 🧭 STRATEGISESSION — 2026-08-11
+
+💡 Extern research (Gemini-marknadsanalys, digitalisering av dödsbohantering SE/UK/US) destillerad och mappad mot befintlig arkitektur. Fullständigt underlag: `research/dodsbo-marknadsanalys-2026-08.md`.
+
+- Tre arkitektoniska byggstenar Efterplan saknar mot de vassaste internationella aktörerna (Settld, Empathy): (1) BankID-flerpartssignering av dödsbofullmakt kopplad till dödsfallsintyg, (2) PSD2 Open Banking-skanning som auto-upptäcker avtal ur transaktionshistorik, (3) orkestrering i tre kanaler (API / säker e-post / print-on-demand) mot leverantörer.
+- **Beslut:** Gemini-visionen tas in som **research-tickets (T149–T153)** i Fas 14, inte byggtickets. Inget byggs förrän underlag finns OCH bolaget är registrerat (T003/T004 fortfarande ☐ — blockerande förutsättning för seriösa bank-/försäkringssamtal).
+- **Beslut:** T135 (deadline-motor) kvarstår som näst-på-tur, oförändrat. Matchar delvis Gemini Fas 2:s "regelmotor" (uppsägningstid räknas från dödsdatum, ej aviseringsdatum) — bekräftar att prioriteringen redan var rätt, inget dubbelarbete.
+- **Beslut:** Ny funktion **Dokumentcentral** (T143–T148, Fas 13) läggs in mellan T135 och T136 — "en sak i taget" gäller fortsatt: T135 → Dokumentcentral → T136.
+- **Beslut (2026-08-11, efter avvägning):** T145 byggs som LLM-baserad kategorisering, inte som en deterministisk OCR+regelmotor. Övervägdes: en fast regelmotor (textavläsning + nyckelordslista mot kända avsändare, samma mönster som deadline-motorn) höll principen 100% intakt men missar allt den inte har i listan — och dödsbon får dokument från ett brett spann av banker/myndigheter/försäkringsbolag/hyresvärdar/föreningar, så fallback till manuell hantering hade blivit vanlig. Överordnad princip: **minsta möjliga tid- och energiåtgång för användaren** väger tyngre än principiell renhet här — LLM-varianten klarar fler dokumenttyper direkt med mindre manuellt jobb för en redan pressad anhörig. `readme.md` uppdaterad: principen omformulerad till att gälla kärnflödet (checklista/prioritering/deadlines förblir deterministiska), assisterande AI tillåten där den mätbart minskar användarens tidsåtgång.
+
+---
+
+# 📄 FAS 13 — DOKUMENTCENTRAL
+💡 Fota dokument från myndigheter/banker, AI kategoriserar och namnger, flagga som viktig/onödig/mellan. Byggs efter T135, före T136.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T143 | Datamodell + ny UI-yta för dokument (flik/sektion i plan-skärmen) — fält: kategori, namn, flagga, datum, källa. Byggd: ny flik "🗂 Arkiv" (`index.html`, `tabcontent-arkiv`), `state.documents` i app.js. Kategori visas som tydlig dekal (`.arkiv-category-badge`) ovanför namnet — syns utan att klicka in på dokumentet. Flikens introtext förklarar även *varför* (slippa leta upp papper igen längre fram), inte bara vad/hur. | 2026-08-11 | Fas 13 | Session | 🔴 | Design | ✔ |
+| T144 | Fotografera/ladda upp dokument — återanvänd kamera/QR-scan-mönstret från T067 (räkningar, app.js). Byggd: `handleDocumentScan()` återanvänder `compressBillImage()` rakt av, samma `capture="environment"`-input-mönster. | 2026-08-11 | Fas 13 | Session | 🟠 | Dev | ✔ |
+| T145 | AI-kategorisering: ny serverless-funktion `api/categorize-document.js` som skickar bilden till en vision-kapabel LLM och föreslår kategori + namn åt användaren. Byggd (Claude Haiku vision via `fetch`, ingen ny dependency). **Kräver `ANTHROPIC_API_KEY` i Vercel env — inte satt än, Owner-åtgärd** (se `.env.example`). Testat lokalt utan nyckeln: fallback till manuell kategori "Övrigt" fungerar felfritt, ingen spärr. | 2026-08-11 | Fas 13 | Session | 🟠 | Dev | ⧖ |
+| T146 | 3-lägesflagga (viktig / onödig / mellan) + filter/sortering på flagga. Byggd och testad (filter, flagg-toggle, avmarkering vid dubbelklick). | 2026-08-11 | Fas 13 | Session | 🟡 | Dev | ✔ |
+| T146b | Dubblettdetektering: enkel deterministisk hash av bildinnehållet (`hashImageData()`) upptäcker om exakt samma foto laddas upp igen. Vid träff: `confirm()`-dialog innan tillägg ("Lägga till ändå?"). Oavsett svar flaggas alla dokument som delar samma hash med en gul "⚠ Möjlig dubblett"-dekal i listan, omräknat vid varje render (så det stämmer även efter radering). Testat: skip-vägen, lägg-till-ändå-vägen, och att dekalen försvinner när ena dubbletten raderas. | 2026-08-11 | Fas 13 | Session | 🟡 | Dev | ✔ |
+| T147 | Lagring: localStorage för alla, Supabase Storage-synk för inloggade/premium (återanvänder auth från T051–T053). **Ej byggd denna omgång** — localStorage-delen klar (`efterplan_documents`, testad över reload), Supabase Storage-synken är en egen, större integration (ny bucket + policies) som medvetet sparades till en egen körning. | 2026-08-11 | Fas 13 | Session | 🟡 | Dev | ☐ |
+| T148 | Radering/retention-policy + GDPR-notis för känsliga dokument. Byggd som info + manuell radering (samma mönster som integritetssektionen på landningssidan) — **inte** automatisk utgångsdatum-radering, det riskerar att ta bort dokument användaren fortfarande behöver. | 2026-08-11 | Fas 13 | Session | 🟠 | Legal | ✔ |
+
+---
+
+# 🔭 FAS 14 — RESEARCH: NÄSTA GENERATIONS DÖDSBOTJÄNST
+💡 Rena research-tickets ur Gemini-analysen. Inget byggåtagande — underlag måste finnas OCH bolaget vara registrerat (T003/T004) innan en eventuell Fas 15+ kan planeras.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T149 | BankID-anslutning: jämför återförsäljare (Scrive, Signicat, Freja eID) vs. direktavtal med Finansiell ID-Teknik BID AB — krav, kostnad, ledtid för flerpartssignering av dödsbofullmakt | 2026-08-11 | Fas 14 | Gemini-analys | 🟡 | Research | ☐ |
+| T150 | Finns ett API för Skatteverkets dödsfallsintyg med släktutredning, eller kräver det manuell blankett/Mina sidor idag? | 2026-08-11 | Fas 14 | Gemini-analys | 🟡 | Research | ☐ |
+| T151 | PSD2/Open Banking-leverantörer i Sverige (Tink/Visa, Enable Banking, Neonomics) — pris, licenskrav (AISP via TPP vs. eget FI-tillstånd), GDPR-implikationer av att läsa 12 månaders transaktionshistorik för en avliden persons konto | 2026-08-11 | Fas 14 | Gemini-analys | 🟡 | Research | ☐ |
+| T152 | Standardiserad dödsbofullmakt — kartlägg krav hos Nordea/SEB/Swedbank/Handelsbanken/Länsförsäkringar Bank, bedöm om ett gemensamt digitalt format är realistiskt | 2026-08-11 | Fas 14 | Gemini-analys | 🟢 | Research | ☐ |
+| T153 | B2B2C-distribution — sondera intresse hos 2–3 svenska livförsäkringsbolag (Folksam, Skandia, Länsförsäkringar) eller fackförbund för en gratis mervärdestjänst vid utbetalning. Kräver registrerat bolag (T003/T004) innan seriösa samtal | 2026-08-11 | Fas 14 | Gemini-analys | 🟢 | Partnership | ☐ |
+
+---
+
+# 🎨 STRATEGISESSION — 2026-08-11 (design)
+
+💡 Design-direktiv delat av Owner ("jag vill bort från generic ai") + tre inspirationsbilder: en lavendelfärgad AI-agent-sajt (mjuk gradient-hero), en grön växtsajt (uttryckligen ett exempel att **undvika** — för lekfullt/consumer för dödsbohantering), och "Aurem"-wellnessappen (mjuka gradient-kort, stat-block "120K+ mindful sessions completed").
+
+- **Inte ett blankt blad:** ett tidigare pass (`style-tokens.css`, "Redesign 2026", live via `index.html:119-120`) har redan flyttat sajten mot varma oklch-toner (sand/sage/terrakotta), Fraunces-serif + IBM Plex Sans, mjuka radier (6–18px) och varma radial-gradients på body. Heron (`index.html:151-164`) har redan empatisk, konkret copy.
+- **Kvarstår generiskt:** två kalla blå gradient-kort (`paywall-card`/`preview-cta-card`, `style.css:1937-1940` & `1997-2000`), svarta modal-skuggor (`style.css:1288,1500`), missmatchad bas-`--accent` (navy, `style.css:37`, bara override:ad av tokens-filen), och **ingen dedikerad feature/trust-sektion** — landningssidan hoppar idag direkt från hero till FAQ.
+- **Ärlighetsspärr:** direktivets punkt om "riktiga siffror som trust-signaler" (à la Aurems "120K+") kan inte uppfyllas ärligt — senaste veckorapporten visar 16 sessioner/15 users den senaste veckan, `plan_generated` i enstaka siffror totalt. En påhittad stat vore vilseledande. Se T156.
+
+---
+
+# 🎨 FAS 15 — DESIGN: BORT FRÅN GENERIC AI-LOOK
+💡 Ordning: T154 (snabb konsekvensstädning) → T155+T156 tillsammans (ny sektion, ärlig) → T157 (polering).
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T154 | Konsekvenspass: värm upp de två kvarvarande kalla blå gradient-korten (`paywall-card`/`preview-cta-card`, `style.css:1937-1940`, `1997-2000`) + svarta modal-skuggor (`style.css:1288,1500`) + rätta bas-`--accent` (`style.css:37`, navy) så den matchar `style-tokens.css`s sage-värde istället för att bara override:as | 2026-08-11 | Fas 15 | Design-direktiv | 🟠 | Dev | ☐ |
+| T155 | Ny feature-/"hur det fungerar"-sektion på landningssidan mellan hero och FAQ — finns inte idag. Bygg med samma mjuka gradient-kort-språk som redan finns på body (`style.css:118-120`, `style-tokens.css:56-58`), inspirerat av Aurem-referensens kortbehandling, men med äkta steg ur bouppteckningsflödet — inte lorem ipsum | 2026-08-11 | Fas 15 | Design-direktiv | 🟠 | Design/Dev | ☐ |
+| T156 | Inga fabricerade siffror: nuvarande trafik ger inget ärligt "120K+"-liknande tal. Använd kvalitativa trust-signaler (integritetsbadges finns redan, `index.html:237-242`) tills riktiga volymer finns, eller en annan ärlig siffra (gratis/0 kr, en tydligt märkt tidsuppskattning — inte ett påstått mätvärde) | 2026-08-11 | Fas 15 | Design-direktiv | 🟡 | Content/Legal | ☐ |
+| T157 | Hero-polerpass: hero är redan i linje med riktningen (Fraunces, varm palett, mjuk radie, empatisk copy) — undersök om samma gradient-kort-behandling som T155 kan ge visuell enhetlighet mellan hero och den nya sektionen | 2026-08-11 | Fas 15 | Design-direktiv | 🟢 | Design | ☐ |
+
+---
+
+# 💳 FAS 16 — QA: BETALNINGSFLÖDET
+💡 Ersätter/konkretiserar T032 ("Test full purchase flow", ⧖ sedan tidigare) — pengar ska aldrig vara det som gör att förtroendet brister.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T158 | Verifiera att betalningsfunktionen är 100 % fungerande och korrekt — hela flödet end-to-end, inte bara enskilda smoke-tester: (1) **Checkout** — `api/create-checkout.js`, riktig Stripe Checkout-session i test-läge, rätt pris/valuta/locale; (2) **Webhook** — `api/stripe-webhook.js`, signaturverifiering med aktuell `STRIPE_WEBHOOK_SECRET` (roterad efter T115-läckan — bekräfta att nuvarande secret i Vercel faktiskt matchar Stripe Dashboard), att `purchases`-raden skapas korrekt i Supabase; (3) **Felfall** — avbruten betalning (`cancel_url`), nekat kort, dubbel-webhook (idempotens — samma event levereras två gånger ska inte ge dubbelt premium eller dubbel rad), webhook som kommer innan `verify-checkout.js` hinner köras klientsidan; (4) **Kvitton** — Stripes automatiska kvitto går ut, rätt belopp/moms/avsändare; (5) **`check-premium.js`** — premium låses upp korrekt både via session-redirect och vid inloggning på ny enhet (Supabase-synk). Kör i Stripe test-läge med testkort (4242…, samt ett kort som nekas) innan ev. skarpt test. | 2026-08-11 | Fas 16 | Owner | 🔴 | QA | ☐ |

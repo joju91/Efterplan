@@ -107,9 +107,11 @@ const state = {
   barn:           false,
   name:           '',
   personnr:       '',
+  deathDate:      '', // ÅÅÅÅ-MM-DD, frivilligt — driver T135-deadline-motorn
   taskChecklists: {}, // taskId → {key: bool}
   tasks:               [],
   bills:               [],
+  documents:           [], // Arkiv/Dokumentcentral (T143–T148)
 };
 
 // ─── SCREENS ─────────────────────────────────
@@ -168,16 +170,18 @@ function obPrefillAnswers() {
   document.querySelectorAll('#ob-step-2 input[type="checkbox"]').forEach(cb => {
     cb.checked = !!state[cb.dataset.key];
   });
-  // Step 3 — name
+  // Step 3 — name + dödsdatum
   const nameEl = document.getElementById('deceased-name');
   if (nameEl) nameEl.value = state.name || '';
+  const dateEl = document.getElementById('deceased-date');
+  if (dateEl) dateEl.value = state.deathDate || '';
   // Step 4 — personnr
   const pnrEl = document.getElementById('deceased-personnr');
   if (pnrEl) pnrEl.value = state.personnr || '';
 }
 
 // ─── ONBOARDING (conversational) ─────────────
-let OB_TOTAL = 3;
+let OB_TOTAL = 4;
 let obCurrentStep = 1;
 
 function obInitDots() {
@@ -269,15 +273,18 @@ function updateCheckboxState(key) {
 }
 
 function generatePlan() {
-  state.name     = document.getElementById('deceased-name').value.trim();
-  state.personnr = document.getElementById('deceased-personnr').value.trim();
+  state.name      = document.getElementById('deceased-name').value.trim();
+  state.personnr  = document.getElementById('deceased-personnr').value.trim();
+  state.deathDate = document.getElementById('deceased-date')?.value || '';
   buildTasks();
+  applyDeadlines();
   loadTaskState();
   loadBills();
+  loadDocuments();
   renderPlan();
   saveState();
   saveTaskState();
-  track('plan_generated', { relation: state.relation || 'okänd' });
+  track('plan_generated', { relation: state.relation || 'okänd', has_death_date: !!state.deathDate });
   showScreen('screen-plan');
 }
 
@@ -851,6 +858,60 @@ function buildTasks() {
   loadTaskState();
 }
 
+// ─── DEADLINE ENGINE (T135) ──────────────────
+// Ren datumaritmetik utifrån dödsdatumet — inget gissas, bara adderad tid.
+// Om inget dödsdatum är ifyllt lämnas TASK_LIBRARY:s statiska fristtext orörd (fallback).
+function addMonths(date, months) {
+  const d = new Date(date);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function parseDeathDate() {
+  if (!state.deathDate) return null;
+  const d = new Date(state.deathDate + 'T00:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function applyDeadlines() {
+  const death = parseDeathDate();
+  if (!death) return;
+
+  // Bouppteckning (ÄB 20 kap 1 §): förrättas inom 3 mån, skickas till Skatteverket inom 4 mån.
+  const boupp = state.tasks.find(t => t.id === 'bouppteckning');
+  if (boupp) {
+    const boFrist  = addMonths(death, 3);
+    const skvFrist = addMonths(death, 4);
+    boupp.time = `Bouppteckning senast ${formatDate(boFrist)}`;
+    boupp.desc = boupp.desc.replace(
+      'Den ska vara klar inom 3 månader och skickas till Skatteverket inom 4 månader.',
+      `Den ska vara klar senast <strong>${formatDate(boFrist)}</strong> och skickas till Skatteverket senast <strong>${formatDate(skvFrist)}</strong>.`
+    );
+    // Dödsboanmälan (litet bo): hålls mjuk med "runt"/"cirka" — exakt kommunregel är overifierad,
+    // och en falskt exakt deadline här skulle skapa onödig stress snarare än hjälpa.
+    const smaBo = addMonths(death, 2);
+    boupp.desc = boupp.desc.replace(
+      'Kontakta socialtjänsten för att se om det gäller dig.',
+      `Kontakta socialtjänsten för att se om det gäller dig — gör det gärna runt <strong>${formatDate(smaBo)}</strong> eller tidigare (exakt frist varierar per kommun).`
+    );
+  }
+
+  // Hyresuppsägning: kortare uppsägningstid om det görs inom 1 månad från dödsfallet.
+  const hyra = state.tasks.find(t => t.id === 'hyresratt_uppsagning');
+  if (hyra) {
+    const hyresFrist = addDays(death, 30);
+    hyra.time = `Säg upp senast ${formatDate(hyresFrist)} för kortare uppsägningstid`;
+  }
+
+  track('deadline_dates_computed');
+}
+
 // ─── NOTES (cached) ──────────────────────────
 let _notesCache = null;
 
@@ -959,6 +1020,7 @@ function renderPlan() {
 
   updateProgress();
   renderBills();
+  renderDocuments();
 }
 
 let expandedTaskId = null;
@@ -1413,6 +1475,193 @@ async function handleBillScan(event) {
     console.error('Bill scan error', err);
     setBillScanStatus('Det gick inte att läsa bilden. Försök igen.', true);
     setTimeout(() => setBillScanStatus(''), 5000);
+  }
+}
+
+// ─── ARKIV / DOKUMENTCENTRAL (T143–T148) ─────
+let documentFilter = 'alla';
+const FLAG_LABELS = { viktig: 'Viktig', mellan: 'Kanske', onodig: 'Onödig' };
+
+function loadDocuments() {
+  try { state.documents = JSON.parse(localStorage.getItem('efterplan_documents')) || []; } catch(e) { state.documents = []; }
+}
+function saveDocuments() {
+  try { localStorage.setItem('efterplan_documents', JSON.stringify(state.documents)); } catch(e) {}
+  try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
+}
+
+function setDocumentFilter(filter) {
+  documentFilter = filter;
+  document.querySelectorAll('.arkiv-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+  renderDocuments();
+}
+
+function renderDocuments() {
+  const list = document.getElementById('arkiv-list');
+  const empty = document.getElementById('arkiv-empty');
+  if (!list) return;
+  const docs = documentFilter === 'alla'
+    ? state.documents
+    : state.documents.filter(d => d.flag === documentFilter);
+
+  if (docs.length === 0) {
+    list.innerHTML = '';
+    if (empty) {
+      empty.classList.remove('hidden');
+      empty.textContent = state.documents.length === 0
+        ? 'Inga dokument tillagda än — fota det första papperet som dyker upp.'
+        : 'Inga dokument med den här flaggan.';
+    }
+    return;
+  }
+  empty && empty.classList.add('hidden');
+
+  // Dubblettdetektering: dokument som delar samma bild-hash flaggas visuellt,
+  // oavsett i vilken ordning de lades till eller togs bort (räknas om varje render).
+  const hashCounts = {};
+  state.documents.forEach(d => { if (d.imageHash) hashCounts[d.imageHash] = (hashCounts[d.imageHash] || 0) + 1; });
+
+  list.innerHTML = docs.map(d => {
+    const isDup = !!(d.imageHash && hashCounts[d.imageHash] > 1);
+    return `
+    <li class="arkiv-item${isDup ? ' arkiv-item--dup' : ''}" id="arkiv-${d.id}">
+      ${d.photo ? `<img class="arkiv-thumb" src="${d.photo}" alt="Foto av dokument" onclick="viewDocumentPhoto('${d.id}')">` : ''}
+      <div class="arkiv-info">
+        <div class="arkiv-badge-row">
+          <span class="arkiv-category-badge">${escapeHtml(d.category)}</span>
+          ${isDup ? `<span class="arkiv-dup-badge" title="Ser ut som samma foto som ett annat dokument i arkivet">⚠ Möjlig dubblett</span>` : ''}
+          <span class="arkiv-meta">${escapeHtml(d.date)}</span>
+        </div>
+        <input class="arkiv-name" value="${escapeHtml(d.name)}" aria-label="Dokumentnamn"
+               onchange="renameDocument('${d.id}', this.value)">
+        <div class="arkiv-flags">
+          ${['viktig','mellan','onodig'].map(f => `
+            <button class="arkiv-flag-btn${d.flag === f ? ' active' : ''}" data-flag="${f}"
+                    onclick="setDocumentFlag('${d.id}', '${f}')">${FLAG_LABELS[f]}</button>
+          `).join('')}
+        </div>
+      </div>
+      <button class="arkiv-delete" onclick="deleteDocument('${d.id}')" aria-label="Ta bort dokument">×</button>
+    </li>`;
+  }).join('');
+}
+
+// Enkel, deterministisk hash av bildinnehållet — för att upptäcka att exakt
+// samma foto laddas upp igen. Inte kryptografiskt säker, behöver inte vara det.
+function hashImageData(dataUrl) {
+  let hash = 0;
+  for (let i = 0; i < dataUrl.length; i++) {
+    hash = (hash * 31 + dataUrl.charCodeAt(i)) | 0;
+  }
+  return hash.toString(36);
+}
+
+function viewDocumentPhoto(id) {
+  const d = state.documents.find(d => d.id === id);
+  if (!d || !d.photo) return;
+  const w = window.open('', '_blank');
+  if (w) w.document.write(`<title>${escapeHtml(d.name)}</title><body style="margin:0;background:#222;display:grid;place-items:center;min-height:100vh"><img src="${d.photo}" style="max-width:100%;max-height:100vh;object-fit:contain"></body>`);
+}
+
+function renameDocument(id, value) {
+  const d = state.documents.find(d => d.id === id);
+  if (!d) return;
+  d.name = value.trim() || d.name;
+  saveDocuments();
+}
+
+function setDocumentFlag(id, flag) {
+  const d = state.documents.find(d => d.id === id);
+  if (!d) return;
+  d.flag = d.flag === flag ? null : flag; // klicka igen på samma flagga för att avmarkera
+  saveDocuments();
+  renderDocuments();
+  track('document_flag_set', { flag: d.flag || 'none' });
+}
+
+function deleteDocument(id) {
+  state.documents = state.documents.filter(d => d.id !== id);
+  saveDocuments();
+  renderDocuments();
+  track('document_deleted');
+}
+
+function setDocumentScanStatus(msg, isError) {
+  const el = document.getElementById('doc-scan-status');
+  if (!el) return;
+  if (!msg) { el.classList.add('hidden'); el.textContent = ''; return; }
+  el.classList.remove('hidden');
+  el.textContent = msg;
+  el.classList.toggle('arkiv-scan-status--error', !!isError);
+}
+
+// Ren assist — misslyckas anropet (nätverk, saknad ANTHROPIC_API_KEY, m.m.)
+// faller vi tillbaka till manuell kategorisering. Aldrig en spärr.
+async function categorizeDocumentAI(dataUrl) {
+  try {
+    const r = await fetch('/api/categorize-document', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: dataUrl }),
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!data || !data.ok) return null;
+    return { category: data.category, name: data.name };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function handleDocumentScan(event) {
+  const file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  setDocumentScanStatus('Läser dokument…');
+  try {
+    const reader = new FileReader();
+    const rawDataUrl = await new Promise((resolve, reject) => {
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = () => reject(new Error('Kunde inte läsa filen'));
+      reader.readAsDataURL(file);
+    });
+    const compressed = await compressBillImage(rawDataUrl, 1280, 0.7);
+    const imageHash = hashImageData(compressed);
+
+    const existingDup = state.documents.find(d => d.imageHash === imageHash);
+    if (existingDup) {
+      const proceed = window.confirm(
+        `Det här ser ut som samma foto som "${existingDup.name}" som redan finns i arkivet. Lägga till det ändå?`
+      );
+      if (!proceed) {
+        setDocumentScanStatus('Hoppade över — fanns redan i arkivet.');
+        setTimeout(() => setDocumentScanStatus(''), 3000);
+        return;
+      }
+    }
+
+    setDocumentScanStatus('Föreslår kategori…');
+    const ai = await categorizeDocumentAI(compressed);
+
+    const doc = {
+      id: Date.now().toString(),
+      name: ai?.name || `Dokument ${formatDate(new Date())}`,
+      category: ai?.category || 'Övrigt',
+      date: formatDate(new Date()),
+      flag: null,
+      photo: compressed,
+      imageHash,
+    };
+    state.documents.push(doc);
+    saveDocuments();
+    renderDocuments();
+    track(ai ? 'document_categorized_ai' : 'document_added_manual', { category: doc.category });
+    setDocumentScanStatus(ai ? 'Dokument tillagt — kategori föreslagen.' : 'Dokument tillagt. Byt namn/kategori manuellt ovan om du vill.');
+    setTimeout(() => setDocumentScanStatus(''), 4000);
+  } catch (err) {
+    console.error('Document scan error', err);
+    setDocumentScanStatus('Det gick inte att läsa bilden. Försök igen.', true);
+    setTimeout(() => setDocumentScanStatus(''), 5000);
   }
 }
 
@@ -2110,6 +2359,7 @@ function getShareableState() {
     vardepapper: state.vardepapper,
     barn:       state.barn,
     name:       state.name,
+    deathDate:  state.deathDate,
     // personnr intentionally excluded (privacy)
   };
 }
@@ -2258,8 +2508,10 @@ async function handlePaywallCTA() {
     if (saved) {
       Object.assign(state, JSON.parse(saved));
       buildTasks();
+      applyDeadlines();
       loadTaskState();
       loadBills();
+      loadDocuments();
       renderPlan();
       showScreen('screen-plan');
       return;
@@ -2271,6 +2523,12 @@ async function handlePaywallCTA() {
     history.replaceState(null, '', window.location.pathname);
     startOnboarding();
   }
+})();
+
+// Dödsdatum kan aldrig ligga i framtiden
+(function initDeathDateMax() {
+  const el = document.getElementById('deceased-date');
+  if (el) el.max = new Date().toISOString().slice(0, 10);
 })();
 
 // ─── BOUPPTECKNING ────────────────────────────
