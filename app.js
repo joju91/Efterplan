@@ -2540,8 +2540,18 @@ const boppData = {
   skulder:    [],  // [{ beskrivning, belopp }]
 };
 
+let boppTracked = false; // T133: rapportera aktivering en gång per session, inte per tangenttryck
+
 function boppSave() {
   try { localStorage.setItem(BOPP_KEY, JSON.stringify(boppData)); } catch(e) {}
+  if (!boppTracked && (boppData.delbagare.length || boppData.tillgangar.length || boppData.skulder.length)) {
+    boppTracked = true;
+    track('bouppteckning_saved', {
+      delbagare: boppData.delbagare.length,
+      tillgangar: boppData.tillgangar.length,
+      skulder: boppData.skulder.length,
+    });
+  }
 }
 
 function boppLoad() {
