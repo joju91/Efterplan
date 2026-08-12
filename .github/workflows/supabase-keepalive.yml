@@ -1,0 +1,40 @@
+name: Supabase Keep-Alive
+
+# T163 — Supabase gratisnivå auto-pausar projekt efter ~7 dagars inaktivitet,
+# vilket 2026-08-12 tyst slog ut inloggning, sparade planer och betalnings-
+# webhooken (DNS slutade svara helt). Den här workflowen gör ett litet
+# autentiserat databasanrop ett par gånger i veckan så projektet räknas
+# som aktivt och aldrig hinner pausas.
+
+on:
+  schedule:
+    # Måndag och torsdag 06:00 UTC — gap på 3–4 dagar, gott om marginal
+    # under Supabase 7-dagarsgräns även om ett körningstillfälle skulle missas.
+    - cron: '0 6 * * 1,4'
+  workflow_dispatch:  # tillåt manuell körning från Actions-fliken
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase-databasen
+        env:
+          # Projekt-URL är inte känslig (samma sak som att veta domänen),
+          # så den ligger direkt här istället för som ett extra repo-secret.
+          SUPABASE_URL: https://vjupkemzpnrahdsljenl.supabase.co
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SECRET_KEY" ]; then
+            echo "SUPABASE_SECRET_KEY saknas som repo-secret — se roadmap.md T163."
+            exit 1
+          fi
+          status=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/users?select=id&limit=1" \
+            -H "apikey: $SUPABASE_SECRET_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SECRET_KEY")
+          echo "HTTP status: $status"
+          cat /tmp/resp.json
+          if [ "$status" -ge 400 ]; then
+            echo "Oväntat felstatus från Supabase — projektet kan vara pausat eller nyckeln ogiltig."
+            exit 1
+          fi
