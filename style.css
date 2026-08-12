@@ -2328,6 +2328,19 @@ body {
 .arkiv-flag-btn.active[data-flag="viktig"] { background: var(--green); border-color: var(--green); color: #fff; }
 .arkiv-flag-btn.active[data-flag="mellan"] { background: var(--yellow); border-color: var(--yellow); color: #fff; }
 .arkiv-flag-btn.active[data-flag="onodig"] { background: var(--grey); border-color: var(--grey); color: #fff; }
+.arkiv-explain-row { margin-top: 6px; }
+.arkiv-explain-btn {
+  background: none; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 4px 10px; font-size: 0.8rem; font-weight: 600; color: var(--accent);
+  cursor: pointer; font-family: var(--font);
+}
+.arkiv-explain-btn:hover { background: var(--accent-light); }
+.arkiv-explain {
+  margin-top: 8px; padding: 10px 12px; background: var(--accent-light);
+  border-radius: var(--radius-sm); font-size: 0.85rem; line-height: 1.55;
+  color: var(--text-soft); white-space: pre-wrap;
+}
+.arkiv-explain.hidden { display: none; }
 .arkiv-delete { background: none; border: none; color: var(--text-soft); font-size: 1.2rem; cursor: pointer; min-width: 36px; min-height: 36px; flex-shrink: 0; }
 .arkiv-delete:hover { color: var(--red); }
 .arkiv-empty { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 16px 0; }

@@ -1355,6 +1355,21 @@ function clearBillPhoto() {
   const img = document.getElementById('bill-photo-preview-img');
   if (img) img.src = '';
 }
+// Dubblettdetektering: OCR/fakturareferens är en starkare signal än bildhash
+// (samma faktura kan fotograferas i annan vinkel/ljus och få annan hash).
+// Kollas en gång, här — inte mitt i skanningen — eftersom manuellt inmatade
+// räkningar (utan QR) bara går att jämföra när desc/belopp/foto är klara.
+function findDuplicateBill(ocr, imageHash) {
+  if (ocr) {
+    const byOcr = state.bills.find(b => b.ocr && b.ocr === ocr);
+    if (byOcr) return { bill: byOcr, matchType: 'ocr' };
+  }
+  if (imageHash) {
+    const byHash = state.bills.find(b => b.imageHash && b.imageHash === imageHash);
+    if (byHash) return { bill: byHash, matchType: 'hash' };
+  }
+  return null;
+}
 function submitBill() {
   const desc = document.getElementById('bill-desc-input').value.trim();
   const errEl = document.getElementById('err-bills');
@@ -1368,7 +1383,21 @@ function submitBill() {
   const form = document.getElementById('bill-form');
   const photo = (form && form.dataset.photo) || '';
   const ocr = (form && form.dataset.ocr) || '';
-  state.bills.push({ id: Date.now().toString(), desc, amount: amount || '', paid: false, photo, ocr });
+  const imageHash = photo ? hashImageData(photo) : '';
+
+  const dup = findDuplicateBill(ocr, imageHash);
+  if (dup) {
+    const paidNote = dup.bill.paid ? ' Den är redan markerad som BETALD.' : '';
+    const reason = dup.matchType === 'ocr'
+      ? `samma OCR-/fakturanummer (${ocr}) som "${dup.bill.desc}"`
+      : `samma foto som "${dup.bill.desc}"`;
+    const proceed = window.confirm(
+      `Det här ser ut som ${reason}, som redan finns bland dina räkningar.${paidNote} Lägga till den ändå?`
+    );
+    if (!proceed) return; // formuläret lämnas öppet — ingen spärr, bara en paus
+  }
+
+  state.bills.push({ id: Date.now().toString(), desc, amount: amount || '', paid: false, photo, ocr, imageHash });
   saveBills();
   renderBills();
   hideBillForm();
@@ -1488,6 +1517,7 @@ async function handleBillScan(event) {
 
 // ─── ARKIV / DOKUMENTCENTRAL (T143–T148) ─────
 let documentFilter = 'alla';
+let expandedDocId = null; // id of the document whose "Förklara"-panel is open, if any
 const FLAG_LABELS = { viktig: 'Viktig', mellan: 'Kanske', onodig: 'Onödig' };
 
 function loadDocuments() {
@@ -1531,6 +1561,7 @@ function renderDocuments() {
 
   list.innerHTML = docs.map(d => {
     const isDup = !!(d.imageHash && hashCounts[d.imageHash] > 1);
+    const isExplainOpen = expandedDocId === d.id;
     return `
     <li class="arkiv-item${isDup ? ' arkiv-item--dup' : ''}" id="arkiv-${d.id}">
       ${d.photo ? `<img class="arkiv-thumb" src="${d.photo}" alt="Foto av dokument" onclick="viewDocumentPhoto('${d.id}')">` : ''}
@@ -1548,6 +1579,16 @@ function renderDocuments() {
                     onclick="setDocumentFlag('${d.id}', '${f}')">${FLAG_LABELS[f]}</button>
           `).join('')}
         </div>
+        <div class="arkiv-explain-row">
+          <button class="arkiv-explain-btn" type="button"
+                  aria-expanded="${isExplainOpen ? 'true' : 'false'}" aria-controls="arkiv-explain-${d.id}"
+                  onclick="toggleDocumentExplanation('${d.id}')">
+            ${isExplainOpen ? 'Dölj förklaring' : '✨ Förklara detta dokument'}
+          </button>
+        </div>
+        <div class="arkiv-explain${isExplainOpen ? '' : ' hidden'}" id="arkiv-explain-${d.id}">${
+          isExplainOpen ? escapeHtml(d.explanation || 'Tar fram en förklaring…') : ''
+        }</div>
       </div>
       <button class="arkiv-delete" onclick="deleteDocument('${d.id}')" aria-label="Ta bort dokument">×</button>
     </li>`;
@@ -1594,6 +1635,42 @@ function deleteDocument(id) {
   track('document_deleted');
 }
 
+async function toggleDocumentExplanation(id) {
+  const d = state.documents.find(x => x.id === id);
+  if (!d) return;
+
+  if (expandedDocId === id) {
+    expandedDocId = null;
+    renderDocuments();
+    return;
+  }
+
+  expandedDocId = id;
+  renderDocuments(); // öppnar panelen direkt — visar cachat svar eller en väntetext
+  track('document_explain_opened');
+
+  if (d.explanation) return; // redan hämtat — inget nytt anrop
+  if (!d.photo) return; // säkerhet: inget foto att skicka (borde inte kunna hända)
+
+  const explanation = await explainDocumentAI(d.photo);
+  if (expandedDocId !== id) return; // användaren stängde/öppnade en annan panel innan svaret kom
+
+  const panel = document.getElementById(`arkiv-explain-${id}`);
+  if (!explanation) {
+    if (panel) panel.textContent = '';
+    setDocumentScanStatus('Kunde inte ta fram en förklaring just nu. Försök gärna igen om en stund.', true);
+    setTimeout(() => setDocumentScanStatus(''), 5000);
+    expandedDocId = null;
+    renderDocuments();
+    return;
+  }
+
+  d.explanation = explanation;
+  saveDocuments();
+  if (panel) panel.textContent = explanation; // textContent, aldrig innerHTML, för AI-text
+  track('document_explained_ai');
+}
+
 function setDocumentScanStatus(msg, isError) {
   const el = document.getElementById('doc-scan-status');
   if (!el) return;
@@ -1616,6 +1693,25 @@ async function categorizeDocumentAI(dataUrl) {
     const data = await r.json();
     if (!data || !data.ok) return null;
     return { category: data.category, name: data.name };
+  } catch (e) {
+    return null;
+  }
+}
+
+// Ren assist — misslyckas anropet (nätverk, saknad ANTHROPIC_API_KEY, rate-limit,
+// m.m.) visar vi bara ett kort felmeddelande. Aldrig en spärr för att se eller
+// hantera dokumentet i övrigt.
+async function explainDocumentAI(dataUrl) {
+  try {
+    const r = await fetch('/api/explain-document', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: dataUrl }),
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!data || !data.ok || typeof data.explanation !== 'string') return null;
+    return data.explanation;
   } catch (e) {
     return null;
   }
@@ -1929,9 +2025,70 @@ function saveSenderInfo(name, email) {
 }
 function getSenderInfo() {
   return {
-    name:  localStorage.getItem('efterplan_sender_name')  || '',
-    email: localStorage.getItem('efterplan_sender_email') || ''
+    name:    localStorage.getItem('efterplan_sender_name')    || '',
+    email:   localStorage.getItem('efterplan_sender_email')   || '',
+    address: localStorage.getItem('efterplan_sender_address') || '',
+    zip:     localStorage.getItem('efterplan_sender_zip')     || '',
+    city:    localStorage.getItem('efterplan_sender_city')    || '',
   };
+}
+function saveSenderAddress(address, zip, city) {
+  try {
+    if (address) localStorage.setItem('efterplan_sender_address', address);
+    if (zip)     localStorage.setItem('efterplan_sender_zip', zip);
+    if (city)    localStorage.setItem('efterplan_sender_city', city);
+  } catch(e) {}
+}
+function saveSenderAddressFields() {
+  const a = document.getElementById('doc-sender-address');
+  const z = document.getElementById('doc-sender-zip');
+  const c = document.getElementById('doc-sender-city');
+  saveSenderAddress((a && a.value.trim()) || '', (z && z.value.trim()) || '', (c && c.value.trim()) || '');
+}
+function initSenderAddressFields() {
+  const s = getSenderInfo();
+  const a = document.getElementById('doc-sender-address');
+  const z = document.getElementById('doc-sender-zip');
+  const c = document.getElementById('doc-sender-city');
+  if (a && s.address) a.value = s.address;
+  if (z && s.zip)     z.value = s.zip;
+  if (c && s.city)    c.value = s.city;
+}
+// Postnummer → stad, helt klientsidan mot ett bundlat dataset (data/postnummer-se.json,
+// källa GeoNames.org, CC BY 4.0) — inget postnummer skickas till någon extern tjänst.
+// Ren assist: skriver aldrig över ett fält användaren redan fyllt i själv, och
+// misslyckas tyst (offline, saknad fil, okänt postnummer) utan felmeddelande.
+let _postortTable = null;
+async function loadPostortTable() {
+  if (_postortTable) return _postortTable;
+  try {
+    const r = await fetch('data/postnummer-se.json');
+    _postortTable = r.ok ? await r.json() : {};
+  } catch(e) { _postortTable = {}; }
+  return _postortTable;
+}
+async function lookupPostort() {
+  const zipEl = document.getElementById('doc-sender-zip');
+  const cityEl = document.getElementById('doc-sender-city');
+  if (!zipEl) return;
+  const digits = zipEl.value.replace(/\D/g, '');
+  if (digits.length !== 5) return;
+  const table = await loadPostortTable();
+  const match = table[digits];
+  if (match && cityEl && !cityEl.value) {
+    cityEl.value = match;
+    saveSenderAddressFields();
+  }
+}
+// Byggs in i avsändarblocket i genererade brev, under namn/e-post. Tom sträng
+// om inget adressfält är ifyllt — lägger då inte till någon extra rad alls.
+function formatSenderAddressBlock() {
+  const { address, zip, city } = getSenderInfo();
+  const lines = [];
+  if (address) lines.push(address);
+  const zipCity = [zip, city].filter(Boolean).join(' ');
+  if (zipCity) lines.push(zipCity);
+  return lines.length ? '\n' + lines.join('\n') : '';
 }
 function getRelationLabel() {
   const map = { partner: 'Make/Maka', foralder: 'Barn', syskon: 'Syskon', barn: 'Förälder', annan: '' };
@@ -2077,7 +2234,7 @@ function _doGenerateBulk(sender, email, genBtn) {
 
   const letters = services.map(({ name, custnr }) => ({
     service: name,
-    text: `${sender}\n${email}\n\n${today}\n\nTill: ${name}\nÄrende: Avslutning av abonnemang — dödsfall${custnr ? '\nKundnummer: ' + custnr : ''}\n\nHej,\n\nJag kontaktar er angående abonnemanget som tillhörde ${deceased} (personnr ${personnr}), som tyvärr har gått bort.\n\nJag ber er härmed avsluta abonnemanget snarast möjligt och begär återbetalning för eventuell förbetald period efter avslutsdatum.\n\nJag bifogar dödsbevis och är tillgänglig för frågor via e-post.\n\nVänligen bekräfta avslut skriftligen.\n\nMed vänliga hälsningar,\n\n${sender}\n${email}`,
+    text: `${sender}\n${email}${formatSenderAddressBlock()}\n\n${today}\n\nTill: ${name}\nÄrende: Avslutning av abonnemang — dödsfall${custnr ? '\nKundnummer: ' + custnr : ''}\n\nHej,\n\nJag kontaktar er angående abonnemanget som tillhörde ${deceased} (personnr ${personnr}), som tyvärr har gått bort.\n\nJag ber er härmed avsluta abonnemanget snarast möjligt och begär återbetalning för eventuell förbetald period efter avslutsdatum.\n\nJag bifogar dödsbevis och är tillgänglig för frågor via e-post.\n\nVänligen bekräfta avslut skriftligen.\n\nMed vänliga hälsningar,\n\n${sender}\n${email}`,
   }));
 
   const container = document.getElementById('bulk-letters-list');
@@ -2125,7 +2282,7 @@ function generateLetter() {
   const custnrLine = custnr ? `\nKundnummer: ${custnr}` : '';
 
   showDocResult('Uppsägningsbrev — ' + service, `${sender}
-${email}
+${email}${formatSenderAddressBlock()}
 
 ${today}
 
@@ -2160,7 +2317,7 @@ function generateBank() {
   const { deceased, personnr, today } = getDocContext();
 
   showDocResult('Brev till ' + bank, `${sender}
-${email}
+${email}${formatSenderAddressBlock()}
 
 ${today}
 
@@ -2200,7 +2357,7 @@ function generateForsakring() {
   const { deceased, personnr, today } = getDocContext();
 
   showDocResult('Brev till ' + bolag, `${sender}
-${email}
+${email}${formatSenderAddressBlock()}
 
 ${today}
 
@@ -2275,6 +2432,7 @@ function generateSkatteverket() {
   const email    = document.getElementById('skv-email').value.trim();
   clearFormError('err-skatteverket');
   if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
 
@@ -2286,7 +2444,7 @@ function generateSkatteverket() {
 
   const { subject, body } = arendeTexts[arende];
 
-  showDocResult(`Skatteverket — ${subject}`, `${sender}\n${email}\n\n${today}\n\nTill: Skatteverket\nÄrende: ${subject}\n\nHej,\n\n${body}\n\nMed vänliga hälsningar,\n\n${sender}\n${relation} till ${deceased}\n${email}`, subject);
+  showDocResult(`Skatteverket — ${subject}`, `${sender}\n${email}${formatSenderAddressBlock()}\n\n${today}\n\nTill: Skatteverket\nÄrende: ${subject}\n\nHej,\n\n${body}\n\nMed vänliga hälsningar,\n\n${sender}\n${relation} till ${deceased}\n${email}`, subject);
 }
 
 
@@ -2510,6 +2668,7 @@ async function handlePaywallCTA() {
 
 // ─── INIT ─────────────────────────────────────
 (function init() {
+  initSenderAddressFields(); // oberoende av vilken gren nedan som körs — bara localStorage-återställning
   // Restore own plan from localStorage
   try {
     const saved = localStorage.getItem('efterplan_state');
