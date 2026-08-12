@@ -32,3 +32,33 @@ export function originFromReq(req) {
 export function normalizeEmail(e) {
   return (e || '').trim().toLowerCase();
 }
+
+// T162: klientens IP för rate-limiting. Vercel sätter x-forwarded-for;
+// första adressen i listan är den faktiska klienten (resten är proxy-hopp).
+export function getClientIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length) return xff.split(',')[0].trim();
+  return req.socket?.remoteAddress || 'unknown';
+}
+
+// T162: enkelt per-nyckel dagligt tak, backat av Supabase (samma projekt/secret
+// som redan finns, se T163) istället för att kräva en ny Upstash/KV-integration.
+// Fail-open: om rate-limit-kontrollen själv failar (nätverk, Supabase pausat)
+// släpper vi igenom anropet — en trög/nere rate-limiter ska inte slå ut hela
+// funktionen för alla användare.
+export async function checkRateLimit(bucket, ip, limit) {
+  try {
+    const supa = getSupabaseAdmin();
+    const today = new Date().toISOString().slice(0, 10);
+    const key = `${bucket}:${ip}:${today}`;
+    const { data, error } = await supa.rpc('rate_limit_increment', { key_in: key });
+    if (error) {
+      console.error('[rate-limit]', bucket, error);
+      return { limited: false };
+    }
+    return { limited: typeof data === 'number' && data > limit, count: data };
+  } catch (err) {
+    console.error('[rate-limit]', bucket, err);
+    return { limited: false };
+  }
+}
