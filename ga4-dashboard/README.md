@@ -36,7 +36,7 @@ Oppna sedan:
 Dashboarden visar fyra nyckeltal:
 - `Conversion`: `Plan Completed / Plan Generated`
 - `Trafik`: `sessions`
-- `Intakt`: `purchaseRevenue` (fallback: `Purchases x PAID_PRICE_SEK`, default 149 kr)
+- `Intakt`: `purchaseRevenue` (fallback: `Purchases x PAID_PRICE_SEK`, default 49 kr)
 - `Leads`: `Lead Submitted + lead_generated + Paywall CTA Clicked + paywall_hit`
 
 ## API-endpoints
