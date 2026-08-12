@@ -4,11 +4,21 @@
 // svarar vi med ett fel — klienten (app.js, categorizeDocumentClientSide) faller
 // då tillbaka till manuell kategorisering. AI är en assist, aldrig en spärr
 // (readme.md: "No AI in the core flow").
+//
+// T162 — endpointen är öppen utan inloggning och drar riktiga Anthropic-tokens
+// från Owners delade server-side-nyckel per anrop. Dagligt tak per IP så
+// spam/missbruk inte kan dra obegränsad kostnad.
+
+import { getClientIp, checkRateLimit } from './_lib.js';
 
 const CATEGORIES = [
   'Skatteverket', 'Försäkringskassan', 'Bank', 'Försäkringsbolag',
   'Hyresvärd/Bostad', 'Pensionsmyndigheten', 'Kronofogden', 'Övrigt',
 ];
+
+// Generöst för en enskild dödsbo-genomgång (kan lätt bli 10-15 dokument),
+// men stoppar automatiserad spam/missbruk av den delade AI-nyckeln.
+const DAILY_LIMIT_PER_IP = 30;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -19,6 +29,12 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return res.status(503).json({ ok: false, error: 'ai_not_configured' });
+  }
+
+  const ip = getClientIp(req);
+  const { limited } = await checkRateLimit('categorize-document', ip, DAILY_LIMIT_PER_IP);
+  if (limited) {
+    return res.status(429).json({ ok: false, error: 'rate_limited' });
   }
 
   const body = req.body && typeof req.body === 'object' ? req.body : {};

@@ -67,6 +67,14 @@ create table if not exists public.purchases (
 create index if not exists purchases_email_idx on public.purchases(lower(email));
 create index if not exists purchases_user_id_idx on public.purchases(user_id);
 
+-- Rate limiting (T162) — enkel dagsvis räknare per nyckel (t.ex. "endpoint:ip:datum").
+-- Bara service-rollen (våra /api/*-funktioner) läser/skriver, se rate_limit_increment nedan.
+create table if not exists public.rate_limits (
+  bucket_key text primary key,
+  count      integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
 -- One active token per (plan, kind). Inactive tokens may linger for history.
 create unique index if not exists share_tokens_plan_kind_active_key
   on public.share_tokens(plan_id, kind) where active = true;
@@ -109,6 +117,25 @@ create trigger plans_bump_updated_at
   before update on public.plans
   for each row execute function public.bump_plan_updated_at();
 
+-- T162: atomisk "hämta och räkna upp" för en rate-limit-nyckel. Nyckeln bär
+-- själv sitt tidsfönster (t.ex. "categorize-document:1.2.3.4:2026-08-12"), så
+-- ingen separat fönster-logik behövs — en ny dag ger automatiskt en ny nyckel/rad.
+create or replace function public.rate_limit_increment(key_in text)
+returns integer
+language sql
+security definer
+set search_path = public
+as $$
+  insert into public.rate_limits (bucket_key, count, updated_at)
+  values (key_in, 1, now())
+  on conflict (bucket_key) do update
+    set count = public.rate_limits.count + 1,
+        updated_at = now()
+  returning count;
+$$;
+
+grant execute on function public.rate_limit_increment(text) to service_role;
+
 -- ───────────────────────────────────────────────
 -- Row Level Security
 -- ───────────────────────────────────────────────
@@ -120,6 +147,9 @@ alter table public.share_tokens     enable row level security;
 alter table public.purchases        enable row level security;
 -- No anon/authenticated policies on purchases — only the service role
 -- (used by /api/* serverless functions) reads/writes this table.
+alter table public.rate_limits      enable row level security;
+-- No anon/authenticated policies on rate_limits either — only reached via
+-- rate_limit_increment() (security definer) from /api/* serverless functions.
 
 -- users: select/update own row only
 drop policy if exists users_select_own on public.users;
