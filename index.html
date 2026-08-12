@@ -573,6 +573,24 @@
           <h2 class="plan-title">Brev & dokument</h2>
           <p class="plan-sub">Välj vad du behöver — vi skriver det åt dig.</p>
         </div>
+        <div class="form-group" id="sender-address-box">
+          <p class="plan-sub" style="margin-bottom:10px">Din adress (valfritt) — fylls i automatiskt i alla brev nedan.</p>
+          <label for="doc-sender-address">Gatuadress</label>
+          <input type="text" id="doc-sender-address" class="text-input" placeholder="Storgatan 1"
+                 onchange="saveSenderAddressFields()">
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <label for="doc-sender-zip">Postnummer</label>
+              <input type="text" id="doc-sender-zip" class="text-input" placeholder="123 45" inputmode="numeric" maxlength="6"
+                     onblur="lookupPostort()" onchange="saveSenderAddressFields()">
+            </div>
+            <div class="form-group">
+              <label for="doc-sender-city">Stad</label>
+              <input type="text" id="doc-sender-city" class="text-input" placeholder="Stockholm"
+                     onchange="saveSenderAddressFields()">
+            </div>
+          </div>
+        </div>
         <button class="doc-bulk-cta" onclick="showDocForm('bulk')">
           <span class="doc-bulk-icon" aria-hidden="true">⚡</span>
           <div class="doc-bulk-text">
