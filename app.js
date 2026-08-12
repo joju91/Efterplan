@@ -1106,6 +1106,13 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
       ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('docs');showDocForm('${task.hasDoc}')">Generera dokument →</button>`
       : '';
 
+    // "Hitta viktiga dokument" ber användaren samla ihop papper men saknade
+    // en väg vidare till Arkiv-fliken (foto + AI-kategorisering, T143–T148)
+    // där de faktiskt kan sparas. Kopplar ihop dem.
+    const arkivLinkHtml = task.id === 'viktiga_dokument'
+      ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('arkiv')">📷 Fota och spara dokumenten →</button>`
+      : '';
+
     const doneHtml = task.done
       ? `<span class="task-expand-done">Klar ✓</span>
          <button class="task-expand-undo-btn" onclick="event.stopPropagation();undoTaskDoneManual('${task.id}')">Markera som ej klar</button>`
@@ -1143,6 +1150,7 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
         <div class="task-expand-actions">
           ${doneHtml}
           ${docHtml}
+          ${arkivLinkHtml}
         </div>
       </div>
     `;
