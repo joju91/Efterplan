@@ -1032,7 +1032,7 @@ function buildPreviewCTACard() {
     <div class="preview-cta-lock" aria-hidden="true">🔒</div>
     <h3 class="preview-cta-title">Lås upp hela planen</h3>
     <p class="preview-cta-desc">Du har sett de första ${PREVIEW_STEPS} stegen. Lås upp alla återstående uppgifter — engångsbetalning, ingen prenumeration.</p>
-    <button class="btn-primary preview-cta-btn" onclick="handlePreviewCTA()">Lås upp — 149 kr</button>
+    <button class="btn-primary preview-cta-btn" onclick="handlePreviewCTA()">Lås upp — 49 kr</button>
   `;
   return cta;
 }

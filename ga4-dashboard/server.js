@@ -213,7 +213,7 @@ app.get("/api/kpis", async (req, res) => {
     }
 
     const days = normalizeDays(req.query.days);
-    const priceSek = Math.max(Number(process.env.PAID_PRICE_SEK || 149), 0);
+    const priceSek = Math.max(Number(process.env.PAID_PRICE_SEK || 49), 0);
 
     const trackedEvents = [
       "Plan Generated",
