@@ -160,7 +160,7 @@
       </ul>
       <button class="btn-primary btn-large" onclick="startOnboarding()">Börja här</button>
       <p class="landing-note">Gratis. Det du fyller i finns kvar — även om du stänger sidan.</p>
-      <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> checklista, plan, PDF, bouppteckningsöversikt. <strong>49 kr engångsbetalning:</strong> alla färdigskrivna brev — till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons.</p>
+      <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> checklista, plan, PDF, bouppteckningsöversikt. <strong>49 kr engångsbetalning:</strong> alla färdigskrivna brev — till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons, med mera.</p>
     </div>
   </div>
 
@@ -532,8 +532,10 @@
           <div class="progress-bar-fill" id="progress-bar-fill"></div>
         </div>
         <div class="progress-summary" id="progress-summary" aria-live="polite"></div>
+        <p class="digital-legend">🟢 Går att göra digitalt med ditt eget BankID · 🟡 Delvis digitalt — vissa steg kan kräva telefon, möte eller post · 🔴 Kräver post eller original i fysisk form</p>
         <button class="btn-print-inline" onclick="printPlan()">Skriv ut / Spara som PDF</button>
         <button class="btn-print-inline" onclick="openShareModal()">🔗 Dela läsbar länk</button>
+        <button class="btn-print-inline" id="hide-done-all" onclick="toggleHideDoneAll()">Dölj alla klara uppgifter</button>
       </div>
 
       <div class="completion-message" id="completion-message" role="status">
@@ -554,6 +556,7 @@
             <h2 class="section-title">Gör idag</h2>
             <span class="section-count" id="count-today"></span>
             <span class="section-done-badge hidden" id="badge-today">✓ Klar</span>
+            <button class="section-hide-done-btn" id="hide-done-today" onclick="toggleHideDoneSection('today')">Dölj klara</button>
           </div>
           <div class="task-list" id="tasks-today"></div>
         </div>
@@ -565,6 +568,7 @@
             <span class="section-coming-tag">Fler steg visas här</span>
             <span class="section-count" id="count-week"></span>
             <span class="section-done-badge hidden" id="badge-week">✓ Klar</span>
+            <button class="section-hide-done-btn" id="hide-done-week" onclick="toggleHideDoneSection('week')">Dölj klara</button>
           </div>
           <div class="task-list" id="tasks-week"></div>
         </div>
@@ -576,40 +580,11 @@
             <span class="section-coming-tag">Fler steg visas här</span>
             <span class="section-count" id="count-later"></span>
             <span class="section-done-badge hidden" id="badge-later">✓ Klar</span>
+            <button class="section-hide-done-btn" id="hide-done-later" onclick="toggleHideDoneSection('later')">Dölj klara</button>
           </div>
           <div class="task-list" id="tasks-later"></div>
         </div>
 
-        <!-- Räkningar (T067) — placerad efter task-sections, kopplad till "Avsluta abonnemang"-uppgiften -->
-        <section class="bills-section owner-only" id="bills-section">
-          <div class="bills-header">
-            <h2 class="section-title">Räkningar</h2>
-            <div class="bills-header-actions">
-              <button class="btn-ghost bills-scan-btn" onclick="document.getElementById('bill-photo-input').click()" aria-label="Fota räkning">
-                <span aria-hidden="true">📷</span> Fota
-              </button>
-              <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
-            </div>
-          </div>
-          <p class="bills-intro">Räkningar till dödsboet kommer ofta in utan förvarning, och du har inte tillgång till kontots transaktioner — bara rätt att betala. Lista dem här när de dyker upp och bocka av när de är betalda, så tappar du inte koll.</p>
-          <input type="file" id="bill-photo-input" accept="image/*" capture="environment" hidden onchange="handleBillScan(event)">
-          <p class="bill-scan-status hidden" id="bill-scan-status" role="status"></p>
-          <div class="bill-form hidden" id="bill-form">
-            <div class="bill-photo-preview hidden" id="bill-photo-preview">
-              <img id="bill-photo-preview-img" alt="Förhandsvisning av räkning">
-              <button type="button" class="bill-photo-clear" onclick="clearBillPhoto()" aria-label="Ta bort foto">×</button>
-            </div>
-            <input type="text" id="bill-desc-input" aria-label="Beskrivning" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
-            <input type="number" id="bill-amount-input" aria-label="Belopp i kronor" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
-            <p class="form-error hidden" id="err-bills" role="alert"></p>
-            <div class="bill-form-actions">
-              <button class="btn-primary" onclick="submitBill()">Lägg till</button>
-              <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
-            </div>
-          </div>
-          <ul id="bills-list" class="bills-list"></ul>
-          <p class="bills-empty hidden" id="bills-empty">Inga räkningar registrerade än.</p>
-        </section>
       </div>
 
       <!-- Trust band -->
@@ -1009,6 +984,39 @@
       <p class="arkiv-empty hidden" id="arkiv-empty">Inga dokument tillagda än — fota det första papperet som dyker upp.</p>
 
       <p class="arkiv-privacy-note">När du använder "✨ Förklara detta dokument" eller AI-kategorisering skickas bilden till Anthropics API för att analyseras — den sparas inte permanent där, men lämnar din enhet för den analysen. Dokumenten lagras själva bara lokalt i din webbläsare, inte på någon Efterplan-server. Rensar du webbläsarens data försvinner de, så ta gärna en skärmdump av det som är viktigt innan du gör det.</p>
+
+      <!-- Räkningar (T067) — flyttad hit från "Min plan" (låg tidigare sist, efter alla
+           uppgiftslistor). Räkningar är papper precis som allt annat i Arkivet, så de hör
+           hemma här — med tillägget att man kan bocka av dem som betalda. -->
+      <section class="bills-section owner-only" id="bills-section">
+        <div class="bills-header">
+          <h2 class="section-title">Räkningar</h2>
+          <div class="bills-header-actions">
+            <button class="btn-ghost bills-scan-btn" onclick="document.getElementById('bill-photo-input').click()" aria-label="Fota räkning">
+              <span aria-hidden="true">📷</span> Fota
+            </button>
+            <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
+          </div>
+        </div>
+        <p class="bills-intro">Räkningar till dödsboet kommer ofta in utan förvarning, och du har inte tillgång till kontots transaktioner — bara rätt att betala. De sparas här tillsammans med övriga papper från dödsboet. Lista dem när de dyker upp och bocka av när de är betalda, så tappar du inte koll.</p>
+        <input type="file" id="bill-photo-input" accept="image/*" capture="environment" hidden onchange="handleBillScan(event)">
+        <p class="bill-scan-status hidden" id="bill-scan-status" role="status"></p>
+        <div class="bill-form hidden" id="bill-form">
+          <div class="bill-photo-preview hidden" id="bill-photo-preview">
+            <img id="bill-photo-preview-img" alt="Förhandsvisning av räkning">
+            <button type="button" class="bill-photo-clear" onclick="clearBillPhoto()" aria-label="Ta bort foto">×</button>
+          </div>
+          <input type="text" id="bill-desc-input" aria-label="Beskrivning" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
+          <input type="number" id="bill-amount-input" aria-label="Belopp i kronor" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
+          <p class="form-error hidden" id="err-bills" role="alert"></p>
+          <div class="bill-form-actions">
+            <button class="btn-primary" onclick="submitBill()">Lägg till</button>
+            <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
+          </div>
+        </div>
+        <ul id="bills-list" class="bills-list"></ul>
+        <p class="bills-empty hidden" id="bills-empty">Inga räkningar registrerade än.</p>
+      </section>
     </div>
   </div>
 
