@@ -396,6 +396,16 @@ body {
   color: var(--ink-muted);
   letter-spacing: 0.01em;
 }
+.landing-note--pricing {
+  display: inline-block;
+  margin-top: var(--space-xs, 8px);
+  padding: 10px 16px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, var(--paper-card) 0%, var(--accent-light) 130%);
+  color: var(--ink-soft);
+  letter-spacing: normal;
+}
 
 /* Nudge brand logo in nav into the editorial voice */
 #screen-landing .logo {
@@ -523,6 +533,55 @@ body {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--accent);
+}
+
+/* ─── HUR DET FUNGERAR (T155) ────────────────── */
+.landing-section--howto {
+  max-width: 920px;
+}
+.howto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+.howto-card {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 22px 18px 18px;
+  background: linear-gradient(160deg, var(--paper-card) 0%, var(--accent-light) 130%);
+}
+.howto-card--2, .howto-card--4 {
+  background: linear-gradient(160deg, var(--paper-card) 0%, var(--ember-tn) 130%);
+}
+.howto-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.howto-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.howto-card p {
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0;
+  max-width: none;
 }
 
 /* ─── LANDING FOOTER ─────────────────────────── */
@@ -829,6 +888,27 @@ body {
   color: var(--text-muted);
   margin: 16px 0 6px;
 }
+
+/* ─── T193: BOSTADSFLÖDE — undersektion ─────── */
+.ob-fastighet-details {
+  margin: 4px 0 12px 16px;
+  padding: 12px 0 4px 12px;
+  border-left: 2px solid var(--border);
+}
+.ob-fastighet-details.hidden { display: none; }
+.ob-check-group-label--sub { margin-top: 0; }
+.ob-choices--compact {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ob-choice--sm {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.ob-check--sub { margin-top: 6px; }
 
 /* ─── CHOICE GRID ────────────────────────────── */
 .choice-grid {
@@ -1288,7 +1368,7 @@ body {
   max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  box-shadow: 0 20px 60px rgba(60,50,30,0.18);
 }
 .modal-sm { max-width: 400px; }
 .modal-header {
@@ -1403,6 +1483,15 @@ body {
 }
 .task-next-badge { display: none; }
 
+/* ─── DIGITAL/FYSISK-INDIKATOR (T192) ────────── */
+.task-digital-badge {
+  display: inline-block;
+  font-size: 0.85em;
+  margin-left: 6px;
+  cursor: help;
+  vertical-align: -1px;
+}
+
 /* ─── DOC FORMS ──────────────────────────────── */
 #doc-chooser.hidden { display: none; }
 .doc-form { display: flex; flex-direction: column; gap: 0; }
@@ -1500,7 +1589,7 @@ body {
   gap: 16px;
   z-index: 300;
   font-size: 0.9rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+  box-shadow: 0 4px 20px rgba(60,50,30,0.26);
   white-space: normal;
   max-width: calc(100vw - 32px);
   animation: toastIn 0.25s ease;
@@ -1938,9 +2027,9 @@ body {
    PAYWALL CARD
 ════════════════════════════════════════════ */
 .paywall-card {
-  border: 1.5px solid #C8D6E5;
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--radius);
-  background: linear-gradient(135deg, #EDF2F7 0%, #F8F7F5 100%);
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--paper-card) 100%);
   padding: 28px 24px;
   text-align: center;
   margin-top: 16px;
@@ -1998,9 +2087,9 @@ body {
 }
 
 .preview-cta-card {
-  border: 1.5px solid #C8D6E5;
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--radius);
-  background: linear-gradient(135deg, #EDF2F7 0%, #F8F7F5 100%);
+  background: linear-gradient(135deg, var(--ember-tn) 0%, var(--paper-card) 100%);
   padding: 24px 20px;
   text-align: center;
   margin: 14px 0 18px;
