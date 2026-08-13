@@ -359,3 +359,94 @@ $$;
 
 grant execute on function public.toggle_shared_task(text, text, boolean)
   to anon, authenticated;
+
+-- ───────────────────────────────────────────────
+-- T177 — Zero-knowledge delning (läsbar länk).
+-- INTE den skrotade share_tokens-modellen ovan (T124/T141) — servern lagrar
+-- bara krypterad text, aldrig nyckeln. Nyckeln finns bara i URL-fragmentet
+-- (#k=...) som webbläsaren aldrig skickar till servern. Supabase (och därmed
+-- vi) kan inte läsa innehållet ens om databasen skulle läcka.
+-- ───────────────────────────────────────────────
+
+create table if not exists public.shared_plans (
+  id         uuid primary key default gen_random_uuid(),
+  ciphertext text not null,  -- base64 AES-GCM-krypterad JSON (plannamn + uppgiftslista)
+  iv         text not null,  -- base64 nonce/IV, 12 byte
+  created_at timestamptz not null default now(),
+  view_count integer not null default 0
+);
+
+alter table public.shared_plans enable row level security;
+-- Ingen anon/authenticated policy på tabellen — når bara via RPC:erna nedan,
+-- som validerar indata och inte returnerar mer än nödvändigt.
+
+create or replace function public.create_shared_plan(ciphertext_in text, iv_in text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  if ciphertext_in is null or length(ciphertext_in) = 0 or length(ciphertext_in) > 200000 then
+    raise exception 'invalid_ciphertext';
+  end if;
+  if iv_in is null or length(iv_in) = 0 or length(iv_in) > 64 then
+    raise exception 'invalid_iv';
+  end if;
+
+  insert into public.shared_plans (ciphertext, iv)
+  values (ciphertext_in, iv_in)
+  returning id into v_id;
+
+  return v_id;
+end;
+$$;
+
+grant execute on function public.create_shared_plan(text, text) to anon, authenticated;
+
+create or replace function public.get_shared_plan_v2(id_in uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_row public.shared_plans;
+begin
+  update public.shared_plans
+     set view_count = view_count + 1
+   where id = id_in
+  returning * into v_row;
+
+  if v_row.id is null then
+    return null;
+  end if;
+
+  return jsonb_build_object('ciphertext', v_row.ciphertext, 'iv', v_row.iv);
+end;
+$$;
+
+grant execute on function public.get_shared_plan_v2(uuid) to anon, authenticated;
+
+-- ───────────────────────────────────────────────
+-- T178 — Samtycke till deadline-påminnelser (insamlingsdelen).
+-- Inget faktiskt mejlutskick i denna omgång — det kräver ett separat val av
+-- e-postleverantör + cron, se roadmap.md T136/T178. Den här tabellen bara
+-- sparar samtycket så det finns att bygga vidare på.
+-- ───────────────────────────────────────────────
+
+create table if not exists public.reminder_optins (
+  id           uuid primary key default gen_random_uuid(),
+  email        text not null,
+  death_date   date,
+  optin_types  text[] not null default '{}', -- t.ex. {'bouppteckning','inlamning'}
+  created_at   timestamptz not null default now(),
+  unsubscribed boolean not null default false
+);
+
+create index if not exists reminder_optins_email_idx on public.reminder_optins(lower(email));
+
+alter table public.reminder_optins enable row level security;
+-- Ingen anon/authenticated policy — bara service-rollen (api/subscribe-reminder.js) skriver.
