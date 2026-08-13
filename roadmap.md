@@ -559,6 +559,15 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 
 ---
 
+# 📞 FAS 24 — TELEFONMANUS BREDVID BREVGENERATORN
+💡 Persona-simulering (2026-08-13) av en nybliven änka pekade på en lucka: dokumentgeneratorn producerar bara skrivna brev, men fler ringer banken/Försäkringskassan/försäkringsbolaget än mejlar dem — särskilt först, innan dödsfallsintyget ens finns. Ångesten "vad ska jag säga" gäller ett samtal, inte ett brev.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T195 | Telefonmanus i dokumentgeneratorn. Lägg till en andra flik ("Brev" / "Vad du kan säga i telefon") på de dokument där folk oftare ringer än skriver — bank, Försäkringskassan, försäkringsbolag, begravningsbyrå. Manuset: kort talspråklig öppningsreplik ("Hej, jag heter [namn]. Min [relation] [avliden] har gått bort, jag vill anmäla dödsfallet och spärra kontona…") + en checklista över vad man bör ha framme under samtalet (personnummer, eget kontonummer, ev. ärendenummer). Samma UI-mönster som befintlig brevgenerator (`app.js` doc-generator-funktionerna, `index.html` doc-result-vyn). | 2026-08-13 | Fas 24 | Persona-simulering session | 🟡 | Dev/Content | ☐ |
+
+---
+
 ## 💡 MÖJLIGA EXPANSIONER — 2026-08-13 (ej prioriterade, ej påbörjade)
 
 💡 Resten av `research/Vad Efterplan bör täcka.md` som Owner valde att varken bygga eller kasta, utan bevaka — samma mönster som T137–T142. Inget av det löser ett lika akut, konkret problem som dödsboanmälan/bodelning gjorde.
