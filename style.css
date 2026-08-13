@@ -1043,6 +1043,12 @@ body {
   color: var(--text-soft);
   margin-bottom: 12px;
 }
+.digital-legend {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 4px 0 12px;
+  line-height: 1.5;
+}
 .plan-dodsbo-def {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -1090,6 +1096,18 @@ body {
   color: var(--text-muted);
   font-weight: 500;
 }
+.section-hide-done-btn {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.section-hide-done-btn:hover { color: var(--text-primary); border-color: var(--accent); }
+.task-wrap--hidden-done { display: none; }
 
 /* ─── TASK CARD ──────────────────────────────── */
 .task-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1215,6 +1233,26 @@ body {
   line-height: 1.5;
 }
 .task-notes:focus { outline: none; border-color: var(--accent); }
+.task-date-field {
+  display: block;
+  margin-bottom: 14px;
+}
+.task-date-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.task-date-input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: var(--bg);
+}
+.task-date-input:focus { outline: none; border-color: var(--accent); }
 .task-expand-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .task-expand-btn {
   background: var(--accent);
@@ -2155,6 +2193,9 @@ body {
 
   /* Task card layout for print */
   .task-wrap { break-inside: avoid; margin-bottom: 10px; }
+  /* "Dölj klara" är bara ett skärmfilter — den sparade/utskrivna planen ska alltid
+     visa alla uppgifter (klara syns nedtonade, se .task-card.done nedan). */
+  .task-wrap--hidden-done { display: block !important; }
   .task-card { box-shadow: none; border: 1px solid #ccc; border-radius: 0; margin-bottom: 0; }
   .task-card.done { opacity: 0.5; }
   .task-expand { border: 1px solid #ccc; border-top: none; border-radius: 0; padding: 8px 12px; }
@@ -2819,6 +2860,17 @@ body {
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
+}
+.doc-location-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.doc-location-input-doc,
+.doc-location-input-plats { flex: 1; }
+@media (max-width: 480px) {
+  .doc-location-row { flex-wrap: wrap; }
 }
 .bopp-input-name { flex: 1; }
 .bopp-input-amount { width: 130px; flex-shrink: 0; }
