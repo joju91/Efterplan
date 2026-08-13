@@ -568,6 +568,17 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 
 ---
 
+# 🔍 FAS 25 — NYA SEO-LANDNINGSSIDOR (SÖKORDSGAP)
+💡 Manuell gap-analys mot befintliga 32 innehållssidor 2026-08-13 — **ingen levande GA4/Search Console-data fanns tillgänglig i sessionen** (bara `.env.example`, ingen riktig nyckel), så detta är kvalitativ prioritering, inte volymdata. Verifiera mot faktisk Search Console-sökordsdata innan skrivarbete påbörjas. Tre kandidater identifierade där sökintentionen skiljer sig tydligt från befintliga sidor (ingen kannibalisering) — övriga närliggande termer (änkepension, arvsavstående, bolån vid dödsfall) finns redan omnämnda inline i befintliga sidor och behöver ingen egen URL. Samma sakfels-rigör som Fas 21 gäller — juridiskt innehåll ska källbeläggas innan publicering, inte genereras fritt.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T196 | Ny sida: **framtidsfullmakt**. Omnämns idag bara i en bisats i `fullmakt-dodsbo.html` (som handlar om fullmakt EFTER dödsfall — annan juridisk konstruktion). Framtidsfullmakt är ett proaktivt dokument en efterlevande ofta börjar fundera på åt sig själv strax efter att ha upplevt hur krångligt det blev utan fullmakter för den avlidne — naturlig "nu ordnar jag mitt eget" -vinkel för Efterplans målgrupp. Egen sökterm, egen intention. Kräver källbelagt juridiskt innehåll (lag om framtidsfullmakter 2017:310) innan publicering. | 2026-08-13 | Fas 25 | Manuell gap-analys | 🟡 | Content/SEO | ☐ |
+| T197 | Ny sida: **dödsbo eget företag / enskild firma**. Regelmotorn har redan en `foretag`-trigger och en färdig Skatteverket-avregistreringsuppgift med brevgenerator (`app.js`) — men ingen toppen-av-tratten-sida fångar upp sökintentionen förrän man redan är i appen. En landningssida skulle koppla en verklig sökterm direkt till en redan byggd funktion (bra konverteringsväg). | 2026-08-13 | Fas 25 | Manuell gap-analys | 🟡 | Content/SEO | ☐ |
+| T198 | Ny sida: **vad händer med den avlidnes tjänstepension**. Skiljer sig från `efterlevandepension.html`, som handlar om utbetalningar TILL efterlevande — den här sidan täcker den avlidnes egen intjänade pension och hur/om den betalas ut till dödsboet. Distinkt sökintention, ingen befintlig sida täcker den. | 2026-08-13 | Fas 25 | Manuell gap-analys | 🟢 | Content/SEO | ☐ |
+
+---
+
 ## 💡 MÖJLIGA EXPANSIONER — 2026-08-13 (ej prioriterade, ej påbörjade)
 
 💡 Resten av `research/Vad Efterplan bör täcka.md` som Owner valde att varken bygga eller kasta, utan bevaka — samma mönster som T137–T142. Inget av det löser ett lika akut, konkret problem som dödsboanmälan/bodelning gjorde.
