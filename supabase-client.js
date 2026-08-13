@@ -204,6 +204,67 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
+  // ── T177: zero-knowledge delning ────────────────
+  // Servern lagrar bara krypterad text (AES-GCM). Nyckeln finns aldrig i en
+  // request till Supabase — den stannar i URL-fragmentet (#k=...), som
+  // webbläsare aldrig skickar över nätverket. Se supabase/schema.sql.
+  function bufToBase64url(buf) {
+    let bin = '';
+    new Uint8Array(buf).forEach(b => { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function base64urlToBuf(str) {
+    const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((str.length + 3) % 4);
+    const bin = atob(b64);
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return buf.buffer;
+  }
+
+  async function createSharedLink(plainObj) {
+    await initSupabase();
+    if (!client) throw new Error('Supabase är inte konfigurerad');
+    const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const plaintext = new TextEncoder().encode(JSON.stringify(plainObj));
+    const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
+    const rawKey = await crypto.subtle.exportKey('raw', key);
+
+    const { data, error } = await client.rpc('create_shared_plan', {
+      ciphertext_in: bufToBase64url(cipherBuf),
+      iv_in: bufToBase64url(iv.buffer),
+    });
+    if (error) throw error;
+
+    const keyStr = bufToBase64url(rawKey);
+    return `${window.location.origin}/?shared=${data}#k=${keyStr}`;
+  }
+
+  async function resolveSharedLink(id, keyStr) {
+    await initSupabase();
+    if (!client) throw new Error('Supabase är inte konfigurerad');
+    const { data, error } = await client.rpc('get_shared_plan_v2', { id_in: id });
+    if (error || !data) throw (error || new Error('Länken hittades inte'));
+
+    const rawKey = base64urlToBuf(keyStr);
+    const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']);
+    const iv = new Uint8Array(base64urlToBuf(data.iv));
+    const cipherBuf = base64urlToBuf(data.ciphertext);
+    const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipherBuf);
+    return JSON.parse(new TextDecoder().decode(plainBuf));
+  }
+
+  // ── T178: samtycke till deadline-påminnelser (insamling, inget utskick än) ──
+  async function subscribeReminder(email, deathDate, types) {
+    const r = await fetch('/api/subscribe-reminder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, deathDate, types }),
+    });
+    if (!r.ok) throw new Error('subscribe_failed');
+    return r.json();
+  }
+
   // Public API
   window.efterplanAuth = {
     initSupabase,
@@ -214,6 +275,9 @@ const SUPABASE_CONFIG = {
     loadPlan,
     syncToSupabase,
     isConfigured,
+    createSharedLink,
+    resolveSharedLink,
+    subscribeReminder,
   };
 
   window.addEventListener('efterplan:state-changed', syncToSupabase);
