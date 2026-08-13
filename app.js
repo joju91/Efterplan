@@ -105,6 +105,10 @@ const state = {
   hyresratt:      false,
   vardepapper:    false,
   barn:           false,
+  giftSambo:      false, // T190 — triggar bodelning-påminnelse
+  litetDodsbo:    false, // T189 — triggar dödsboanmälan istället för bouppteckning
+  bostadTyp:      null,  // T193 — 'villa' | 'brf' | 'lantbruk' | null
+  maklare:        false, // T193 — filtrerar bort mäklarhanterade uppgifter
   name:           '',
   personnr:       '',
   deathDate:      '', // ÅÅÅÅ-MM-DD, frivilligt — driver T135-deadline-motorn
@@ -220,6 +224,26 @@ function obChoose(btn) {
   if (nextBtn) nextBtn.disabled = false;
 }
 
+function obChooseSub(btn) {
+  const key = btn.dataset.key;
+  const val = btn.dataset.val;
+  state[key] = val;
+  btn.closest('.ob-choices').querySelectorAll('.ob-choice').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  track('checkbox_toggle', { key, val });
+}
+
+// T193 — visa bostadstyp + mäklare-fråga bara när "Ägde sin bostad" är ikryssad
+function toggleFastighetDetails() {
+  const checked = document.getElementById('ob-check-fastighet')?.checked;
+  const details = document.getElementById('ob-fastighet-details');
+  if (details) details.classList.toggle('hidden', !checked);
+  if (!checked) {
+    state.bostadTyp = null;
+    state.maklare = false;
+  }
+}
+
 function obGoTo(step) {
   track('onboarding_step', { step });
   const current = document.querySelector('.ob-step.active');
@@ -285,7 +309,26 @@ function generatePlan() {
   saveState();
   saveTaskState();
   track('plan_generated', { relation: state.relation || 'okänd', has_death_date: !!state.deathDate });
+  submitReminderOptinIfChecked();
   showScreen('screen-plan');
+}
+
+// T178 — skickar samtycket vidare om användaren kryssat i påminnelse-rutan.
+// Bara insamling, inget faktiskt utskick byggt än (se roadmap.md T136/T178).
+function submitReminderOptinIfChecked() {
+  const checked = document.getElementById('ob-reminder-optin')?.checked;
+  const email = document.getElementById('ob-reminder-email')?.value.trim();
+  if (!checked || !email || !window.efterplanAuth) return;
+  const hasDodsboanmalan = state.tasks.some(t => t.id === 'dodsboanmalan');
+  const types = hasDodsboanmalan ? ['dodsboanmalan'] : ['bouppteckning', 'inlamning'];
+  window.efterplanAuth.subscribeReminder(email, state.deathDate || null, types)
+    .then(() => track('reminder_optin'))
+    .catch(err => console.warn('[reminder-optin]', err));
+}
+
+function toggleReminderEmail() {
+  const checked = document.getElementById('ob-reminder-optin').checked;
+  document.getElementById('ob-reminder-email').classList.toggle('hidden', !checked);
 }
 
 // ─── RULE ENGINE ─────────────────────────────
@@ -356,7 +399,7 @@ const TASK_LIBRARY = [
   {
     id: 'nycklar_post',
     title: 'Säkra nycklar och eftersänd post',
-    desc: 'Ta hand om bostadsnycklar och gör en adressändring för den avlidnes post via adressändring.se. Viktiga brev kan annars gå förlorade.',
+    desc: 'Ta hand om bostadsnycklar och gör en adressändring för den avlidnes post via adressändring.se. Viktiga brev kan annars gå förlorade. Hade den avlidna digital myndighetspost (Kivra eller Min myndighetspost) blir den normalt inte tillgänglig för dödsboet automatiskt — kontrollera separat om det finns brev där också.',
     urgency: 'today',
     time: 'ca 20 min',
     link: 'https://www.adressandring.se',
@@ -383,6 +426,7 @@ const TASK_LIBRARY = [
     desc: 'När ni är flera som ärver måste normalt alla godkänna varje åtgärd — vilket snabbt blir tungrott. Lösningen är att alla skriver en fullmakt till en person som får agera för er gemensamt: betala räkningar, kontakta banker och hantera löpande ärenden. Fullmakten måste visas upp i original vid bankbesök.',
     link: null,
     triggers: [],
+    digital: 'fysisk',
     hasDoc: 'fullmakt',
   },
   {
@@ -393,11 +437,35 @@ const TASK_LIBRARY = [
     time: 'Kontakta jurist inom veckan',
     link: null,
     triggers: [],
+    digital: 'fysisk',
     resources: [
       { label: 'Familjens Jurist — rikstäckande, specialiserade på dödsbon', url: 'https://www.familjens-jurist.se' },
       { label: 'Advokatsamfundet — hitta advokat nära dig', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
     ],
     notesPlaceholder: 'Jurist kontaktad, offert, datum för förrättning…',
+  },
+  // ── CONDITIONAL: Dödsboanmälan (T189) — ersätter bouppteckning för mycket små dödsbon ──
+  {
+    id: 'dodsboanmalan',
+    title: 'Gör dödsboanmälan hos kommunens socialtjänst',
+    desc: 'Eftersom dödsboets tillgångar bara täcker begravningskostnaden (och det inte finns fastighet eller bostadsrätt) kan ni göra en <em>dödsboanmälan</em> istället för en full bouppteckning — det är gratis och enklare.<br><br><strong>Så går det till:</strong> Kontakta kommunens socialtjänst (inte Skatteverket — de tar bara emot den färdiga anmälan). Socialtjänsten begär vanligen kontoutdrag för de senaste 3 månaderna och gör ett hembesök i bostaden, som bör lämnas orörd fram till dess.<br><br>Anmälan bör vara kommunen tillhanda inom ungefär 2 månader efter dödsfallet — kortare tidsram än bouppteckningens 3–4 månader. Ingen bouppteckning behöver göras, men skulderna försvinner inte — det är bara den formella utredningsplikten som faller bort.',
+    urgency: 'week',
+    time: 'Kontakta kommunen inom veckan',
+    link: null,
+    triggers: ['litetDodsbo'],
+    digital: 'fysisk',
+    notesPlaceholder: 'Socialtjänsten kontaktad, hembesök bokat, kontoutdrag ordnat…',
+  },
+  // ── CONDITIONAL: Bodelning-påminnelse (T190) — triggas av civilstånd, inte antal barn ──
+  {
+    id: 'bodelning_paminnelse',
+    title: 'Kontrollera om bodelning behöver göras',
+    desc: 'Var den avlidna gift eller sambo kan bodelning behöva göras <strong>innan</strong> arvet fördelas.<br><br><strong>Gift:</strong> Bodelning omfattar hela giftorättsgodset (det som inte är enskild egendom) — den efterlevande maken/makan har normalt rätt till hälften innan resten går till arvskifte.<br><strong>Sambo:</strong> Bodelning omfattar bara samboegendom (gemensam bostad och bohag som skaffats för gemensamt bruk) — inte hela boet, och bara om den efterlevande sambon begär det inom ett år.',
+    urgency: 'week',
+    time: 'ca 20 min',
+    link: null,
+    triggers: ['giftSambo'],
+    notesPlaceholder: 'Bodelning behövs? Vem hjälper till — jurist, egen överenskommelse…',
   },
   {
     id: 'bank_kontakt',
@@ -407,6 +475,7 @@ const TASK_LIBRARY = [
     time: 'ca 30 min',
     link: null,
     triggers: [],
+    digital: 'hybrid',
     hasDoc: 'bank',
     notesPlaceholder: 'Vet du vilka banker? Skriv de du känner till — det är okej att börja med en. (t.ex. Swedbank, SEB, Nordea…)',
     resources: [
@@ -428,6 +497,7 @@ const TASK_LIBRARY = [
     time: 'ca 1–2 timmar',
     link: null,
     triggers: [],
+    digital: 'hybrid',
     hasDoc: 'forsakring',
     notesPlaceholder: 'Vet du något försäkringsbolag? Skriv det du hittar — ett i taget är bra nog. (t.ex. Folksam, If, Skandia, Afa…)',
     resources: [
@@ -461,6 +531,7 @@ Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`
     phone: '0771-524 524',
     link: 'https://www.forsakringskassan.se/privatperson/nar-nagon-dor',
     triggers: [],
+    digital: 'digital',
     notesPlaceholder: 'Ärenden öppnade, ärendenummer, beviljade förmåner…',
   },
 
@@ -483,6 +554,7 @@ Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`
     time: 'ca 1–2 timmar',
     link: null,
     triggers: [],
+    digital: 'hybrid',
     hasDoc: 'bulk',
     notesPlaceholder: 'Vet du några abonnemang eller tjänster? Notera dem här — du kan fylla på. (t.ex. Telia, Spotify, Netflix, el, gym…)',
   },
@@ -528,6 +600,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'Senast 2 maj efter dödsåret',
     link: 'https://www.skatteverket.se',
     triggers: [],
+    digital: 'digital',
     notesPlaceholder: 'Deklaration inlämnad, revisor anlitad, datum…',
   },
 
@@ -535,12 +608,23 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
   {
     id: 'fastighet_boende',
     title: 'Besluta om bostadens framtid',
-    desc: 'Ska bostaden säljas, övertas av anhörig, eller hyras ut? Ta detta beslut med alla delägare i boet.',
+    desc: 'Ska bostaden säljas, övertas av anhörig, eller hyras ut? Ta detta beslut med alla delägare i boet. Bestämmer ni er för att sälja via mäklare sköter de sedan visning, budgivning och köpekontrakt åt er — det behöver ni inte ha koll på själva.',
     urgency: 'week',
     time: 'Diskussion med familjen',
     link: null,
     triggers: ['fastighet'],
     notesPlaceholder: 'Beslut om bostaden, kontaktad mäklare eller arvinge…',
+  },
+  {
+    id: 'fastighet_forsaljningsadmin',
+    title: 'Visning, budgivning och köpekontrakt',
+    desc: 'Om ni säljer bostaden själva (utan mäklare) behöver dödsboet sköta visning, ta emot bud och upprätta köpekontrakt. Ta gärna hjälp av en jurist för själva kontraktet — ett fel här kan bli kostsamt. Anlitar ni mäklare sköter de allt detta åt er.',
+    urgency: 'week',
+    time: 'Veckor',
+    link: null,
+    triggers: ['fastighet'],
+    maklarhanterad: true,
+    notesPlaceholder: 'Visningar bokade, bud mottagna, kontrakt upprättat…',
   },
   {
     id: 'bostadsratt_brf',
@@ -555,12 +639,23 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
   {
     id: 'lagfart',
     title: 'Ansök om lagfart',
-    desc: 'När en fastighet ärvs måste den nya ägaren ansöka om lagfart hos Lantmäteriet. Ansökan ska göras inom 3 månader från att bouppteckningen registrerats hos Skatteverket. Stämpelskatten är 1,5 % av fastighetens taxeringsvärde, plus en expeditionsavgift på 825 kr.',
+    desc: 'När en fastighet ärvs måste den nya ägaren ansöka om lagfart hos Lantmäteriet. Ansökan ska göras inom 3 månader från att bouppteckningen registrerats hos Skatteverket. Vid ett rent arvskifte (ingen arvinge betalar de andra) kostar det bara 825 kr i expeditionsavgift — ingen stämpelskatt. Löser en arvinge ut de andra med kontanter och ersättningen når 85 % eller mer av taxeringsvärdet, tillkommer 1,5 % stämpelskatt på den delen.',
     urgency: 'later',
     time: 'ca 30 min online',
     link: 'https://www.lantmateriet.se/sv/fastigheter/agande-och-rattigheter/lagfart/',
     triggers: ['fastighet'],
+    digital: 'digital',
     notesPlaceholder: 'Ansökan skickad, datum, stämpelskatt beräknad…',
+  },
+  {
+    id: 'lantbruk_fastighet',
+    title: 'Lantbruks- eller skogsfastighet i dödsboet',
+    desc: 'Lantbruks- och skogsfastigheter kan ha särskilda regler utöver det som gäller för vanliga bostäder — t.ex. kring virkesförråd, arrendeavtal och jordbruksstöd som ska överföras eller avslutas. Kontakta Skogsstyrelsen eller Jordbruksverket om fastigheten är aktiv, och en jurist som är van vid lantbruksfastigheter för arvskiftet. Läs mer i vår <a href="./dodsbo-fastighet.html" target="_blank" rel="noopener">guide om dödsbo och fastighet</a>.',
+    urgency: 'week',
+    time: 'ca 1 timme',
+    link: null,
+    triggers: ['lantbruk'],
+    notesPlaceholder: 'Arrendeavtal, jordbruksstöd, skogsbruksplan…',
   },
 
   // ── CONDITIONAL: Hyresrätt ────────────────
@@ -572,6 +667,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     desc: 'Hyreskontrakt upphör inte automatiskt vid dödsfall. Säg upp direkt till hyresvärden skriftligen — om det görs inom en månad från dödsfallet är uppsägningstiden normalt en månad. Väntar du längre löper vanlig uppsägningstid (ofta 3 månader). Ha dödsbevis redo.',
     link: null,
     triggers: ['hyresratt'],
+    digital: 'hybrid',
     hasDoc: 'letter',
   },
 
@@ -585,6 +681,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: 'https://www.bolagsverket.se',
     phone: '0771-670 670',
     triggers: ['foretag'],
+    digital: 'digital',
     notesPlaceholder: 'Anmälan skickad, ärendenummer, datum…',
   },
   {
@@ -702,12 +799,13 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
   {
     id: 'barnpension_ansokan',
     title: 'Ansök om barnpension',
-    desc: 'Barn under 20 år som förlorat en förälder kan ha rätt till <em>barnpension</em> och <em>efterlevandestöd</em> från Försäkringskassan. Ansökan är inte automatisk — du måste aktivt ansöka.<br><br><strong>Barnpension:</strong> Baseras på den avlidnes livsinkomst. Söks via Försäkringskassan.<br><strong>Efterlevandestöd:</strong> Kompletterande stöd om barnpensionen är låg. Upp till 18 år.<br><strong>Tjänstepension:</strong> Kontrollera om den deceased hade ett efterlevandeskydd för barn i sin tjänstepension.<br><br>Ansök inom 1 år — du kan inte få retroaktiv utbetalning längre tillbaka.',
+    desc: 'Barn under 20 år som förlorat en förälder kan ha rätt till <em>barnpension</em> och <em>efterlevandestöd</em> från Försäkringskassan. Ansökan är inte automatisk — du måste aktivt ansöka.<br><br><strong>Barnpension:</strong> Baseras på den avlidnes livsinkomst. Söks via Försäkringskassan.<br><strong>Efterlevandestöd:</strong> Kompletterande stöd om barnpensionen är låg. Upp till 18 år.<br><strong>Tjänstepension:</strong> Kontrollera om den avlidne hade ett efterlevandeskydd för barn i sin tjänstepension.<br><br>Ansök inom 1 år — du kan inte få retroaktiv utbetalning längre tillbaka.',
     urgency: 'week',
     time: 'ca 30 min',
     phone: '0771-524 524',
     link: 'https://www.forsakringskassan.se/privatperson/nar-nagon-dor/barnpension',
     triggers: ['barn'],
+    digital: 'digital',
     notesPlaceholder: 'Ansökan inlämnad, ärendenummer, beviljade belopp…',
   },
 
@@ -721,6 +819,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     phone: '0771-776 776',
     link: 'https://www.pensionsmyndigheten.se/privatperson/nar-nagon-dor/omstallningspension',
     triggers: ['make'],
+    digital: 'digital',
     notesPlaceholder: 'Ansökan inlämnad, ärendenummer, beviljad period…',
   },
 
@@ -756,6 +855,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 1 timme',
     link: null,
     triggers: ['testamente'],
+    digital: 'fysisk',
     notesPlaceholder: 'Testamente delgivet, datum, eventuell jurist anlitad…',
   },
 
@@ -850,10 +950,21 @@ function buildTasks() {
   if (state.hyresratt)   triggers.add('hyresratt');
   if (state.vardepapper) triggers.add('vardepapper');
   if (state.barn)        triggers.add('barn');
+  if (state.giftSambo)   triggers.add('giftSambo');
+  // T189: dödsboanmälan ersätter bouppteckning bara om boet är litet OCH ingen fastighet finns
+  const useDodsboanmalan = state.litetDodsbo && !state.fastighet;
+  if (useDodsboanmalan) triggers.add('litetDodsbo');
+  // T193: strukturerat bostadsflöde — lantbruk/skog får en egen uppgift
+  if (state.fastighet && state.bostadTyp === 'lantbruk') triggers.add('lantbruk');
+  // "Anlitar ni mäklare?" filtrerar bort mäklarhanterade uppgifter — minskar börda
+  const useMaklare = state.fastighet && state.maklare;
 
-  state.tasks = TASK_LIBRARY.filter(task =>
-    task.triggers.length === 0 || task.triggers.some(t => triggers.has(t))
-  ).map(task => ({ ...task, done: false, started: false }));
+  state.tasks = TASK_LIBRARY.filter(task => {
+    if (task.id === 'bouppteckning' && useDodsboanmalan) return false;
+    if (task.id === 'dodsboanmalan' && !useDodsboanmalan) return false;
+    if (task.maklarhanterad && useMaklare) return false;
+    return task.triggers.length === 0 || task.triggers.some(t => triggers.has(t));
+  }).map(task => ({ ...task, done: false, started: false }));
 
   loadTaskState();
 }
@@ -1059,12 +1170,24 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
     wrap.className = 'task-wrap';
     wrap.id = `task-wrap-${task.id}`;
 
+    // T192 — digital/fysisk-indikator. Kopy utgår alltid från att det är den
+    // EFTERLEVANDES eget BankID som används, aldrig den avlidnes (spärras vid dödsfall).
+    const DIGITAL_LEVELS = {
+      digital:  { emoji: '🟢', title: 'Går att göra digitalt, med ditt eget BankID' },
+      hybrid:   { emoji: '🟡', title: 'Delvis digitalt — vissa steg kan kräva telefon, möte eller post' },
+      fysisk:   { emoji: '🔴', title: 'Kräver post eller original i fysisk form' },
+    };
+    const digitalInfo = DIGITAL_LEVELS[task.digital];
+    const digitalBadge = digitalInfo
+      ? `<span class="task-digital-badge" title="${digitalInfo.title}" aria-label="${digitalInfo.title}">${digitalInfo.emoji}</span>`
+      : '';
+
     if (isLocked) {
       wrap.innerHTML = `
         <div class="task-card task-card--locked" id="task-card-${task.id}" aria-disabled="true">
           <div class="task-check" aria-hidden="true"></div>
           <div class="task-body">
-            <div class="task-title">${task.title}</div>
+            <div class="task-title">${task.title}${digitalBadge}</div>
             <div class="task-time">${task.time}</div>
           </div>
           <div class="task-lock" aria-hidden="true">🔒</div>
@@ -1133,7 +1256,7 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
       <div class="task-card${cardClass}" id="task-card-${task.id}">
         <div class="task-check${checkClass}" id="check-${task.id}"></div>
         <div class="task-body">
-          <div class="task-title">${task.title}${nextBadge}</div>
+          <div class="task-title">${task.title}${digitalBadge}${nextBadge}</div>
           <div class="task-time">${task.time}${startedBadge}</div>
         </div>
         <div class="task-chevron" id="chevron-${task.id}" aria-hidden="true">›</div>
@@ -2621,6 +2744,84 @@ function printPlan() {
   window.print();
 }
 
+// ─── T177: DELA LÄSBAR LÄNK (zero-knowledge) ──
+function openShareModal() {
+  document.getElementById('share-modal-status').textContent = '';
+  document.getElementById('share-modal-body').innerHTML =
+    `<button type="button" class="btn-primary" style="width:100%;" onclick="generateShareLink()">Skapa länk</button>`;
+  document.getElementById('share-modal').classList.remove('hidden');
+}
+
+async function generateShareLink() {
+  const statusEl = document.getElementById('share-modal-status');
+  statusEl.textContent = 'Skapar länk…';
+  try {
+    if (!window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
+      statusEl.textContent = 'Delning är inte tillgänglig just nu.';
+      return;
+    }
+    // Bara det som behövs för en läsbar checklista — aldrig personnummer.
+    const shareData = {
+      name: state.name || '',
+      tasks: (state.tasks || []).map(t => ({
+        title: t.title, urgency: t.urgency, done: !!t.done,
+      })),
+    };
+    const url = await window.efterplanAuth.createSharedLink(shareData);
+    track('shared_plan_created');
+    document.getElementById('share-modal-body').innerHTML = `
+      <input type="text" readonly value="${url}" id="share-link-input"
+        style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:0.85rem;margin-bottom:10px;"
+        onclick="this.select()" />
+      <button type="button" class="btn-ghost btn-sm" style="width:100%;" onclick="navigator.clipboard.writeText(document.getElementById('share-link-input').value); this.textContent='Kopierad ✓'">Kopiera länk</button>`;
+    statusEl.textContent = 'Klart. Länken innehåller nyckeln — dela den bara med den du litar på.';
+  } catch (err) {
+    console.error('[share]', err);
+    statusEl.textContent = 'Kunde inte skapa länken. Försök igen om en stund.';
+  }
+}
+
+// Visar en läsbar, icke-interaktiv kopia när ?shared=<id>#k=<nyckel> öppnas.
+async function tryRenderSharedView() {
+  const params = new URLSearchParams(window.location.search);
+  const sharedId = params.get('shared');
+  if (!sharedId) return false;
+  const hash = window.location.hash || '';
+  const keyMatch = hash.match(/[#&]k=([^&]+)/);
+  const key = keyMatch ? keyMatch[1] : null;
+
+  showScreen('shared-view');
+  const titleEl = document.getElementById('shared-view-title');
+  const listEl = document.getElementById('shared-view-tasks');
+
+  if (!key || !window.efterplanAuth || !window.efterplanAuth.isConfigured()) {
+    listEl.innerHTML = '<p class="modal-sub">Länken saknar nyckeln som krävs för att låsa upp innehållet.</p>';
+    return true;
+  }
+  try {
+    const data = await window.efterplanAuth.resolveSharedLink(sharedId, key);
+    titleEl.textContent = data.name ? `${data.name}s plan` : 'Delad plan';
+    const groups = { today: [], week: [], later: [] };
+    (data.tasks || []).forEach(t => { (groups[t.urgency] || groups.later).push(t); });
+    const labels = { today: 'Gör idag', week: 'Denna vecka', later: 'Senare' };
+    listEl.innerHTML = Object.keys(labels).map(key => {
+      const items = groups[key];
+      if (!items.length) return '';
+      return `<h2 class="plan-title" style="font-size:1.1rem;margin-top:20px">${labels[key]}</h2>
+        <ul style="list-style:none;padding:0;margin:0;">
+          ${items.map(t => `<li style="padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="${t.done ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${t.done ? '✓ ' : ''}${t.title}</span>
+          </li>`).join('')}
+        </ul>`;
+    }).join('');
+    track('shared_plan_opened');
+  } catch (err) {
+    console.error('[shared-view]', err);
+    listEl.innerHTML = '<p class="modal-sub">Länken är ogiltig eller har tagits bort.</p>';
+  }
+  return true;
+}
+
 // ─── PAYWALL ─────────────────────────────────
 (function initPaywall() {
   applyPremiumState();
@@ -2667,7 +2868,10 @@ async function handlePaywallCTA() {
 }
 
 // ─── INIT ─────────────────────────────────────
-(function init() {
+(async function init() {
+  // T177: en delad länk (?shared=...#k=...) vinner alltid över lokalt sparad state.
+  if (await tryRenderSharedView()) return;
+
   initSenderAddressFields(); // oberoende av vilken gren nedan som körs — bara localStorage-återställning
   // Restore own plan from localStorage
   try {
