@@ -1651,6 +1651,27 @@ body {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
+/* ─── APP TOAST (generic, non-blocking — ersätter alert()) ──── */
+.app-toast {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  z-index: 300;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(60,50,30,0.26);
+  white-space: normal;
+  max-width: calc(100vw - 32px);
+  animation: toastIn 0.25s ease;
+}
+.app-toast.hidden { display: none; }
+.app-toast.is-error { background: #a3312a; }
+.app-toast.is-success { background: #2f6b4f; }
+
 /* ─── STARTED TASK STATE ─────────────────────── */
 .task-card.started {
   border-color: var(--accent);
