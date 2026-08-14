@@ -576,3 +576,35 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 | BankID-flerpartssignering av fullmakter | Kräver tredjepartsleverantör + server-relation, krockar med "ingen server, sparas bara lokalt"-löftet. Matchar redan T149/Fas 14:s slutsats — vänta tills bolaget är registrerat och trafiken större. Ingen ny ticket. |
 | Obligatorisk eller valbar avslutningskontroll ("är allt verkligen klart?") | Skulle riva upp den befintliga "du är klar, andas ut"-känslan för att påminna om saker som kan ligga månader/år fram (deklaration, skattekonto). Momentan lättnad är giltig även om något administrativt hänger kvar. |
 | Fordon uppdelat i undertyper (bil/mc/släp/husbil/båt) som strukturerat delflöde | Sällan lika komplicerat som bostad — en generisk "fordon"-uppgift räcker, upprepa vid behov. |
+
+---
+
+# 🧹 FAS 24 — OWNER-AUDIT (UI-genomgång 2026-08-13) + GROK-UTVÄRDERING
+
+💡 Owner gick igenom appen skärm för skärm och listade ~20 konkreta observationer (copy, lista-istället-för-fritext, villkorad synlighet, en scroll-bugg m.m.), och klistrade in en separat Grok-analys (UI/UX-audit + sorgpsykologisk backlogg) för utvärdering. Genomgången bekräftade att flera Grok-punkter redan var byggda i tidigare sessioner (T177/T178/T189–T193) — de listas inte här igen.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T195 | Textfixar: prisrad "med mera" tillagd, Försäkringskassan-uppgiften förtydligad (automatiskt dödsbesked via folkbokföringen men stoppar inte utbetalningar automatiskt), skattedeklarations-länk bytt till Skatteverkets specifika dödsbo-sida, jurist-disclaimer tillagd på bouppteckningsuppgiften, ny alltid synlig röd-gul-grön-förklaring i plan-headern. `index.html`, `app.js`, `style.css`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟢 | Content | ✔ |
+| T196 | "Meddela närstående" hade både en färdigbyggd bock-av-lista (`renderNotifyList`) OCH ett dubblerande fritextfält kvar — fritextfältet borttaget. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟡 | Dev | ✔ |
+| T197 | "Hitta viktiga dokument" fick en ny lista (dokument + var det finns), samma mönster som underrätta-listan, som komplement till foto-genvägen till Arkiv. Ny `renderDocumentLocationList()` i `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟡 | Dev | ✔ |
+| T198 | "Inventera skulder noggrant" kopplad till Bouppteckningens redan befintliga skuldlista istället för ett fristående fritextfält; placeholder bytt till "Borgenär (skuld till)". `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟡 | Dev | ✔ |
+| T199 | "Avsluta autogiron och e-fakturor" + "Avsluta abonnemang och prenumerationer" gjorda om till interaktiva bock-av-listor, samma mönster som "Avsluta digitala konton" redan hade. `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟢 | Dev | ✔ |
+| T200 | Buggfix: äktenskapsförord/samboavtal-uppgiften triggade bara på `relation==='make'` (att DU är maken) istället för `giftSambo` (att den avlidne var gift/sambo). Trigger utökad till båda. `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟠 | Dev | ✔ |
+| T201 | "Besluta om bostadens framtid" och "Kontrollera bostadsrättens framtid" slagits ihop till en uppgift och flyttad i `TASK_LIBRARY` till att ligga bredvid bouppteckningen, istället för längre ner bland de administrativa fastighetsstegen. `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟡 | Dev | ✔ |
+| T202 | Lagfart-uppgiften fick ett datumfält för "bouppteckningen registrerad hos Skatteverket" som räknar ut 3-månadersfristen, samma mönster som `applyDeadlines()` redan gör för dödsdatumet. Ny `applyLagfartDeadline()`. `app.js`, `style.css`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟡 | Dev | ✔ |
+| T203 | Dölj/visa klara uppgifter — global knapp + en knapp per sektion (Idag/Denna vecka/Senare), lagras i `localStorage` (`efterplan_hide_done`). `app.js`, `index.html`, `style.css`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟡 | Dev | ✔ |
+| T204 | Buggfix: att markera en uppgift som klar skrollade till den FÖRSTA oavklarade uppgiften totalt (kunde hoppa hela vägen upp om en tidig uppgift lämnats öppen). Ändrat till nästa oavklarade uppgift efter den man just klarade av. `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟠 | Dev | ✔ |
+| T205 | Räkningssektionen flyttad från botten av "Min plan" till Arkiv-fliken, med en rad som förklarar varför den ligger där. `index.html`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟢 | Dev | ✔ |
+| T206 | "Ta hand om dig själv" flyttad från "Senare" till "Gör idag" — kräver ingen deadline, bara närvaro, och ska synas tidigt. `app.js`. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟢 | Content | ✔ |
+| T207 | Framtida (när traction finns): utvärdera om jurister/byråer som listas i appen (t.ex. Familjens Jurist) kan ge provision/kickback för förmedlade dödsbo-ärenden — inklusive vad det gör med trovärdigheten i "det här är bara förslag"-formuleringen (T195). Ren framtidsnotering, ingen kod. | 2026-08-13 | Fas 24 | Owner UI-audit | 🟢 | Research/Backlog | ☐ |
+| T208 | Grok-bevakningslista (granskad och avgränsad från denna omgång — se AVVISAT nedan för resonemang): (1) "Jag orkar inte just nu"-pausläge, (2) förifyllda standardposter i Bouppteckningens tillgångar/skulder (Bankkonto, Bostad, Bil, Bohag m.fl.), (3) AI-kategorisering av räkningsfoton (samma mönster som redan finns för Arkiv-dokument), (4) diskret konto-synk-prompt efter första sessionen. Källa: Grok UI/UX-audit, inklistrad av Owner 2026-08-13. | 2026-08-13 | Backlog | Grok-analys | 🟢 | Research/Backlog | ☐ |
+
+---
+
+## 🚫 AVVISAT — 2026-08-13 (session 2, Grok-utvärdering)
+
+| Beslut | Motivering |
+|---|---|
+| "Visa 1–2 brev gratis" (Grok-förslag) | Ren pris-/affärsmodellsfråga, inte UX — måste beslutas av Owner separat, kodas inte in på egen hand. |
+| Duplicera "Ta hand om dig själv" som flera task-instanser i olika sektioner | Skulle bryta klar-markering/state per kopia (samma uppgift, flera `done`-flaggor att hålla reda på). Löst istället genom att flytta den enda instansen tidigare i flödet (T206). |
