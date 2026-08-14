@@ -608,3 +608,29 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 |---|---|
 | "Visa 1–2 brev gratis" (Grok-förslag) | Ren pris-/affärsmodellsfråga, inte UX — måste beslutas av Owner separat, kodas inte in på egen hand. |
 | Duplicera "Ta hand om dig själv" som flera task-instanser i olika sektioner | Skulle bryta klar-markering/state per kopia (samma uppgift, flera `done`-flaggor att hålla reda på). Löst istället genom att flytta den enda instansen tidigare i flödet (T206). |
+
+---
+
+# 📊 FAS 25 — GA4/GSC-verifiering, outreach-status, SEO-titlar (2026-08-14)
+
+💡 Session initierad av Owner ("hur går det med trafiken") som eskalerade genom flera runda av "kolla, gissa inte" — GA4-hämtning krävde ny service-account-nyckel (gammal var 48 byte, ogiltig), egen-testtrafik i datan kunde varken bekräftas eller uteslutas (IP-geolokalisering opålitlig i Sverige). Slutade i faktisk kodverifiering + skarpa SEO-fixar.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T209 | GA4 service-account-nyckel var ogiltig (48 byte). Ny nyckel skapad (`ga4-reader@intricate-tempo-496015-a0.iam.gserviceaccount.com`), Viewer-access i GA4, sparad på `~/.config/efterplan/ga4-service-account.json`. 30-dagars funnel hämtad: 75 sessioner, onboarding_start 12%, plan_generated > onboarding_start i unika användare — verifierat i koden (`app.js:148`, `app.js:300`) att detta INTE kan bero på en trasig funnel (generatePlan kräver alltid startOnboarding först), sannolikt GA4-attributionskvirk vid fönsterkant. Egen testtrafik i datan varken bekräftad eller utesluten (IP visade Stockholm, Owner sitter i Visby — opålitlig signal). | 2026-08-14 | Fas 25 | Session | 🟡 | Analytics | ✔ |
+| T210 | Outreach-status verifierad mot Gmail-etiketten Arbete/Efterplan (ej gissad): sorg.se, SPES, Svenska kyrkan, Råd & Rön — skickade 12 apr. 1177 — skickat, avböjt. Aftonbladet — status okänd, lämnad så på Owners begäran. Statustabell tillagd i `outreach.md`. | 2026-08-14 | Fas 25 | Session | 🟢 | Content | ✔ |
+| T211 | Återkommande molnrutin skapad: "Community-scan efterplan.se" (`trig_01RSTqpLnTb2UapAYiYvkrFw`), varje måndag 06:00 UTC. Söker Reddit/Flashback/Familjeliv efter trådar där ett genuint icke-säljande svar är rimligt — postar aldrig själv, loggar till `community-watch.md` + öppnar PR för granskning. Explicit instruerad att INTE göra reklam (de flesta forum förbjuder självmarknadsföring i sina regler). | 2026-08-14 | Fas 25 | Session | 🟢 | Growth | ✔ |
+| T212 | SEO: 29 av 33 sidors `<title>` var över 60 tecken (klipps i Google-SERP). Kortade alla till ≤60 tecken, behöll nyckelord + "\| Efterplan"-suffix. `index.html` (65, varumärkesledd) och `auth-modal.html` (ingen egen sida, ej i sitemap) undantagna med avsikt. PR #59. | 2026-08-14 | Fas 25 | Session | 🟡 | SEO | ✔ |
+| T213 | Google Search Console API kopplad (samma projekt/service-account som GA4, kräver Owner-godkännande av API + Sök-konsol-åtkomst). Sitemap omskickad. Indexeringsstatus verifierad per URL (ej gissad från sitemap-rapportens missvisande "0 indexerade"): **18/33 sidor indexerade**, 8 crawlade-ej-indexerade, 4 upptäckta-ej-crawlade, 3 helt okända för Google (boutredningsman, digital-dodsbo, dodsbo-deklaration). | 2026-08-14 | Fas 25 | Session | 🟠 | SEO | ✔ |
+| T214 | Grundorsak till T213:s tre "okända" sidor: fanns bara 2–4 svaga interna länkar var, och saknades helt i startsidans footer (som bara länkade till 3 av 32 guider trots att `om.html` har 33 inlänkar och är sajtens starkaste sida). Startsidans footer utökad till alla 32 guide-länkar. PR #60. Väntar på ny Google-crawl (dagar–veckor) för att verifiera effekt. | 2026-08-14 | Fas 25 | Session | 🟠 | SEO | ✔ |
+| T215 | Request Indexing (enskild URL, GSC-knappen) har ingen publik API — verifierat, inte antaget. Skalbar ersättning (sitemap-omskickning, T213) användes istället. Manuell process i [NEXT_STEPS_FOR_JONAS.md](NEXT_STEPS_FOR_JONAS.md:36) kan strykas/nedprioriteras nu när sitemap-vägen finns. | 2026-08-14 | Fas 25 | Session | 🟢 | Research | ✔ |
+| T216 | Uppföljning om ~2–4 veckor: kör `/ga4` + ny GSC-indexeringskoll för att se om T212 (kortare titlar) och T214 (interlänkning) faktiskt flyttat CTR/indexeringssiffrorna. | — | Fas 25 | Session | 🟡 | Analytics | ☐ |
+
+---
+
+## 🚫 AVVISAT / EJ GJORT — 2026-08-14
+
+| Beslut | Motivering |
+|---|---|
+| LinkedIn-profil städas till bara Efterplan | Ingen tillgänglig verktygsväg kunde faktiskt redigera profilen (Gmail-sök saknades, computer-use ger bara läsläge i webbläsare, ny inloggning i webbläsarpanelen krävdes aldrig). Owner avbröt ("skit i det") innan en väg hittades. Ohanterat — kan tas upp igen om Owner vill logga in i webbläsarpanelen direkt. |
+| Bygga automatiserat LinkedIn-kontohanteringsverktyg | Avböjt — LinkedIn förbjuder skriptad kontoåtkomst i sina villkor, risk för avstängning. Erbjöd manuella alternativ istället. |
