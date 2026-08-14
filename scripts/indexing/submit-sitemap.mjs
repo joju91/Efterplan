@@ -3,9 +3,11 @@
 // bara stödjer JobPosting/BroadcastEvent-sidor) — det är den enda automatiska,
 // kostnadsfria mekanismen som faktiskt gäller för en vanlig HTML-sajt.
 //
-// Kräver env-variabeln GSC_SERVICE_ACCOUNT_JSON: samma service-account-nyckel
-// som redan har Owner-åtkomst till efterplan.se i Search Console (se roadmap.md
-// T213). Sätts som GitHub Actions-secret, inte committad i repot.
+// Kräver en service-account-nyckel med Search Console-åtkomst till efterplan.se.
+// Läser i första hand GSC_SERVICE_ACCOUNT_JSON, men faller tillbaka på
+// GA4_SERVICE_ACCOUNT_JSON — per roadmap.md T213 är det samma service-account
+// (redan Owner-godkänd i både GA4 och Search Console), så den befintliga
+// GitHub-secreten funkar utan att något nytt behöver läggas till.
 //
 // Körs bara av workflown när update-sitemap.mjs faktiskt ändrat sitemap.xml.
 
@@ -15,11 +17,12 @@ const SITE_URL = 'https://efterplan.se/';
 const FEEDPATH = 'https://efterplan.se/sitemap.xml';
 
 function buildAuth() {
-  const json = process.env.GSC_SERVICE_ACCOUNT_JSON;
+  const json = process.env.GSC_SERVICE_ACCOUNT_JSON || process.env.GA4_SERVICE_ACCOUNT_JSON;
   if (!json) {
     throw new Error(
-      'Saknar GSC_SERVICE_ACCOUNT_JSON. Lägg till service-account-nyckeln (samma som har ' +
-        'Owner-åtkomst till efterplan.se i Search Console, se roadmap.md T213) som GitHub-secret.'
+      'Saknar service-account-nyckel för Search Console. Sätt GSC_SERVICE_ACCOUNT_JSON eller ' +
+        'GA4_SERVICE_ACCOUNT_JSON som GitHub-secret (samma service-account har redan Owner-åtkomst ' +
+        'till efterplan.se i Search Console, se roadmap.md T213).'
     );
   }
   let creds;
