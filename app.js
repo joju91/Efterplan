@@ -77,12 +77,12 @@ async function handlePremiumReturn() {
     if (data && data.ok) {
       setPremium(data.email || '');
       track('premium_activated');
-      alert('Tack! Premium är upplåst på den här enheten.');
+      showToast('Tack! Premium är upplåst på den här enheten.', 'success');
     } else {
-      alert('Vi kunde inte bekräfta betalningen direkt. Försök ladda om sidan om en stund.');
+      showToast('Vi kunde inte bekräfta betalningen direkt. Försök ladda om sidan om en stund.', 'error');
     }
   } catch (_) {
-    alert('Kunde inte verifiera betalningen — kolla din inkorg för Stripe-kvittot.');
+    showToast('Kunde inte verifiera betalningen — kolla din inkorg för Stripe-kvittot.', 'error');
   } finally {
     // Strip query params so reloads don't re-trigger.
     const clean = window.location.pathname + window.location.hash;
@@ -1736,11 +1736,24 @@ async function handleBillScan(event) {
       if (qr.iref && form) form.dataset.ocr = String(qr.iref);
       setBillScanStatus('Hittade fakturadata — kontrollera och spara.');
       track('bill_scanned_qr');
+      setTimeout(() => setBillScanStatus(''), 5000);
     } else {
-      setBillScanStatus('Foto sparat. Skriv beskrivning manuellt.');
-      track('bill_scanned_photo_only');
+      // Ingen QR — samma AI-assist som Arkiv redan använder (categorize-document)
+      // föreslår avsändare/namn utifrån fotot. Ren assist: misslyckas anropet
+      // (nätverk, saknad nyckel, rate-limit) faller vi bara tillbaka till manuell
+      // ifyllning, precis som i Arkiv. Aldrig en spärr.
+      setBillScanStatus('Föreslår avsändare…');
+      const ai = await categorizeDocumentAI(compressed);
+      if (ai?.name) {
+        document.getElementById('bill-desc-input').value = ai.name;
+        setBillScanStatus('Foto sparat — avsändare föreslagen. Kontrollera och spara.');
+        track('bill_scanned_categorized_ai');
+      } else {
+        setBillScanStatus('Foto sparat. Skriv beskrivning manuellt.');
+        track('bill_scanned_photo_only');
+      }
+      setTimeout(() => setBillScanStatus(''), 5000);
     }
-    setTimeout(() => setBillScanStatus(''), 5000);
   } catch (err) {
     console.error('Bill scan error', err);
     setBillScanStatus('Det gick inte att läsa bilden. Försök igen.', true);
@@ -2065,7 +2078,11 @@ function markTaskDone(taskId) {
 }
 
 
-// ─── SIMPLE LOCALSTORAGE LISTS (delas av underrätta-listan och dokumentplats-listan) ──
+// ─── DELAD LOCALSTORAGE-LIST-KOMPONENT ────────
+// Tidigare fanns tre nästan identiska implementationer av "spara/hämta/lägg till/ta
+// bort rader i en localStorage-lista" (underrätta-listan, dokumentplats-listan, och den
+// generiska _getLSList den ena byggde på). Konsoliderat till en delad fabrik här —
+// nya "hjälp mig komma ihåg X"-listor kan återanvända mönstret utan att skrivas om.
 function _getLSList(key) {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
 }
@@ -2077,59 +2094,75 @@ function _genListId() {
   return Math.random().toString(36).slice(2, 10);
 }
 
+function createLSList(storageKey, makeItem) {
+  const get = () => _getLSList(storageKey);
+  const save = (list) => _saveLSList(storageKey, list);
+  return {
+    get,
+    add(extra) {
+      const list = get();
+      list.push({ id: _genListId(), ...makeItem(extra) });
+      save(list);
+      return list;
+    },
+    remove(id) {
+      const list = get().filter(item => item.id !== id);
+      save(list);
+      return list;
+    },
+    setField(id, field, value) {
+      const list = get();
+      const row = list.find(r => r.id === id);
+      if (row) { row[field] = value; save(list); }
+      return list;
+    },
+    toggleField(id, field) {
+      const list = get();
+      const row = list.find(r => r.id === id);
+      if (row) { row[field] = !row[field]; save(list); }
+      return list;
+    },
+  };
+}
+
 // ─── NOTIFY LIST ──────────────────────────────
-function _getNotifyList() {
-  return _getLSList('efterplan_notify_list');
-}
-function _saveNotifyList(list) {
-  _saveLSList('efterplan_notify_list', list);
-}
-function _genNotifyId() {
-  return _genListId();
-}
+const _notifyList = createLSList('efterplan_notify_list', (name) => ({ name, notified: false, notifier: '' }));
 
 function addNotifyPerson() {
   const input = document.getElementById('notify-new-input');
   const name = input?.value.trim();
   if (!name) return;
-  const list = _getNotifyList();
-  list.push({ id: _genNotifyId(), name, notified: false, notifier: '' });
-  _saveNotifyList(list);
+  _notifyList.add(name);
   input.value = '';
   _refreshNotifyList();
 }
 
 function toggleNotified(personId) {
-  const list = _getNotifyList();
-  const person = list.find(p => p.id === personId);
-  if (person) { person.notified = !person.notified; _saveNotifyList(list); }
+  _notifyList.toggleField(personId, 'notified');
   _refreshNotifyList();
 }
 
 function removeNotifyPerson(personId) {
-  const list = _getNotifyList().filter(p => p.id !== personId);
-  _saveNotifyList(list);
+  _notifyList.remove(personId);
   _refreshNotifyList();
 }
 
 function setNotifyNotifier(personId, notifier) {
-  const list = _getNotifyList();
-  const person = list.find(p => p.id === personId);
-  if (person) { person.notifier = notifier; _saveNotifyList(list); }
+  _notifyList.setField(personId, 'notifier', notifier);
 }
 
 function _refreshNotifyList() {
   const container = document.getElementById('notify-list-container');
   if (!container) return;
   container.innerHTML = _buildNotifyListInner();
-  const list = _getNotifyList();
+  const list = _notifyList.get();
   const done = list.filter(p => p.notified).length;
   const el = document.getElementById('notify-counter');
   if (el) el.textContent = list.length ? `${done} av ${list.length} meddelade` : '';
 }
 
 function _buildNotifyListInner() {
-  const list = _getNotifyList();
+  const list = _notifyList.get();
   if (!list.length) return '<p class="notify-empty">Inga tillagda än</p>';
   return list.map(p => {
     const safeId = p.id;
@@ -2147,7 +2180,7 @@ function _buildNotifyListInner() {
 }
 
 function renderNotifyList() {
-  const list = _getNotifyList();
+  const list = _notifyList.get();
   const done = list.filter(p => p.notified).length;
   const counterText = list.length ? `${done} av ${list.length} meddelade` : '';
   return `<div class="notify-list-section">
@@ -2169,34 +2202,21 @@ function renderNotifyList() {
 }
 
 // ─── DOCUMENT LOCATION LIST (viktiga dokument) ─
-function _getDocLocations() {
-  return _getLSList('efterplan_document_locations');
-}
-function _saveDocLocations(list) {
-  _saveLSList('efterplan_document_locations', list);
-}
-function _genDocLocId() {
-  return _genListId();
-}
+const _docLocationList = createLSList('efterplan_document_locations', () => ({ doc: '', plats: '' }));
 
 function addDocLocation() {
-  const list = _getDocLocations();
-  list.push({ id: _genDocLocId(), doc: '', plats: '' });
-  _saveDocLocations(list);
+  _docLocationList.add();
   _refreshDocLocationList();
   const inputs = document.querySelectorAll('#doc-location-list-container .doc-location-input-doc');
   if (inputs.length) inputs[inputs.length - 1].focus();
 }
 
 function setDocLocationField(id, field, value) {
-  const list = _getDocLocations();
-  const row = list.find(r => r.id === id);
-  if (row) { row[field] = value; _saveDocLocations(list); }
+  _docLocationList.setField(id, field, value);
 }
 
 function removeDocLocation(id) {
-  const list = _getDocLocations().filter(r => r.id !== id);
-  _saveDocLocations(list);
+  _docLocationList.remove(id);
   _refreshDocLocationList();
 }
 
@@ -2207,7 +2227,7 @@ function _refreshDocLocationList() {
 }
 
 function _buildDocLocationListInner() {
-  const list = _getDocLocations();
+  const list = _docLocationList.get();
   if (!list.length) return '<p class="notify-empty">Inga tillagda än</p>';
   return list.map(r => `
     <div class="doc-location-row">
@@ -2874,6 +2894,21 @@ function clearFormError(errId) {
   if (el) el.classList.add('hidden');
 }
 
+// Icke-blockerande toast — ersätter alert() för meddelanden som inte hör till ett
+// specifikt formulärfält (t.ex. betalningsstatus). Samma mönster som showFormError,
+// fast utan fast plats i DOM:en.
+let _appToastTimer = null;
+function showToast(msg, type) {
+  const toast = document.getElementById('app-toast');
+  const msgEl = document.getElementById('app-toast-msg');
+  if (!toast || !msgEl) return;
+  msgEl.textContent = msg;
+  toast.classList.remove('hidden', 'is-error', 'is-success');
+  if (type) toast.classList.add(type === 'error' ? 'is-error' : 'is-success');
+  clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => toast.classList.add('hidden'), 5000);
+}
+
 // ─── UTILS ────────────────────────────────────
 function formatDate(date) {
   return date.toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -3056,13 +3091,13 @@ async function handlePaywallCTA() {
     });
     const data = await r.json();
     if (!r.ok || !data || !data.url) {
-      alert('Kunde inte starta betalningen. Försök igen om en stund.');
+      showToast('Kunde inte starta betalningen. Försök igen om en stund.', 'error');
       return;
     }
     if (email) localStorage.setItem(PREMIUM_EMAIL_KEY, email);
     window.location.href = data.url;
   } catch (err) {
-    alert('Något gick fel mot betaltjänsten. Kontrollera din anslutning och försök igen.');
+    showToast('Något gick fel mot betaltjänsten. Kontrollera din anslutning och försök igen.', 'error');
   }
 }
 
@@ -3111,6 +3146,15 @@ const boppData = {
   skulder:    [],  // [{ beskrivning, belopp }]
 };
 
+// T208 — förifyllda default-rader istället för en tom lista: användaren slipper komma på
+// vad som ska fyllas i, och kan redigera/ta bort raderna precis som vanligt.
+const BOPP_DEFAULT_TILLGANGAR = [
+  { beskrivning: 'Bankkonto', varde: '' },
+  { beskrivning: 'Bostad', varde: '' },
+  { beskrivning: 'Bil', varde: '' },
+  { beskrivning: 'Bohag', varde: '' },
+];
+
 let boppTracked = false; // T133: rapportera aktivering en gång per session, inte per tangenttryck
 
 function boppSave() {
@@ -3127,11 +3171,16 @@ function boppSave() {
 
 function boppLoad() {
   try {
-    const saved = JSON.parse(localStorage.getItem(BOPP_KEY) || 'null');
+    const raw = localStorage.getItem(BOPP_KEY);
+    const saved = JSON.parse(raw || 'null');
     if (saved) {
       boppData.delbagare  = saved.delbagare  || [];
       boppData.tillgangar = saved.tillgangar || [];
       boppData.skulder    = saved.skulder    || [];
+    } else if (raw === null) {
+      // Första besöket i Bouppteckning (inget sparat ännu) — starta med vanliga rader
+      // istället för en tom lista. Ifyllningsbara och borttagbara som vanligt.
+      boppData.tillgangar = BOPP_DEFAULT_TILLGANGAR.map(row => ({ ...row }));
     }
   } catch(e) {}
   boppRender();
