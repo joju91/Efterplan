@@ -2700,6 +2700,14 @@ body {
   max-width: var(--measure);
 }
 
+/* Small byline under the lead paragraph — when a guide's content was last checked */
+.seo-article .seo-updated {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+  margin: calc(-1 * var(--space-sm)) 0 var(--space-lg);
+}
+
 /* Inline CTA box — editorial, not generic "card" */
 .seo-cta {
   background: var(--paper-soft);
