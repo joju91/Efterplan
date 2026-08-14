@@ -1,5 +1,18 @@
 # Outreach-mejl — efterplan.se
 
+## Status (verifierad mot Gmail-etiketten Arbete/Efterplan, 2026-08-14)
+
+| Mål | Status | Datum | Not |
+|---|---|---|---|
+| sorg.se | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
+| SPES | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
+| Svenska kyrkan | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
+| 1177.se | ✔ Skickat | — | **Nej** |
+| Aftonbladet | Okänt | — | Ej verifierat, lämnas okänt |
+| Råd & Rön | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
+
+Utöver dessa sex finns fler outreach-trådar i Gmail-etiketten (gästkrönika/partnerförslag/kundriktade mejl 5–22 apr) som inte har egna mallar här. Två trådar med faktiska svar: `info@anhori...` (30 apr) och ärende CS0296058 (22 apr, "Klara") — innehåll ej fullständigt läst.
+
 ---
 
 ## 1. Sorgorganisationer
