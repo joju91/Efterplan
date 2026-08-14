@@ -654,6 +654,22 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 
 ---
 
+# 🌱 FAS 27 — CHATGPT-SEO-RESEARCH 2026-08-14 (VERIFIERAD MOT KOD)
+
+💡 Owner delade en ny ChatGPT-researchrapport om Efterplans SEO. Rapportens huvudpoäng ("sajten är i huvudsak en SPA, guiderna är bara länkar utan riktiga URL:er") stämde **inte** vid verifiering — Fas 19/25/26 hade redan löst det (34 statiska HTML-sidor, canonical, JSON-LD, autositemap, interlänkar från footer). Rapporten återupprepade därför i stort redan gjort arbete. Fem fynd var dock faktiska luckor, verifierade i koden (grep över samtliga `*.html`, inte gissade) innan de loggades här.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T232 | Ny landningssida `saga-upp-abonnemang-vid-dodsfall.html` — "abonnemang" nämns idag i 10 andra guider men äger ingen egen sida/sökintention. Rapporten pekar ut det som kommersiell long-tail nära produkten (uppsägningsbrev finns redan i appen). Samma mall som befintliga 34 sidor (canonical, meta, Article+HowTo+FAQPage+BreadcrumbList JSON-LD), interlänkad från `checklista-dodsbo.html`, `vad-gora-nar-nagon-dor.html`, `dodsbo-checklista-7-dagar.html` och startsidans footer. | 2026-08-14 | Fas 27 | ChatGPT-research (Owner) | 🟡 | SEO | ☐ |
+| T233 | Tre nya landningssidor för ämnen som idag bara nämns i förbigående på `index.html`, ingen egen sida: `forsakring-vid-dodsfall.html`, `husdjur-efter-dodsfall.html`, `eftersandning-post-dodsbo.html`. Samma mall/interlänkning som T232. Lägg till i samma slinga som T222 (B1, redan i backloggen) snarare än separat session. | 2026-08-14 | Fas 27 | ChatGPT-research (Owner) | 🟢 | SEO | ☐ |
+| T234 | "Senast uppdaterad: [datum]"-rad tillagd på alla 34 guide-sidor, satt från git-historik (samma källa som `update-sitemap.mjs` redan använder för `lastmod`, så ingen ny datakälla behövs). Särskilt värdefullt för juridik-/Skatteverket-innehåll (bouppteckning, arvskifte, testamente) där sidorna faktiskt underhålls vid lagändringar (jfr Fas 21). Inte kosmetiskt — datumet ska vara sant, bara uppdateras när innehållet faktiskt ändras. | 2026-08-14 | Fas 27 | ChatGPT-research (Owner) | 🟡 | SEO | ☐ |
+| T235 | Fristående, delbar landningssida för checklistan/bouppteckningsöversikten (t.ex. `/gratis-checklista-dodsbo.html`) som länkar in till appens flöde — idag finns verktygen bara inuti appen, ingen egen URL att länka/dela. Rapportens poäng: sådana sidor är bättre länk-magneter för kommuner/anhörigorganisationer än generiska artiklar. Kräver produktbeslut om vad som visas gratis vs bakom onboarding — avstäm med Owner innan byggnation (jfr redan avvisat "visa fler brev gratis"-beslut ovan, samma typ av avvägning). | 2026-08-14 | Fas 27 | ChatGPT-research (Owner) | 🟢 | SEO/Product | ☐ |
+| T236 | Slå ihop med T216/T226 (redan öppna uppföljningstickets, förfaller ~slutet aug/mitten sep 2026): när `/ga4` + GSC-koll körs då, mät även effekt av T232–T234 om de hunnit byggas och crawlas. Ingen ny separat uppföljning behövs. | — | Fas 27 | ChatGPT-research (Owner) | 🟢 | Analytics | ☐ |
+
+**Redan gjort, bekräftat vid verifiering (ingen ny ticket)**: separata crawlbara sidor per sökintention, title/H1/first-paragraph-matchning, interlänkning från footer, beskrivande ankartexter, strukturerad data (Article/HowTo/FAQPage/BreadcrumbList), automatisk sitemap + Search Console-submission (ej Indexing API — verifierat fel användningsområde i T215), korta titlar (T212). Se Fas 19/25/26.
+
+---
+
 ## 🚫 AVVISAT / EJ GJORT — 2026-08-14
 
 | Beslut | Motivering |
