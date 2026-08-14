@@ -1,0 +1,11 @@
+{
+  "name": "efterplan-indexing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sitemap-automation + Search Console-notifiering för efterplan.se. Isolerad från root package.json (Vercel-funktionerna) så den inte påverkar deploy av api/*.",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "googleapis": "^171.4.0"
+  }
+}
