@@ -112,6 +112,7 @@ const state = {
   name:           '',
   personnr:       '',
   deathDate:      '', // ÅÅÅÅ-MM-DD, frivilligt — driver T135-deadline-motorn
+  bouppRegDatum:  '', // ÅÅÅÅ-MM-DD, frivilligt — datum då bouppteckningen registrerades hos Skatteverket, driver lagfartsfristen
   taskChecklists: {}, // taskId → {key: bool}
   tasks:               [],
   bills:               [],
@@ -302,6 +303,7 @@ function generatePlan() {
   state.deathDate = document.getElementById('deceased-date')?.value || '';
   buildTasks();
   applyDeadlines();
+  applyLagfartDeadline();
   loadTaskState();
   loadBills();
   loadDocuments();
@@ -347,7 +349,6 @@ const TASK_LIBRARY = [
     resources: [
       { label: 'Skatteverket — beställ dödsfallsintyg', url: 'https://www.skatteverket.se/privat/folkbokforing/dodsfall.html' },
     ],
-    notesPlaceholder: 'Vad har du hittat? Var förvaras respektive dokument?',
   },
   {
     id: 'konstatera_dodsfall',
@@ -363,12 +364,11 @@ const TASK_LIBRARY = [
   {
     id: 'narmaste_anhörig',
     title: 'Meddela närstående',
-    desc: 'Det här sker i etapper — du behöver inte nå alla på en gång. Börja med de allra närmaste: familj och nära vänner. Övriga kan meddelas under de kommande dagarna. Det är okej att be någon annan hjälpa till.',
+    desc: 'Det här sker i etapper — du behöver inte nå alla på en gång. Börja med de allra närmaste: familj och nära vänner. Övriga kan meddelas under de kommande dagarna. Det är okej att be någon annan hjälpa till. Lägg till personer i listan nedan och bocka av vartefter du når dem.',
     urgency: 'today',
     time: 'Din tid',
     link: null,
     triggers: [],
-    notesPlaceholder: 'Vem har meddelats, vem återstår…',
   },
   {
     id: 'begravningsbyra',
@@ -406,6 +406,25 @@ const TASK_LIBRARY = [
     triggers: [],
     notesPlaceholder: 'Var finns nycklarna? Adressändring gjord hos Postnord?',
   },
+  // Placerad här (inte längst ner bland "later"-uppgifterna) eftersom urgency:'today'
+  // förutsätter att positionen i TASK_LIBRARY matchar — markTaskDone()s "scrolla till
+  // nästa uppgift" letar i array-ordning, inte i renderad sektionsordning.
+  {
+    id: 'sorgstod',
+    title: 'Ta hand om dig själv',
+    desc: `Det praktiska tar tid och energi — men sorgen kräver sin egen plats.<br><br>
+Du behöver inte ha allt under kontroll. Det är normalt att känna sig utmattad, arg, lättad, tom eller allt på en gång.<br><br>
+<strong>Prata med någon:</strong><br>
+— <em>1177 Sorgelinjen</em>: Ring 1177 och be om att bli kopplad till sorgestöd.<br>
+— <em>SPES</em> (Suicidprevention och efterlevandestöd): spes.se, för dig som förlorat någon till självmord.<br>
+— <em>Kyrkans stöd</em>: Oavsett tro erbjuder Svenska kyrkan samtalsstöd — kontakta närmaste kyrka.<br><br>
+Det finns ingen tidsgräns för sorg, och du behöver inte vara klar.`,
+    urgency: 'today',
+    time: 'Din tid',
+    link: 'https://www.1177.se/liv-halsa/psykisk-halsa/sorg/',
+    triggers: [],
+    notesPlaceholder: 'Vad hjälper dig just nu? Är det någon du vill ringa?',
+  },
 
   // ── WEEK ───────────────────────────────────
   {
@@ -432,7 +451,7 @@ const TASK_LIBRARY = [
   {
     id: 'bouppteckning',
     title: 'Planera bouppteckningen',
-    desc: 'En bouppteckning är en förteckning över den avlidnes tillgångar och skulder. Den ska vara klar inom 3 månader och skickas till Skatteverket inom 4 månader.<br><br><strong>Är boet litet?</strong> Om tillgångarna knappt täcker begravnings- och bouppteckningskostnaderna kan du istället göra en <em>dödsboanmälan</em> hos kommunens socialtjänst — det är gratis och enklare. Kontakta socialtjänsten för att se om det gäller dig.<br><br><strong>Göra själv:</strong> Möjligt om boet är enkelt (bara bankmedel och lösöre). Kräver två utomstående vittnen som inte är arvingar. Sparar 6 500–15 000 kr.<br><strong>Anlita jurist:</strong> Rekommenderas vid fastighet, företag, testamente eller om arvingarna inte är överens.',
+    desc: 'En bouppteckning är en förteckning över den avlidnes tillgångar och skulder. Den ska vara klar inom 3 månader och skickas till Skatteverket inom 4 månader.<br><br><strong>Är boet litet?</strong> Om tillgångarna knappt täcker begravnings- och bouppteckningskostnaderna kan du istället göra en <em>dödsboanmälan</em> hos kommunens socialtjänst — det är gratis och enklare. Kontakta socialtjänsten för att se om det gäller dig.<br><br><strong>Göra själv:</strong> Möjligt om boet är enkelt (bara bankmedel och lösöre). Kräver två utomstående vittnen som inte är arvingar. Sparar 6 500–15 000 kr.<br><strong>Anlita jurist:</strong> Rekommenderas vid fastighet, företag, testamente eller om arvingarna inte är överens. Byråerna nedan är förslag för att komma igång — det finns många andra jurister och byråer att välja bland.',
     urgency: 'week',
     time: 'Kontakta jurist inom veckan',
     link: null,
@@ -466,6 +485,24 @@ const TASK_LIBRARY = [
     link: null,
     triggers: ['giftSambo'],
     notesPlaceholder: 'Bodelning behövs? Vem hjälper till — jurist, egen överenskommelse…',
+  },
+  // Slår ihop den tidigare "Kontrollera bostadsrättens framtid" (make-triggad) i denna —
+  // samma beslut, oavsett om det är du eller någon annan som fyller i formuläret.
+  // Flyttad hit (bredvid bouppteckningen) eftersom bostadens framtid är ett beslut som
+  // hör ihop med bouppteckningen, inte något som hör hemma bland de administrativa
+  // säljstegen längre ner.
+  // Trigger är bara 'fastighet' (inte 'make') — "Ägde sin bostad" fångar redan ägande
+  // oavsett relation, och 'make' ensam skulle visa uppgiften även för en efterlevande
+  // vars avlidna partner bara hyrde (inget att besluta om då).
+  {
+    id: 'fastighet_boende',
+    title: 'Besluta om bostadens framtid',
+    desc: 'Ska bostaden säljas, övertas av anhörig, eller hyras ut? Ta detta beslut med alla delägare i boet. Bestämmer ni er för att sälja via mäklare sköter de sedan visning, budgivning och köpekontrakt åt er — det behöver ni inte ha koll på själva.<br><br>Bor eller bodde ni i en bostadsrätt tillsammans — kontakta bostadsrättsföreningen om hur överlåtelse eller fortsatt boende hanteras. BRF:en behöver godkänna en ny ägare.',
+    urgency: 'week',
+    time: 'Diskussion med familjen',
+    link: null,
+    triggers: ['fastighet'],
+    notesPlaceholder: 'Beslut om bostaden, kontaktad mäklare, arvinge eller BRF…',
   },
   {
     id: 'bank_kontakt',
@@ -519,8 +556,8 @@ const TASK_LIBRARY = [
   {
     id: 'forsakringskassan',
     title: 'Kontakta Försäkringskassan',
-    desc: `Försäkringskassan behöver meddelas om dödsfallet för att stoppa löpande utbetalningar och för att du ska kunna ansöka om förmåner du kan ha rätt till.<br><br>
-<strong>Stoppa automatiskt:</strong> Barnbidrag, bostadsbidrag, sjukpenning och andra bidrag avslutas inte alltid automatiskt — kontakta FK för att undvika återkrav.<br><br>
+    desc: `Försäkringskassan får automatiskt besked om dödsfallet via folkbokföringen — samma uppgift som Skatteverket registrerar. Det stoppar dock <strong>inte</strong> alltid pågående utbetalningar automatiskt, och det startar <strong>aldrig</strong> nya förmåner du kan ha rätt till — därför behöver du ändå kontakta dem aktivt.<br><br>
+<strong>Stoppa manuellt vid behov:</strong> Barnbidrag, bostadsbidrag, sjukpenning och andra bidrag avslutas inte alltid automatiskt — kontakta FK för att undvika återkrav.<br><br>
 <strong>Ansök om:</strong><br>
 — <em>Barnpension</em>: Barn under 20 år kan ha rätt till barnpension om en förälder dör.<br>
 — <em>Efterlevandestöd</em>: Om barnpensionen inte räcker får barnet efterlevandestöd upp till 18 år.<br>
@@ -539,24 +576,41 @@ Kontakta FK på telefon eller logga in på Mina sidor på forsakringskassan.se.`
   {
     id: 'autogiron_avsluta',
     title: 'Avsluta autogiron och e-fakturor',
-    desc: 'Löpande betalningsuppdrag fortsätter dra pengar från dödsboets konton tills de aktivt avslutas. Bankerna kan ta fram en fullständig lista över aktiva autogiron kopplade till ett konto.<br><br><strong>Vanliga autogiron att kontrollera:</strong><br>— Hyra / månadsavgift<br>— El, vatten, fjärrvärme<br>— Internet, TV, mobilabonnemang<br>— Streaming (Spotify, Netflix, HBO)<br>— Tidningsprenumerationer<br>— Gymmedlemskap<br>— Larmtjänster<br>— Försäkringspremier<br><br>Be banken om listan via närmaste kontor eller digitalt. Avsluta abonnemangen hos respektive leverantör — banken kan spärra betalningarna men inte avsluta avtalen.',
+    desc: 'Löpande betalningsuppdrag fortsätter dra pengar från dödsboets konton tills de aktivt avslutas. Bankerna kan ta fram en fullständig lista över aktiva autogiron kopplade till ett konto.<br><br>Be banken om listan via närmaste kontor eller digitalt. Avsluta abonnemangen hos respektive leverantör — banken kan spärra betalningarna men inte avsluta avtalen.',
     urgency: 'later',
     time: 'ca 1–2 timmar',
     link: null,
     triggers: [],
-    notesPlaceholder: 'Lista från banken mottagen, avslutade abonnemang…',
+    checklist: [
+      { key: 'hyra',        label: 'Hyra / månadsavgift' },
+      { key: 'el',          label: 'El, vatten, fjärrvärme' },
+      { key: 'internet',    label: 'Internet, TV, mobilabonnemang' },
+      { key: 'streaming',   label: 'Streaming (Spotify, Netflix, HBO)' },
+      { key: 'tidningar',   label: 'Tidningsprenumerationer' },
+      { key: 'gym',         label: 'Gymmedlemskap' },
+      { key: 'larm',        label: 'Larmtjänster' },
+      { key: 'forsakring',  label: 'Försäkringspremier' },
+    ],
+    notesPlaceholder: 'Övriga autogiron eller e-fakturor…',
   },
   {
     id: 'abonnemang',
     title: 'Avsluta abonnemang och prenumerationer',
-    desc: 'Mobil, streaming, tidningar, el, gym — säg upp tjänster en efter en. Använd dokumentgeneratorn för att skapa uppsägningsbrev. Skriv ned det du vet eller hittar nedan.',
+    desc: 'Säg upp tjänster en efter en. Använd dokumentgeneratorn för att skapa uppsägningsbrev.',
     urgency: 'later',
     time: 'ca 1–2 timmar',
     link: null,
     triggers: [],
     digital: 'hybrid',
     hasDoc: 'bulk',
-    notesPlaceholder: 'Vet du några abonnemang eller tjänster? Notera dem här — du kan fylla på. (t.ex. Telia, Spotify, Netflix, el, gym…)',
+    checklist: [
+      { key: 'mobil',     label: 'Mobilabonnemang' },
+      { key: 'streaming', label: 'Streaming (Spotify, Netflix m.fl.)' },
+      { key: 'tidning',   label: 'Tidningsprenumerationer' },
+      { key: 'el',        label: 'Elavtal' },
+      { key: 'gym',       label: 'Gymmedlemskap' },
+    ],
+    notesPlaceholder: 'Övriga abonnemang eller tjänster…',
   },
   {
     id: 'arvskifte',
@@ -595,26 +649,16 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
   {
     id: 'skattedeklaration',
     title: 'Dödsboets skattedeklaration',
-    desc: 'Dödsboet är skattskyldigt och kan behöva lämna in en deklaration. Kontakta Skatteverket eller en revisor.',
+    desc: 'Dödsboet är skattskyldigt och kan behöva lämna in en deklaration. Skatteverket har en egen guide för hur man deklarerar för ett dödsbo — annars går det bra att kontakta en revisor.',
     urgency: 'later',
     time: 'Senast 2 maj efter dödsåret',
-    link: 'https://www.skatteverket.se',
+    link: 'https://www.skatteverket.se/privat/folkbokforing/narenanhorigdor/deklareradodsbo.4.3528414214b3f87580566e.html',
     triggers: [],
     digital: 'digital',
     notesPlaceholder: 'Deklaration inlämnad, revisor anlitad, datum…',
   },
 
   // ── CONDITIONAL: Fastighet ─────────────────
-  {
-    id: 'fastighet_boende',
-    title: 'Besluta om bostadens framtid',
-    desc: 'Ska bostaden säljas, övertas av anhörig, eller hyras ut? Ta detta beslut med alla delägare i boet. Bestämmer ni er för att sälja via mäklare sköter de sedan visning, budgivning och köpekontrakt åt er — det behöver ni inte ha koll på själva.',
-    urgency: 'week',
-    time: 'Diskussion med familjen',
-    link: null,
-    triggers: ['fastighet'],
-    notesPlaceholder: 'Beslut om bostaden, kontaktad mäklare eller arvinge…',
-  },
   {
     id: 'fastighet_forsaljningsadmin',
     title: 'Visning, budgivning och köpekontrakt',
@@ -699,12 +743,12 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
   {
     id: 'skulder_inventering',
     title: 'Inventera skulder noggrant',
-    desc: 'Samla en komplett bild av lån, krediter och obetalda räkningar. Skulder betalas av dödsboet innan arv utbetalas.<br><br><strong>Viktigt:</strong> Begravnings- och bouppteckningskostnader prioriteras före alla andra skulder. Om boet inte räcker till kontaktar du borgenärerna och begär anstånd tills bouppteckningen är klar. Du som anhörig är <em>inte</em> personligt betalningsansvarig för den avlidnes skulder.',
+    desc: 'Samla en komplett bild av lån, krediter och obetalda räkningar. Skulder betalas av dödsboet innan arv utbetalas.<br><br><strong>Viktigt:</strong> Begravnings- och bouppteckningskostnader prioriteras före alla andra skulder. Om boet inte räcker till kontaktar du borgenärerna och begär anstånd tills bouppteckningen är klar. Du som anhörig är <em>inte</em> personligt betalningsansvarig för den avlidnes skulder.<br><br>Lista varje skuld med borgenär och belopp under fliken Bouppteckning — samma lista används där boets nettovärde räknas ut.',
     urgency: 'week',
     time: 'ca 1–2 timmar',
     link: null,
     triggers: ['skulder'],
-    notesPlaceholder: 'Skulder listade, kontakter till borgenärer, belopp…',
+    notesPlaceholder: 'Övrigt att komma ihåg — t.ex. begärt anstånd, väntar svar från borgenär…',
   },
   {
     id: 'skulder_kronofogden',
@@ -757,7 +801,9 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     urgency: 'week',
     time: 'ca 30 min + jurist vid behov',
     link: null,
-    triggers: ['make'],
+    // Trigger på giftSambo (var den avlidne gift/sambo?) — inte bara 'make' (är DU
+    // maken/makan). En bouppteckning påverkas av äktenskapsförord oavsett vem som fyller i.
+    triggers: ['giftSambo', 'make'],
     resources: [
       { label: 'Skatteverket — äktenskapsregistret', url: 'https://www.skatteverket.se/privat/folkbokforing/aktenskapochpartnerskap/aktenskapsregistret.html' },
     ],
@@ -835,16 +881,6 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     triggers: ['make'],
     notesPlaceholder: 'Kontaktad Pensionsmyndigheten, ärendenummer, tjänstepensionsbolag…',
   },
-  {
-    id: 'make_bostadsratt',
-    title: 'Kontrollera bostadsrättens framtid',
-    desc: 'Om ni bodde i bostadsrätt ihop — kontakta bostadsrättsföreningen om hur överlåtelse eller fortsatt boende hanteras.',
-    urgency: 'week',
-    time: 'ca 30 min',
-    link: null,
-    triggers: ['make'],
-    notesPlaceholder: 'BRF kontaktad, beslut om boende eller överlåtelse…',
-  },
 
   // ── CONDITIONAL: Testamente ───────────────
   {
@@ -904,23 +940,6 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     desc: 'Rullstol, säng, lyft och andra medicintekniska produkter är ofta lån från regionen och ska återlämnas rengjorda. Större hjälpmedel hämtas ofta kostnadsfritt — ring regionen eller kommunen. Överblivna mediciner (tabletter, sprutor, krämer) lämnas till närmaste apotek för säker destruktion.',
     triggers: [],
     notesPlaceholder: 'Hjälpmedel återlämnade, mediciner till apoteket, datum…',
-  },
-
-  {
-    id: 'sorgstod',
-    title: 'Ta hand om dig själv',
-    desc: `Det praktiska tar tid och energi — men sorgen kräver sin egen plats.<br><br>
-Du behöver inte ha allt under kontroll. Det är normalt att känna sig utmattad, arg, lättad, tom eller allt på en gång.<br><br>
-<strong>Prata med någon:</strong><br>
-— <em>1177 Sorgelinjen</em>: Ring 1177 och be om att bli kopplad till sorgestöd.<br>
-— <em>SPES</em> (Suicidprevention och efterlevandestöd): spes.se, för dig som förlorat någon till självmord.<br>
-— <em>Kyrkans stöd</em>: Oavsett tro erbjuder Svenska kyrkan samtalsstöd — kontakta närmaste kyrka.<br><br>
-Det finns ingen tidsgräns för sorg, och du behöver inte vara klar.`,
-    urgency: 'later',
-    time: 'Din tid',
-    link: 'https://www.1177.se/liv-halsa/psykisk-halsa/sorg/',
-    triggers: [],
-    notesPlaceholder: 'Vad hjälper dig just nu? Är det någon du vill ringa?',
   },
 
   // ── ALWAYS: Bostadsavveckling ──────────────
@@ -1023,6 +1042,34 @@ function applyDeadlines() {
   track('deadline_dates_computed');
 }
 
+// Lagfart-fristen räknas separat, eftersom den utgår från datumet bouppteckningen
+// registrerades hos Skatteverket — inte dödsdatumet. Fylls i av användaren själv
+// på lagfart-uppgiften, när det datumet väl finns.
+const LAGFART_DEFAULT_TIME = 'ca 30 min online';
+
+function applyLagfartDeadline() {
+  const lagfart = state.tasks?.find(t => t.id === 'lagfart');
+  if (!lagfart) return;
+  if (!state.bouppRegDatum) { lagfart.time = LAGFART_DEFAULT_TIME; return; }
+  const reg = new Date(state.bouppRegDatum + 'T00:00:00');
+  if (isNaN(reg.getTime())) { lagfart.time = LAGFART_DEFAULT_TIME; return; }
+  const frist = addMonths(reg, 3);
+  lagfart.time = `Ansök senast ${formatDate(frist)}`;
+}
+
+function setBouppRegDatum(value) {
+  state.bouppRegDatum = value || '';
+  applyLagfartDeadline();
+  saveState();
+  const timeEl = document.querySelector('#task-card-lagfart .task-time');
+  const lagfart = state.tasks.find(t => t.id === 'lagfart');
+  if (timeEl && lagfart) {
+    const badge = timeEl.querySelector('.task-started-badge');
+    timeEl.textContent = lagfart.time;
+    if (badge) timeEl.appendChild(badge);
+  }
+}
+
 // ─── NOTES (cached) ──────────────────────────
 let _notesCache = null;
 
@@ -1048,6 +1095,45 @@ const saveTaskNote = _debounce(function(taskId, value) {
 
 function getTaskNote(taskId) {
   return _getNotes()[taskId] || '';
+}
+
+// ─── HIDE DONE TASKS (per sektion + global) ──
+const HIDE_DONE_SECTIONS = ['today', 'week', 'later'];
+
+function _getHideDone() {
+  try { return JSON.parse(localStorage.getItem('efterplan_hide_done') || '{}'); } catch(e) { return {}; }
+}
+function _saveHideDone(obj) {
+  try { localStorage.setItem('efterplan_hide_done', JSON.stringify(obj)); } catch(e) {}
+}
+
+function toggleHideDoneSection(section) {
+  const hd = _getHideDone();
+  hd[section] = !hd[section];
+  _saveHideDone(hd);
+  renderPlan();
+}
+
+function toggleHideDoneAll() {
+  const hd = _getHideDone();
+  // Om någon sektion just nu visar klara uppgifter, döljer vi allt. Annars visar vi allt igen.
+  const anyVisible = HIDE_DONE_SECTIONS.some(s => !hd[s]);
+  HIDE_DONE_SECTIONS.forEach(s => { hd[s] = anyVisible; });
+  _saveHideDone(hd);
+  renderPlan();
+}
+
+function updateHideDoneButtons() {
+  const hd = _getHideDone();
+  HIDE_DONE_SECTIONS.forEach(section => {
+    const btn = document.getElementById(`hide-done-${section}`);
+    if (btn) btn.textContent = hd[section] ? 'Visa klara igen' : 'Dölj klara';
+  });
+  const globalBtn = document.getElementById('hide-done-all');
+  if (globalBtn) {
+    const anyVisible = HIDE_DONE_SECTIONS.some(s => !hd[s]);
+    globalBtn.textContent = anyVisible ? 'Dölj alla klara uppgifter' : 'Visa alla klara uppgifter igen';
+  }
 }
 
 function saveTaskState() {
@@ -1115,9 +1201,10 @@ function renderPlan() {
   }
 
   const nextTaskId = firstTask?.id;
-  renderTaskList('tasks-today', today, nextTaskId, 0);
-  renderTaskList('tasks-week',  week,  nextTaskId, today.length);
-  renderTaskList('tasks-later', later, nextTaskId, today.length + week.length);
+  renderTaskList('tasks-today', today, nextTaskId, 0, 'today');
+  renderTaskList('tasks-week',  week,  nextTaskId, today.length, 'week');
+  renderTaskList('tasks-later', later, nextTaskId, today.length + week.length, 'later');
+  updateHideDoneButtons();
 
   // Show Skatteverket doc button only if deceased had a company (F-skatt relevant)
   const skvBtn = document.getElementById('doc-btn-skatteverket');
@@ -1153,9 +1240,10 @@ function handlePreviewCTA() {
   handlePaywallCTA();
 }
 
-function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
+function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0, sectionKey = null) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+  const sectionHideDone = sectionKey ? _getHideDone()[sectionKey] : false;
 
   tasks.forEach((task, i) => {
     const globalIdx = globalOffset + i;
@@ -1169,6 +1257,7 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
     const wrap = document.createElement('div');
     wrap.className = 'task-wrap';
     wrap.id = `task-wrap-${task.id}`;
+    if (task.done && sectionHideDone) wrap.classList.add('task-wrap--hidden-done');
 
     // T192 — digital/fysisk-indikator. Kopy utgår alltid från att det är den
     // EFTERLEVANDES eget BankID som används, aldrig den avlidnes (spärras vid dödsfall).
@@ -1210,6 +1299,16 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
       ? `<a class="task-expand-phone task-expand-phone--secondary" href="tel:${task.phone2.replace(/\s|-/g,'')}">Ring ${task.phone2}</a>`
       : '';
 
+    // Lagfart-fristen (3 mån) räknas från datumet bouppteckningen registrerades hos
+    // Skatteverket — inte dödsdatumet. Frivilligt fält, syns bara på lagfart-uppgiften.
+    const lagfartDateHtml = task.id === 'lagfart'
+      ? `<label class="task-date-field">
+           <span class="task-date-label">Datum då bouppteckningen registrerades hos Skatteverket</span>
+           <input type="date" class="task-date-input" id="bopp-reg-datum-input" value="${state.bouppRegDatum || ''}"
+             onclick="event.stopPropagation()" onchange="event.stopPropagation();setBouppRegDatum(this.value)">
+         </label>`
+      : '';
+
     const resourcesHtml = task.resources?.length
       ? `<div class="task-resources">${task.resources.map(r =>
           `<a class="task-resource-link" href="${r.url}" target="_blank" rel="noopener">${r.label} ↗</a>`
@@ -1225,6 +1324,8 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
 
     const notifyHtml = task.id === 'narmaste_anhörig' ? renderNotifyList() : '';
 
+    const docLocationHtml = task.id === 'viktiga_dokument' ? renderDocumentLocationList() : '';
+
     const docHtml = task.hasDoc && !task.done
       ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('docs');showDocForm('${task.hasDoc}')">Generera dokument →</button>`
       : '';
@@ -1234,6 +1335,12 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
     // där de faktiskt kan sparas. Kopplar ihop dem.
     const arkivLinkHtml = task.id === 'viktiga_dokument'
       ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('arkiv')">📷 Fota och spara dokumenten →</button>`
+      : '';
+
+    // "Inventera skulder noggrant" hade ett eget fritextfält som inte var kopplat
+    // till Bouppteckningens skuldlista, där nettovärdet faktiskt räknas ut. Länkar dit istället.
+    const boppLinkHtml = task.id === 'skulder_inventering'
+      ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('bopp')">📋 Lista skulder i Bouppteckning →</button>`
       : '';
 
     const doneHtml = task.done
@@ -1266,14 +1373,17 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0) {
         ${linkHtml}
         ${phoneHtml}
         ${phone2Html}
+        ${lagfartDateHtml}
         ${resourcesHtml}
         ${notifyHtml}
+        ${docLocationHtml}
         ${checklistHtml}
         ${notesHtml}
         <div class="task-expand-actions">
           ${doneHtml}
           ${docHtml}
           ${arkivLinkHtml}
+          ${boppLinkHtml}
         </div>
       </div>
     `;
@@ -1941,8 +2051,11 @@ function markTaskDone(taskId) {
   updateProgress();
   showUndoToast(taskId);
 
-  // Scroll to next uncompleted task
-  const next = state.tasks.find(t => !t.done);
+  // Scroll to the next uncompleted task AFTER the one just finished — not the first
+  // uncompleted task overall. Annars kan man t.ex. klara av uppgift 15 och bli
+  // skickad hela vägen upp till uppgift 2, vilket känns som att sidan hoppar till toppen.
+  const idx  = state.tasks.findIndex(t => t.id === taskId);
+  const next = state.tasks.slice(idx + 1).find(t => !t.done);
   if (next) {
     setTimeout(() => {
       const el = document.getElementById(`task-card-${next.id}`);
@@ -1952,16 +2065,27 @@ function markTaskDone(taskId) {
 }
 
 
-// ─── NOTIFY LIST ──────────────────────────────
-function _getNotifyList() {
-  try { return JSON.parse(localStorage.getItem('efterplan_notify_list') || '[]'); } catch(e) { return []; }
+// ─── SIMPLE LOCALSTORAGE LISTS (delas av underrätta-listan och dokumentplats-listan) ──
+function _getLSList(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
 }
-function _saveNotifyList(list) {
-  try { localStorage.setItem('efterplan_notify_list', JSON.stringify(list)); } catch(e) {}
+function _saveLSList(key, list) {
+  try { localStorage.setItem(key, JSON.stringify(list)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
 }
-function _genNotifyId() {
+function _genListId() {
   return Math.random().toString(36).slice(2, 10);
+}
+
+// ─── NOTIFY LIST ──────────────────────────────
+function _getNotifyList() {
+  return _getLSList('efterplan_notify_list');
+}
+function _saveNotifyList(list) {
+  _saveLSList('efterplan_notify_list', list);
+}
+function _genNotifyId() {
+  return _genListId();
 }
 
 function addNotifyPerson() {
@@ -2040,6 +2164,71 @@ function renderNotifyList() {
         onclick="event.stopPropagation()"
         onkeydown="if(event.key==='Enter'){event.stopPropagation();addNotifyPerson();}" />
       <button class="notify-add-btn" onclick="event.stopPropagation();addNotifyPerson()">Lägg till</button>
+    </div>
+  </div>`;
+}
+
+// ─── DOCUMENT LOCATION LIST (viktiga dokument) ─
+function _getDocLocations() {
+  return _getLSList('efterplan_document_locations');
+}
+function _saveDocLocations(list) {
+  _saveLSList('efterplan_document_locations', list);
+}
+function _genDocLocId() {
+  return _genListId();
+}
+
+function addDocLocation() {
+  const list = _getDocLocations();
+  list.push({ id: _genDocLocId(), doc: '', plats: '' });
+  _saveDocLocations(list);
+  _refreshDocLocationList();
+  const inputs = document.querySelectorAll('#doc-location-list-container .doc-location-input-doc');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function setDocLocationField(id, field, value) {
+  const list = _getDocLocations();
+  const row = list.find(r => r.id === id);
+  if (row) { row[field] = value; _saveDocLocations(list); }
+}
+
+function removeDocLocation(id) {
+  const list = _getDocLocations().filter(r => r.id !== id);
+  _saveDocLocations(list);
+  _refreshDocLocationList();
+}
+
+function _refreshDocLocationList() {
+  const container = document.getElementById('doc-location-list-container');
+  if (!container) return;
+  container.innerHTML = _buildDocLocationListInner();
+}
+
+function _buildDocLocationListInner() {
+  const list = _getDocLocations();
+  if (!list.length) return '<p class="notify-empty">Inga tillagda än</p>';
+  return list.map(r => `
+    <div class="doc-location-row">
+      <input class="bill-input doc-location-input-doc" type="text" placeholder="Dokument (t.ex. Testamente)" value="${_esc(r.doc)}"
+        onclick="event.stopPropagation()" oninput="setDocLocationField('${r.id}','doc',this.value)">
+      <input class="bill-input doc-location-input-plats" type="text" placeholder="Var det finns (t.ex. Bankfack Swedbank)" value="${_esc(r.plats)}"
+        onclick="event.stopPropagation()" oninput="setDocLocationField('${r.id}','plats',this.value)">
+      <button class="notify-remove" onclick="event.stopPropagation();removeDocLocation('${r.id}')" aria-label="Ta bort rad">×</button>
+    </div>`).join('');
+}
+
+function renderDocumentLocationList() {
+  return `<div class="notify-list-section">
+    <div class="notify-list-header">
+      <span class="notify-list-label">Dokument och var de finns</span>
+    </div>
+    <div class="doc-location-list-items" id="doc-location-list-container">
+      ${_buildDocLocationListInner()}
+    </div>
+    <div class="notify-add-row">
+      <button class="notify-add-btn" onclick="event.stopPropagation();addDocLocation()">+ Lägg till rad</button>
     </div>
   </div>`;
 }
@@ -2268,21 +2457,26 @@ function showDocForm(type) {
   }
   if (type === 'bulk') {
     initBulkForm();
+    // Prefill från både den ibockade checklistan (T199) och kvarvarande fritext för
+    // "övrigt" — annars matas inte det man bockat av vidare till uppsägningsbrevet.
+    const abonnemangTask = state.tasks.find(t => t.id === 'abonnemang');
+    const checked = (abonnemangTask?.checklist || [])
+      .filter(item => (state.taskChecklists?.abonnemang || {})[item.key])
+      .map(item => item.label);
     const abNotes = getTaskNote('abonnemang');
-    if (abNotes) {
-      const services = abNotes.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-      if (services.length > 0) {
-        document.getElementById('bulk-rows').innerHTML = '';
-        _bulkRowId = 0;
-        services.forEach(svc => {
-          addBulkRow();
-          const rows = document.querySelectorAll('#bulk-rows .bulk-row');
-          const lastRow = rows[rows.length - 1];
-          const input = lastRow?.querySelector('.bulk-name');
-          if (input) input.value = svc;
-        });
-        addBulkRow(); // one empty row at end
-      }
+    const fromNotes = abNotes ? abNotes.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
+    const services = [...checked, ...fromNotes];
+    if (services.length > 0) {
+      document.getElementById('bulk-rows').innerHTML = '';
+      _bulkRowId = 0;
+      services.forEach(svc => {
+        addBulkRow();
+        const rows = document.querySelectorAll('#bulk-rows .bulk-row');
+        const lastRow = rows[rows.length - 1];
+        const input = lastRow?.querySelector('.bulk-name');
+        if (input) input.value = svc;
+      });
+      addBulkRow(); // one empty row at end
     }
     const sEl = document.getElementById('bulk-sender');
     if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
@@ -2647,8 +2841,13 @@ function getShareableState() {
     hyresratt:  state.hyresratt,
     vardepapper: state.vardepapper,
     barn:       state.barn,
+    giftSambo:  state.giftSambo,
+    litetDodsbo: state.litetDodsbo,
+    bostadTyp:  state.bostadTyp,
+    maklare:    state.maklare,
     name:       state.name,
     deathDate:  state.deathDate,
+    bouppRegDatum: state.bouppRegDatum,
     // personnr intentionally excluded (privacy)
   };
 }
@@ -2880,6 +3079,7 @@ async function handlePaywallCTA() {
       Object.assign(state, JSON.parse(saved));
       buildTasks();
       applyDeadlines();
+      applyLagfartDeadline();
       loadTaskState();
       loadBills();
       loadDocuments();
@@ -2991,7 +3191,7 @@ function boppRowSkuld(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Banklån Swedbank)" value="${_esc(item.beskrivning)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Borgenär (skuld till, t.ex. Swedbank)" value="${_esc(item.beskrivning)}"
       oninput="boppData.skulder[${i}].beskrivning=this.value;boppSave()">
     <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.belopp||''}"
       oninput="boppData.skulder[${i}].belopp=this.value;boppSave();boppUpdateSummary()">
