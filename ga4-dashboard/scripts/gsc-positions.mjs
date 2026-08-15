@@ -15,7 +15,7 @@ const DAYS = 90;  // larger window → more stable position averages
 
 function buildAuth() {
   const scopes = ['https://www.googleapis.com/auth/webmasters.readonly'];
-  const json = process.env.GA4_SERVICE_ACCOUNT_JSON;
+  const json = process.env.GSC_SERVICE_ACCOUNT_JSON || process.env.GA4_SERVICE_ACCOUNT_JSON;
   if (json) {
     let creds;
     try { creds = JSON.parse(json); }
