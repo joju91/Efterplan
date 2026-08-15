@@ -21,3 +21,12 @@ Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kan
 | Råd & Rön | radron@radron.se | Skickat |
 | Svenska kyrkan (kyrkokansliet) | innovation@svenskakyrkan.se | Skickat |
 | sorg.se | — | Ej skickat, ingen publik mejladress hittad (bara telefon 08-33 50 40) |
+
+## Begravningsbyråer 2026-08-15
+
+| Mål | Kontakt | Status | Not |
+|---|---|---|---|
+| Fonus | — | Uteslutet | Har redan egen digital checklista (bekräftat) |
+| SBF (branschorg.) | Ulf.Lerneus@memento.se | Skickat | Presskontakt, hela medlemslistan nås via en relation |
+| Lavendla | lavendla.se kontaktformulär / 0771-22 21 21 | Manuell — text redo | Bara statisk PDF-checklista, ingen konkurrerande app. Ingen mejladress hittad. |
+| Memoria | — | Ej kontaktad | Kunde inte säkert identifiera rätt bolag/domän |
