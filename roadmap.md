@@ -693,6 +693,19 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 
 ---
 
+# 🚀 FAS 28 — TRAFIK FÖRE ALLT (Owner-beslut 2026-08-15)
+
+💡 `handoff.md` (2026-08-13) lämnade aktiveringsfrågan öppen: 16 sessioner → 0 `onboarding_start` behövde verifieras i GA4 Realtime innan mer trafik drevs in. **Owner bekräftade 2026-08-15 att GA4-kollen är gjord och att aktivering fungerar** — 0/16 var alltså inte ett spårningsfel. Marketing-planens paus ("aktivering före trafik", `marketing-plan-2026-08.md`) är därmed upphävd. Nytt explicit Owner-direktiv: **"det enda som räknas nu är trafik"** — allt arbete denna fas prioriterar besöksvolym, inte konvertering/paywall-städning (T237 kvarstår avsiktligt olöst).
+
+Samma session mergeade in två efterhängande grenar (`claude/analysera-aauv10`: Fas 27-sidorna T232–T235 ovan; `claude/efterplan-user-experience-zhqz2t`/PR #58: telefonmanus + twitter:card + arvskifte-utökning) och fixade en tyst trasig automation:
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T238 | `scripts/indexing/` saknade `package-lock.json` sen introduktionen (T217, 2026-08-14) — `npm ci` i `update-sitemap.yml` har failat på **alla** körningar sen dess (`gh run list` verifierat, ej gissat), så varken sitemap-uppdatering eller GSC-submission gått igenom trots att koden var korrekt designad. Lockfil genererad + committad (`dec2dca`), workflow går nu grönt förbi npm-steget. | 2026-08-15 | Fas 28 | Session (CI-loggverifiering) | 🔴 | Infra/SEO | ✔ |
+| T239 | GSC-submission failar fortfarande, men på ett annat, väntat fel: `User does not have sufficient permission for site 'https://efterplan.se/'` för service-accounten `ga4-reader@intricate-tempo-496015-a0.iam.gserviceaccount.com`. T213/T217 antog att kontot redan hade Search Console-åtkomst — aldrig faktiskt verifierat end-to-end pga T238-buggen. Kräver ett engångs-behörighetssteg av Owner i Search Console (lägg till kontot som Full-användare) — inte en upprepad SEO-uppgift. | 2026-08-15 | Fas 28 | Session (CI-loggverifiering) | 🟠 | Infra/SEO | ☐ |
+
+---
+
 ## 🚫 AVVISAT / EJ GJORT — 2026-08-14
 
 | Beslut | Motivering |
