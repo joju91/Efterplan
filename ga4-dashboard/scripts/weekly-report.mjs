@@ -18,8 +18,8 @@ const propertyId = process.env.GA4_PROPERTY_ID;
 
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 
-function buildAuth() {
-  const scopes = ['https://www.googleapis.com/auth/analytics.readonly'];
+function buildAuth(extraScopes = []) {
+  const scopes = ['https://www.googleapis.com/auth/analytics.readonly', ...extraScopes];
   const json = process.env.GA4_SERVICE_ACCOUNT_JSON;
   if (json) {
     let creds;
@@ -37,6 +37,26 @@ function buildAuth() {
     });
   }
   throw new Error('Missing GA4 credentials (set GA4_SERVICE_ACCOUNT_JSON or GOOGLE_APPLICATION_CREDENTIALS)');
+}
+
+async function fetchGscPositions() {
+  try {
+    const auth = buildAuth(['https://www.googleapis.com/auth/webmasters.readonly']);
+    const sc = google.searchconsole({ version: 'v1', auth });
+    const endDate   = today;
+    const startDate = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
+    const res = await sc.searchanalytics.query({
+      siteUrl: 'https://efterplan.se/',
+      requestBody: { startDate, endDate, dimensions: ['page'], rowLimit: 500 },
+    });
+    const rows = (res.data.rows || [])
+      .filter(r => r.position >= 11 && r.position <= 25)
+      .sort((a, b) => b.impressions - a.impressions)
+      .slice(0, 10);
+    return { rows, startDate, endDate };
+  } catch (err) {
+    return { error: err.message };
+  }
 }
 
 async function ga4(propertyId, body) {
@@ -136,7 +156,7 @@ function roadmapStatus() {
   };
 }
 
-function buildMarkdown({ kpis, uptime, git, audit, roadmap }) {
+function buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc }) {
   const md = [];
   md.push(`# Efterplan Veckorapport — ${today}`);
   md.push('');
@@ -171,6 +191,21 @@ function buildMarkdown({ kpis, uptime, git, audit, roadmap }) {
     kpis.channels.sort((a,b)=>b.sessions-a.sessions).forEach(c => md.push(`- ${c.name}: ${c.sessions}`));
   }
   md.push('');
+  md.push('## 🔍 GSC — Sidor på position 11–25 (90 dagar)');
+  md.push('');
+  if (gsc.error) {
+    md.push(`_GSC-anrop misslyckades: ${gsc.error}_`);
+  } else if (!gsc.rows?.length) {
+    md.push('_Inga sidor på position 11–25 hittades._');
+  } else {
+    md.push('| Pos | Klick | Visn | CTR | Sida |');
+    md.push('|-----|-------|------|-----|------|');
+    for (const r of gsc.rows) {
+      const url = r.keys[0].replace('https://efterplan.se/', '/');
+      md.push(`| ${r.position.toFixed(1)} | ${r.clicks} | ${r.impressions} | ${(r.ctr*100).toFixed(1)}% | \`${url}\` |`);
+    }
+  }
+  md.push('');
   md.push('## 🟢 Uptime');
   md.push('');
   md.push('| Path | Status | Tid |');
@@ -202,11 +237,11 @@ function buildMarkdown({ kpis, uptime, git, audit, roadmap }) {
 }
 
 (async () => {
-  const [kpis, uptime] = await Promise.all([fetchKpis(), checkUptime()]);
+  const [kpis, uptime, gsc] = await Promise.all([fetchKpis(), checkUptime(), fetchGscPositions()]);
   const git = gitActivity();
   const audit = npmAudit();
   const roadmap = roadmapStatus();
-  const md = buildMarkdown({ kpis, uptime, git, audit, roadmap });
+  const md = buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc });
   writeFileSync(outFile, md, 'utf8');
   console.log(`Veckorapport skriven: ${outFile}`);
 })().catch(err => { console.error('FAIL:', err); process.exit(1); });
