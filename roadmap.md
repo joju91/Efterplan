@@ -559,6 +559,28 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 
 ---
 
+# 📞 FAS 24 — TELEFONMANUS BREDVID BREVGENERATORN
+💡 Persona-simulering (2026-08-13) av en nybliven änka pekade på en lucka: dokumentgeneratorn producerar bara skrivna brev, men fler ringer banken/Försäkringskassan/försäkringsbolaget än mejlar dem — särskilt först, innan dödsfallsintyget ens finns. Ångesten "vad ska jag säga" gäller ett samtal, inte ett brev.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T195 | Telefonmanus i dokumentgeneratorn. Lägg till en andra flik ("Brev" / "Vad du kan säga i telefon") på de dokument där folk oftare ringer än skriver — bank, Försäkringskassan, försäkringsbolag, begravningsbyrå. Manuset: kort talspråklig öppningsreplik ("Hej, jag heter [namn]. Min [relation] [avliden] har gått bort, jag vill anmäla dödsfallet och spärra kontona…") + en checklista över vad man bör ha framme under samtalet (personnummer, eget kontonummer, ev. ärendenummer). Samma UI-mönster som befintlig brevgenerator (`app.js` doc-generator-funktionerna, `index.html` doc-result-vyn). | 2026-08-13 | Fas 24 | Persona-simulering session | 🟡 | Dev/Content | ☐ |
+
+---
+
+# 🔍 FAS 25 — NYA SEO-LANDNINGSSIDOR (SÖKORDSGAP)
+💡 Manuell gap-analys mot befintliga 32 innehållssidor 2026-08-13 — **ingen levande GA4/Search Console-data fanns tillgänglig i sessionen** (bara `.env.example`, ingen riktig nyckel), så detta är kvalitativ prioritering, inte volymdata. Verifiera mot faktisk Search Console-sökordsdata innan skrivarbete påbörjas. Tre kandidater identifierade där sökintentionen skiljer sig tydligt från befintliga sidor (ingen kannibalisering) — övriga närliggande termer (änkepension, arvsavstående, bolån vid dödsfall) finns redan omnämnda inline i befintliga sidor och behöver ingen egen URL. Samma sakfels-rigör som Fas 21 gäller — juridiskt innehåll ska källbeläggas innan publicering, inte genereras fritt.
+
+**Owner-beslut 2026-08-13: pausad, väntar på riktig sökdata.** T196–T198 skrivs inte förrän Search Console-datan finns. Vägen dit är redan dokumenterad i `NEXT_STEPS_FOR_JONAS.md` avsnitt 2 (Verifiera Search Console) — Owner exporterar Performance-CSV:n (28 dagar, per sida) och skickar den, sen kör vi om denna gap-analys mot riktiga siffror innan något av T196–T198 påbörjas.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T196 | Ny sida: **framtidsfullmakt**. Omnämns idag bara i en bisats i `fullmakt-dodsbo.html` (som handlar om fullmakt EFTER dödsfall — annan juridisk konstruktion). Framtidsfullmakt är ett proaktivt dokument en efterlevande ofta börjar fundera på åt sig själv strax efter att ha upplevt hur krångligt det blev utan fullmakter för den avlidne — naturlig "nu ordnar jag mitt eget" -vinkel för Efterplans målgrupp. Egen sökterm, egen intention. Kräver källbelagt juridiskt innehåll (lag om framtidsfullmakter 2017:310) innan publicering. | 2026-08-13 | Fas 25 | Manuell gap-analys | 🟡 | Content/SEO | ☐ |
+| T197 | Ny sida: **dödsbo eget företag / enskild firma**. Regelmotorn har redan en `foretag`-trigger och en färdig Skatteverket-avregistreringsuppgift med brevgenerator (`app.js`) — men ingen toppen-av-tratten-sida fångar upp sökintentionen förrän man redan är i appen. En landningssida skulle koppla en verklig sökterm direkt till en redan byggd funktion (bra konverteringsväg). | 2026-08-13 | Fas 25 | Manuell gap-analys | 🟡 | Content/SEO | ☐ |
+| T198 | Ny sida: **vad händer med den avlidnes tjänstepension**. Skiljer sig från `efterlevandepension.html`, som handlar om utbetalningar TILL efterlevande — den här sidan täcker den avlidnes egen intjänade pension och hur/om den betalas ut till dödsboet. Distinkt sökintention, ingen befintlig sida täcker den. | 2026-08-13 | Fas 25 | Manuell gap-analys | 🟢 | Content/SEO | ☐ |
+
+---
+
 ## 💡 MÖJLIGA EXPANSIONER — 2026-08-13 (ej prioriterade, ej påbörjade)
 
 💡 Resten av `research/Vad Efterplan bör täcka.md` som Owner valde att varken bygga eller kasta, utan bevaka — samma mönster som T137–T142. Inget av det löser ett lika akut, konkret problem som dödsboanmälan/bodelning gjorde.
