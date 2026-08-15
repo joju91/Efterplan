@@ -30,3 +30,13 @@ Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kan
 | SBF (branschorg.) | Ulf.Lerneus@memento.se | Skickat | Presskontakt, hela medlemslistan nås via en relation |
 | Lavendla | dennis.rydgren@lavendla.se (marknadschef) | Skickat | Bara statisk PDF-checklista, ingen konkurrerande app. Kontaktformuläret på sajten var bara för mötesbokning (Jonas rättade) — hittade marknadschefens mejl via press-sök istället. |
 | Memoria | — | Ej kontaktad | Kunde inte säkert identifiera rätt bolag/domän |
+
+## Outreach-batch 2 2026-08-15
+
+| Mål | Adress | Status | Not |
+|---|---|---|---|
+| Röda Korset (anhörigstöd) | info@redcross.se | Skickat | |
+| Tidningen Syre | tips@tidningensyre.se | Skickat | Oberoende lokaltidning |
+| Efterlevandeguiden | — | Uteslutet | Drivs av Pensionsmyndigheten/Skatteverket/Försäkringskassan — fel typ av mål |
+| Kommuners anhörigstöd | — | Uteslutet | Ingen central kontakt, utspritt per stadsdel/kommun — för lågt hävstång per ansträngning |
+| Fenix begravning | — | Uteslutet | Tungt digitaliserad byrå (10 Mkr finansiering), trolig konkurrensrisk, ej säkert avfärdad |
