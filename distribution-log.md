@@ -28,5 +28,5 @@ Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kan
 |---|---|---|---|
 | Fonus | — | Uteslutet | Har redan egen digital checklista (bekräftat) |
 | SBF (branschorg.) | Ulf.Lerneus@memento.se | Skickat | Presskontakt, hela medlemslistan nås via en relation |
-| Lavendla | lavendla.se kontaktformulär / 0771-22 21 21 | Manuell — text redo | Bara statisk PDF-checklista, ingen konkurrerande app. Ingen mejladress hittad. |
+| Lavendla | dennis.rydgren@lavendla.se (marknadschef) | Skickat | Bara statisk PDF-checklista, ingen konkurrerande app. Kontaktformuläret på sajten var bara för mötesbokning (Jonas rättade) — hittade marknadschefens mejl via press-sök istället. |
 | Memoria | — | Ej kontaktad | Kunde inte säkert identifiera rätt bolag/domän |
