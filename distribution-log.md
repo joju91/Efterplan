@@ -12,3 +12,12 @@ Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kan
 **Nästa steg:** Jonas postar de tre godkända (texter i `distribution-vecka-33.md`, skickad som fil 2026-08-15). Uppdatera denna logg med URL + engagemang när posterna är ute — flagga trådar med starkt engagemang för uppföljning nästa vecka.
 
 **Känt gap:** Fas 1-research (hitta specifika aktiva trådar att svara i) kunde inte köras — websökningen hade ingen tillförlitlig åtkomst till Reddit/Flashback-sökning. Alla tre poster är därför egna inlägg, inte trådsvar. Om Jonas vill trådsvar istället: leta upp 1–2 aktiva trådar manuellt och klistra in länkarna, så skrivs skräddarsydda svar.
+
+## Outreach-uppföljning 2026-08-15
+
+| Mål | Adress | Status |
+|---|---|---|
+| SPES | info@spes.se | Skickat |
+| Råd & Rön | radron@radron.se | Skickat |
+| Svenska kyrkan (kyrkokansliet) | innovation@svenskakyrkan.se | Skickat |
+| sorg.se | — | Ej skickat, ingen publik mejladress hittad (bara telefon 08-33 50 40) |
