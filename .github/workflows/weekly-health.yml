@@ -31,10 +31,10 @@ jobs:
             https://efterplan.se
             https://efterplan.se/checklista-dodsbo.html
             https://efterplan.se/bouppteckning-guide.html
-          # .lighthouserc.json plockas upp automatiskt (ci.assert.assertions) -
-          # budgetPath är ett annat, inkompatibelt config-schema (Lighthouse
-          # "budgets.json") och krockar ("Cannot use both budgets AND
-          # assertions") om den pekas på samma fil, se T225-sessionen.
+          # configPath, INTE budgetPath: budgetPath är Lighthouse "budgets.json"
+          # -formatet (ett annat, inkompatibelt schema) och utan någotdera
+          # hoppar actionen tyst över assert-steget helt, se T225-sessionen.
+          configPath: .lighthouserc.json
           uploadArtifacts: true
 
       - name: Open issue on failure
