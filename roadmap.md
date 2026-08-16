@@ -721,4 +721,4 @@ Samma session mergeade in två efterhängande grenar (`claude/analysera-aauv10`:
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T242 | body-parser DoS-sårbarhet (low) i ga4-dashboard — `body-parser 2.0.0–2.2.2` sårbar för DoS när ogiltigt `limit`-värde stänger av storleksbegränsning (GHSA-v422-hmwv-36x6). Åtgärda med `cd ga4-dashboard && npm audit fix`. Fil: ga4-dashboard/package.json. | 2026-08-16 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T242 | body-parser DoS-sårbarhet (low) i ga4-dashboard — `body-parser 2.0.0–2.2.2` sårbar för DoS när ogiltigt `limit`-värde stänger av storleksbegränsning (GHSA-v422-hmwv-36x6). Åtgärda med `cd ga4-dashboard && npm audit fix`. Fil: ga4-dashboard/package.json. | 2026-08-16 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
