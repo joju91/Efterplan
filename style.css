@@ -1583,6 +1583,43 @@ body {
   color: var(--text-soft);
   margin-bottom: 16px;
 }
+.doc-mode-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.doc-mode-tabs.hidden { display: none; }
+.doc-mode-tab {
+  background: none;
+  border: none;
+  padding: 10px 4px;
+  margin-right: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--transition);
+}
+.doc-mode-tab:hover { color: var(--text-primary); }
+.doc-mode-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.doc-phone-checklist {
+  background: var(--accent-light);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin: -6px 0 16px;
+  font-size: 0.85rem;
+}
+.doc-phone-checklist.hidden { display: none; }
+.doc-phone-checklist-title { font-weight: 600; margin-bottom: 6px; }
+.doc-phone-checklist ul { margin: 0; padding-left: 20px; }
+.doc-phone-checklist li { margin-bottom: 2px; }
 .result-actions { display: flex; gap: 10px; margin-bottom: 10px; }
 .copied-msg {
   font-size: 0.85rem;
