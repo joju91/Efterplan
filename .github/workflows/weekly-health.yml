@@ -18,7 +18,10 @@ jobs:
       - name: Broken link check
         uses: lycheeverse/lychee-action@v1
         with:
-          args: --verbose --no-progress './**/*.html'
+          args: >-
+            --verbose --no-progress
+            --exclude '^https://fonts\.(gstatic|googleapis)\.com/$'
+            './**/*.html'
           fail: true
 
       - name: Lighthouse CI
