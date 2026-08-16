@@ -116,7 +116,7 @@
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link rel="stylesheet" href="style-tokens.css?v=5" />
   <script type="application/ld+json">
   {
@@ -927,7 +927,15 @@
         <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
         <h2 class="plan-title" id="result-title" style="margin-bottom:6px">Klart!</h2>
         <p class="result-note">Läs igenom och justera om du vill — kopiera sedan och skicka.</p>
+        <div class="doc-mode-tabs hidden" id="doc-mode-tabs">
+          <button class="doc-mode-tab active" id="doc-mode-tab-brev" onclick="switchDocMode('brev')">✉ Brev</button>
+          <button class="doc-mode-tab" id="doc-mode-tab-telefon" onclick="switchDocMode('telefon')">📞 Vad du kan säga i telefon</button>
+        </div>
         <div class="doc-output" id="doc-output-text"></div>
+        <div class="doc-phone-checklist hidden" id="doc-phone-checklist">
+          <p class="doc-phone-checklist-title">Ha framme innan du ringer:</p>
+          <ul id="doc-phone-checklist-items"></ul>
+        </div>
         <div class="result-actions">
           <button class="btn-primary" style="max-width:200px" onclick="copyDocument()">Kopiera</button>
           <a id="result-mailto" class="btn-ghost" href="mailto:" style="max-width:200px; text-align:center;">Öppna i e-post ✉</a>
@@ -1098,7 +1106,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=23" defer></script>
+<script src="app.js?v=25" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

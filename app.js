@@ -2679,7 +2679,19 @@ Med vänliga hälsningar,
 
 ${sender}
 ${relation} till ${deceased}
-${email}`);
+${email}`, undefined, {
+    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort, och jag ringer för att anmäla dödsfallet.
+
+Kan ni spärra kontona som stod i hens namn, och kan jag få en förteckning över konton och tillgångar?
+
+Jag kan mejla eller posta dödsbeviset till er — vad vill ni ha det till, och behöver ni något mer av mig just nu?`,
+    checklist: [
+      'Den avlidnes personnummer',
+      'Ditt eget namn och personnummer',
+      'Eventuellt kundnummer hos banken',
+      'Din relation till den avlidne',
+    ],
+  });
 }
 
 function generateForsakring() {
@@ -2717,7 +2729,19 @@ Med vänliga hälsningar,
 
 ${sender}
 ${relation} till ${deceased}
-${email}`);
+${email}`, undefined, {
+    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort, och jag ringer för att anmäla dödsfallet och höra vilka försäkringar hen hade hos er.
+
+Kan ni kolla om det finns en livförsäkring eller begravningsförsäkring som ska betalas ut, och avsluta löpande försäkringar från och med dödsdatumet?
+
+Vad behöver ni av mig för att gå vidare — dödsbevis, försäkringsnummer, något annat?`,
+    checklist: [
+      'Den avlidnes personnummer',
+      'Eventuellt försäkringsnummer (om känt)',
+      'Ditt eget namn och kontaktuppgifter',
+      'Din relation till den avlidne',
+    ],
+  });
 }
 
 function generateAnnons() {
@@ -2746,12 +2770,18 @@ ${funLine}
 Sörjd och saknad.${ovrigtLine}`.trim());
 }
 
-function showDocResult(title, text, emailSubject) {
+// T195: telefonmanus bredvid brevet — bara satt för brevtyper där folk
+// oftare ringer än skriver (bank, försäkringsbolag). phoneScript är
+// { text, checklist: [...] } eller null/undefined för övriga brevtyper.
+let docPhoneScript = null;
+let docLetterText  = null;
+let docMode        = 'brev';
+
+function showDocResult(title, text, emailSubject, phoneScript) {
   track('doc_generated', { title: title.split(' — ')[0] });
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
   document.getElementById('doc-chooser').classList.add('hidden');
   document.getElementById('result-title').textContent = title;
-  document.getElementById('doc-output-text').textContent = text;
   document.getElementById('doc-result').classList.remove('hidden');
   document.getElementById('copied-msg').classList.add('hidden');
   const mailtoBtn = document.getElementById('result-mailto');
@@ -2759,6 +2789,29 @@ function showDocResult(title, text, emailSubject) {
     const subj = encodeURIComponent(emailSubject || title);
     const body = encodeURIComponent(text);
     mailtoBtn.href = `mailto:?subject=${subj}&body=${body}`;
+  }
+
+  docLetterText  = text;
+  docPhoneScript = phoneScript || null;
+  document.getElementById('doc-mode-tabs').classList.toggle('hidden', !docPhoneScript);
+  switchDocMode('brev');
+}
+
+function switchDocMode(mode) {
+  docMode = mode;
+  const isPhone = mode === 'telefon' && docPhoneScript;
+  document.getElementById('doc-mode-tab-brev').classList.toggle('active', !isPhone);
+  document.getElementById('doc-mode-tab-telefon').classList.toggle('active', isPhone);
+  document.getElementById('doc-output-text').textContent = isPhone ? docPhoneScript.text : docLetterText;
+
+  const checklistBox = document.getElementById('doc-phone-checklist');
+  if (isPhone && docPhoneScript.checklist && docPhoneScript.checklist.length) {
+    const list = document.getElementById('doc-phone-checklist-items');
+    list.innerHTML = docPhoneScript.checklist.map(item => `<li>${item}</li>`).join('');
+    checklistBox.classList.remove('hidden');
+    track('doc_phone_script_viewed', { title: document.getElementById('result-title').textContent.split(' — ')[0] });
+  } else {
+    checklistBox.classList.add('hidden');
   }
 }
 
