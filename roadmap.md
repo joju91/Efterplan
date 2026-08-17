@@ -722,3 +722,12 @@ Samma session mergeade in två efterhängande grenar (`claude/analysera-aauv10`:
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T242 | body-parser DoS-sårbarhet (low) i ga4-dashboard — `body-parser 2.0.0–2.2.2` sårbar för DoS när ogiltigt `limit`-värde stänger av storleksbegränsning (GHSA-v422-hmwv-36x6). Åtgärda med `cd ga4-dashboard && npm audit fix`. Fil: ga4-dashboard/package.json. | 2026-08-16 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-08-17
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T243 | Performance: Lighthouse CI mätte perf 0.76 (budget ≥0.80), LCP 3565ms (budget ≤2500ms), TBT 305ms (budget ≤300ms) — alla warn-nivå, över budget men fäller inte bygget. Observerades under T225-testkörning 2026-08-16. Utred och åtgärda: identifiera vilka resurser som orsakar LCP och TBT via Lighthouse-artefakt i Actions, optimera render-blockerande JS/CSS i `app.js`/`style.css`. Filer: `app.js`, `style.css`, `.lighthouserc.json`. | 2026-08-17 | Fas 12 | Veckorapport | 🟠 | Dev/Perf | ☐ |
+| T244 | Security headers saknas i `vercel.json`: X-Frame-Options, X-Content-Type-Options, Referrer-Policy och HSTS (`Strict-Transport-Security`) är inte satta för `efterplan.se`. Minsta åtgärd: lägg till ett global `headers`-block i `vercel.json` med `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`. HSTS sätts automatiskt av Vercel men bör verifieras. Fil: `vercel.json`. | 2026-08-17 | Fas 12 | Veckorapport | 🟡 | Dev/Sec | ☐ |
