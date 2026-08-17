@@ -11,6 +11,7 @@ cowork-veckorapport-*.md
 # Claude Code lokala session-filer (kan innehålla secrets i klartext)
 .claude/handoff.md
 .claude/handoff*.md
+.claude/hooks/.last-postcompact-input.json
 .claude/weekly-report.log
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
