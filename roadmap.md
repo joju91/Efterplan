@@ -660,3 +660,41 @@ Fullständigt underlag: `research/dodsbo-audit-2026.md`, `research/Lagändringsa
 |---|---|
 | LinkedIn-profil städas till bara Efterplan | Ingen tillgänglig verktygsväg kunde faktiskt redigera profilen (Gmail-sök saknades, computer-use ger bara läsläge i webbläsare, ny inloggning i webbläsarpanelen krävdes aldrig). Owner avbröt ("skit i det") innan en väg hittades. Ohanterat — kan tas upp igen om Owner vill logga in i webbläsarpanelen direkt. |
 | Bygga automatiserat LinkedIn-kontohanteringsverktyg | Avböjt — LinkedIn förbjuder skriptad kontoåtkomst i sina villkor, risk för avstängning. Erbjöd manuella alternativ istället. |
+
+---
+
+# 📝 FAS 27 — FÖRSKOTTS-FORMULÄR + EXTERN ANALYS (2026-08-21)
+
+💡 Owner klistrade in en spec för en ny funktion ("förskotts-formulär", en levande
+användare fyller i sin egen efterplan i förväg) plus en extern konkurrensanalys av
+efterplan.se. Fullständigt underlag: `research/dodsbo-marknadsanalys-2026-08-21.md`.
+Kategori-inventering + datamodell/UI-förslag för förskotts-formuläret:
+`research/forskotts-formular-forslag.md`.
+
+**Redan täckt av tidigare research — ingen ny ticket:**
+- BankID-signering av uppsägningar/fullmakter → matchar T149 (Fas 14), redan
+  utrett och avvisat tills bolaget är registrerat (T003/T004 fortfarande ☐).
+- Direktkoppling mot myndigheter (Skatteverkets dödsfallsintyg-API) → T150 (Fas 14):
+  inget offentligt API finns, Efterplan kvalificerar inte för den begränsade
+  e-tjänsten. Inget att bygga.
+- Automatisk bevakning/skanning av bankkonto eller post för dolda avtal → T151
+  (Fas 14): juridiskt problem (samtycke kan inte inhämtas från en avliden
+  kontohavare) väger tyngre än priset. Inget att bygga utan ny juridisk grund.
+- Jordbruksverkets chipregister för katt → redan länkat i `husdjur_omplacering`-
+  uppgiften (hundregistret) och nämnt i `husdjur-efter-dodsfall.html`.
+- Automatisk beräkning av tidsfrister från dödsdatum → finns redan
+  (`applyDeadlines()`, T202 för lagfart specifikt).
+- AI-dokumentkategorisering → finns redan (T145, Arkiv-fliken).
+
+**Flaggat, inte byggt — kräver ett Owner-beslut som river upp ett tidigare beslut:**
+- "Flexiblare ansvarsfördelning" (tilldela uppgifter till en specifik person +
+  påminnelser) är i praktiken samma funktion som skrotades i T124 (2026-05-30,
+  ~1090 rader borttagna: assignee/participants-system, delnings-API) och som T141
+  uttryckligen säger ska **inte** byggas om utan ett nytt uttryckligt beslut. Se T235.
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T232 | Förskotts-formulär: bygg `min-efterplan.html` enligt datamodell/UI-flöde i `research/forskotts-formular-forslag.md` — 16 kategorier speglade från TASK_LIBRARY plus ny kategori "Begravningsönskemål", inga obligatoriska fält, inga kontonummer/lösenord i klartext, ingen betalspärr, ingen auto-trigger vid dödsfall, dela via utskrift/PDF/kopiera-text (ingen delad länk — se T124/T141). **Väntar Owner-godkännande av datamodell/UI-flöde innan bygge påbörjas.** | 2026-08-21 | Fas 27 | Owner-spec | 🟠 | Design/Dev | ☐ |
+| T233 | Content: nya/utökade guider för fysisk tömning av bostad — hur man hittar värderingsmän, mäklare och ideella organisationer (t.ex. Myrorna, Stadsmissionen) som hämtar bohag. Egen sida eller ny sektion i `dodsbo-bostadsratt.html`/`tomma-dodsbo.html`, samma mall som befintliga guider. | 2026-08-21 | Fas 27 | Extern analys | 🟢 | Content | ☐ |
+| T234 | Enkel utläggsspårare för löpande dödsbokostnader (t.ex. kattmat, BRF-avgift) — dödsbodelägare loggar egna utlägg lokalt, summering + export (samma PDF/text-export som T232) för manuell avräkning vid arvskifte. Lokal lagring per användare, ingen realtidsdelning mellan syskon (samma princip som T124/T141 — se T235 för varför). | 2026-08-21 | Fas 27 | Extern analys | 🟡 | Design/Dev | ☐ |
+| T235 | **Beslutspunkt, inte byggticket:** ska T124 (delningsfunktion, borttagen 2026-05-30) rivas upp för att tillåta uppgiftstilldelning per dödsbodelägare + påminnelser via e-post/SMS? Kräver Owner-beslut om (a) om det ska byggas alls, (b) om det får lagras på server (T124 togs bort delvis för att slippa central lagring av känslig data) eller måste lösas peer-to-peer/krypterat. Ingen kod skrivs förrän beslutet finns. | 2026-08-21 | Fas 27 | Extern analys | 🟢 | Decision | ☐ |
