@@ -208,15 +208,42 @@ print("Report generated.")
 
 ---
 
-## GitHub Secrets som behöver sättas
+## Nyckelhantering — ett ställe, inte tre
 
-Gå till: `github.com/joju91/efterplan → Settings → Secrets → Actions`
+Nycklar (Stripe, Supabase, Anthropic, GA4/GSC service accounts) behöver
+finnas i tre olika verktyg: Vercel env vars, GitHub Actions secrets, och
+lokal `.env.local`. Manuell klistring i tre UI:er varje gång en nyckel
+läggs till eller roteras är slöseri — gör det en gång i stället:
+
+```
+node scripts/sync-secrets.mjs --init      # första gången, skapar mallen
+# fyll i nycklarna i ~/.config/efterplan/secrets.env
+node scripts/sync-secrets.mjs             # synkar allt: Vercel + GitHub + .env.local
+```
+
+Källan till sanning är `~/.config/efterplan/secrets.env` — utanför repot,
+aldrig committad, samma mapp som `ga4-service-account.json` redan låg i
+(T209). Skriptet kräver att `vercel` och `gh` CLI redan är inloggade
+lokalt (`vercel link` / `gh auth login`) — det autentiserar inget själv,
+bara skickar vidare det som redan står i filen. Se
+`scripts/sync-secrets.mjs` för vilka nycklar som går till vilket mål —
+lägg till en rad i `TARGETS`-objektet där när en ny integration behöver
+en secret.
+
+`--dry-run` visar vad som skulle hända utan att ändra något.
+`--only=NYCKEL1,NYCKEL2` synkar bara valda nycklar (t.ex. efter en
+rotation av en enda nyckel).
+
+GitHub Actions secrets som skriptet håller synkade (`Settings → Secrets →
+Actions`):
 
 | Secret | Värde |
 |---|---|
-| `GA4_PROPERTY_ID` | Ditt GA4 property-ID (siffror) |
-| `GA4_SERVICE_ACCOUNT_JSON` | Innehållet i service account JSON-filen |
-| `ANTHROPIC_API_KEY` | Din Anthropic API-nyckel |
+| `GA4_PROPERTY_ID` | GA4 property-ID (siffror) |
+| `GA4_SERVICE_ACCOUNT_JSON` | Innehållet i GA4 service account JSON-filen |
+| `GSC_SERVICE_ACCOUNT_JSON` | Innehållet i Search Console service account JSON-filen |
+| `SUPABASE_SECRET_KEY` | Samma nyckel som Vercel använder (supabase-keepalive.yml) |
+| `ANTHROPIC_API_KEY` | Anthropic API-nyckel |
 
 ---
 
