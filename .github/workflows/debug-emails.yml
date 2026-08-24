@@ -1,0 +1,18 @@
+name: Debug SA Emails (temp)
+on: workflow_dispatch
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print client_email fields (not secret values)
+        env:
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+        run: |
+          node -e "
+            const a = JSON.parse(process.env.GA4_SERVICE_ACCOUNT_JSON || '{}');
+            const b = JSON.parse(process.env.GSC_SERVICE_ACCOUNT_JSON || '{}');
+            console.log('GA4_SERVICE_ACCOUNT_JSON client_email:', a.client_email);
+            console.log('GSC_SERVICE_ACCOUNT_JSON client_email:', b.client_email);
+            console.log('SAME ACCOUNT:', a.client_email === b.client_email);
+          "
