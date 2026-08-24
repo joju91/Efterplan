@@ -47,13 +47,18 @@ själva dashboarden — ingen leverantör tillåter det via API, av säkerhetssk
 
 > **⚠️ Google-rotation — vanligaste felkällan (se T239/T246 i roadmap.md):**
 > Klicka **aldrig** "Create service account" när du roterar Google-nyckeln.
-> Klicka in på det **befintliga** kontot `ga4-reader@intricate-tempo-496015-a0.iam.gserviceaccount.com`
-> → fliken **Keys** → **Add key** → **Create new key** → JSON. Ett nytt konto
-> får en ny e-postadress, och Search Console-behörigheten (som är knuten till
-> just den e-postadressen) måste då läggas till manuellt igen på
-> https://search.google.com/search-console/users?resource_id=sc-domain:efterplan.se
-> — vilket är precis det som gått fel flera gånger tidigare. Samma e-post
-> hela tiden = det här problemet uppstår aldrig igen.
+> Klicka in på det **befintliga** kontot `efterplan@efterplan.iam.gserviceaccount.com`
+> (projekt `efterplan` — verifierat direkt ur secret-innehållet 2026-08-24,
+> se kommentar i `scripts/keys/config.mjs`) → fliken **Keys** → **Add key**
+> → **Create new key** → JSON. Ett nytt konto får en ny e-postadress, och
+> Search Console-behörigheten (som är knuten till just den e-postadressen)
+> måste då läggas till manuellt igen på **rätt egendom** — Search Console
+> skiljer på domän-egendomen (`sc-domain:efterplan.se`) och URL-prefix-
+> egendomen (`https://efterplan.se/`) som separata behörighetslistor;
+> koden i `gsc-positions.mjs`/`weekly-report.mjs` frågar specifikt mot
+> URL-prefix-egendomen, så lägg till kontot där:
+> https://search.google.com/search-console/users?resource_id=https://efterplan.se/
+> Samma e-post + rätt egendom = det här problemet uppstår aldrig igen.
 > `npm run keys:rotate -- google` och `npm run keys:open -- google` skriver
 > nu ut den här varningen automatiskt.
 

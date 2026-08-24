@@ -41,19 +41,22 @@ export const SERVICES = {
   },
   google: {
     label: 'Google (GA4 / Search Console service account)',
-    dashboardUrl: 'https://console.cloud.google.com/iam-admin/serviceaccounts?project=intricate-tempo-496015-a0',
+    dashboardUrl: 'https://console.cloud.google.com/iam-admin/serviceaccounts?project=efterplan',
     vars: [],
     githubSecrets: ['GA4_SERVICE_ACCOUNT_JSON', 'GSC_SERVICE_ACCOUNT_JSON', 'GA4_PROPERTY_ID'],
-    // Känt konto som redan är tillagt som Full-användare i Search Console
-    // (tillagt manuellt av Owner, senast bekräftat 2026-08-24). Om ett nytt
-    // konto med annan e-post någonsin skapas måste det läggas till i Search
-    // Console på nytt — därför: ÅTERANVÄND alltid detta konto vid rotation.
-    knownAccountEmail: 'ga4-reader@intricate-tempo-496015-a0.iam.gserviceaccount.com',
+    // Verifierat direkt ur secret-innehållet 2026-08-24 (ett engångs debug-
+    // workflow-steg skrev ut BARA client_email, aldrig private_key, sen
+    // borttaget). client_email i BÅDA GA4_SERVICE_ACCOUNT_JSON och
+    // GSC_SERVICE_ACCOUNT_JSON är samma konto — men i projektet "efterplan",
+    // INTE "intricate-tempo-496015-a0" som en tidigare (nu inaktuell) rotation
+    // använde. Om detta ändras igen: kör ett liknande engångs-debug-steg för
+    // att verifiera ur secreten själv, gissa aldrig på gammal dokumentation.
+    knownAccountEmail: 'efterplan@efterplan.iam.gserviceaccount.com',
     warning:
       '⚠️  VIKTIGT: klicka INTE "CREATE SERVICE ACCOUNT" (skapar nytt konto med ny\n' +
       '   e-post → tappar Search Console-behörighet, se T239/T246 i roadmap.md).\n' +
-      '   Klicka istället in på det BEFINTLIGA kontot "ga4-reader@..." i listan\n' +
-      '   → fliken "KEYS" → "ADD KEY" → "Create new key" → JSON.\n' +
+      '   Klicka istället in på det BEFINTLIGA kontot "efterplan@efterplan.iam..."\n' +
+      '   i listan → fliken "KEYS" → "ADD KEY" → "Create new key" → JSON.\n' +
       '   Samma e-post hela tiden = Search Console-behörigheten består för alltid.',
   },
 };
