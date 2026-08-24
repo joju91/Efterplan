@@ -2,6 +2,9 @@ name: GSC Positions
 
 on:
   workflow_dispatch:
+  schedule:
+    # Måndag 06:00 UTC — före veckorapporten (07:00 UTC) så positionsdata är färsk
+    - cron: '0 6 * * 1'
 
 jobs:
   fetch:
