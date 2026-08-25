@@ -710,13 +710,23 @@
             <span class="doc-type-title">Fullmakt</span>
             <span class="doc-type-sub">Ge en person rätt att företräda dödsboet</span>
           </button>
+          <button class="doc-type-btn hidden" id="doc-btn-hyresvard" onclick="showDocForm('hyresvard')">
+            <span class="doc-icon" aria-hidden="true">🏠</span>
+            <span class="doc-type-title">Till hyresvärden</span>
+            <span class="doc-type-sub">Säg upp hyresrätten</span>
+          </button>
+          <button class="doc-type-btn hidden" id="doc-btn-pension" onclick="showDocForm('pension')">
+            <span class="doc-icon" aria-hidden="true">💰</span>
+            <span class="doc-type-title">Till Pensionsmyndigheten</span>
+            <span class="doc-type-sub">Ansök om efterlevandepension</span>
+          </button>
         </div>
 
         <!-- Paywall card — dold tills PAYWALL_ENABLED = true i app.js -->
         <div id="paywall-card" class="paywall-card hidden">
           <div class="paywall-lock" aria-hidden="true">🔒</div>
           <h2 class="paywall-title">Lås upp alla dokument</h2>
-          <p class="paywall-desc">Lås upp alla brevmallar: till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons.</p>
+          <p class="paywall-desc">Lås upp alla brevmallar: till banken, försäkringsbolaget, hyresvärden, Pensionsmyndigheten, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons.</p>
           <button class="btn-primary paywall-cta" onclick="handlePaywallCTA()">Lås upp — 49 kr</button>
           <p class="paywall-note">Engångsbetalning. Inga prenumerationer.</p>
         </div>
@@ -898,6 +908,56 @@
         </div>
         <p class="form-error hidden" id="err-fullmakt" role="alert"></p>
         <button class="btn-primary" style="max-width:260px" onclick="generateFullmakt()">Skapa fullmakt</button>
+      </div>
+
+      <!-- Form: Hyresvärd (visas om hyresratt = true) -->
+      <div id="doc-form-hyresvard" class="doc-form hidden">
+        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <h2 class="plan-title" style="margin-bottom:6px">Brev till hyresvärden</h2>
+        <p class="plan-sub" style="margin-bottom:28px">Säg upp dödsboets hyresrätt. Vi skriver brevet — du kopierar och skickar.</p>
+        <div class="form-group">
+          <label for="hyresvard-namn">Hyresvärd / bostadsbolag <span class="required">*</span></label>
+          <input type="text" id="hyresvard-namn" class="text-input" placeholder="t.ex. Svenska Bostäder, Stena Fastigheter" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-adress">Lägenhetens adress <span class="required">*</span></label>
+          <input type="text" id="hyresvard-adress" class="text-input" placeholder="Gata, nummer, postnummer och ort" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="hyresvard-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-relation">Din relation till den avlidne <span class="required">*</span></label>
+          <input type="text" id="hyresvard-relation" class="text-input" placeholder="t.ex. Make, Dotter, Son" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="hyresvard-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-hyresvard" role="alert"></p>
+        <button class="btn-primary" style="max-width:240px" onclick="generateHyresvard()">Skapa brev</button>
+      </div>
+
+      <!-- Form: Pensionsmyndigheten (visas om relation = partner) -->
+      <div id="doc-form-pension" class="doc-form hidden">
+        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <h2 class="plan-title" style="margin-bottom:6px">Brev till Pensionsmyndigheten</h2>
+        <p class="plan-sub" style="margin-bottom:28px">Ansök om efterlevandepension/omställningspension. Vi skriver brevet — du kopierar och skickar, eller använder det som stöd när du ansöker digitalt.</p>
+        <div class="form-group">
+          <label for="pension-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="pension-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="pension-personnr">Ditt personnummer <span class="required">*</span></label>
+          <input type="text" id="pension-personnr" class="text-input" placeholder="ÅÅÅÅMMDD-XXXX" />
+        </div>
+        <div class="form-group">
+          <label for="pension-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="pension-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-pension" role="alert"></p>
+        <button class="btn-primary" style="max-width:260px" onclick="generatePension()">Skapa brev</button>
       </div>
 
       <!-- Form: Skatteverket (visas endast om foretag = true) -->

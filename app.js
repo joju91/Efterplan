@@ -35,7 +35,7 @@ function applyPremiumState() {
   document.body.classList.toggle('is-premium', premium);
   const card = document.getElementById('paywall-card');
   if (card) card.classList.toggle('hidden', !PAYWALL_ENABLED || premium);
-  ['doc-btn-skatteverket', 'doc-btn-fullmakt'].forEach(id => {
+  ['doc-btn-skatteverket', 'doc-btn-fullmakt', 'doc-btn-hyresvard', 'doc-btn-pension'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('hidden', PAYWALL_ENABLED && !premium);
   });
@@ -1211,6 +1211,16 @@ function renderPlan() {
   if (skvBtn) skvBtn.classList.toggle('hidden', !state.foretag);
   const fullmaktBtn = document.getElementById('doc-btn-fullmakt');
   if (fullmaktBtn) fullmaktBtn.classList.toggle('hidden', state.ansvar !== 'flera');
+
+  // T139: visa "Till hyresvärden" bara om dödsboet har en hyresrätt att säga upp
+  const hyresvardBtn = document.getElementById('doc-btn-hyresvard');
+  if (hyresvardBtn) hyresvardBtn.classList.toggle('hidden', !state.hyresratt);
+
+  // T140: visa "Till Pensionsmyndigheten" bara för efterlevande make/maka
+  // (samma trigger — state.relation === 'make' — som omstallningspension/
+  // make_pension-uppgifterna, se buildTasks())
+  const pensionBtn = document.getElementById('doc-btn-pension');
+  if (pensionBtn) pensionBtn.classList.toggle('hidden', state.relation !== 'make');
 
   document.getElementById('count-today').textContent = `${today.length} uppgifter`;
   document.getElementById('count-week').textContent  = `${week.length} uppgifter`;
@@ -2423,7 +2433,14 @@ function formatSenderAddressBlock() {
   return lines.length ? '\n' + lines.join('\n') : '';
 }
 function getRelationLabel() {
-  const map = { partner: 'Make/Maka', foralder: 'Barn', syskon: 'Syskon', barn: 'Förälder', annan: '' };
+  // Nycklarna är den avlidnes relation till användaren (state.relation, satt i
+  // onboarding steg 1 — se index.html data-val="make"/"forälder"/"barn"/"syskon"/
+  // "annan"). Värdena är då avsändarens relation till den avlidne, alltså
+  // omvänt: gick föräldern bort är avsändaren "Barn", gick barnet bort är
+  // avsändaren "Förälder". Buggfix: nycklarna matchade tidigare inte de
+  // faktiska värdena ('partner' fanns aldrig, 'foralder' saknade å) så
+  // relation-fältet i alla brev föll alltid tillbaka på tomt.
+  const map = { make: 'Make/Maka', forälder: 'Barn', syskon: 'Syskon', barn: 'Förälder', annan: '' };
   return map[state.relation] || '';
 }
 
@@ -2473,6 +2490,25 @@ function showDocForm(type) {
     const sEl = document.getElementById('letter-sender');
     if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
     const eEl = document.getElementById('letter-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+  }
+  if (type === 'hyresvard') {
+    const sEl = document.getElementById('hyresvard-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('hyresvard-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+    const rEl = document.getElementById('hyresvard-relation');
+    if (rEl && !rEl.value && relation) rEl.value = relation;
+    const aEl = document.getElementById('hyresvard-adress');
+    if (aEl && !aEl.value && sender.address) {
+      const zipCity = [sender.zip, sender.city].filter(Boolean).join(' ');
+      aEl.value = zipCity ? `${sender.address}, ${zipCity}` : sender.address;
+    }
+  }
+  if (type === 'pension') {
+    const sEl = document.getElementById('pension-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('pension-email');
     if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
   }
   if (type === 'bulk') {
@@ -2873,6 +2909,99 @@ ${grantors}
 Dödsbodelägare                    Datum och ort`);
 }
 
+
+function generateHyresvard() {
+  const varden   = document.getElementById('hyresvard-namn').value.trim();
+  const adress   = document.getElementById('hyresvard-adress').value.trim();
+  const sender   = document.getElementById('hyresvard-sender').value.trim();
+  const relation = document.getElementById('hyresvard-relation').value.trim();
+  const email    = document.getElementById('hyresvard-email').value.trim();
+  clearFormError('err-hyresvard');
+  if (!varden || !adress || !sender || !relation || !email) { showFormError('err-hyresvard', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+
+  showDocResult('Brev till ' + varden, `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+Till: ${varden}
+Ärende: Uppsägning av hyresrätt på grund av dödsfall
+Lägenhetens adress: ${adress}
+
+Hej,
+
+Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gått bort. Jag är ${relation} och företräder dödsboet.
+
+Jag säger härmed upp hyresavtalet för lägenheten på ${adress} med omedelbar verkan, i enlighet med de särskilda uppsägningsregler som gäller dödsbo (normalt en månads uppsägningstid räknat från dödsfallet, oavsett kvarvarande bindningstid).
+
+Jag ber er bekräfta uppsägningen skriftligen samt meddela när lägenheten senast ska vara tömd och besiktigad, samt hur eventuell deposition återbetalas.
+
+Dödsbevis bifogas. Kontakta mig för ytterligare dokumentation.
+
+Med vänliga hälsningar,
+
+${sender}
+${relation} till ${deceased}
+${email}`, undefined, {
+    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort och som hyrde lägenheten på ${adress}.
+
+Jag ringer för att säga upp hyresavtalet för dödsboets räkning. Dödsbo har normalt en månads uppsägningstid från dödsfallet — kan ni bekräfta det, och berätta vad som gäller för besiktning, nycklar och återbetalning av deposition?
+
+Jag kan mejla eller posta dödsbeviset till er — vad behöver ni av mig?`,
+    checklist: [
+      'Lägenhetens fullständiga adress',
+      'Den avlidnes personnummer',
+      'Datum för dödsfallet',
+      'Eget namn, personnummer och relation till den avlidne',
+    ],
+  });
+}
+
+function generatePension() {
+  const sender    = document.getElementById('pension-sender').value.trim();
+  const personnr2 = document.getElementById('pension-personnr').value.trim();
+  const email     = document.getElementById('pension-email').value.trim();
+  clearFormError('err-pension');
+  if (!sender || !personnr2 || !email) { showFormError('err-pension', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+
+  showDocResult('Pensionsmyndigheten — Efterlevandepension', `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+Till: Pensionsmyndigheten
+Ärende: Ansökan om efterlevandepension/omställningspension
+
+Hej,
+
+Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}), min make/maka, har gått bort.
+
+Jag ansöker härmed om den efterlevandepension (omställningspension) jag kan ha rätt till, samt ber om information om barnpension/efterlevandestöd om det finns barn i hushållet. Mina egna uppgifter: ${sender}, personnummer ${personnr2}.
+
+Vänligen meddela vilka handlingar ni behöver utöver dödsfallsintyget för att handlägga ansökan, samt om ansökan även kan/bör göras digitalt via Mina sidor.
+
+Med vänliga hälsningar,
+
+${sender}
+Make/maka till ${deceased}
+${email}`, 'Ansökan om efterlevandepension', {
+    text: `Hej, jag heter ${sender}. Min make/maka ${deceased} har gått bort, och jag ringer för att ansöka om efterlevandepension (omställningspension).
+
+Mitt personnummer är ${personnr2}. Vad behöver ni av mig för att handlägga ansökan, och kan jag göra den digitalt via Mina sidor istället?`,
+    checklist: [
+      'Den avlidnes personnummer',
+      'Eget personnummer',
+      'Om ni bodde ihop och sedan när',
+      'Om det finns barn i hushållet (barnpension)',
+    ],
+  });
+}
 
 function printBulkLetters() {
   const letters = [];
