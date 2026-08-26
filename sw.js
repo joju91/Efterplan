@@ -1,5 +1,5 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v16';
+const CACHE = 'efterplan-v17';
 const ASSETS = [
   './',
   './index.html',
@@ -21,6 +21,11 @@ const ASSETS = [
   './efterlevandepension.html',
   './testamente-guide.html',
   './dodsbo-bostadsratt.html',
+  // T223: self-hostade fonter (ersätter fonts.googleapis.com/fonts.gstatic.com)
+  './fonts/fraunces-normal-latin.woff2',
+  './fonts/fraunces-italic-latin.woff2',
+  './fonts/ibm-plex-sans-normal-latin.woff2',
+  './fonts/ibm-plex-sans-italic-400-latin.woff2',
 ];
 
 self.addEventListener('install', e => {
@@ -40,24 +45,10 @@ self.addEventListener('activate', e => {
 });
 
 // Cache-first: serve from cache, fall back to network
-// Google Fonts: cacha vid första hämtning (annars funkar inte appen offline)
+// T223: fonter är self-hostade (samma origin) sedan Google Fonts togs bort,
+// så de täcks redan av den generiska cache-first-hanteringen nedan.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  const url = e.request.url;
-  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
-    e.respondWith(
-      caches.open(CACHE).then(cache =>
-        cache.match(e.request).then(cached => {
-          if (cached) return cached;
-          return fetch(e.request).then(resp => {
-            cache.put(e.request, resp.clone());
-            return resp;
-          }).catch(() => cached);
-        })
-      )
-    );
-    return;
-  }
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
