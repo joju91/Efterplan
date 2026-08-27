@@ -772,6 +772,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: null,
     triggers: ['utland'],
     resources: [
+      { label: 'Efterplan — guide till internationellt arv', url: './internationellt-arv.html' },
       { label: 'Advokatsamfundet — hitta specialist i internationell arvsrätt', url: 'https://www.advokatsamfundet.se/hitta-advokat' },
       { label: 'UD — konsulär hjälp vid dödsfall utomlands', url: 'https://www.swedenabroad.se/sv/om-utlandet-for-svenska-medborgare/konsulart-bistand/' },
     ],
@@ -805,6 +806,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     // maken/makan). En bouppteckning påverkas av äktenskapsförord oavsett vem som fyller i.
     triggers: ['giftSambo', 'make'],
     resources: [
+      { label: 'Efterplan — guide till äktenskapsförord', url: './aktenskapsforord.html' },
       { label: 'Skatteverket — äktenskapsregistret', url: 'https://www.skatteverket.se/privat/folkbokforing/aktenskapochpartnerskap/aktenskapsregistret.html' },
     ],
     notesPlaceholder: 'Hittat äktenskapsförord? Var? Innehåll och konsekvenser…',
