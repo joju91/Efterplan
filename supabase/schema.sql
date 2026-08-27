@@ -450,3 +450,112 @@ create index if not exists reminder_optins_email_idx on public.reminder_optins(l
 
 alter table public.reminder_optins enable row level security;
 -- Ingen anon/authenticated policy — bara service-rollen (api/subscribe-reminder.js) skriver.
+
+-- ───────────────────────────────────────────────
+-- T147 — Supabase Storage-synk för Arkiv-dokument.
+-- Fotona i state.documents (base64) fanns tidigare bara i localStorage,
+-- aldrig på servern. Metadata går i denna tabell, den binära bilden i en
+-- privat Storage-bucket ('documents') — inte som text genom state_json,
+-- som skulle bli extremt ineffektivt för base64-blobbar.
+-- ───────────────────────────────────────────────
+
+create table if not exists public.documents (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid not null references public.users(id) on delete cascade,
+  client_id    text not null, -- matchar det lokala Date.now()-genererade id:t i state.documents
+  name         text not null default '',
+  category     text not null default 'Övrigt',
+  doc_date     text,          -- formaterat visningsdatum från klienten (formatDate()), inte en riktig date-kolumn
+  flag         text,
+  image_hash   text,
+  storage_path text,          -- sökväg i 'documents'-bucketen, t.ex. "{user_id}/{client_id}.jpg"
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+create unique index if not exists documents_user_client_key
+  on public.documents(user_id, client_id);
+
+create index if not exists documents_user_id_idx on public.documents(user_id);
+
+create or replace function public.bump_documents_updated_at()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+drop trigger if exists documents_bump_updated_at on public.documents;
+create trigger documents_bump_updated_at
+  before update on public.documents
+  for each row execute function public.bump_documents_updated_at();
+
+alter table public.documents enable row level security;
+
+drop policy if exists documents_select_own on public.documents;
+create policy documents_select_own on public.documents
+  for select to authenticated
+  using (user_id = auth.uid());
+
+drop policy if exists documents_insert_own on public.documents;
+create policy documents_insert_own on public.documents
+  for insert to authenticated
+  with check (user_id = auth.uid());
+
+drop policy if exists documents_update_own on public.documents;
+create policy documents_update_own on public.documents
+  for update to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+drop policy if exists documents_delete_own on public.documents;
+create policy documents_delete_own on public.documents
+  for delete to authenticated
+  using (user_id = auth.uid());
+
+-- Storage: privat bucket för dokumentfotona (base64 → binär blob).
+-- Inte public — RLS-policies nedan begränsar till ägarens egen mapp
+-- ({user_id}/...), signerade URL:er används för nedladdning.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('documents', 'documents', false, 5242880, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do nothing;
+
+drop policy if exists documents_storage_select_own on storage.objects;
+create policy documents_storage_select_own on storage.objects
+  for select to authenticated
+  using (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists documents_storage_insert_own on storage.objects;
+create policy documents_storage_insert_own on storage.objects
+  for insert to authenticated
+  with check (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists documents_storage_update_own on storage.objects;
+create policy documents_storage_update_own on storage.objects
+  for update to authenticated
+  using (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  )
+  with check (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists documents_storage_delete_own on storage.objects;
+create policy documents_storage_delete_own on storage.objects
+  for delete to authenticated
+  using (
+    bucket_id = 'documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );

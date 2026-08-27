@@ -25,6 +25,8 @@ const SUPABASE_CONFIG = {
   let initPromise = null;
   let currentUser = null;
   let syncTimer = null;
+  let documentsSyncTimer = null;
+  const uploadedDocIds = new Set(); // T147: undvik att ladda upp samma foto flera gånger per session
 
   function isConfigured() {
     return !!(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey);
@@ -53,7 +55,10 @@ const SUPABASE_CONFIG = {
       return client.auth.getUser().then(({ data }) => {
         currentUser = data && data.user ? data.user : null;
         fireAuthChanged();
-        if (currentUser) hydrateFromRemoteIfNewer();
+        if (currentUser) {
+          hydrateFromRemoteIfNewer();
+          hydrateDocumentsFromRemote();
+        }
       }).then(() => client);
     });
     return initPromise;
@@ -69,6 +74,7 @@ const SUPABASE_CONFIG = {
     currentUser = session && session.user ? session.user : null;
     if (event === 'SIGNED_IN') {
       await hydrateFromRemoteIfNewer();
+      await hydrateDocumentsFromRemote();
     }
     // SIGNED_OUT: do NOT touch localStorage (keeps offline data intact).
     fireAuthChanged();
@@ -204,6 +210,122 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
+  // ── T147: Arkiv-dokument-synk (Storage + documents-tabell) ──────
+  // localStorage (state.documents, med base64-foton) förblir source-of-truth
+  // för icke-inloggade/offline, exakt som planen redan fungerar. Inloggade
+  // användare får dessutom en synk hit: fotot laddas upp som binär blob till
+  // Storage-bucketen 'documents', bara metadata + sökväg går i Postgres.
+  function dataUrlToBlob(dataUrl) {
+    const [header, base64] = dataUrl.split(',');
+    const mimeMatch = /data:([^;]+);base64/.exec(header || '');
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const bin = atob(base64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: mime });
+  }
+
+  async function uploadDocumentPhoto(clientId, dataUrl) {
+    const path = `${currentUser.id}/${clientId}.jpg`;
+    const blob = dataUrlToBlob(dataUrl);
+    const { error } = await client.storage.from('documents')
+      .upload(path, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+    if (error) { console.warn('[efterplan] uploadDocumentPhoto', error); return null; }
+    return path;
+  }
+
+  function syncDocumentsToSupabase(documents) {
+    if (documentsSyncTimer) clearTimeout(documentsSyncTimer);
+    documentsSyncTimer = setTimeout(async () => {
+      documentsSyncTimer = null;
+      if (!client || !currentUser || !Array.isArray(documents)) return;
+      for (const doc of documents) {
+        if (!doc || !doc.id) continue;
+        let storagePath = doc._storagePath || null;
+        // Bara ladda upp binärdatan en gång per session/foto — base64:an ändras
+        // aldrig efter att dokumentet skapats, bara metadata (namn, flagga) gör.
+        if (doc.photo && typeof doc.photo === 'string' && doc.photo.startsWith('data:') && !uploadedDocIds.has(doc.id)) {
+          const uploaded = await uploadDocumentPhoto(doc.id, doc.photo);
+          if (uploaded) { storagePath = uploaded; uploadedDocIds.add(doc.id); }
+        }
+        const { error } = await client.from('documents').upsert({
+          user_id: currentUser.id,
+          client_id: doc.id,
+          name: doc.name || '',
+          category: doc.category || 'Övrigt',
+          doc_date: doc.date || null,
+          flag: doc.flag || null,
+          image_hash: doc.imageHash || null,
+          storage_path: storagePath,
+        }, { onConflict: 'user_id,client_id' });
+        if (error) console.warn('[efterplan] syncDocumentsToSupabase', error);
+      }
+    }, 2000);
+  }
+
+  // T147: explicit borttagning (inte en diff mot hela listan — en diff hade
+  // kunnat råka radera dokument som bara ännu inte hunnit hydreras ner på en
+  // ny enhet, om en synk triggas innan hydrateDocumentsFromRemote() är klar).
+  // deleteDocument() i app.js skickar det här eventet direkt vid borttagning.
+  async function deleteRemoteDocument(clientId) {
+    if (!client || !currentUser || !clientId) return;
+    const { data: row } = await client
+      .from('documents')
+      .select('storage_path')
+      .eq('user_id', currentUser.id)
+      .eq('client_id', clientId)
+      .maybeSingle();
+    if (row && row.storage_path) {
+      const { error: rmErr } = await client.storage.from('documents').remove([row.storage_path]);
+      if (rmErr) console.warn('[efterplan] deleteRemoteDocument storage', rmErr);
+    }
+    const { error: delErr } = await client.from('documents')
+      .delete()
+      .eq('user_id', currentUser.id)
+      .eq('client_id', clientId);
+    if (delErr) console.warn('[efterplan] deleteRemoteDocument', delErr);
+    uploadedDocIds.delete(clientId);
+  }
+
+  async function hydrateDocumentsFromRemote() {
+    if (!client || !currentUser) return;
+    const { data, error } = await client
+      .from('documents')
+      .select('client_id, name, category, doc_date, flag, image_hash, storage_path')
+      .eq('user_id', currentUser.id);
+    if (error) { console.warn('[efterplan] hydrateDocumentsFromRemote', error); return; }
+    if (!data || !data.length) return;
+
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem('efterplan_documents') || '[]') || []; } catch (_) { local = []; }
+    const localIds = new Set(local.map(d => d.id));
+    const missing = data.filter(row => !localIds.has(row.client_id));
+    if (!missing.length) return;
+
+    const added = [];
+    for (const row of missing) {
+      let photo = null;
+      if (row.storage_path) {
+        const { data: signed } = await client.storage.from('documents')
+          .createSignedUrl(row.storage_path, 60 * 60 * 24); // 24h — tillräckligt för en session, förnyas vid nästa inloggning
+        photo = signed ? signed.signedUrl : null;
+      }
+      added.push({
+        id: row.client_id,
+        name: row.name || '',
+        category: row.category || 'Övrigt',
+        date: row.doc_date || '',
+        flag: row.flag || null,
+        photo,
+        imageHash: row.image_hash || null,
+        _storagePath: row.storage_path || null, // undviker onödig re-upload av redan synkade foton
+      });
+    }
+    if (!added.length) return;
+    localStorage.setItem('efterplan_documents', JSON.stringify([...local, ...added]));
+    window.dispatchEvent(new CustomEvent('efterplan:documents-hydrated', { detail: added }));
+  }
+
   // ── T177: zero-knowledge delning ────────────────
   // Servern lagrar bara krypterad text (AES-GCM). Nyckeln finns aldrig i en
   // request till Supabase — den stannar i URL-fragmentet (#k=...), som
@@ -278,9 +400,15 @@ const SUPABASE_CONFIG = {
     createSharedLink,
     resolveSharedLink,
     subscribeReminder,
+    syncDocumentsToSupabase,
+    deleteRemoteDocument,
   };
 
   window.addEventListener('efterplan:state-changed', syncToSupabase);
+  // T147: egen event, inte state-changed — dokumentfoton ska INTE gå genom
+  // plans.state_json (för stora/oeffektivt), de synkas separat mot Storage.
+  window.addEventListener('efterplan:documents-changed', (e) => syncDocumentsToSupabase(e.detail));
+  window.addEventListener('efterplan:document-deleted', (e) => deleteRemoteDocument(e.detail));
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => { initSupabase(); });
