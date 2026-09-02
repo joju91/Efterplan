@@ -103,7 +103,7 @@
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=9" />
   <link rel="stylesheet" href="style-tokens.css?v=6" />
   <script type="application/ld+json">
   {
@@ -146,6 +146,7 @@
         <li>Du kan stänga och komma tillbaka senare</li>
       </ul>
       <button class="btn-primary btn-large" onclick="startOnboarding()">Börja här</button>
+      <button class="btn-ghost landing-continue" id="landing-continue" hidden onclick="resumePlan()">Fortsätt din plan →</button>
       <p class="landing-note">Gratis. Det du fyller i finns kvar — även om du stänger sidan.</p>
       <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> checklista, plan, PDF, bouppteckningsöversikt. <strong>49 kr engångsbetalning:</strong> alla färdigskrivna brev — till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons, med mera.</p>
     </div>
@@ -588,7 +589,7 @@
           <div class="section-header">
             <span class="section-dot dot-yellow" id="dot-week"></span>
             <h2 class="section-title">Denna vecka</h2>
-            <span class="section-coming-tag">Fler steg visas här</span>
+            <span class="section-coming-tag">Fylls på efterhand</span>
             <span class="section-count" id="count-week"></span>
             <span class="section-done-badge hidden" id="badge-week">✓ Klar</span>
             <button class="section-hide-done-btn" id="hide-done-week" onclick="toggleHideDoneSection('week')">Dölj klara</button>
@@ -600,7 +601,7 @@
           <div class="section-header">
             <span class="section-dot dot-grey" id="dot-later"></span>
             <h2 class="section-title">Senare</h2>
-            <span class="section-coming-tag">Fler steg visas här</span>
+            <span class="section-coming-tag">Fylls på efterhand</span>
             <span class="section-count" id="count-later"></span>
             <span class="section-done-badge hidden" id="badge-later">✓ Klar</span>
             <button class="section-hide-done-btn" id="hide-done-later" onclick="toggleHideDoneSection('later')">Dölj klara</button>
@@ -1093,7 +1094,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=28" defer></script>
+<script src="app.js?v=29" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

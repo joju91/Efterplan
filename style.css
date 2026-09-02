@@ -223,6 +223,14 @@ body {
   border-radius: 8px;
 }
 
+/* Sekundär väg för återvändande besökare med sparad plan.
+   #id för att vinna över .btn-ghost { width: 100% } längre ned. */
+#landing-continue.landing-continue {
+  width: auto;
+  margin-top: var(--space-sm);
+  border-color: var(--rule-strong);
+}
+
 @keyframes ctaPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(44, 74, 110, 0.35); }
   50%       { box-shadow: 0 0 0 12px rgba(44, 74, 110, 0); }
