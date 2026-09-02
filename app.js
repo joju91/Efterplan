@@ -1179,7 +1179,7 @@ function loadTaskState() {
 function renderPlan() {
   const name = state.name;
   document.getElementById('plan-title').textContent =
-    name ? `${name}s efterplan` : 'Din efterplan';
+    name ? `Efter ${name}` : 'Din plan';
   document.getElementById('plan-sub').textContent =
     'Uppdateras allteftersom du går vidare. Det finns inget fel sätt att börja.';
 
@@ -3113,7 +3113,7 @@ async function tryRenderSharedView() {
   }
   try {
     const data = await window.efterplanAuth.resolveSharedLink(sharedId, key);
-    titleEl.textContent = data.name ? `${data.name}s plan` : 'Delad plan';
+    titleEl.textContent = data.name ? `Plan efter ${data.name}` : 'Delad plan';
     const groups = { today: [], week: [], later: [] };
     (data.tasks || []).forEach(t => { (groups[t.urgency] || groups.later).push(t); });
     const labels = { today: 'Gör idag', week: 'Denna vecka', later: 'Senare' };
