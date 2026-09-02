@@ -81,14 +81,43 @@ Byggt på riktig Search Console-data (90 dagar, hämtad 2026-08-15): snittpositi
 - **Schemaläggning:** Ingen begränsning inledningsvis — samla data först, optimera sen
 
 ## Konverteringsspårning (gör detta innan launch)
-Ni har redan events i `app.js` via `gtag()` — `onboarding_start`, `free_tool_letter_generated`, `free_tool_to_app_click` m.fl. Koppla dessa som konverteringar i Google Ads:
 
-1. I Google Ads: **Verktyg → Konverteringar → Google Analytics (GA4)**
-2. Länka GA4-egendomen (samma property som `GA4_PROPERTY_ID`) om den inte redan är länkad
-3. Importera `onboarding_start` som primär konvertering (visar faktiskt intresse, inte bara ett besök)
-4. Importera `free_tool_letter_generated` som sekundär konvertering för landningssidorna utan konto (arvskifte-mall, gratis-checklista-abonnemang)
+> **OBS (uppdaterad 2026-09-02, PR #85):** Google Analytics (gtag/GA4) är
+> **borttaget** från hela sajten — bara Plausible (cookielöst) körs nu.
+> Den gamla vägen "importera från GA4" fungerar **inte längre**. Se
+> roadmap **T254** för hela beslutet. Kortversion:
+>
+> **Alternativ A — Plausible-only (ingen Google-kod):** UTM-tagga varje
+> annons (`utm_source=google&utm_medium=cpc&utm_term={keyword}`), aktivera
+> Plausible-goals (roadmap **T252**: `onboarding_start`, `plan_completed`,
+> `free_tool_letter_generated`), och läs goal-konvertering filtrerad på
+> `utm_source=google` / per landningssida. Google Ads ser inga
+> konverteringar → ingen Smart Bidding, du optimerar manuellt på
+> CPC/CTR + Söktermsrapporten.
+>
+> **Alternativ B (rekommenderat om budget > någon tusenlapp/mån):** lägg
+> tillbaka **enbart** Google Ads konverteringstagg (`gtag.js` med ett
+> `AW-xxxxx`-ID, inte GA4:s `G-xxxxx`). Fyr en konvertering på
+> `plan_completed` (mjuk) och en på Stripe-tacksidan (49 kr, hård, med
+> värde). Då får du konverteringar + kostnad/konv. **per sökord** direkt
+> i Ads-tabellen och kan köra Smart Bidding.
 
-Utan detta ser du bara klick och CPC — inte om trafiken faktiskt gör något på sidan.
+**Utvärdering per sökord (gäller båda alternativen):**
+- Tighta annonsgrupper (1–3 sökord/grupp) mot **rätt landningssida** (inte
+  startsidan) — annonsgrupperna ovan är redan byggda så.
+- Dela sökorden i två hinkar och utvärdera olika:
+  - **Informationssökning** ("vad gör man när någon dör", "bouppteckning tid")
+    — hög volym, låg köpintention, konkurrerar med er egen organiska
+    ranking. Mät kostnad per `onboarding_start` / `plan_completed`. Ofta
+    bortkastat att betala för trafik ni redan får gratis.
+  - **Transaktionsnära** ("arvskifte mall", "uppsägningsbrev abonnemang
+    dödsfall", "fullmakt dödsbo mall") — närmast 49 kr-brevet. Mät
+    kostnad per Stripe-betalning (CAC).
+- **Söktermsrapporten** (Ads → Sökord → Söktermer) varje vecka: lägg till
+  irrelevanta söktermer som negativa sökord.
+- Utan alternativ B ger Plausibles **per-sida goal-konvertering** en bra
+  proxy för annonsgruppens effektivitet (eftersom varje grupp pekar på
+  en egen sida).
 
 ## Efter 2 veckors testperiod
 - Pausa annonsgrupper med CPC > 10 kr eller 0 konverteringar
