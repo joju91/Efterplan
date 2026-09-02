@@ -13,7 +13,8 @@ Plan: `.claude/plans/planera-f-r-k-rning-av-curried-map.md`
 | 5 | harden | Sonnet 5 | 98929e0 | ~$4 | `05-harden.md` — H2 (bopp aria-labels), L1 (esc numeriska), M6 (landmarks); H2/L1 mest falsklarm |
 | 6 | clarify | Sonnet 5 | a433ea1 | ~$3 | `06-clarify.md` — steg 4-etikett, frivilligt-formuleringar, 5 felmeddelanden; P5/döda länkar mest falsklarm |
 | 7 | typeset | Sonnet 5 | d32d83b | ~$3 | `07-typeset.md` — ob/plan-rubriker in i Fraunces-systemet, near-dup-storlekar konsoliderade |
-| 8 | arrange | Sonnet 5 | _pågår_ | ~$4 | `08-arrange.md` — howto avkortat, footer-träffytor 17→39px, Arkiv-emoji bort; P1 vidare |
+| 8 | arrange | Sonnet 5 | 2f6113b | ~$4 | `08-arrange.md` — howto avkortat, footer-träffytor 17→39px, Arkiv-emoji bort; P1 vidare |
+| 9 | optimize | Sonnet 5 | _pågår_ | ~$5 | `09-optimize.md` — GA→Plausible (41 sidor), progress-bars→transform; M4 icke-problem |
 
 ## Steg 0 — teach-impeccable
 
