@@ -168,7 +168,7 @@ body {
   line-height: 1.2;
 }
 .logo-tagline {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 400;
   letter-spacing: 0;
@@ -473,7 +473,7 @@ body {
 .landing-contact-link:hover { text-decoration: underline; }
 /* Fix #16: ta bort !important — mer specifik selektor räcker */
 .landing-section .legal-disclaimer {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   background: var(--grey-bg);
   border-radius: var(--radius-sm);
@@ -535,7 +535,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 6px 14px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--accent);
 }
@@ -703,7 +703,7 @@ body {
 }
 
 .ob-reassure {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   margin-top: 6px;
   margin-bottom: 28px;
@@ -714,12 +714,15 @@ body {
 }
 
 .ob-title {
-  font-size: clamp(1.7rem, 4vw, 2.4rem);
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 60, 'SOFT' 40, 'wght' 460;
+  font-size: var(--fs-2xl);
+  font-weight: 460;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
   margin-bottom: 10px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .ob-hint {
@@ -1038,10 +1041,15 @@ body {
 }
 .plan-header { margin-bottom: 40px; }
 .plan-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 48, 'SOFT' 40, 'wght' 460;
+  font-size: var(--fs-xl);
+  font-weight: 460;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  text-wrap: balance;
   margin-bottom: 8px;
+  color: var(--ink);
 }
 .plan-sub {
   font-size: 1rem;
@@ -1164,7 +1172,7 @@ body {
 .task-title { font-size: 0.97rem; font-weight: 600; margin-bottom: 3px; }
 .task-desc { font-size: 0.85rem; color: var(--text-soft); line-height: 1.4; }
 .task-time {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   margin-top: 6px;
   font-weight: 500;
@@ -1327,7 +1335,7 @@ body {
 .doc-bulk-icon { font-size: 1.4rem; flex-shrink: 0; }
 .doc-bulk-text { flex: 1; }
 .doc-bulk-title { display: block; font-size: 1rem; font-weight: 700; }
-.doc-bulk-sub { display: block; font-size: 0.82rem; opacity: 0.8; margin-top: 2px; }
+.doc-bulk-sub { display: block; font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
 .doc-bulk-arrow { font-size: 1.2rem; flex-shrink: 0; opacity: 0.7; }
 
 .bulk-row {
@@ -1387,7 +1395,7 @@ body {
 .bulk-letter-name { font-weight: 700; font-size: 0.95rem; color: var(--accent); }
 .bulk-letter .doc-output { border: none; border-radius: 0; background: var(--bg-card); }
 .bulk-letter .copied-msg { margin: 0 16px 12px; }
-.btn-sm { padding: 8px 14px !important; font-size: 0.82rem !important; }
+.btn-sm { padding: 8px 14px !important; font-size: 0.85rem !important; }
 
 
 /* ─── MODALS ─────────────────────────────────── */
@@ -1467,7 +1475,7 @@ body {
   align-items: center;
 }
 .doc-type-title { font-size: 0.97rem; font-weight: 600; }
-.doc-type-sub { font-size: 0.83rem; color: var(--text-soft); }
+.doc-type-sub { font-size: 0.85rem; color: var(--text-soft); }
 
 /* ─── FORM ERROR ─────────────────────────────── */
 .form-error {
@@ -1732,7 +1740,7 @@ body {
 }
 .task-started-badge {
   display: inline-block;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--accent);
   background: var(--bg-card);
@@ -1842,7 +1850,7 @@ body {
 }
 .notify-new-input:focus { outline: none; border-color: var(--accent); }
 .notify-add-btn {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   padding: 5px 12px;
   border-radius: var(--radius-sm);
@@ -1885,7 +1893,7 @@ body {
   color: var(--paper);
   text-align: center;
   padding: 9px 20px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   z-index: 9999;
@@ -1942,7 +1950,7 @@ body {
 }
 .task-resource-link {
   display: inline-block;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-soft);
   text-decoration: none;
   font-weight: 500;
@@ -2491,7 +2499,7 @@ body {
 .arkiv-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 16px; }
 .arkiv-filter-btn {
   padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 20px;
-  background: var(--bg-card); color: var(--text-soft); font-size: 0.82rem; font-weight: 500;
+  background: var(--bg-card); color: var(--text-soft); font-size: 0.85rem; font-weight: 500;
   cursor: pointer; transition: var(--transition); font-family: var(--font);
 }
 .arkiv-filter-btn:hover { border-color: var(--accent); }
@@ -2512,7 +2520,7 @@ body {
 .arkiv-item--dup { border-color: var(--yellow); }
 .arkiv-name { font-size: 0.92rem; font-weight: 600; background: none; border: none; padding: 0; font-family: var(--font); color: var(--text-primary); width: 100%; }
 .arkiv-name:focus { border-bottom: 1.5px solid var(--accent); }
-.arkiv-meta { font-size: 0.78rem; color: var(--text-muted); }
+.arkiv-meta { font-size: 0.8rem; color: var(--text-muted); }
 .arkiv-flags { display: flex; gap: 4px; margin-top: 4px; }
 .arkiv-flag-btn {
   font-size: 0.72rem; padding: 3px 9px; border-radius: 20px; border: 1.5px solid var(--border);
@@ -2537,7 +2545,7 @@ body {
 .arkiv-delete { background: none; border: none; color: var(--text-soft); font-size: 1.2rem; cursor: pointer; min-width: 36px; min-height: 36px; flex-shrink: 0; }
 .arkiv-delete:hover { color: var(--red); }
 .arkiv-empty { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 16px 0; }
-.arkiv-privacy-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }
+.arkiv-privacy-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }
 .bill-form-actions { display: flex; gap: 8px; }
 
 /* ═══ PDF PRINT BUTTON (T050) ════════════════ */
@@ -2547,7 +2555,7 @@ body {
   gap: 6px;
   margin-top: 12px;
   padding: 7px 14px;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--accent);
   background: transparent;
@@ -2562,7 +2570,7 @@ body {
 /* ═══ FREE PREVIEW (T030) ════════════════════ */
 .section--coming .task-list { opacity: 0.55; }
 .section-coming-tag {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-muted);
@@ -2621,7 +2629,7 @@ body {
 
 /* Article meta (date stamp) */
 .seo-article .article-meta {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--ink-muted);
   margin-top: -0.5rem;
   margin-bottom: 0.25rem;
@@ -2924,7 +2932,7 @@ body {
   margin: 0;
 }
 .bopp-section-hint {
-  font-size: 0.83rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   margin: 0 0 12px;
   line-height: 1.5;
@@ -2962,7 +2970,7 @@ body {
 }
 .bopp-remove:hover { background: var(--red-bg); color: var(--red); }
 .bopp-empty {
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   font-style: italic;
   margin: 0;
