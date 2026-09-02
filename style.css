@@ -2973,3 +2973,39 @@ body {
   .bopp-input-amount { width: 100%; }
   .bopp-select { width: 100%; }
 }
+
+/* T137: arvsfördelning — sub-checkboxar (avstarArv/samboegendom) och statusar */
+.bopp-row--delbagare,
+.bopp-row--tillgang { flex-wrap: wrap; }
+.bopp-check-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-basis: 100%;
+  font-size: 0.83rem;
+  color: var(--text-soft);
+  cursor: pointer;
+  margin-top: 2px;
+}
+.bopp-status-chip {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.bopp-laglott-note {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.bopp-warn {
+  color: var(--yellow);
+  font-size: 0.85rem;
+  padding: 10px 14px;
+  background: var(--yellow-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(122, 74, 15, 0.2);
+  margin: 10px 0;
+  line-height: 1.5;
+}
+.bopp-warn a { color: inherit; text-decoration: underline; }
+.bopp-summary--arvsfordelning:empty { display: none; }

@@ -381,12 +381,19 @@
             </span>
           </label>
           <label class="ob-check">
-            <input type="checkbox" data-key="giftSambo" onchange="updateCheckboxState(this.dataset.key)">
+            <input type="checkbox" data-key="giftSambo" id="ob-check-giftsambo" onchange="updateCheckboxState(this.dataset.key); toggleGiftSamboDetails()">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Var gift eller sambo
               <span class="ob-check-hint">Bodelning kan behöva göras innan arvet fördelas</span>
             </span>
           </label>
+          <div class="ob-fastighet-details hidden" id="ob-giftsambo-details">
+            <p class="ob-check-group-label ob-check-group-label--sub">Gift eller sambo?</p>
+            <div class="ob-choices ob-choices--compact">
+              <button type="button" class="ob-choice ob-choice--sm" data-key="civilstand" data-val="gift" onclick="obChooseSub(this)">Gift</button>
+              <button type="button" class="ob-choice ob-choice--sm" data-key="civilstand" data-val="sambo" onclick="obChooseSub(this)">Sambo</button>
+            </div>
+          </div>
           <label class="ob-check">
             <input type="checkbox" data-key="litetDodsbo" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
@@ -967,6 +974,9 @@
           <span>Nettovärde</span><span id="bopp-sum-netto">0 kr</span>
         </div>
       </div>
+
+      <!-- T137: Preliminär arvsfördelning — fylls i av boppRenderArvsfordelning() -->
+      <div class="bopp-summary bopp-summary--arvsfordelning" id="bopp-arvsfordelning"></div>
 
       <!-- Dödsbodelägare -->
       <section class="bopp-section">
