@@ -10,7 +10,8 @@ Plan: `.claude/plans/planera-f-r-k-rning-av-curried-map.md`
 | 2 | critique | Sonnet 5 | a1abcee | ~$3 | `02-critique.md` — 5 prioriterade UX-problem, PASS på anti-patterns |
 | — | GRIND | — | — | onboard=JA · analytics: ta bort GA behåll Plausible · ordning: normalize först · security-review flyttad till slutet (design-pass har ej T244-koden) |
 | 4 | normalize | Sonnet 5 | db5b699 | ~$6 | `04-normalize.md` — C1+H1+H4+M1+M2+M9+L2 fixade; M6/M8/M10/P4 vidare |
-| 5 | harden | Sonnet 5 | _pågår_ | ~$4 | `05-harden.md` — H2 (bopp aria-labels), L1 (esc numeriska), M6 (landmarks); H2/L1 mest falsklarm |
+| 5 | harden | Sonnet 5 | 98929e0 | ~$4 | `05-harden.md` — H2 (bopp aria-labels), L1 (esc numeriska), M6 (landmarks); H2/L1 mest falsklarm |
+| 6 | clarify | Sonnet 5 | _pågår_ | ~$3 | `06-clarify.md` — steg 4-etikett, frivilligt-formuleringar, 5 felmeddelanden; P5/döda länkar mest falsklarm |
 
 ## Steg 0 — teach-impeccable
 

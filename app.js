@@ -2612,7 +2612,7 @@ function generateLetter() {
   const sender  = document.getElementById('letter-sender').value.trim();
   const email   = document.getElementById('letter-email').value.trim();
   clearFormError('err-letter');
-  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2648,7 +2648,7 @@ function generateBank() {
   const relation = document.getElementById('bank-relation').value.trim();
   const email    = document.getElementById('bank-email').value.trim();
   clearFormError('err-bank');
-  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2700,7 +2700,7 @@ function generateForsakring() {
   const relation = document.getElementById('fors-relation').value.trim();
   const email    = document.getElementById('fors-email').value.trim();
   clearFormError('err-forsakring');
-  if (!bolag || !sender || !relation || !email) { showFormError('err-forsakring', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!bolag || !sender || !relation || !email) { showFormError('err-forsakring', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2821,7 +2821,7 @@ function generateSkatteverket() {
   const relation = document.getElementById('skv-relation').value.trim();
   const email    = document.getElementById('skv-email').value.trim();
   clearFormError('err-skatteverket');
-  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2844,7 +2844,7 @@ function generateFullmakt() {
   const agent    = document.getElementById('fullmakt-agent').value.trim();
   const relation = document.getElementById('fullmakt-relation').value.trim();
   clearFormError('err-fullmakt');
-  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i alla fält markerade med *.'); return; }
 
   const { deceased, personnr, today } = getDocContext();
   const grantors = grantor2 ? `${grantor1} och ${grantor2}` : grantor1;

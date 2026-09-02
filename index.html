@@ -492,14 +492,14 @@
         <input type="text" id="deceased-name" class="ob-text-input" placeholder="Förnamn Efternamn" autocomplete="off"
           aria-label="Den avlidnes förnamn och efternamn"
           onkeydown="if(event.key==='Enter') document.getElementById('deceased-date').focus()" />
-        <p class="ob-skip">Frivilligt — du kan hoppa över detta.</p>
+        <p class="ob-skip">Frivilligt. Du kan lägga till det senare.</p>
 
         <p class="ob-check-group-label">När gick personen bort?</p>
-        <p class="ob-hint">Så kan vi räkna ut bouppteckningsfrist, Skatteverket-frist m.fl. som riktiga datum åt dig — annars visar vi ungefärlig text istället.</p>
+        <p class="ob-hint">Då räknar vi ut bouppteckningsfristen, Skatteverkets frist och de andra tidsgränserna som riktiga datum åt dig. Utan datum visar vi ungefärlig text i stället.</p>
         <input type="date" id="deceased-date" class="ob-text-input" autocomplete="off"
           aria-label="Dödsdatum"
           onkeydown="if(event.key==='Enter') obGoTo(4)" />
-        <p class="ob-skip">Frivilligt — du kan lägga till det senare.</p>
+        <p class="ob-skip">Frivilligt. Du kan lägga till det senare.</p>
 
         <label class="ob-check ob-check--sub">
           <input type="checkbox" id="ob-reminder-optin" onchange="toggleReminderEmail()">
@@ -517,9 +517,9 @@
     <!-- Step 4 — personnr -->
     <div class="ob-step" id="ob-step-4">
       <div class="ob-content">
-        <p class="ob-label">Steg 4 av 4 — helt frivilligt</p>
+        <p class="ob-label">Steg 4 av 4</p>
         <h2 class="ob-title">Personnummer?</h2>
-        <p class="ob-hint">Vi fyller i det automatiskt i alla brev du genererar — sparar tid. Annars kan du fylla i det manuellt direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
+        <p class="ob-hint">Helt frivilligt. Fyller du i det nu skriver vi in det åt dig i alla brev — annars fyller du i det för hand direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
         <input type="text" id="deceased-personnr" class="ob-text-input" placeholder="ÅÅÅÅMMDD-XXXX" autocomplete="off"
           aria-label="Den avlidnes personnummer" inputmode="numeric"
           onkeydown="if(event.key==='Enter') generatePlan()" />
@@ -1106,7 +1106,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=26" defer></script>
+<script src="app.js?v=27" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
