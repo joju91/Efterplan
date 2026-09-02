@@ -3265,15 +3265,15 @@ function boppRowDelbagare(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Namn" value="${_esc(item.namn)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Namn" aria-label="Dödsbodelägarens namn" value="${_esc(item.namn)}"
       oninput="boppData.delbagare[${i}].namn=this.value;boppSave()">
-    <select class="bill-input bopp-select" onchange="boppData.delbagare[${i}].roll=this.value;boppSave()">
+    <select class="bill-input bopp-select" aria-label="Roll i dödsboet" onchange="boppData.delbagare[${i}].roll=this.value;boppSave()">
       <option value="arvinge"${item.roll==='arvinge'?' selected':''}>Arvinge</option>
       <option value="testamentstagare"${item.roll==='testamentstagare'?' selected':''}>Testamentstagare</option>
       <option value="efterlevande_make"${item.roll==='efterlevande_make'?' selected':''}>Efterlevande make/maka</option>
       <option value="annan"${item.roll==='annan'?' selected':''}>Annan</option>
     </select>
-    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort delägare">×</button>`;
   return row;
 }
 
@@ -3281,11 +3281,11 @@ function boppRowTillgang(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Bankkonto Swedbank)" value="${_esc(item.beskrivning)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Bankkonto Swedbank)" aria-label="Tillgångens beskrivning" value="${_esc(item.beskrivning)}"
       oninput="boppData.tillgangar[${i}].beskrivning=this.value;boppSave()">
-    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.varde||''}"
+    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" aria-label="Tillgångens värde i kronor" value="${_esc(String(item.varde||''))}"
       oninput="boppData.tillgangar[${i}].varde=this.value;boppSave();boppUpdateSummary()">
-    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort tillgång">×</button>`;
   return row;
 }
 
@@ -3293,11 +3293,11 @@ function boppRowSkuld(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Borgenär (skuld till, t.ex. Swedbank)" value="${_esc(item.beskrivning)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Borgenär (skuld till, t.ex. Swedbank)" aria-label="Borgenär — vem skulden gäller" value="${_esc(item.beskrivning)}"
       oninput="boppData.skulder[${i}].beskrivning=this.value;boppSave()">
-    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.belopp||''}"
+    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" aria-label="Skuldens belopp i kronor" value="${_esc(String(item.belopp||''))}"
       oninput="boppData.skulder[${i}].belopp=this.value;boppSave();boppUpdateSummary()">
-    <button class="bopp-remove" onclick="boppRemove('skulder',${i})" aria-label="Ta bort">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('skulder',${i})" aria-label="Ta bort skuld">×</button>`;
   return row;
 }
 

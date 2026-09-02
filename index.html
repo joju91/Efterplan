@@ -139,7 +139,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: LANDING
 ════════════════════════════════════════════ -->
-<div id="screen-landing" class="screen active">
+<div id="screen-landing" class="screen active" role="main">
   <nav class="nav">
     <div class="logo">Efterplan</div>
     <div class="nav-landing-links">
@@ -326,7 +326,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: ONBOARDING (fullscreen, conversational)
 ════════════════════════════════════════════ -->
-<div id="screen-onboarding" class="screen">
+<div id="screen-onboarding" class="screen" role="main">
 
   <div class="ob-progress-bar-wrap" aria-hidden="true">
     <div class="ob-progress-bar-fill" id="ob-progress-bar-fill"></div>
@@ -1106,7 +1106,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=25" defer></script>
+<script src="app.js?v=26" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
@@ -1163,7 +1163,7 @@
 </div>
 
 <!-- T177: Läsbar-länk-vy (visas när ?shared= finns i URL:en) -->
-<div id="shared-view" class="screen" style="max-width:600px;margin:0 auto;padding:24px 16px;">
+<div id="shared-view" class="screen" role="main" style="max-width:600px;margin:0 auto;padding:24px 16px;">
   <p class="landing-brand">Efterplan</p>
   <h1 id="shared-view-title" class="plan-title">Delad plan</h1>
   <p class="modal-sub">Det här är en läsbar kopia — inga ändringar sparas här. <a href="/">Skapa din egen plan →</a></p>
