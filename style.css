@@ -1880,8 +1880,10 @@ body {
   height: 100%;
   background: var(--accent);
   border-radius: 0 2px 2px 0;
-  transition: width 0.35s ease;
-  width: 0%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
 }
 
 /* ─── Offline banner ─── */
@@ -1979,8 +1981,10 @@ body {
   height: 100%;
   background: var(--accent);
   border-radius: 2px;
-  width: 0%;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── COMPLETION STATE ───────────────────────── */

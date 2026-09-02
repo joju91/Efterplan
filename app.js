@@ -134,15 +134,6 @@ function track(event, props) {
   if (typeof window.plausible === 'function') {
     window.plausible(event, props ? { props } : undefined);
   }
-
-  if (typeof window.gtag === 'function') {
-    const gaEvent = String(event || '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '_')
-      .replace(/^_+|_+$/g, '')
-      .slice(0, 40) || 'custom_event';
-    window.gtag('event', gaEvent, props || {});
-  }
 }
 
 function startOnboarding() {
@@ -271,8 +262,7 @@ function obShowStep(step) {
   // Update label dynamically
   const labelEl = el.querySelector('.ob-label');
   if (labelEl) {
-    const suffix = step === 4 ? ' — helt frivilligt' : '';
-    labelEl.textContent = `Steg ${Math.min(step, OB_TOTAL)} av ${OB_TOTAL}${suffix}`;
+    labelEl.textContent = `Steg ${Math.min(step, OB_TOTAL)} av ${OB_TOTAL}`;
   }
   if (OB_FOCUS_IDS[step]) {
     setTimeout(() => document.getElementById(OB_FOCUS_IDS[step])?.focus(), 350);
@@ -280,7 +270,7 @@ function obShowStep(step) {
   // Update visual progress bar
   const fillEl = document.getElementById('ob-progress-bar-fill');
   if (fillEl) {
-    fillEl.style.width = `${Math.round((Math.min(step, OB_TOTAL) / OB_TOTAL) * 100)}%`;
+    fillEl.style.transform = `scaleX(${Math.min(step, OB_TOTAL) / OB_TOTAL})`;
   }
 }
 
@@ -1469,7 +1459,7 @@ function updateProgress() {
   const fillEl    = document.getElementById('progress-bar-fill');
   const completionEl = document.getElementById('completion-message');
 
-  if (fillEl) fillEl.style.width = pct + '%';
+  if (fillEl) fillEl.style.transform = `scaleX(${total ? done / total : 0})`;
 
   if (done === total) {
     summaryEl.innerHTML = `<strong>${total} av ${total}</strong> uppgifter klara`;
