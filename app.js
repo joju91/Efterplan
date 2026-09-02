@@ -1772,6 +1772,9 @@ function loadDocuments() {
 function saveDocuments() {
   try { localStorage.setItem('efterplan_documents', JSON.stringify(state.documents)); } catch(e) {}
   try { window.dispatchEvent(new Event('efterplan:state-changed')); } catch(e) {}
+  // T147: dokumentfoton synkas separat mot Supabase Storage, inte via
+  // state-changed (som bara täcker plans.state_json-nycklarna).
+  try { window.dispatchEvent(new CustomEvent('efterplan:documents-changed', { detail: state.documents })); } catch(e) {}
 }
 
 function setDocumentFilter(filter) {
@@ -1879,6 +1882,9 @@ function deleteDocument(id) {
   saveDocuments();
   renderDocuments();
   track('document_deleted');
+  // T147: explicit borttagning på servern (rad + Storage-fil) — inte inferrerad
+  // via diff, se supabase-client.js för varför.
+  try { window.dispatchEvent(new CustomEvent('efterplan:document-deleted', { detail: id })); } catch(e) {}
 }
 
 async function toggleDocumentExplanation(id) {
@@ -3122,6 +3128,17 @@ async function tryRenderSharedView() {
     checkPremiumServerSide();
   }
 })();
+
+// T147: dokument som synkats ner från Supabase Storage (t.ex. vid inloggning
+// på en ny enhet) läggs in i state.documents/localStorage av supabase-client.js
+// — hämta in dem här och rendera om, utan att kräva en sidladdning.
+window.addEventListener('efterplan:documents-hydrated', (e) => {
+  const added = Array.isArray(e.detail) ? e.detail : [];
+  if (!added.length) return;
+  const existingIds = new Set(state.documents.map(d => d.id));
+  added.forEach(d => { if (!existingIds.has(d.id)) state.documents.push(d); });
+  if (document.getElementById('arkiv-list')) renderDocuments();
+});
 
 async function handlePaywallCTA() {
   track('paywall_cta_clicked');
