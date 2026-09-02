@@ -15,7 +15,8 @@ Plan: `.claude/plans/planera-f-r-k-rning-av-curried-map.md`
 | 7 | typeset | Sonnet 5 | d32d83b | ~$3 | `07-typeset.md` — ob/plan-rubriker in i Fraunces-systemet, near-dup-storlekar konsoliderade |
 | 8 | arrange | Sonnet 5 | 2f6113b | ~$4 | `08-arrange.md` — howto avkortat, footer-träffytor 17→39px, Arkiv-emoji bort; P1 vidare |
 | 9 | optimize | Sonnet 5 | c06ab65 | ~$5 | `09-optimize.md` — GA→Plausible (41 sidor), progress-bars→transform; M4 icke-problem |
-| 10 | onboard | Sonnet 5 | _pågår_ | ~$4 | `10-onboard.md` — P1 "Fortsätt din plan" (retur-lucka), P2 "Fler steg"-taggen var felaktig |
+| 10 | onboard | Sonnet 5 | 764bcb4 | ~$4 | `10-onboard.md` — P1 "Fortsätt din plan" (retur-lucka), P2 "Fler steg"-taggen var felaktig |
+| 11 | polish | Sonnet 5 | _pågår_ | ~$4 | `11-polish.md` — fokusring, --bg-secondary, reduced-motion; P4/M10 → egna uppdrag |
 
 ## Steg 0 — teach-impeccable
 

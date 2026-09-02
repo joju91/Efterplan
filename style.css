@@ -2024,7 +2024,7 @@ body {
 
 /* ─── TASK CARD KEYBOARD ─────────────────────── */
 .task-card[tabindex="0"]:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: var(--radius);
 }
@@ -2478,7 +2478,7 @@ body {
   gap: 6px 12px;
   margin: 24px 0 0;
   padding: 12px 16px;
-  background: var(--bg-secondary, #f7f7f5);
+  background: var(--paper-soft);
   border-radius: 10px;
   font-size: 0.8rem;
   color: var(--text-muted, #888);
@@ -2587,7 +2587,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  background: var(--bg-secondary, #f0f0ed);
+  background: var(--paper-soft);
   padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
@@ -2865,7 +2865,14 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .btn-primary:hover { transform: none; }
+  /* Nollställ hover-förflyttningar generellt, inte bara primärknappen */
+  .btn-primary:hover,
+  .btn-large:hover,
+  .task-card:hover,
+  .howto-card:hover,
+  a:hover {
+    transform: none !important;
+  }
 }
 
 /* Utility classes for moved inline styles */
