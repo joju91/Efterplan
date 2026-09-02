@@ -1,7 +1,21 @@
 /* ═══════════════════════════════════════════════════════════════
-   EFTERPLAN — Design token override (Redesign 2026)
-   Inkluderas EFTER style.css. Ersätter bara :root-tokens — all
-   komponentlogik i style.css fortsätter fungera oförändrat.
+   EFTERPLAN — Design tokens (Redesign 2026)
+   ───────────────────────────────────────────────────────────────
+   SANNINGSKÄLLA för färg. Inkluderas EFTER style.css och vinner
+   över style.css :root. Ändra tokens HÄR, inte i style.css.
+   All komponentlogik i style.css konsumerar dessa via var().
+
+   Kontrast (WCAG 2.2 AA, ljust läge — uppmätt canvas-resolverat):
+     ink / paper .............. 15:1
+     ink-soft / paper ......... 8:1
+     ink-muted / paper ........ 5.2:1
+     ink-teal / paper ......... 5.9:1   (länktext, accentrubrik)
+     vit / ink-teal ........... 6.8:1   (primärknappens etikett)
+     ink-teal / ink-teal-tn ... 5.6:1   (text i tonad badge)
+     ember / paper ............ 5.9:1
+     rule-strong / paper ...... 3.2:1   (formulärfältens ram, 1.4.11)
+   rule (mjuk) är dekorativ (~1.4:1) — bara där ytan/skuggan också
+   bär avgränsningen, aldrig som enda kant på en kontroll.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
@@ -12,18 +26,21 @@
   --ink:          oklch(22% 0.02 80);
   --ink-soft:     oklch(40% 0.015 80);
   --ink-muted:    oklch(50% 0.012 80);
-  --rule:         oklch(86% 0.022 80);
-  --rule-strong:  oklch(78% 0.028 80);
+  --rule:         oklch(84% 0.022 80);   /* mjuk: dekorativa avdelare, kortkanter */
+  --rule-strong:  oklch(62% 0.04 80);    /* 3.2:1 — formulärkontrollers ram (1.4.11) */
 
-  /* Primär accent: soft sage */
-  --ink-teal:     oklch(58% 0.07 150);
-  --ink-teal-dk:  oklch(50% 0.075 150);
-  --ink-teal-tn:  oklch(91% 0.03 150);
+  /* Primär accent: djup sage — läsbar som text OCH som knappyta */
+  --ink-teal:     oklch(46% 0.10 150);   /* länk, primärknapp, accentrubrik */
+  --ink-teal-dk:  oklch(40% 0.10 150);   /* hover/aktiv + fokusring */
+  --ink-teal-tn:  oklch(93% 0.03 150);   /* tonad yta (badge-bg) — dekorativ */
 
-  /* Sekundär: dämpad varm terrakotta */
-  --ember:        oklch(60% 0.08 50);
-  --ember-dk:     oklch(50% 0.085 50);
-  --ember-tn:     oklch(92% 0.025 60);
+  /* Sekundär: dämpad varm terrakotta — läsbar som text */
+  --ember:        oklch(48% 0.11 45);
+  --ember-dk:     oklch(42% 0.11 45);
+  --ember-tn:     oklch(93% 0.03 55);    /* tonad yta — dekorativ */
+
+  /* Fokusring — en token, konsumeras av ett enda :focus-visible i style.css */
+  --focus-ring:   var(--ink-teal-dk);
 
   /* Legacy mappings (matchar style.css) */
   --bg:             var(--paper);
@@ -44,7 +61,8 @@
   --yellow-bg:      oklch(93% 0.04 80);
   --grey:           var(--ink-muted);
   --grey-bg:        oklch(91% 0.018 80);
-  --green:          oklch(50% 0.09 150);
+  --green:          oklch(46% 0.10 150);
+  --green-bg:       oklch(93% 0.03 150);
   --danger:         oklch(50% 0.14 28);
 
   --shadow:    0 1px 2px rgba(60, 50, 30, .04), 0 8px 24px -12px rgba(60, 50, 30, .10);
