@@ -712,7 +712,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: null,
     triggers: ['hyresratt'],
     digital: 'hybrid',
-    hasDoc: 'letter',
+    hasDoc: 'hyresvard',
   },
 
   // ── CONDITIONAL: Företag ───────────────────
@@ -879,6 +879,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     link: 'https://www.pensionsmyndigheten.se',
     phone: '0771-776 776',
     triggers: ['make'],
+    hasDoc: 'pensionsmyndighet',
     notesPlaceholder: 'Kontaktad Pensionsmyndigheten, ärendenummer, tjänstepensionsbolag…',
   },
 
@@ -1211,6 +1212,10 @@ function renderPlan() {
   if (skvBtn) skvBtn.classList.toggle('hidden', !state.foretag);
   const fullmaktBtn = document.getElementById('doc-btn-fullmakt');
   if (fullmaktBtn) fullmaktBtn.classList.toggle('hidden', state.ansvar !== 'flera');
+  const hyresvardBtn = document.getElementById('doc-btn-hyresvard');
+  if (hyresvardBtn) hyresvardBtn.classList.toggle('hidden', !state.hyresratt);
+  const pensionBtn = document.getElementById('doc-btn-pensionsmyndighet');
+  if (pensionBtn) pensionBtn.classList.toggle('hidden', state.relation !== 'make');
 
   document.getElementById('count-today').textContent = `${today.length} uppgifter`;
   document.getElementById('count-week').textContent  = `${week.length} uppgifter`;
@@ -2475,6 +2480,18 @@ function showDocForm(type) {
     const eEl = document.getElementById('letter-email');
     if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
   }
+  if (type === 'hyresvard') {
+    const sEl = document.getElementById('hyresvard-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('hyresvard-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+  }
+  if (type === 'pensionsmyndighet') {
+    const sEl = document.getElementById('pension-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('pension-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+  }
   if (type === 'bulk') {
     initBulkForm();
     // Prefill från både den ibockade checklistan (T199) och kvarvarande fritext för
@@ -2690,6 +2707,88 @@ Jag kan mejla eller posta dödsbeviset till er — vad vill ni ha det till, och 
       'Ditt eget namn och personnummer',
       'Eventuellt kundnummer hos banken',
       'Din relation till den avlidne',
+    ],
+  });
+}
+
+function generateHyresvard() {
+  const hyresvard = document.getElementById('hyresvard-namn').value.trim();
+  const adress    = document.getElementById('hyresvard-adress').value.trim();
+  const sender    = document.getElementById('hyresvard-sender').value.trim();
+  const email     = document.getElementById('hyresvard-email').value.trim();
+  clearFormError('err-hyresvard');
+  if (!hyresvard || !sender || !email) { showFormError('err-hyresvard', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+  const adressLine = adress ? `\nAdress/lägenhetsnummer: ${adress}` : '';
+
+  showDocResult('Uppsägning av hyreskontrakt — ' + hyresvard, `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+Till: ${hyresvard}
+Ärende: Uppsägning av hyreskontrakt — dödsfall${adressLine}
+
+Hej,
+
+Jag kontaktar er angående hyreskontraktet som stod i ${deceased}s (personnr ${personnr}) namn, som tyvärr har gått bort.
+
+Jag ber er härmed säga upp hyreskontraktet med omedelbar verkan från dödsfallet. Enligt hyreslagen är uppsägningstiden normalt en månad om uppsägningen görs inom en månad från dödsfallet.
+
+Jag bifogar dödsbevis och ber er bekräfta uppsägningen och eventuellt återstående belopp (deposition, slutavräkning) skriftligen.
+
+Med vänliga hälsningar,
+
+${sender}
+${email}`);
+}
+
+function generatePensionsmyndighet() {
+  const sender    = document.getElementById('pension-sender').value.trim();
+  const personnr2 = document.getElementById('pension-personnr').value.trim();
+  const email     = document.getElementById('pension-email').value.trim();
+  clearFormError('err-pensionsmyndighet');
+  if (!sender || !personnr2 || !email) { showFormError('err-pensionsmyndighet', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+
+  showDocResult('Brev till Pensionsmyndigheten', `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+Till: Pensionsmyndigheten
+Ärende: Dödsfallsanmälan — förfrågan om efterlevandepension och omställningspension
+
+Hej,
+
+Jag kontaktar er med anledning av att min make/maka ${deceased} (personnr ${personnr}) har gått bort.
+
+Mitt eget personnummer: ${personnr2}
+
+Jag ber er:
+
+1. Kontrollera om jag har rätt till omställningspension (upp till 12 månaders ekonomiskt stöd — observera att ansökan bör göras snarast, retroaktiv utbetalning ges normalt inte).
+2. Informera om eventuell efterlevandepension och vad som krävs för ansökan.
+3. Meddela vilka handlingar ni behöver av mig för att gå vidare.
+
+Dödsbevis bifogas. Jag är tillgänglig för frågor via e-post.
+
+Med vänliga hälsningar,
+
+${sender}
+${email}`, undefined, {
+    text: `Hej, jag heter ${sender}. Min make/maka ${deceased} har gått bort och jag ringer för att anmäla dödsfallet och höra om jag har rätt till omställningspension eller efterlevandepension.
+
+Kan ni berätta vad som krävs för att ansöka, och om det finns någon tidsgräns jag behöver tänka på?`,
+    checklist: [
+      'Den avlidnes personnummer',
+      'Ditt eget personnummer',
+      'Uppgift om ni bodde tillsammans',
+      'Eventuella tjänstepensionsbolag att också kontakta',
     ],
   });
 }

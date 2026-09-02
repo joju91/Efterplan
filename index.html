@@ -710,6 +710,16 @@
             <span class="doc-type-title">Fullmakt</span>
             <span class="doc-type-sub">Ge en person rätt att företräda dödsboet</span>
           </button>
+          <button class="doc-type-btn hidden" id="doc-btn-hyresvard" onclick="showDocForm('hyresvard')">
+            <span class="doc-icon" aria-hidden="true">🏠</span>
+            <span class="doc-type-title">Till hyresvärden</span>
+            <span class="doc-type-sub">Säg upp hyreskontraktet</span>
+          </button>
+          <button class="doc-type-btn hidden" id="doc-btn-pensionsmyndighet" onclick="showDocForm('pensionsmyndighet')">
+            <span class="doc-icon" aria-hidden="true">👵</span>
+            <span class="doc-type-title">Till Pensionsmyndigheten</span>
+            <span class="doc-type-sub">Fråga om efterlevande- eller omställningspension</span>
+          </button>
         </div>
 
         <!-- Paywall card — dold tills PAYWALL_ENABLED = true i app.js -->
@@ -801,6 +811,52 @@
         </div>
         <p class="form-error hidden" id="err-bank" role="alert"></p>
         <button class="btn-primary" style="max-width:240px" onclick="generateBank()">Skapa brev</button>
+      </div>
+
+      <!-- Form: Uppsägning hyreskontrakt -->
+      <div id="doc-form-hyresvard" class="doc-form hidden">
+        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <h2 class="plan-title" style="margin-bottom:6px">Brev till hyresvärden</h2>
+        <p class="plan-sub" style="margin-bottom:28px">Vi skriver uppsägningen — du kopierar och skickar.</p>
+        <div class="form-group">
+          <label for="hyresvard-namn">Hyresvärd <span class="required">*</span></label>
+          <input type="text" id="hyresvard-namn" class="text-input" placeholder="t.ex. Stockholmshem, Willhem, en privat hyresvärd" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-adress">Adress / lägenhetsnummer</label>
+          <input type="text" id="hyresvard-adress" class="text-input" placeholder="Frivilligt — gör brevet tydligare" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="hyresvard-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="hyresvard-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="hyresvard-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-hyresvard" role="alert"></p>
+        <button class="btn-primary" style="max-width:240px" onclick="generateHyresvard()">Skapa brev</button>
+      </div>
+
+      <!-- Form: Pensionsmyndigheten -->
+      <div id="doc-form-pensionsmyndighet" class="doc-form hidden">
+        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <h2 class="plan-title" style="margin-bottom:6px">Brev till Pensionsmyndigheten</h2>
+        <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar, eller ringer med telefonmanuset.</p>
+        <div class="form-group">
+          <label for="pension-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="pension-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="pension-personnr">Ditt personnummer <span class="required">*</span></label>
+          <input type="text" id="pension-personnr" class="text-input" placeholder="ÅÅÅÅMMDD-XXXX" />
+        </div>
+        <div class="form-group">
+          <label for="pension-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="pension-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-pensionsmyndighet" role="alert"></p>
+        <button class="btn-primary" style="max-width:240px" onclick="generatePensionsmyndighet()">Skapa brev</button>
       </div>
 
       <!-- Form: Dödsannons -->
