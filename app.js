@@ -30,6 +30,63 @@ function clearPremium() {
   applyPremiumState();
 }
 
+// ─── GOOGLE ADS — KONVERTERINGSSPÅRNING (opt-in) ─────────────
+// Fyll i värdena från Google Ads → Verktyg → Konverteringar (se ADS-SETUP.md).
+// Alla tre tomma = ingen Google-kod laddas, allt nedan blir no-op.
+// OBS: när ADS_CONVERSION_ID är ifyllt laddas Google-taggen och sätter
+// mätcookies (_gcl_*) för den som kommer via en annons. Detta är en
+// medveten avvikelse från "ingen Google-kod" (PR #85) — bara för
+// annonskonvertering, ingen GA4-analys.
+const ADS_CONVERSION_ID   = '';   // t.ex. 'AW-123456789'
+const ADS_LABEL_PLAN      = '';   // konv.etikett — "personlig plan skapad" (mjuk)
+const ADS_LABEL_PURCHASE  = '';   // konv.etikett — "49 kr-köp" (hård, med värde)
+
+// Fånga gclid + utm_* vid landning — för attribution och ev. offline
+// conversion import (Stripe → Ads) senare. Rent localStorage, ingen kod laddas.
+(function captureAdClick() {
+  try {
+    const p = new URLSearchParams(location.search);
+    const gclid = p.get('gclid');
+    if (gclid) {
+      localStorage.setItem('efterplan_gclid', JSON.stringify({ gclid, ts: Date.now() }));
+    }
+    const utm = {};
+    for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
+      const v = p.get(k);
+      if (v) utm[k] = v;
+    }
+    if (Object.keys(utm).length) {
+      localStorage.setItem('efterplan_utm', JSON.stringify({ ...utm, ts: Date.now() }));
+    }
+  } catch (e) { /* private mode / storage disabled */ }
+})();
+
+// Ladda Google Ads-taggen — bara om ett konverterings-ID är konfigurerat.
+(function loadAdsTag() {
+  if (!ADS_CONVERSION_ID) return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', ADS_CONVERSION_ID);
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ADS_CONVERSION_ID);
+  document.head.appendChild(s);
+})();
+
+// Fyr en Google Ads-konvertering. No-op om taggen inte är konfigurerad.
+function adsConversion(label, opts) {
+  opts = opts || {};
+  if (!ADS_CONVERSION_ID || !label || typeof window.gtag !== 'function') return;
+  const params = { send_to: ADS_CONVERSION_ID + '/' + label };
+  if (typeof opts.value === 'number' && opts.value > 0) {
+    params.value = opts.value;
+    params.currency = 'SEK';
+  }
+  if (opts.transactionId) params.transaction_id = String(opts.transactionId);
+  try { window.gtag('event', 'conversion', params); } catch (e) {}
+}
+
 function applyPremiumState() {
   const premium = isPremium();
   document.body.classList.toggle('is-premium', premium);
@@ -77,6 +134,10 @@ async function handlePremiumReturn() {
     if (data && data.ok) {
       setPremium(data.email || '');
       track('premium_activated');
+      // Hård konvertering — 49 kr-köp. transaction_id = Stripe-sessionen
+      // (Google Ads deduplicerar, så en omladdning dubbelräknar inte).
+      const kr = typeof data.amount_total === 'number' ? data.amount_total / 100 : 49;
+      adsConversion(ADS_LABEL_PURCHASE, { value: kr, transactionId: sessionId });
       showToast('Tack! Premium är upplåst på den här enheten.', 'success');
     } else {
       showToast('Vi kunde inte bekräfta betalningen direkt. Försök ladda om sidan om en stund.', 'error');
@@ -330,6 +391,7 @@ function generatePlan() {
   saveState();
   saveTaskState();
   track('plan_generated', { relation: state.relation || 'okänd', has_death_date: !!state.deathDate });
+  adsConversion(ADS_LABEL_PLAN); // mjuk konvertering — personlig plan skapad
   submitReminderOptinIfChecked();
   showScreen('screen-plan');
 }

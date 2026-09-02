@@ -95,12 +95,17 @@ Byggt på riktig Search Console-data (90 dagar, hämtad 2026-08-15): snittpositi
 > konverteringar → ingen Smart Bidding, du optimerar manuellt på
 > CPC/CTR + Söktermsrapporten.
 >
-> **Alternativ B (rekommenderat om budget > någon tusenlapp/mån):** lägg
-> tillbaka **enbart** Google Ads konverteringstagg (`gtag.js` med ett
-> `AW-xxxxx`-ID, inte GA4:s `G-xxxxx`). Fyr en konvertering på
-> `plan_completed` (mjuk) och en på Stripe-tacksidan (49 kr, hård, med
-> värde). Då får du konverteringar + kostnad/konv. **per sökord** direkt
-> i Ads-tabellen och kan köra Smart Bidding.
+> **Alternativ B (rekommenderat om budget > någon tusenlapp/mån):**
+> **koden är redan byggd** (branch `ads-conversion-tracking`) — mjuk
+> konvertering fyr:s i `generatePlan()`, hård (49 kr, med värde,
+> `transaction_id` = Stripe-sessionen) i `handlePremiumReturn()`.
+> Aktiveras genom att fylla i tre värden i `app.js`
+> (`ADS_CONVERSION_ID` + två etiketter). **Fullständig instruktion:
+> `ADS-SETUP.md`.** Tills dess laddas ingen Google-kod. När det är på
+> får du konverteringar + kostnad/konv. **per sökord** i Ads-tabellen
+> och kan köra Smart Bidding (men taggen sätter `_gcl_*`-cookies).
+> `gclid`/`utm_*` sparas redan i `localStorage` vid landning oavsett,
+> som underlag för offline conversion import senare.
 
 **Utvärdering per sökord (gäller båda alternativen):**
 - Tighta annonsgrupper (1–3 sökord/grupp) mot **rätt landningssida** (inte
