@@ -39,9 +39,13 @@ jobs:
           git config user.email "efterplan-bot@users.noreply.github.com"
           FILE="veckorapport-$(date -u +%Y-%m-%d).md"
           if [ -f "$FILE" ]; then
-            git add "$FILE"
+            # T132: git add "$FILE" ensam missade roadmap.md-ändringar som
+            # weekly-report.mjs (eller ett senare steg) gör i samma körning —
+            # de blev aldrig committade. Staga båda, committa bara det som
+            # faktiskt ändrats.
+            git add "$FILE" roadmap.md
             if git diff --cached --quiet; then
-              echo "Ingen förändring i $FILE — hoppar över commit."
+              echo "Ingen förändring i $FILE eller roadmap.md — hoppar över commit."
             else
               git commit -m "Veckorapport $(date -u +%Y-%m-%d) (auto, GitHub Actions)"
               git push
