@@ -7,7 +7,9 @@ Plan: `.claude/plans/planera-f-r-k-rning-av-curried-map.md`
 |---|-------|--------|--------|---------|----------------|
 | 0 | teach-impeccable | Sonnet 5 | a0cc618 | ~$1 | Design context → `.impeccable.md` + `CLAUDE.md` |
 | 1 | audit | Sonnet 5 | d562dcd | ~$3 | `01-audit.md` — 1 Critical, 4 High, 10 Medium, 4 Low |
-| 2 | critique | Sonnet 5 | _pågår_ | ~$3 | `02-critique.md` — 5 prioriterade UX-problem, PASS på anti-patterns |
+| 2 | critique | Sonnet 5 | a1abcee | ~$3 | `02-critique.md` — 5 prioriterade UX-problem, PASS på anti-patterns |
+| — | GRIND | — | — | onboard=JA · analytics: ta bort GA behåll Plausible · ordning: normalize först · security-review flyttad till slutet (design-pass har ej T244-koden) |
+| 4 | normalize | Sonnet 5 | _pågår_ | ~$6 | `04-normalize.md` — C1+H1+H4+M1+M2+M9+L2 fixade; M6/M8/M10/P4 vidare |
 
 ## Steg 0 — teach-impeccable
 
