@@ -126,7 +126,36 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-function goToLanding() { showScreen('screen-landing'); }
+function goToLanding() {
+  showScreen('screen-landing');
+  // Visa "Fortsätt din plan" om det finns en sparad plan att återvända till.
+  const cont = document.getElementById('landing-continue');
+  if (cont) {
+    let hasPlan = false;
+    try { hasPlan = !!localStorage.getItem('efterplan_state'); } catch (e) {}
+    cont.hidden = !hasPlan;
+  }
+}
+
+// Återuppta en sparad plan (byggs upp om den inte redan finns i minnet).
+function resumePlan() {
+  if (!Array.isArray(state.tasks) || !state.tasks.length) {
+    try {
+      const saved = localStorage.getItem('efterplan_state');
+      if (saved) {
+        Object.assign(state, JSON.parse(saved));
+        buildTasks();
+        applyDeadlines();
+        applyLagfartDeadline();
+        loadTaskState();
+        loadBills();
+        loadDocuments();
+        renderPlan();
+      }
+    } catch (e) {}
+  }
+  showScreen('screen-plan');
+}
 
 // ─── ANALYTICS ───────────────────────────────
 // Plausible custom events — safe noop if script hasn't loaded
@@ -1205,6 +1234,13 @@ function renderPlan() {
   document.getElementById('count-today').textContent = `${today.length} uppgifter`;
   document.getElementById('count-week').textContent  = `${week.length} uppgifter`;
   document.getElementById('count-later').textContent = `${later.length} uppgifter`;
+
+  // "Fylls på efterhand"-taggen bara när sektionen faktiskt är gles —
+  // annars säger den emot de uppgifter som redan står där.
+  const weekTag  = document.querySelector('#section-week .section-coming-tag');
+  const laterTag = document.querySelector('#section-later .section-coming-tag');
+  if (weekTag)  weekTag.hidden  = week.length  > 1;
+  if (laterTag) laterTag.hidden = later.length > 1;
 
   updateProgress();
   renderBills();
