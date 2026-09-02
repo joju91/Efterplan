@@ -10,6 +10,14 @@
   "headers": [
     {
       "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "efterplan\\.vercel\\.app" }],
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
     },
