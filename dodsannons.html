@@ -22,7 +22,7 @@
     "headline": "Dödsannons mall 2026 — text, exempel och kostnad",
     "inLanguage": "sv",
     "datePublished": "2026-04-18",
-    "dateModified": "2026-08-15",
+    "dateModified": "2026-09-06",
     "author": { "@type": "Organization", "name": "Efterplan", "url": "https://efterplan.se" },
     "publisher": { "@type": "Organization", "name": "Efterplan", "url": "https://efterplan.se" },
     "image": "https://efterplan.se/og.png",
@@ -63,10 +63,35 @@
         "@type": "Question",
         "name": "Vad ska en dödsannons innehålla?",
         "acceptedAnswer": { "@type": "Answer", "text": "En dödsannons innehåller vanligtvis: den dödes namn, födelseår och dödsdag, en kort hälsning eller minnesmening, eventuellt foto, namn på efterlevande (make/maka, barn), och information om begravning (datum, plats, tid). Håll texten kort och personlig — 30–80 ord är vanligt." }
+      },
+      {
+        "@type": "Question",
+        "name": "Kan jag skapa dödsannonsen gratis själv?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Ja. På den här sidan finns ett gratis verktyg där du fyller i namn, datum och en personlig text och får en färdig annonstext direkt i webbläsaren, klar att kopiera eller skriva ut. Inget konto krävs och inget skickas till någon server. Texten kan du sedan lämna till tidningen eller begravningsbyrån." }
+      },
+      {
+        "@type": "Question",
+        "name": "Vad kostar en dödsannons i Sydsvenskan?",
+        "acceptedAnswer": { "@type": "Answer", "text": "En normalstor dödsannons i Sydsvenskan kostar ungefär 2 000–4 500 kr utan foto. Priset sätts per spaltmillimeter och styrs av annonsens storlek, vilken veckodag den publiceras (helg är dyrare) och om den innehåller foto (tillägg 200–600 kr). Kontakta Sydsvenskans annonsmottagning för exakt pris för din annons." }
       }
     ]
   }
   </script>
+  <style>
+    .dn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+    .dn-grid-3 { grid-template-columns: 2fr 1fr 1fr; }
+    .dn-check { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+    .dn-check input { width: auto; }
+    @media (max-width: 640px) {
+      .dn-grid, .dn-grid-3 { grid-template-columns: 1fr; }
+    }
+    #dn-notice-text { white-space: pre-wrap; font-family: var(--font-mono, monospace); font-size: 0.95rem; line-height: 1.6; }
+    #dn-result-section.hidden { display: none; }
+    @media print {
+      .seo-nav, .seo-footer, .seo-article > *:not(#dn-result-section), .seo-cta { display: none !important; }
+      #dn-result-section { display: block !important; }
+    }
+  </style>
   <script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>
 </head>
 <body>
@@ -79,15 +104,92 @@
   <main class="seo-main" id="main">
     <article class="seo-article">
       <h1>Dödsannons — gratis mall med exempel och kostnad 2026</h1>
-      <p class="article-meta">Senast uppdaterad: <time datetime="2026-08-15">15 augusti 2026</time></p>
+      <p class="article-meta">Senast uppdaterad: <time datetime="2026-09-06">6 september 2026</time></p>
 
-      <p>En dödsannons är ett sätt att berätta för omvärlden att någon du älskat har gått bort — och att bjuda in till begravningen. Den här guiden ger dig en mall, förklarar vad en annons kostar och var du publicerar den, och låter dig skapa en färdig annons med ett gratis verktyg.</p>
-
-      <p class="seo-updated">Senast uppdaterad: 14 augusti 2026</p>
+      <p>En dödsannons är ett sätt att berätta för omvärlden att någon du älskat har gått bort — och att bjuda in till begravningen. Den här guiden ger dig ett gratis verktyg som skapar annonstexten åt dig, en mall att utgå från, och besked om vad en annons kostar i olika tidningar och var du publicerar den.</p>
 
       <div class="seo-cta" style="margin: 1.5em 0;">
-        <p>Skapa din dödsannons direkt — fyll i namn, datum och en personlig text</p>
-        <a href="/" class="btn-primary">Skapa dödsannons gratis →</a>
+        <p>Skapa annonstexten direkt på sidan — fyll i namn, datum och en personlig mening, få en färdig text att kopiera</p>
+        <a href="#generator" class="btn-primary">Skapa dödsannons gratis →</a>
+      </div>
+
+      <h2 id="generator">Skapa dödsannons — gratis verktyg</h2>
+      <p>Fyll i fälten nedan så skapas en färdig annonstext direkt i din webbläsare. Inget konto, inget laddas ner, och inget skickas någonstans — texten lämnar aldrig din enhet förrän du själv kopierar eller skriver ut den. Resultatet är ett utkast: läs igenom, justera orden så att de känns rätt, och lämna det sedan till tidningen eller din begravningsbyrå.</p>
+
+      <div class="doc-form">
+        <div class="form-group">
+          <label for="dn-name">Den avlidnes namn <span class="required">*</span></label>
+          <input type="text" id="dn-name" class="text-input" placeholder="t.ex. Maj-Britt Lindqvist">
+        </div>
+        <div class="dn-grid">
+          <div class="form-group">
+            <label for="dn-born">Född <span class="required">*</span></label>
+            <input type="text" id="dn-born" class="text-input" placeholder="t.ex. 1938 eller 12 mars 1938">
+          </div>
+          <div class="form-group">
+            <label for="dn-died">Avled <span class="required">*</span></label>
+            <input type="text" id="dn-died" class="text-input" placeholder="t.ex. 14 april 2026">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="dn-symbol">Skrivsätt för datumraden</label>
+          <select id="dn-symbol" class="text-input">
+            <option value="star-cross">* född   † avliden (traditionellt)</option>
+            <option value="text">Född … / Avliden …</option>
+            <option value="dash">Endast årtal, med tankstreck</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dn-personal">Personlig mening <span class="required">*</span></label>
+          <textarea id="dn-personal" class="text-input" rows="2" placeholder="t.ex. Du lämnade oss stilla efter en tids sjukdom, omgiven av kärlek."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="dn-memory">Minnesmening <span class="form-label-hint">(valfritt)</span></label>
+          <textarea id="dn-memory" class="text-input" rows="2" placeholder="t.ex. En kärleksfull mor, farmor och vän — du saknas varje dag."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="dn-survivors">Efterlevande <span class="form-label-hint">(valfritt)</span></label>
+          <input type="text" id="dn-survivors" class="text-input" placeholder="t.ex. Sörjs djupt av maken Göran, barnen Karin och Peter med familjer">
+        </div>
+        <div class="dn-grid dn-grid-3">
+          <div class="form-group">
+            <label for="dn-fun-place">Begravning — plats <span class="form-label-hint">(valfritt)</span></label>
+            <input type="text" id="dn-fun-place" class="text-input" placeholder="t.ex. Hedvig Eleonora kyrka, Stockholm">
+          </div>
+          <div class="form-group">
+            <label for="dn-fun-date">Datum</label>
+            <input type="text" id="dn-fun-date" class="text-input" placeholder="t.ex. torsdagen den 7 maj">
+          </div>
+          <div class="form-group">
+            <label for="dn-fun-time">Tid</label>
+            <input type="text" id="dn-fun-time" class="text-input" placeholder="t.ex. 13.00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="dn-check"><input type="checkbox" id="dn-fun-later"> Tid och plats meddelas senare</label>
+        </div>
+        <div class="form-group">
+          <label for="dn-flowers">Rad om blommor eller minnesgåvor <span class="form-label-hint">(valfritt)</span></label>
+          <input type="text" id="dn-flowers" class="text-input" placeholder="t.ex. Blommor undanbedes. Gärna en gåva till Cancerfonden.">
+        </div>
+        <div class="form-group">
+          <label for="dn-place">Ort <span class="form-label-hint">(valfritt, sätts sist i annonsen)</span></label>
+          <input type="text" id="dn-place" class="text-input" placeholder="t.ex. Stockholm">
+        </div>
+      </div>
+
+      <p class="form-error hidden" id="dn-err"></p>
+      <button class="btn-primary" onclick="generateNotice()">Skapa dödsannons →</button>
+
+      <div id="dn-result-section" class="hidden">
+        <h3>Din dödsannons</h3>
+        <div class="doc-output" id="dn-notice-text"></div>
+        <div class="result-actions">
+          <button class="btn-primary btn-sm" onclick="copyNotice()">Kopiera</button>
+          <button class="btn-ghost btn-sm" onclick="window.print()">Skriv ut / spara som PDF</button>
+        </div>
+        <p class="copied-msg hidden" id="dn-copied">Kopierat!</p>
+        <p class="form-label-hint" style="margin-top:10px;">Utkast. Läs igenom och ändra fritt innan du lämnar texten till tidningen eller begravningsbyrån. Tidningen sätter den slutliga radbrytningen och lägger till eventuell symbol och foto.</p>
       </div>
 
       <h2>Vad är en dödsannons?</h2>
@@ -163,11 +265,47 @@
           <tr><td class="u-padding-8 u-border-1px-solid-ddd">Lokaltidning, med foto</td><td class="u-padding-8 u-border-1px-solid-ddd">1 000–2 000 kr</td></tr>
           <tr><td class="u-padding-8 u-border-1px-solid-ddd">DN / SvD</td><td class="u-padding-8 u-border-1px-solid-ddd">1 500–3 500 kr</td></tr>
           <tr><td class="u-padding-8 u-border-1px-solid-ddd">Digital minnessida</td><td class="u-padding-8 u-border-1px-solid-ddd">Gratis</td></tr>
-          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Efterplans dödsannonsgenerator</td><td class="u-padding-8 u-border-1px-solid-ddd">Gratis</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd"><a href="#generator">Efterplans dödsannonsverktyg</a> (skapar texten, du publicerar själv)</td><td class="u-padding-8 u-border-1px-solid-ddd">Gratis</td></tr>
         </tbody>
       </table>
 
       <p>Kostnaden för dödsannonsen betalas av dödsboet och räknas som en begravningskostnad.</p>
+
+      <h2>Vad kostar en dödsannons i olika tidningar?</h2>
+      <p>Tidningar tar betalt per spaltmillimeter, så priset styrs av hur stor annonsen är. Siffrorna nedan är ungefärliga 2026 för en <strong>normalstor annons utan foto</strong>. Utöver storleken påverkar veckodagen (lör–sön är dyrare), foto (tillägg 200–600 kr), symbol eller vinjett, och om annonsen även publiceras på tidningens webb (ingår ofta, annars 100–300 kr). Bekräfta alltid det exakta priset med tidningens annonsmottagning.</p>
+
+      <table class="u-width-full u-border-collapse u-margin-1em-0">
+        <thead>
+          <tr class="u-background-f0f0f0">
+            <th class="u-text-left u-padding-8 u-border-1px-solid-ddd">Tidning</th>
+            <th class="u-text-left u-padding-8 u-border-1px-solid-ddd">Ungefärligt pris, normalstor annons utan foto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Dagens Nyheter</td><td class="u-padding-8 u-border-1px-solid-ddd">3 000–6 000 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Svenska Dagbladet</td><td class="u-padding-8 u-border-1px-solid-ddd">2 500–5 500 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Sydsvenskan</td><td class="u-padding-8 u-border-1px-solid-ddd">2 000–4 500 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Göteborgs-Posten</td><td class="u-padding-8 u-border-1px-solid-ddd">2 000–4 000 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Aftonbladet / Expressen (rikstäckande familjesida)</td><td class="u-padding-8 u-border-1px-solid-ddd">1 500–3 500 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Större regiontidningar (UNT, VLT, NA, Barometern, HD m.fl.)</td><td class="u-padding-8 u-border-1px-solid-ddd">1 200–3 000 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Lokala dagstidningar och landsortstidningar</td><td class="u-padding-8 u-border-1px-solid-ddd">800–2 200 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Kyrkans Tidning</td><td class="u-padding-8 u-border-1px-solid-ddd">1 000–2 000 kr</td></tr>
+          <tr><td class="u-padding-8 u-border-1px-solid-ddd">Digital minnessida (Minnestunden, Fonus, Familjesidan)</td><td class="u-padding-8 u-border-1px-solid-ddd">Gratis</td></tr>
+        </tbody>
+      </table>
+
+      <p>Publicerar du i flera tidningar betalar du per tidning, men många tidningshus med gemensam annonsmottagning (t.ex. Bonnews och Gota Media) ger paketrabatt om du bokar samma annons i flera av deras titlar samtidigt. Fråga efter det.</p>
+
+      <h3>Vad avgör priset?</h3>
+      <ul>
+        <li><strong>Storlek i spaltmillimeter.</strong> Varje extra rad kostar. En kort text på 30–50 ord håller nere priset.</li>
+        <li><strong>Veckodag.</strong> Lördag och söndag har flest läsare och högst pris. Vardagar är billigare.</li>
+        <li><strong>Foto.</strong> Ett svartvitt porträtt är ett tillägg på 200–600 kr.</li>
+        <li><strong>Symbol och vinjett.</strong> Kors, ros, duva eller annan vinjett kan kosta extra hos vissa tidningar.</li>
+        <li><strong>Webbpublicering.</strong> Ingår ofta i priset, annars ett mindre tillägg.</li>
+      </ul>
+
+      <p>Vill du hålla nere kostnaden: skriv en kort annons, välj en vardag, hoppa över fotot i tidningen och lägg i stället ett foto på en gratis digital minnessida. <a href="#generator">Verktyget här ovanför</a> hjälper dig få ner texten till det väsentliga.</p>
 
       <h2>Dödsannons vs begravningsannons vs minnesannons</h2>
       <p>Begreppen används ofta synonymt men det finns nyanser:</p>
@@ -195,6 +333,101 @@
       </div>
     </article>
   </main>
+
+  <script>
+    // ─── Fristående dödsannons-generator ──────────────────────────────────
+    // Samma mönster som arvskifte-mall.html: ren klient-side, inget sparas
+    // eller skickas någonstans. Ingen del av app.js huvudflöde med avsikt.
+    function dnVal(id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    }
+    function dnShowError(msg) {
+      const el = document.getElementById('dn-err');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+    function dnClearError() {
+      document.getElementById('dn-err').classList.add('hidden');
+    }
+
+    function generateNotice() {
+      const name     = dnVal('dn-name');
+      const born     = dnVal('dn-born');
+      const died     = dnVal('dn-died');
+      const style    = dnVal('dn-symbol');
+      const personal = dnVal('dn-personal');
+      const memory   = dnVal('dn-memory');
+      const survivors = dnVal('dn-survivors');
+      const funPlace = dnVal('dn-fun-place');
+      const funDate  = dnVal('dn-fun-date');
+      const funTime  = dnVal('dn-fun-time');
+      const funLater = document.getElementById('dn-fun-later').checked;
+      const flowers  = dnVal('dn-flowers');
+      const place    = dnVal('dn-place');
+
+      dnClearError();
+      if (!name || !born || !died || !personal) {
+        dnShowError('Fyll i namn, född, avled och en personlig mening (fälten märkta med *).');
+        return;
+      }
+
+      let dateLine;
+      if (style === 'text') {
+        dateLine = `Född ${born}   Avliden ${died}`;
+      } else if (style === 'dash') {
+        dateLine = `${born} – ${died}`;
+      } else {
+        dateLine = `* ${born}   † ${died}`;
+      }
+
+      const parts = [name, dateLine, '', personal];
+      if (memory) parts.push('', memory);
+      if (survivors) parts.push('', survivors);
+
+      let funeralLine = '';
+      if (funLater) {
+        funeralLine = 'Tid och plats för begravningen meddelas senare.';
+      } else if (funPlace || funDate || funTime) {
+        let s = 'Begravningen äger rum';
+        if (funDate) s += ` ${funDate}`;
+        if (funTime) s += ` kl ${funTime}`;
+        if (funPlace) s += ` i ${funPlace}`;
+        funeralLine = s.replace(/\s+/g, ' ').trim() + '.';
+      }
+      if (funeralLine) parts.push('', funeralLine);
+      if (flowers) parts.push('', flowers);
+      if (place) parts.push('', place);
+
+      const text = parts.join('\n');
+
+      document.getElementById('dn-notice-text').textContent = text;
+      document.getElementById('dn-result-section').classList.remove('hidden');
+      document.getElementById('dn-copied').classList.add('hidden');
+      document.getElementById('dn-result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      window.plausible && window.plausible('free_tool_letter_generated', { props: { area: 'dodsannons' } });
+    }
+
+    function copyNotice() {
+      const text = document.getElementById('dn-notice-text').textContent;
+      const done = () => {
+        const msg = document.getElementById('dn-copied');
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 2000);
+        window.plausible && window.plausible('free_tool_letter_copied', { props: { area: 'dodsannons' } });
+      };
+      navigator.clipboard.writeText(text).then(done).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        done();
+      });
+    }
+  </script>
 
   <footer class="seo-footer">
     <p>© 2026 Efterplan · <a href="/">Tillbaka till appen</a> · <a href="/om.html">Om</a> · Ej juridisk rådgivning</p>
