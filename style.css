@@ -103,10 +103,12 @@
 .skip-link:focus { top: 0; }
 
 /* ─── FOCUS STYLES ──────────────────────────── */
+/* En enda fokusregel för hela sajten. Konsumerar --focus-ring
+   (djup sage, ~7.6:1 mot papper). Ändra tokenet i style-tokens.css. */
 :focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 body {
@@ -166,7 +168,7 @@ body {
   line-height: 1.2;
 }
 .logo-tagline {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 400;
   letter-spacing: 0;
@@ -219,6 +221,14 @@ body {
   letter-spacing: 0.005em;
   width: auto;
   border-radius: 8px;
+}
+
+/* Sekundär väg för återvändande besökare med sparad plan.
+   #id för att vinna över .btn-ghost { width: 100% } längre ned. */
+#landing-continue.landing-continue {
+  width: auto;
+  margin-top: var(--space-sm);
+  border-color: var(--rule-strong);
 }
 
 @keyframes ctaPulse {
@@ -280,8 +290,11 @@ body {
   align-items: center;
 }
 /* ─── LANDING ────────────────────────────────── */
+/* Sticky nav måste ha solid yta — annars glider brödtext under
+   ordmärket vid scroll (oläsbart). Matchar .seo-nav på innehållssidorna. */
 #screen-landing .nav {
-  background: transparent;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
 }
 .landing-hero {
   min-height: calc(100vh - 80px);
@@ -468,7 +481,7 @@ body {
 .landing-contact-link:hover { text-decoration: underline; }
 /* Fix #16: ta bort !important — mer specifik selektor räcker */
 .landing-section .legal-disclaimer {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   background: var(--grey-bg);
   border-radius: var(--radius-sm);
@@ -530,7 +543,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 6px 14px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--accent);
 }
@@ -539,22 +552,23 @@ body {
 .landing-section--howto {
   max-width: 920px;
 }
+/* "Så här går det till" — numrerad stegsekvens, inte en kort-strip.
+   Editorial: siffran bär tyngden, inget kort-krom. 2 kolonner på desktop. */
 .howto-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-md);
-  margin-top: var(--space-md);
+  grid-template-columns: 1fr;
+  gap: var(--space-lg) var(--space-xl);
+  margin-top: var(--space-lg);
+}
+@media (min-width: 640px) {
+  .howto-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .howto-card {
   position: relative;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  padding: 22px 18px 18px;
-  background: linear-gradient(160deg, var(--paper-card) 0%, var(--accent-light) 130%);
+  padding-top: 2px;
+  border-top: 1px solid var(--rule);
 }
-.howto-card--2, .howto-card--4 {
-  background: linear-gradient(160deg, var(--paper-card) 0%, var(--ember-tn) 130%);
-}
+.howto-card--2, .howto-card--4 { /* tint-varianterna borttagna — lugnare */ }
 .howto-num {
   display: inline-flex;
   align-items: center;
@@ -698,7 +712,7 @@ body {
 }
 
 .ob-reassure {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   margin-top: 6px;
   margin-bottom: 28px;
@@ -709,12 +723,15 @@ body {
 }
 
 .ob-title {
-  font-size: clamp(1.7rem, 4vw, 2.4rem);
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 60, 'SOFT' 40, 'wght' 460;
+  font-size: var(--fs-2xl);
+  font-weight: 460;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
   margin-bottom: 10px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .ob-hint {
@@ -843,7 +860,7 @@ body {
 .ob-text-input {
   width: 100%;
   border: none;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--rule-strong);
   border-radius: 0;
   padding: 12px 4px;
   font-size: 1.4rem;
@@ -969,7 +986,7 @@ body {
 /* ─── TEXT INPUT ─────────────────────────────── */
 .text-input {
   width: 100%;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
   font-size: 1rem;
@@ -1033,10 +1050,15 @@ body {
 }
 .plan-header { margin-bottom: 40px; }
 .plan-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 48, 'SOFT' 40, 'wght' 460;
+  font-size: var(--fs-xl);
+  font-weight: 460;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  text-wrap: balance;
   margin-bottom: 8px;
+  color: var(--ink);
 }
 .plan-sub {
   font-size: 1rem;
@@ -1159,7 +1181,7 @@ body {
 .task-title { font-size: 0.97rem; font-weight: 600; margin-bottom: 3px; }
 .task-desc { font-size: 0.85rem; color: var(--text-soft); line-height: 1.4; }
 .task-time {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   margin-top: 6px;
   font-weight: 500;
@@ -1223,7 +1245,7 @@ body {
   width: 100%;
   margin-bottom: 14px;
   padding: 10px 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-family: var(--font);
@@ -1245,7 +1267,7 @@ body {
 }
 .task-date-input {
   padding: 8px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-family: var(--font);
@@ -1322,7 +1344,7 @@ body {
 .doc-bulk-icon { font-size: 1.4rem; flex-shrink: 0; }
 .doc-bulk-text { flex: 1; }
 .doc-bulk-title { display: block; font-size: 1rem; font-weight: 700; }
-.doc-bulk-sub { display: block; font-size: 0.82rem; opacity: 0.8; margin-top: 2px; }
+.doc-bulk-sub { display: block; font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
 .doc-bulk-arrow { font-size: 1.2rem; flex-shrink: 0; opacity: 0.7; }
 
 .bulk-row {
@@ -1382,7 +1404,7 @@ body {
 .bulk-letter-name { font-weight: 700; font-size: 0.95rem; color: var(--accent); }
 .bulk-letter .doc-output { border: none; border-radius: 0; background: var(--bg-card); }
 .bulk-letter .copied-msg { margin: 0 16px 12px; }
-.btn-sm { padding: 8px 14px !important; font-size: 0.82rem !important; }
+.btn-sm { padding: 8px 14px !important; font-size: 0.85rem !important; }
 
 
 /* ─── MODALS ─────────────────────────────────── */
@@ -1462,7 +1484,7 @@ body {
   align-items: center;
 }
 .doc-type-title { font-size: 0.97rem; font-weight: 600; }
-.doc-type-sub { font-size: 0.83rem; color: var(--text-soft); }
+.doc-type-sub { font-size: 0.85rem; color: var(--text-soft); }
 
 /* ─── FORM ERROR ─────────────────────────────── */
 .form-error {
@@ -1706,8 +1728,8 @@ body {
   animation: toastIn 0.25s ease;
 }
 .app-toast.hidden { display: none; }
-.app-toast.is-error { background: #a3312a; }
-.app-toast.is-success { background: #2f6b4f; }
+.app-toast.is-error { background: var(--red); }
+.app-toast.is-success { background: var(--green); }
 
 /* ─── STARTED TASK STATE ─────────────────────── */
 .task-card.started {
@@ -1727,7 +1749,7 @@ body {
 }
 .task-started-badge {
   display: inline-block;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--accent);
   background: var(--bg-card);
@@ -1828,7 +1850,7 @@ body {
 .notify-new-input {
   flex: 1;
   font-size: 0.8rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   padding: 5px 8px;
   background: var(--bg);
@@ -1837,7 +1859,7 @@ body {
 }
 .notify-new-input:focus { outline: none; border-color: var(--accent); }
 .notify-add-btn {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   padding: 5px 12px;
   border-radius: var(--radius-sm);
@@ -1866,8 +1888,10 @@ body {
   height: 100%;
   background: var(--accent);
   border-radius: 0 2px 2px 0;
-  transition: width 0.35s ease;
-  width: 0%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
 }
 
 /* ─── Offline banner ─── */
@@ -1876,11 +1900,11 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background: #92400E;
-  color: #fff;
+  background: var(--ember-dk);
+  color: var(--paper);
   text-align: center;
   padding: 9px 20px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   z-index: 9999;
@@ -1937,7 +1961,7 @@ body {
 }
 .task-resource-link {
   display: inline-block;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-soft);
   text-decoration: none;
   font-weight: 500;
@@ -1965,8 +1989,10 @@ body {
   height: 100%;
   background: var(--accent);
   border-radius: 2px;
-  width: 0%;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── COMPLETION STATE ───────────────────────── */
@@ -1998,7 +2024,7 @@ body {
 
 /* ─── TASK CARD KEYBOARD ─────────────────────── */
 .task-card[tabindex="0"]:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: var(--radius);
 }
@@ -2064,8 +2090,8 @@ body {
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--green);
-  background: #EBF5EE;
-  border: 1px solid #C3DFC9;
+  background: var(--green-bg);
+  border: 1px solid color-mix(in oklab, var(--green) 22%, transparent);
   padding: 2px 8px;
   border-radius: 20px;
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -2168,11 +2194,11 @@ body {
   opacity: 0.55;
   cursor: default;
   pointer-events: none;
-  background: #F4F4F2;
+  background: var(--paper-soft);
   border-style: dashed;
 }
 .task-card--locked:hover { border-color: inherit; box-shadow: none; }
-.task-card--locked .task-check { background: #DDD; border-color: #CCC; }
+.task-card--locked .task-check { background: var(--paper-soft); border-color: var(--rule-strong); }
 .task-card--locked .task-title,
 .task-card--locked .task-time { color: var(--text-muted); }
 .task-lock {
@@ -2452,7 +2478,7 @@ body {
   gap: 6px 12px;
   margin: 24px 0 0;
   padding: 12px 16px;
-  background: var(--bg-secondary, #f7f7f5);
+  background: var(--paper-soft);
   border-radius: 10px;
   font-size: 0.8rem;
   color: var(--text-muted, #888);
@@ -2476,7 +2502,7 @@ body {
 .bill-delete:hover { color: var(--red); }
 .bills-empty { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 16px 0; }
 .bill-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; padding: 12px; background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border); }
-.bill-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; background: #fff; }
+.bill-input { padding: 8px 12px; border: 1px solid var(--rule-strong); border-radius: var(--radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; background: var(--paper-card); }
 .bill-amount-input { max-width: 160px; }
 
 /* ═══ ARKIV / DOKUMENTCENTRAL (T143–T148) ═══ */
@@ -2486,7 +2512,7 @@ body {
 .arkiv-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 16px; }
 .arkiv-filter-btn {
   padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 20px;
-  background: var(--bg-card); color: var(--text-soft); font-size: 0.82rem; font-weight: 500;
+  background: var(--bg-card); color: var(--text-soft); font-size: 0.85rem; font-weight: 500;
   cursor: pointer; transition: var(--transition); font-family: var(--font);
 }
 .arkiv-filter-btn:hover { border-color: var(--accent); }
@@ -2507,7 +2533,7 @@ body {
 .arkiv-item--dup { border-color: var(--yellow); }
 .arkiv-name { font-size: 0.92rem; font-weight: 600; background: none; border: none; padding: 0; font-family: var(--font); color: var(--text-primary); width: 100%; }
 .arkiv-name:focus { border-bottom: 1.5px solid var(--accent); }
-.arkiv-meta { font-size: 0.78rem; color: var(--text-muted); }
+.arkiv-meta { font-size: 0.8rem; color: var(--text-muted); }
 .arkiv-flags { display: flex; gap: 4px; margin-top: 4px; }
 .arkiv-flag-btn {
   font-size: 0.72rem; padding: 3px 9px; border-radius: 20px; border: 1.5px solid var(--border);
@@ -2532,7 +2558,7 @@ body {
 .arkiv-delete { background: none; border: none; color: var(--text-soft); font-size: 1.2rem; cursor: pointer; min-width: 36px; min-height: 36px; flex-shrink: 0; }
 .arkiv-delete:hover { color: var(--red); }
 .arkiv-empty { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 16px 0; }
-.arkiv-privacy-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }
+.arkiv-privacy-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }
 .bill-form-actions { display: flex; gap: 8px; }
 
 /* ═══ PDF PRINT BUTTON (T050) ════════════════ */
@@ -2542,7 +2568,7 @@ body {
   gap: 6px;
   margin-top: 12px;
   padding: 7px 14px;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--accent);
   background: transparent;
@@ -2557,11 +2583,11 @@ body {
 /* ═══ FREE PREVIEW (T030) ════════════════════ */
 .section--coming .task-list { opacity: 0.55; }
 .section-coming-tag {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  background: var(--bg-secondary, #f0f0ed);
+  background: var(--paper-soft);
   padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
@@ -2616,7 +2642,7 @@ body {
 
 /* Article meta (date stamp) */
 .seo-article .article-meta {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--ink-muted);
   margin-top: -0.5rem;
   margin-bottom: 0.25rem;
@@ -2807,20 +2833,29 @@ body {
   color: var(--ink-teal);
   text-decoration-color: var(--ember);
 }
+/* Footer-sitemap: flöde av block-länkar med tillräcklig träffyta (>=40px,
+   WCAG 2.5.8). Text-separatorerna (·) i markup kollapsas via font-size:0
+   på behållaren och återställs på länkarna. */
 .landing-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px 4px;
+  font-size: 0;
+  margin-top: var(--space-sm);
+}
+.landing-footer-links a {
+  color: inherit;
   font-size: var(--fs-xs);
-  margin-top: var(--space-xs);
-  opacity: 0.9;
+  line-height: 1.3;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
 }
-.landing-footer-links a { color: inherit; }
+.landing-footer-links a:hover {
+  background: color-mix(in oklab, var(--paper) 12%, transparent);
+}
 
-/* ─── FOCUS: AAA visibility on both paper and dark surfaces ── */
-:focus-visible {
-  outline: 2px solid var(--ember);
-  outline-offset: 3px;
-  border-radius: 3px;
-  transition: none;
-}
+/* Fokusregeln bor nu högst upp (en enda :focus-visible, --focus-ring). */
 
 /* ─── REDUCED MOTION ─────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -2830,10 +2865,15 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .btn-primary:hover { transform: none; }
+  /* Nollställ hover-förflyttningar generellt, inte bara primärknappen */
+  .btn-primary:hover,
+  .btn-large:hover,
+  .task-card:hover,
+  .howto-card:hover,
+  a:hover {
+    transform: none !important;
+  }
 }
-.landing-footer-links { font-size: 0.8rem; margin-top: 6px; opacity: 0.7; }
-.landing-footer-links a { color: inherit; }
 
 /* Utility classes for moved inline styles */
 .u-padding-8 { padding: 8px; }
@@ -2925,7 +2965,7 @@ body {
   margin: 0;
 }
 .bopp-section-hint {
-  font-size: 0.83rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   margin: 0 0 12px;
   line-height: 1.5;
@@ -2963,7 +3003,7 @@ body {
 }
 .bopp-remove:hover { background: var(--red-bg); color: var(--red); }
 .bopp-empty {
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   font-style: italic;
   margin: 0;

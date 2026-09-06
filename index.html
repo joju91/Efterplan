@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<!-- Google tag (gtag.js) — lazy loaded -->
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-T1T40TYPQB');
-  window.addEventListener('load', function() {
-    var s = document.createElement('script');
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-T1T40TYPQB';
-    s.async = true;
-    document.head.appendChild(s);
-  });
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Efterplan – Vad gör man när någon dör? Checklista och guide</title>
@@ -116,8 +103,8 @@
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
-  <link rel="stylesheet" href="style.css?v=4" />
-  <link rel="stylesheet" href="style-tokens.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="style-tokens.css?v=6" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -139,7 +126,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: LANDING
 ════════════════════════════════════════════ -->
-<div id="screen-landing" class="screen active">
+<div id="screen-landing" class="screen active" role="main">
   <nav class="nav">
     <div class="logo">Efterplan</div>
     <div class="nav-landing-links">
@@ -159,6 +146,7 @@
         <li>Du kan stänga och komma tillbaka senare</li>
       </ul>
       <button class="btn-primary btn-large" onclick="startOnboarding()">Börja här</button>
+      <button class="btn-ghost landing-continue" id="landing-continue" hidden onclick="resumePlan()">Fortsätt din plan →</button>
       <p class="landing-note">Gratis. Det du fyller i finns kvar — även om du stänger sidan.</p>
       <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> checklista, plan, PDF, bouppteckningsöversikt. <strong>49 kr engångsbetalning:</strong> alla färdigskrivna brev — till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons, med mera.</p>
     </div>
@@ -326,7 +314,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: ONBOARDING (fullscreen, conversational)
 ════════════════════════════════════════════ -->
-<div id="screen-onboarding" class="screen">
+<div id="screen-onboarding" class="screen" role="main">
 
   <div class="ob-progress-bar-wrap" aria-hidden="true">
     <div class="ob-progress-bar-fill" id="ob-progress-bar-fill"></div>
@@ -492,14 +480,14 @@
         <input type="text" id="deceased-name" class="ob-text-input" placeholder="Förnamn Efternamn" autocomplete="off"
           aria-label="Den avlidnes förnamn och efternamn"
           onkeydown="if(event.key==='Enter') document.getElementById('deceased-date').focus()" />
-        <p class="ob-skip">Frivilligt — du kan hoppa över detta.</p>
+        <p class="ob-skip">Frivilligt. Du kan lägga till det senare.</p>
 
         <p class="ob-check-group-label">När gick personen bort?</p>
-        <p class="ob-hint">Så kan vi räkna ut bouppteckningsfrist, Skatteverket-frist m.fl. som riktiga datum åt dig — annars visar vi ungefärlig text istället.</p>
+        <p class="ob-hint">Då räknar vi ut bouppteckningsfristen, Skatteverkets frist och de andra tidsgränserna som riktiga datum åt dig. Utan datum visar vi ungefärlig text i stället.</p>
         <input type="date" id="deceased-date" class="ob-text-input" autocomplete="off"
           aria-label="Dödsdatum"
           onkeydown="if(event.key==='Enter') obGoTo(4)" />
-        <p class="ob-skip">Frivilligt — du kan lägga till det senare.</p>
+        <p class="ob-skip">Frivilligt. Du kan lägga till det senare.</p>
 
         <label class="ob-check ob-check--sub">
           <input type="checkbox" id="ob-reminder-optin" onchange="toggleReminderEmail()">
@@ -517,9 +505,9 @@
     <!-- Step 4 — personnr -->
     <div class="ob-step" id="ob-step-4">
       <div class="ob-content">
-        <p class="ob-label">Steg 4 av 4 — helt frivilligt</p>
+        <p class="ob-label">Steg 4 av 4</p>
         <h2 class="ob-title">Personnummer?</h2>
-        <p class="ob-hint">Vi fyller i det automatiskt i alla brev du genererar — sparar tid. Annars kan du fylla i det manuellt direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
+        <p class="ob-hint">Helt frivilligt. Fyller du i det nu skriver vi in det åt dig i alla brev — annars fyller du i det för hand direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
         <input type="text" id="deceased-personnr" class="ob-text-input" placeholder="ÅÅÅÅMMDD-XXXX" autocomplete="off"
           aria-label="Den avlidnes personnummer" inputmode="numeric"
           onkeydown="if(event.key==='Enter') generatePlan()" />
@@ -553,7 +541,7 @@
       <button class="plan-tab active" id="tab-plan" onclick="switchTab('plan')">Min plan</button>
       <button class="plan-tab" id="tab-docs" onclick="switchTab('docs')">Dokument</button>
       <button class="plan-tab" id="tab-bopp" onclick="switchTab('bopp')">Bouppteckning</button>
-      <button class="plan-tab" id="tab-arkiv" onclick="switchTab('arkiv')">🗂 Arkiv</button>
+      <button class="plan-tab" id="tab-arkiv" onclick="switchTab('arkiv')">Arkiv</button>
     </div>
   </div>
 
@@ -601,7 +589,7 @@
           <div class="section-header">
             <span class="section-dot dot-yellow" id="dot-week"></span>
             <h2 class="section-title">Denna vecka</h2>
-            <span class="section-coming-tag">Fler steg visas här</span>
+            <span class="section-coming-tag">Fylls på efterhand</span>
             <span class="section-count" id="count-week"></span>
             <span class="section-done-badge hidden" id="badge-week">✓ Klar</span>
             <button class="section-hide-done-btn" id="hide-done-week" onclick="toggleHideDoneSection('week')">Dölj klara</button>
@@ -613,7 +601,7 @@
           <div class="section-header">
             <span class="section-dot dot-grey" id="dot-later"></span>
             <h2 class="section-title">Senare</h2>
-            <span class="section-coming-tag">Fler steg visas här</span>
+            <span class="section-coming-tag">Fylls på efterhand</span>
             <span class="section-count" id="count-later"></span>
             <span class="section-done-badge hidden" id="badge-later">✓ Klar</span>
             <button class="section-hide-done-btn" id="hide-done-later" onclick="toggleHideDoneSection('later')">Dölj klara</button>
@@ -1106,7 +1094,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=25" defer></script>
+<script src="app.js?v=30" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
@@ -1163,7 +1151,7 @@
 </div>
 
 <!-- T177: Läsbar-länk-vy (visas när ?shared= finns i URL:en) -->
-<div id="shared-view" class="screen" style="max-width:600px;margin:0 auto;padding:24px 16px;">
+<div id="shared-view" class="screen" role="main" style="max-width:600px;margin:0 auto;padding:24px 16px;">
   <p class="landing-brand">Efterplan</p>
   <h1 id="shared-view-title" class="plan-title">Delad plan</h1>
   <p class="modal-sub">Det här är en läsbar kopia — inga ändringar sparas här. <a href="/">Skapa din egen plan →</a></p>
