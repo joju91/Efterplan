@@ -18,16 +18,8 @@
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"></noscript>
-  <link rel="stylesheet" href="style.css?v=3">
-  <link rel="stylesheet" href="style-tokens.css?v=5">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T1T40TYPQB"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-T1T40TYPQB');
-  </script>
+  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style-tokens.css?v=6">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -80,14 +72,16 @@
     ]
   }
   </script>
+  <script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>
 </head>
 <body>
+  <a href="#main" class="skip-link">Hoppa till innehållet</a>
   <nav class="seo-nav">
     <span class="logo-text">Efterplan</span>
     <a href="/" class="btn-primary">Skapa din plan →</a>
   </nav>
 
-  <main class="seo-main">
+  <main class="seo-main" id="main">
     <article class="seo-article">
       <h1>Gratis checklista och uppsägningsbrev för abonnemang</h1>
 
@@ -180,7 +174,7 @@
 
       <div class="seo-cta">
         <p>Det här täcker bara abonnemang. Behöver du hjälp med hela dödsboet — bouppteckning, bank, bostad, arvskifte och fler brev?</p>
-        <a href="/" class="btn-primary" onclick="gtag('event','free_tool_to_app_click',{area:'abonnemang'})">Skapa din fullständiga plan gratis →</a>
+        <a href="/" class="btn-primary" onclick="window.plausible && window.plausible('free_tool_to_app_click', { props: {area:'abonnemang'} })">Skapa din fullständiga plan gratis →</a>
       </div>
 
       <h2>Vanliga frågor</h2>
@@ -256,7 +250,7 @@
         localStorage.setItem(AB_STORAGE_KEY, JSON.stringify(keys));
       } catch (e) {}
 
-      gtag('event', 'free_tool_checklist_updated', { area: 'abonnemang', count: String(services.length) });
+      window.plausible && window.plausible('free_tool_checklist_updated', { props: { area: 'abonnemang', count: String(services.length) } });
     }
 
     function escapeHtml(str) {
@@ -309,7 +303,7 @@
       mailto.href = `mailto:?subject=${encodeURIComponent('Uppsägningsbrev — ' + service)}&body=${encodeURIComponent(text)}`;
       document.getElementById('ab-letter-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      gtag('event', 'free_tool_letter_generated', { area: 'abonnemang' });
+      window.plausible && window.plausible('free_tool_letter_generated', { props: { area: 'abonnemang' } });
     }
 
     function copyFreeLetter() {
@@ -318,7 +312,7 @@
         const msg = document.getElementById('ab-copied');
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 2000);
-        gtag('event', 'free_tool_letter_copied', { area: 'abonnemang' });
+        window.plausible && window.plausible('free_tool_letter_copied', { props: { area: 'abonnemang' } });
       };
       navigator.clipboard.writeText(text).then(done).catch(() => {
         const ta = document.createElement('textarea');

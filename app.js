@@ -126,22 +126,42 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-function goToLanding() { showScreen('screen-landing'); }
+function goToLanding() {
+  showScreen('screen-landing');
+  // Visa "Fortsätt din plan" om det finns en sparad plan att återvända till.
+  const cont = document.getElementById('landing-continue');
+  if (cont) {
+    let hasPlan = false;
+    try { hasPlan = !!localStorage.getItem('efterplan_state'); } catch (e) {}
+    cont.hidden = !hasPlan;
+  }
+}
+
+// Återuppta en sparad plan (byggs upp om den inte redan finns i minnet).
+function resumePlan() {
+  if (!Array.isArray(state.tasks) || !state.tasks.length) {
+    try {
+      const saved = localStorage.getItem('efterplan_state');
+      if (saved) {
+        Object.assign(state, JSON.parse(saved));
+        buildTasks();
+        applyDeadlines();
+        applyLagfartDeadline();
+        loadTaskState();
+        loadBills();
+        loadDocuments();
+        renderPlan();
+      }
+    } catch (e) {}
+  }
+  showScreen('screen-plan');
+}
 
 // ─── ANALYTICS ───────────────────────────────
 // Plausible custom events — safe noop if script hasn't loaded
 function track(event, props) {
   if (typeof window.plausible === 'function') {
     window.plausible(event, props ? { props } : undefined);
-  }
-
-  if (typeof window.gtag === 'function') {
-    const gaEvent = String(event || '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '_')
-      .replace(/^_+|_+$/g, '')
-      .slice(0, 40) || 'custom_event';
-    window.gtag('event', gaEvent, props || {});
   }
 }
 
@@ -271,8 +291,7 @@ function obShowStep(step) {
   // Update label dynamically
   const labelEl = el.querySelector('.ob-label');
   if (labelEl) {
-    const suffix = step === 4 ? ' — helt frivilligt' : '';
-    labelEl.textContent = `Steg ${Math.min(step, OB_TOTAL)} av ${OB_TOTAL}${suffix}`;
+    labelEl.textContent = `Steg ${Math.min(step, OB_TOTAL)} av ${OB_TOTAL}`;
   }
   if (OB_FOCUS_IDS[step]) {
     setTimeout(() => document.getElementById(OB_FOCUS_IDS[step])?.focus(), 350);
@@ -280,7 +299,7 @@ function obShowStep(step) {
   // Update visual progress bar
   const fillEl = document.getElementById('ob-progress-bar-fill');
   if (fillEl) {
-    fillEl.style.width = `${Math.round((Math.min(step, OB_TOTAL) / OB_TOTAL) * 100)}%`;
+    fillEl.style.transform = `scaleX(${Math.min(step, OB_TOTAL) / OB_TOTAL})`;
   }
 }
 
@@ -1160,7 +1179,7 @@ function loadTaskState() {
 function renderPlan() {
   const name = state.name;
   document.getElementById('plan-title').textContent =
-    name ? `${name}s efterplan` : 'Din efterplan';
+    name ? `Efter ${name}` : 'Din plan';
   document.getElementById('plan-sub').textContent =
     'Uppdateras allteftersom du går vidare. Det finns inget fel sätt att börja.';
 
@@ -1215,6 +1234,13 @@ function renderPlan() {
   document.getElementById('count-today').textContent = `${today.length} uppgifter`;
   document.getElementById('count-week').textContent  = `${week.length} uppgifter`;
   document.getElementById('count-later').textContent = `${later.length} uppgifter`;
+
+  // "Fylls på efterhand"-taggen bara när sektionen faktiskt är gles —
+  // annars säger den emot de uppgifter som redan står där.
+  const weekTag  = document.querySelector('#section-week .section-coming-tag');
+  const laterTag = document.querySelector('#section-later .section-coming-tag');
+  if (weekTag)  weekTag.hidden  = week.length  > 1;
+  if (laterTag) laterTag.hidden = later.length > 1;
 
   updateProgress();
   renderBills();
@@ -1469,7 +1495,7 @@ function updateProgress() {
   const fillEl    = document.getElementById('progress-bar-fill');
   const completionEl = document.getElementById('completion-message');
 
-  if (fillEl) fillEl.style.width = pct + '%';
+  if (fillEl) fillEl.style.transform = `scaleX(${total ? done / total : 0})`;
 
   if (done === total) {
     summaryEl.innerHTML = `<strong>${total} av ${total}</strong> uppgifter klara`;
@@ -2612,7 +2638,7 @@ function generateLetter() {
   const sender  = document.getElementById('letter-sender').value.trim();
   const email   = document.getElementById('letter-email').value.trim();
   clearFormError('err-letter');
-  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2648,7 +2674,7 @@ function generateBank() {
   const relation = document.getElementById('bank-relation').value.trim();
   const email    = document.getElementById('bank-email').value.trim();
   clearFormError('err-bank');
-  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2700,7 +2726,7 @@ function generateForsakring() {
   const relation = document.getElementById('fors-relation').value.trim();
   const email    = document.getElementById('fors-email').value.trim();
   clearFormError('err-forsakring');
-  if (!bolag || !sender || !relation || !email) { showFormError('err-forsakring', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!bolag || !sender || !relation || !email) { showFormError('err-forsakring', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2821,7 +2847,7 @@ function generateSkatteverket() {
   const relation = document.getElementById('skv-relation').value.trim();
   const email    = document.getElementById('skv-email').value.trim();
   clearFormError('err-skatteverket');
-  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i alla fält markerade med *.'); return; }
   saveSenderInfo(sender, email);
 
   const { deceased, personnr, today } = getDocContext();
@@ -2844,7 +2870,7 @@ function generateFullmakt() {
   const agent    = document.getElementById('fullmakt-agent').value.trim();
   const relation = document.getElementById('fullmakt-relation').value.trim();
   clearFormError('err-fullmakt');
-  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i de obligatoriska fälten (märkta med *).'); return; }
+  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i alla fält markerade med *.'); return; }
 
   const { deceased, personnr, today } = getDocContext();
   const grantors = grantor2 ? `${grantor1} och ${grantor2}` : grantor1;
@@ -3087,7 +3113,7 @@ async function tryRenderSharedView() {
   }
   try {
     const data = await window.efterplanAuth.resolveSharedLink(sharedId, key);
-    titleEl.textContent = data.name ? `${data.name}s plan` : 'Delad plan';
+    titleEl.textContent = data.name ? `Plan efter ${data.name}` : 'Delad plan';
     const groups = { today: [], week: [], later: [] };
     (data.tasks || []).forEach(t => { (groups[t.urgency] || groups.later).push(t); });
     const labels = { today: 'Gör idag', week: 'Denna vecka', later: 'Senare' };
@@ -3265,15 +3291,15 @@ function boppRowDelbagare(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Namn" value="${_esc(item.namn)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Namn" aria-label="Dödsbodelägarens namn" value="${_esc(item.namn)}"
       oninput="boppData.delbagare[${i}].namn=this.value;boppSave()">
-    <select class="bill-input bopp-select" onchange="boppData.delbagare[${i}].roll=this.value;boppSave()">
+    <select class="bill-input bopp-select" aria-label="Roll i dödsboet" onchange="boppData.delbagare[${i}].roll=this.value;boppSave()">
       <option value="arvinge"${item.roll==='arvinge'?' selected':''}>Arvinge</option>
       <option value="testamentstagare"${item.roll==='testamentstagare'?' selected':''}>Testamentstagare</option>
       <option value="efterlevande_make"${item.roll==='efterlevande_make'?' selected':''}>Efterlevande make/maka</option>
       <option value="annan"${item.roll==='annan'?' selected':''}>Annan</option>
     </select>
-    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort delägare">×</button>`;
   return row;
 }
 
@@ -3281,11 +3307,11 @@ function boppRowTillgang(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Bankkonto Swedbank)" value="${_esc(item.beskrivning)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Bankkonto Swedbank)" aria-label="Tillgångens beskrivning" value="${_esc(item.beskrivning)}"
       oninput="boppData.tillgangar[${i}].beskrivning=this.value;boppSave()">
-    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.varde||''}"
+    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" aria-label="Tillgångens värde i kronor" value="${_esc(String(item.varde||''))}"
       oninput="boppData.tillgangar[${i}].varde=this.value;boppSave();boppUpdateSummary()">
-    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort tillgång">×</button>`;
   return row;
 }
 
@@ -3293,11 +3319,11 @@ function boppRowSkuld(item, i) {
   const row = document.createElement('div');
   row.className = 'bopp-row';
   row.innerHTML = `
-    <input class="bill-input bopp-input-name" type="text" placeholder="Borgenär (skuld till, t.ex. Swedbank)" value="${_esc(item.beskrivning)}"
+    <input class="bill-input bopp-input-name" type="text" placeholder="Borgenär (skuld till, t.ex. Swedbank)" aria-label="Borgenär — vem skulden gäller" value="${_esc(item.beskrivning)}"
       oninput="boppData.skulder[${i}].beskrivning=this.value;boppSave()">
-    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" value="${item.belopp||''}"
+    <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" aria-label="Skuldens belopp i kronor" value="${_esc(String(item.belopp||''))}"
       oninput="boppData.skulder[${i}].belopp=this.value;boppSave();boppUpdateSummary()">
-    <button class="bopp-remove" onclick="boppRemove('skulder',${i})" aria-label="Ta bort">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('skulder',${i})" aria-label="Ta bort skuld">×</button>`;
   return row;
 }
 
