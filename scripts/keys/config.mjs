@@ -42,8 +42,14 @@ export const SERVICES = {
   google: {
     label: 'Google (GA4 / Search Console service account)',
     dashboardUrl: 'https://console.cloud.google.com/iam-admin/serviceaccounts?project=efterplan',
-    vars: [],
+    // Låg tidigare bara som GitHub Actions-secrets → keys:sync (som bara
+    // läser Vercel) hade inget att hämta. Speglar dem nu även i Vercel
+    // (production) så att sync faktiskt fångar dem, precis som för de
+    // andra tjänsterna. Kräver en rotation (keys:rotate -- google) en gång
+    // för att fylla i Vercel-sidan — GitHub-secreten som redan finns speglas inte automatiskt bakåt.
+    vars: ['GA4_SERVICE_ACCOUNT_JSON', 'GSC_SERVICE_ACCOUNT_JSON', 'GA4_PROPERTY_ID'],
     githubSecrets: ['GA4_SERVICE_ACCOUNT_JSON', 'GSC_SERVICE_ACCOUNT_JSON', 'GA4_PROPERTY_ID'],
+    vercelSensitive: true,
     // Verifierat direkt ur secret-innehållet 2026-08-24 (ett engångs debug-
     // workflow-steg skrev ut BARA client_email, aldrig private_key, sen
     // borttaget). client_email i BÅDA GA4_SERVICE_ACCOUNT_JSON och
