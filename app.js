@@ -34,14 +34,23 @@ function clearPremium() {
   applyPremiumState();
 }
 
+// Ett brev är gratis för att visa vad Efterplan skriver — försäkringsbrevet,
+// eftersom det oftast är det som ger mest tillbaka (TGL/livförsäkring som
+// familjen inte visste fanns). Resten låses upp för 49 kr.
+const FREE_DOC_TYPES = ['forsakring'];
+
+function isDocLocked(type) {
+  return PAYWALL_ENABLED && !isPremium() && !FREE_DOC_TYPES.includes(type);
+}
+
 function applyPremiumState() {
   const premium = isPremium();
   document.body.classList.toggle('is-premium', premium);
   const card = document.getElementById('paywall-card');
   if (card) card.classList.toggle('hidden', !PAYWALL_ENABLED || premium);
-  ['doc-btn-skatteverket', 'doc-btn-fullmakt'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('hidden', PAYWALL_ENABLED && !premium);
+  // Alla brevknappar syns alltid; de betalda får ett lås tills 49 kr betalats.
+  document.querySelectorAll('.doc-type-btn[data-doc], .doc-bulk-cta[data-doc]').forEach(el => {
+    el.classList.toggle('doc-locked', isDocLocked(el.dataset.doc));
   });
   // Re-render the plan so locked-task cards reflect the new state.
   if (typeof renderPlan === 'function' && state && Array.isArray(state.tasks) && state.tasks.length) {
@@ -2515,6 +2524,7 @@ function getDocContext() {
 }
 
 function showDocForm(type) {
+  if (isDocLocked(type)) { showDocPaywall(type); return; }
   document.getElementById('doc-chooser').classList.add('hidden');
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
 
@@ -2591,6 +2601,24 @@ function backToDocChooser() {
   document.getElementById('doc-result-bulk').classList.add('hidden');
   document.getElementById('doc-chooser').classList.remove('hidden');
   window.scrollTo(0, 0);
+}
+
+// Klick på ett låst brev → visa paywall-kortet i stället för formuläret.
+function showDocPaywall(type) {
+  track('paywall_shown', { doc: type || 'okänd' });
+  if (typeof switchTab === 'function') switchTab('docs');
+  document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
+  document.getElementById('doc-result-bulk')?.classList.add('hidden');
+  document.getElementById('doc-chooser').classList.remove('hidden');
+  const card = document.getElementById('paywall-card');
+  if (card) {
+    card.classList.remove('hidden');
+    card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    card.classList.remove('paywall-card--flash');
+    void card.offsetWidth; // reflow så animationen kan spelas om
+    card.classList.add('paywall-card--flash');
+    card.querySelector('.paywall-cta')?.focus({ preventScroll: true });
+  }
 }
 
 // ─── BULK UPPSÄGNING ──────────────────────────
