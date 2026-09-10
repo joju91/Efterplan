@@ -103,7 +103,7 @@
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
-  <link rel="stylesheet" href="style.css?v=12" />
+  <link rel="stylesheet" href="style.css?v=13" />
   <link rel="stylesheet" href="style-tokens.css?v=6" />
   <script type="application/ld+json">
   {
@@ -148,7 +148,7 @@
       <button class="btn-primary btn-large" onclick="startOnboarding()">Börja här</button>
       <button class="btn-ghost landing-continue" id="landing-continue" hidden onclick="resumePlan()">Fortsätt din plan →</button>
       <p class="landing-note">Gratis. Det du fyller i finns kvar — även om du stänger sidan.</p>
-      <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> checklista, plan, PDF, bouppteckningsöversikt. <strong>49 kr engångsbetalning:</strong> alla färdigskrivna brev — till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons, med mera.</p>
+      <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> hela checklistan, planen, PDF, bouppteckningsöversikt och det färdiga brevet till försäkringsbolaget. <strong>49 kr engångsbetalning:</strong> de övriga breven — till banken, Skatteverket, fullmakt för dödsboet, dödsannons och uppsägning av abonnemang.</p>
     </div>
   </div>
 
@@ -644,7 +644,7 @@
             </div>
           </div>
         </div>
-        <button class="doc-bulk-cta" onclick="showDocForm('bulk')">
+        <button class="doc-bulk-cta" data-doc="bulk" onclick="showDocForm('bulk')">
           <span class="doc-bulk-icon" aria-hidden="true">⚡</span>
           <div class="doc-bulk-text">
             <span class="doc-bulk-title">Avsluta flera tjänster på en gång</span>
@@ -653,32 +653,33 @@
           <span class="doc-bulk-arrow">→</span>
         </button>
         <div class="doc-type-grid">
-          <button class="doc-type-btn" onclick="showDocForm('letter')">
+          <button class="doc-type-btn" data-doc="forsakring" onclick="showDocForm('forsakring')">
+            <span class="doc-badge doc-badge--free">Gratis</span>
+            <span class="doc-icon" aria-hidden="true">🛡</span>
+            <span class="doc-type-title">Till försäkringsbolaget</span>
+            <span class="doc-type-sub">Meddela dödsfallet — och missa inte liv-/tjänstegrupplivförsäkring (TGL) som kan betalas ut</span>
+          </button>
+          <button class="doc-type-btn" data-doc="letter" onclick="showDocForm('letter')">
             <span class="doc-icon" aria-hidden="true">✉</span>
             <span class="doc-type-title">Uppsägningsbrev</span>
             <span class="doc-type-sub">Avsluta ett abonnemang</span>
           </button>
-          <button class="doc-type-btn" onclick="showDocForm('bank')">
+          <button class="doc-type-btn" data-doc="bank" onclick="showDocForm('bank')">
             <span class="doc-icon" aria-hidden="true">🏦</span>
             <span class="doc-type-title">Till banken</span>
             <span class="doc-type-sub">Meddela banken om dödsfallet</span>
           </button>
-          <button class="doc-type-btn" onclick="showDocForm('annons')">
+          <button class="doc-type-btn" data-doc="annons" onclick="showDocForm('annons')">
             <span class="doc-icon" aria-hidden="true">📰</span>
             <span class="doc-type-title">Dödsannons</span>
             <span class="doc-type-sub">Formulera ett minnesvärigt meddelande</span>
           </button>
-          <button class="doc-type-btn" onclick="showDocForm('forsakring')">
-            <span class="doc-icon" aria-hidden="true">🛡</span>
-            <span class="doc-type-title">Till försäkringsbolaget</span>
-            <span class="doc-type-sub">Meddela försäkringsbolaget om dödsfallet</span>
-          </button>
-          <button class="doc-type-btn hidden" id="doc-btn-skatteverket" onclick="showDocForm('skatteverket')">
+          <button class="doc-type-btn" data-doc="skatteverket" id="doc-btn-skatteverket" onclick="showDocForm('skatteverket')">
             <span class="doc-icon" aria-hidden="true">🏛</span>
             <span class="doc-type-title">Skatteverket</span>
             <span class="doc-type-sub">Avsluta F-skatt / enskild firma</span>
           </button>
-          <button class="doc-type-btn hidden" id="doc-btn-fullmakt" onclick="showDocForm('fullmakt')">
+          <button class="doc-type-btn" data-doc="fullmakt" id="doc-btn-fullmakt" onclick="showDocForm('fullmakt')">
             <span class="doc-icon" aria-hidden="true">📋</span>
             <span class="doc-type-title">Fullmakt</span>
             <span class="doc-type-sub">Ge en person rätt att företräda dödsboet</span>
@@ -688,8 +689,8 @@
         <!-- Paywall card — dold tills PAYWALL_ENABLED = true i app.js -->
         <div id="paywall-card" class="paywall-card hidden">
           <div class="paywall-lock" aria-hidden="true">🔒</div>
-          <h2 class="paywall-title">Lås upp alla dokument</h2>
-          <p class="paywall-desc">Lås upp alla brevmallar: till banken, försäkringsbolaget, Skatteverket, uppsägning av abonnemang, fullmakt och dödsannons.</p>
+          <h2 class="paywall-title">Lås upp de övriga breven</h2>
+          <p class="paywall-desc">Försäkringsbrevet är gratis. För 49 kr låser du upp resten — brev till banken, Skatteverket, fullmakt för dödsboet, dödsannons och uppsägning av abonnemang.</p>
           <button class="btn-primary paywall-cta" onclick="handlePaywallCTA()">Lås upp — 49 kr</button>
           <p class="paywall-note">Engångsbetalning. Inga prenumerationer.</p>
         </div>
@@ -1079,7 +1080,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=32" defer></script>
+<script src="app.js?v=33" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
