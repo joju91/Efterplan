@@ -103,7 +103,7 @@
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
-  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="style.css?v=12" />
   <link rel="stylesheet" href="style-tokens.css?v=6" />
   <script type="application/ld+json">
   {
@@ -385,27 +385,12 @@
 
           <p class="ob-check-group-label">Bostad</p>
           <label class="ob-check">
-            <input type="checkbox" data-key="fastighet" id="ob-check-fastighet" onchange="updateCheckboxState(this.dataset.key); toggleFastighetDetails()">
+            <input type="checkbox" data-key="fastighet" id="ob-check-fastighet" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
             <span class="ob-check-label">Ägde sin bostad
-              <span class="ob-check-hint">Villa, radhus, bostadsrätt eller lantbruksfastighet — den avlidna <strong>ägde</strong> (inte hyrde)</span>
+              <span class="ob-check-hint">Villa, radhus, bostadsrätt eller lantbruksfastighet — den avlidna <strong>ägde</strong> (inte hyrde). Typ av bostad och mäklare frågar vi om senare, i själva uppgiften.</span>
             </span>
           </label>
-          <div class="ob-fastighet-details hidden" id="ob-fastighet-details">
-            <p class="ob-check-group-label ob-check-group-label--sub">Vilken typ av bostad?</p>
-            <div class="ob-choices ob-choices--compact">
-              <button type="button" class="ob-choice ob-choice--sm" data-key="bostadTyp" data-val="villa" onclick="obChooseSub(this)">Villa / fritidshus</button>
-              <button type="button" class="ob-choice ob-choice--sm" data-key="bostadTyp" data-val="brf" onclick="obChooseSub(this)">Bostadsrätt</button>
-              <button type="button" class="ob-choice ob-choice--sm" data-key="bostadTyp" data-val="lantbruk" onclick="obChooseSub(this)">Lantbruks-/skogsfastighet</button>
-            </div>
-            <label class="ob-check ob-check--sub">
-              <input type="checkbox" data-key="maklare" onchange="updateCheckboxState(this.dataset.key)">
-              <span class="ob-check-box"></span>
-              <span class="ob-check-label">Anlitar ni mäklare för försäljningen?
-                <span class="ob-check-hint">Då sköter mäklaren visning, budgivning och köpekontrakt — vi tar bort det från din checklista</span>
-              </span>
-            </label>
-          </div>
           <label class="ob-check">
             <input type="checkbox" data-key="hyresratt" onchange="updateCheckboxState(this.dataset.key)">
             <span class="ob-check-box"></span>
@@ -1094,7 +1079,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=31" defer></script>
+<script src="app.js?v=32" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
