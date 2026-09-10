@@ -5,7 +5,11 @@
 
 // ─── FEATURE FLAGS ───────────────────────────
 const PAYWALL_ENABLED = true;  // Stripe is wired (api/create-checkout + webhook)
-const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked when PAYWALL_ENABLED
+// Hela checklistan är gratis (Jonas 2026-09-10) — betalning gäller bara
+// breven/dokumenten, inte uppgifterna. Sätt LOCK_TASK_PREVIEW = true för
+// att återinföra "första N stegen gratis, resten låsta".
+const LOCK_TASK_PREVIEW = false;
+const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked — bara aktivt om LOCK_TASK_PREVIEW
 
 // ─── PREMIUM ENTITLEMENT ─────────────────────
 // localStorage is the fast path. Server-side source of truth is Supabase
@@ -357,6 +361,20 @@ function toggleReminderEmail() {
 const TASK_LIBRARY = [
 
   // ── ALWAYS ─────────────────────────────────
+  // "Konstatera dödsfallet" ligger absolut först — det är det enda som
+  // måste ske innan något annat, och kan bockas av direkt om sjukhus/
+  // läkare redan gjort det.
+  {
+    id: 'konstatera_dodsfall',
+    title: 'Konstatera dödsfallet',
+    desc: '<strong>Om dödsfallet var oväntat eller plötsligt — ring 112 omedelbart.</strong><br><br>Om personen avled hemma efter en längre tids sjukdom ringer du jourhavande läkare via 1177 — de skickar en läkare som utfärdar dödsbeviset. Utan ett utfärdat dödsbevis kan inget annat steg påbörjas.<br><br>Har sjukhus, hospice eller läkare redan konstaterat dödsfallet? Då är det här steget klart — bocka av det.',
+    urgency: 'today',
+    time: 'Direkt',
+    phone: '112',
+    phone2: '1177',
+    triggers: [],
+    notesPlaceholder: 'Noterat klockslag, vem som kontaktades…',
+  },
   {
     id: 'viktiga_dokument',
     title: 'Hitta viktiga dokument',
@@ -368,17 +386,6 @@ const TASK_LIBRARY = [
     resources: [
       { label: 'Skatteverket — beställ dödsfallsintyg', url: 'https://www.skatteverket.se/privat/folkbokforing/dodsfall.html' },
     ],
-  },
-  {
-    id: 'konstatera_dodsfall',
-    title: 'Konstatera dödsfallet',
-    desc: '<strong>Om dödsfallet var oväntat eller plötsligt — ring 112 omedelbart.</strong><br><br>Om personen avled hemma efter en längre tids sjukdom ringer du jourhavande läkare via 1177 — de skickar en läkare som utfärdar dödsbeviset. Utan ett utfärdat dödsbevis kan inget annat steg påbörjas.',
-    urgency: 'today',
-    time: 'Direkt',
-    phone: '112',
-    phone2: '1177',
-    triggers: [],
-    notesPlaceholder: 'Noterat klockslag, vem som kontaktades…',
   },
   {
     id: 'narmaste_anhörig',
@@ -1273,10 +1280,10 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0, sectio
 
   tasks.forEach((task, i) => {
     const globalIdx = globalOffset + i;
-    const isLocked  = PAYWALL_ENABLED && !isPremium() && globalIdx >= PREVIEW_STEPS;
+    const isLocked  = LOCK_TASK_PREVIEW && PAYWALL_ENABLED && !isPremium() && globalIdx >= PREVIEW_STEPS;
 
     // T030: insert preview CTA once, right before the first locked task
-    if (PAYWALL_ENABLED && !isPremium() && globalIdx === PREVIEW_STEPS) {
+    if (LOCK_TASK_PREVIEW && PAYWALL_ENABLED && !isPremium() && globalIdx === PREVIEW_STEPS) {
       container.appendChild(buildPreviewCTACard());
     }
 
