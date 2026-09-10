@@ -5,7 +5,11 @@
 
 // ─── FEATURE FLAGS ───────────────────────────
 const PAYWALL_ENABLED = true;  // Stripe is wired (api/create-checkout + webhook)
-const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked when PAYWALL_ENABLED
+// Hela checklistan är gratis (Jonas 2026-09-10) — betalning gäller bara
+// breven/dokumenten, inte uppgifterna. Sätt LOCK_TASK_PREVIEW = true för
+// att återinföra "första N stegen gratis, resten låsta".
+const LOCK_TASK_PREVIEW = false;
+const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked — bara aktivt om LOCK_TASK_PREVIEW
 
 // ─── PREMIUM ENTITLEMENT ─────────────────────
 // localStorage is the fast path. Server-side source of truth is Supabase
@@ -245,26 +249,11 @@ function obChoose(btn) {
   if (nextBtn) nextBtn.disabled = false;
 }
 
-function obChooseSub(btn) {
-  const key = btn.dataset.key;
-  const val = btn.dataset.val;
-  state[key] = val;
-  btn.closest('.ob-choices').querySelectorAll('.ob-choice').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  track('checkbox_toggle', { key, val });
-}
 
-// T193 — visa bostadstyp + mäklare-fråga bara när "Ägde sin bostad" är ikryssad
-function toggleFastighetDetails() {
-  const checked = document.getElementById('ob-check-fastighet')?.checked;
-  const details = document.getElementById('ob-fastighet-details');
-  if (details) details.classList.toggle('hidden', !checked);
-  if (!checked) {
-    state.bostadTyp = null;
-    state.maklare = false;
-  }
-}
-
+// T193 → 2026-09-10: bostadstyp + mäklare frågas inte längre i onboarding.
+// De fälls ut i själva uppgiften "Besluta om bostadens framtid" i planen
+// (renderBostadWidget nedan). "Ägde sin bostad" (state.fastighet) räcker
+// för att uppgiften ska visas; typ/mäklare finjusterar sedan triggers.
 function obGoTo(step) {
   track('onboarding_step', { step });
   const current = document.querySelector('.ob-step.active');
@@ -357,6 +346,20 @@ function toggleReminderEmail() {
 const TASK_LIBRARY = [
 
   // ── ALWAYS ─────────────────────────────────
+  // "Konstatera dödsfallet" ligger absolut först — det är det enda som
+  // måste ske innan något annat, och kan bockas av direkt om sjukhus/
+  // läkare redan gjort det.
+  {
+    id: 'konstatera_dodsfall',
+    title: 'Konstatera dödsfallet',
+    desc: '<strong>Om dödsfallet var oväntat eller plötsligt — ring 112 omedelbart.</strong><br><br>Om personen avled hemma efter en längre tids sjukdom ringer du jourhavande läkare via 1177 — de skickar en läkare som utfärdar dödsbeviset. Utan ett utfärdat dödsbevis kan inget annat steg påbörjas.<br><br>Har sjukhus, hospice eller läkare redan konstaterat dödsfallet? Då är det här steget klart — bocka av det.',
+    urgency: 'today',
+    time: 'Direkt',
+    phone: '112',
+    phone2: '1177',
+    triggers: [],
+    notesPlaceholder: 'Noterat klockslag, vem som kontaktades…',
+  },
   {
     id: 'viktiga_dokument',
     title: 'Hitta viktiga dokument',
@@ -368,17 +371,6 @@ const TASK_LIBRARY = [
     resources: [
       { label: 'Skatteverket — beställ dödsfallsintyg', url: 'https://www.skatteverket.se/privat/folkbokforing/dodsfall.html' },
     ],
-  },
-  {
-    id: 'konstatera_dodsfall',
-    title: 'Konstatera dödsfallet',
-    desc: '<strong>Om dödsfallet var oväntat eller plötsligt — ring 112 omedelbart.</strong><br><br>Om personen avled hemma efter en längre tids sjukdom ringer du jourhavande läkare via 1177 — de skickar en läkare som utfärdar dödsbeviset. Utan ett utfärdat dödsbevis kan inget annat steg påbörjas.',
-    urgency: 'today',
-    time: 'Direkt',
-    phone: '112',
-    phone2: '1177',
-    triggers: [],
-    notesPlaceholder: 'Noterat klockslag, vem som kontaktades…',
   },
   {
     id: 'narmaste_anhörig',
@@ -1273,10 +1265,10 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0, sectio
 
   tasks.forEach((task, i) => {
     const globalIdx = globalOffset + i;
-    const isLocked  = PAYWALL_ENABLED && !isPremium() && globalIdx >= PREVIEW_STEPS;
+    const isLocked  = LOCK_TASK_PREVIEW && PAYWALL_ENABLED && !isPremium() && globalIdx >= PREVIEW_STEPS;
 
     // T030: insert preview CTA once, right before the first locked task
-    if (PAYWALL_ENABLED && !isPremium() && globalIdx === PREVIEW_STEPS) {
+    if (LOCK_TASK_PREVIEW && PAYWALL_ENABLED && !isPremium() && globalIdx === PREVIEW_STEPS) {
       container.appendChild(buildPreviewCTACard());
     }
 
@@ -1352,6 +1344,8 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0, sectio
 
     const docLocationHtml = task.id === 'viktiga_dokument' ? renderDocumentLocationList() : '';
 
+    const bostadWidgetHtml = task.id === 'fastighet_boende' ? renderBostadWidget() : '';
+
     const docHtml = task.hasDoc && !task.done
       ? `<button class="task-expand-doc" onclick="event.stopPropagation();switchTab('docs');showDocForm('${task.hasDoc}')">Generera dokument →</button>`
       : '';
@@ -1403,6 +1397,7 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0, sectio
         ${resourcesHtml}
         ${notifyHtml}
         ${docLocationHtml}
+        ${bostadWidgetHtml}
         ${checklistHtml}
         ${notesHtml}
         <div class="task-expand-actions">
@@ -2203,6 +2198,63 @@ function _buildNotifyListInner() {
           aria-label="Ta bort ${p.name}">×</button>
       </div>`;
   }).join('');
+}
+
+// ── Bostads-widget (uppgiften "Besluta om bostadens framtid") ────────
+// Typ av bostad + mäklare frågades tidigare i onboarding; nu här,
+// kontextuellt. Ändring räknar om planen (lantbruk-trigger, mäklare tar
+// bort visnings-/budgivningssteg).
+function renderBostadWidget() {
+  const typ = state.bostadTyp || '';
+  const opt = (val, label) =>
+    `<button type="button" class="ob-choice ob-choice--sm${typ === val ? ' selected' : ''}"` +
+    ` onclick="event.stopPropagation();setBostadTyp('${val}')">${label}</button>`;
+  return `<div class="bostad-widget">
+    <p class="bostad-widget-label">Vilken typ av bostad är det?</p>
+    <div class="ob-choices ob-choices--compact">
+      ${opt('villa', 'Villa / fritidshus')}
+      ${opt('brf', 'Bostadsrätt')}
+      ${opt('lantbruk', 'Lantbruks-/skogsfastighet')}
+    </div>
+    <label class="ob-check ob-check--sub bostad-widget-maklare" onclick="event.stopPropagation()">
+      <input type="checkbox" ${state.maklare ? 'checked' : ''}
+        onchange="event.stopPropagation();setBostadMaklare(this.checked)">
+      <span class="ob-check-box"></span>
+      <span class="ob-check-label">Ni anlitar mäklare för försäljningen
+        <span class="ob-check-hint">Då sköter mäklaren visning, budgivning och köpekontrakt — vi tar bort de stegen från din checklista.</span>
+      </span>
+    </label>
+  </div>`;
+}
+
+function setBostadTyp(val) {
+  state.bostadTyp = (state.bostadTyp === val) ? null : val;
+  track('checkbox_toggle', { key: 'bostadTyp', val: state.bostadTyp || 'none' });
+  recomputePlan('fastighet_boende');
+}
+
+function setBostadMaklare(checked) {
+  state.maklare = !!checked;
+  track('checkbox_toggle', { key: 'maklare', val: String(!!checked) });
+  recomputePlan('fastighet_boende');
+}
+
+// Räkna om planen efter ett svar som ändrar vilka uppgifter som gäller.
+// Behåller markeringar/anteckningar (loadTaskState) och öppnar uppgiften
+// användaren jobbar i igen.
+function recomputePlan(reopenTaskId) {
+  saveState();
+  buildTasks();
+  applyDeadlines();
+  applyLagfartDeadline();
+  loadTaskState();
+  renderPlan();
+  if (reopenTaskId && document.getElementById('expand-' + reopenTaskId)) {
+    expandedTaskId = null;
+    toggleTask(reopenTaskId);
+    document.getElementById('task-card-' + reopenTaskId)
+      ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
 }
 
 function renderNotifyList() {

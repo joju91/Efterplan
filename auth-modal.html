@@ -26,8 +26,8 @@
     <div id="auth-view-in" class="hidden">
       <p class="modal-sub">Inloggad som <strong id="auth-email-display"></strong>.</p>
       <div class="u-padding-12-14 u-background-f0f0f0 u-border-radius-10px u-margin-bottom-16px">
-        <div id="auth-progress" class="u-font-weight-600">— av — steg klara</div>
-        <div id="auth-last-sync" class="modal-sub u-margin-top-4px">Senaste synk: —</div>
+        <div id="auth-progress" class="u-font-weight-600">Din plan</div>
+        <div id="auth-last-sync" class="modal-sub u-margin-top-4px">Senaste synk: hämtar…</div>
       </div>
       <button type="button" id="auth-sync-btn" class="btn-ghost btn-sm u-width-full u-margin-bottom-8px">Synka nu</button>
       <button type="button" id="auth-signout-btn" class="btn-ghost btn-sm u-width-full">Logga ut</button>
@@ -97,7 +97,8 @@
       if (res && res.error) throw res.error;
       status.textContent = 'Länk skickad — kolla din e-post.';
     } catch (err) {
-      status.textContent = 'Kunde inte skicka länk: ' + (err && err.message || err);
+      console.warn('[auth] magic link failed', err);
+      status.textContent = 'Det gick inte att skicka länken just nu. Kontrollera din uppkoppling och försök igen om en stund.';
     }
   });
 
