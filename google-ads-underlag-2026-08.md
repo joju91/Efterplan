@@ -2,6 +2,15 @@
 
 Byggt på riktig Search Console-data (90 dagar, hämtad 2026-08-15): snittposition 43 organiskt, nästan ingen trafik. Målet är att fylla trafikgapet med billig betald trafik på lågkonkurrens-sökord medan länkbyggandet (SBF, Lavendla, Röda Korset m.fl.) ger effekt på sikt.
 
+> **Launch-läge 2026-09-10:** Kör det första testet efter
+> **`ADS-LAUNCH-A.md`** — bara annonsgrupp **1 (Arvskiftesavtal)** och
+> **3 (Säga upp abonnemang)**, 75 kr/dag i 2 veckor, Plausible+UTM som
+> mätning (ingen Google-kod). Annonsgrupp 2 (Dödsboanmälan) och 4
+> (Bouppteckning) är avsiktligt pausade i testet — informationssökningar,
+> dyra, konkurrerar med eget gratismaterial, konverterar inte till 49 kr.
+> Landningssidorna för grupp 1 och 3 är trycktestade i browser
+> (formulär → brev → `free_tool_letter_generated`) — tratten är hel.
+
 ## Så här kommer du igång
 1. Skapa ett Google Ads-konto på [ads.google.com](https://ads.google.com) om du inte redan har ett.
 2. Skapa en **Sökkampanj** (Search), mål: Webbplatstrafik eller Leads (inte "Försäljning" — ni har inget e-handelsflöde att spåra ännu).
