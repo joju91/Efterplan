@@ -43,7 +43,13 @@ export default async function handler(req, res) {
       console.warn('[verify-checkout] supabase upsert skipped', e?.message);
     }
 
-    return res.status(200).json({ ok: true, email, status: 'paid' });
+    return res.status(200).json({
+      ok: true,
+      email,
+      status: 'paid',
+      amount_total: session.amount_total ?? null, // öre — klienten skickar /100 till Google Ads
+      currency: session.currency || null,
+    });
   } catch (err) {
     console.error('[verify-checkout]', err);
     return res.status(500).json({ ok: false, error: 'verify_failed' });
