@@ -85,6 +85,23 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Global .hidden — vissa komponenter (auth-vyn, räkningsformuläret) saknade
+   egen scoped .hidden-regel och renderades trots klassen. En regel för alla.
+   Komponentspecifika `.x.hidden { display: block !important }` (t.ex. print)
+   har högre specificitet och vinner fortfarande. */
+.hidden { display: none !important; }
+
+/* Skärmläsar-only (används av bl.a. inloggnings-formulärets etikett) */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ─── SKIP LINK ──────────────────────────────── */
 .skip-link {
   position: absolute;
@@ -1767,6 +1784,22 @@ body {
   border-top: 1px solid var(--border);
   padding-top: 12px;
 }
+
+/* Bostads-widget i uppgiften "Besluta om bostadens framtid" */
+.bostad-widget {
+  margin: 12px 0 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.bostad-widget-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.bostad-widget-maklare { margin-top: 10px; }
 .notify-list-header {
   display: flex;
   align-items: center;
