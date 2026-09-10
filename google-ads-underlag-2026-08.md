@@ -11,6 +11,8 @@ Byggt på riktig Search Console-data (90 dagar, hämtad 2026-08-15): snittpositi
 ## Budget
 **Förslag: 75 kr/dag (~2 250 kr/månad), testperiod 2 veckor.** Lågkonkurrens-sökorden nedan har historiskt legat under 5 kr/klick i liknande nischer, så 75 kr/dag ger uppskattningsvis 15–25 klick/dag att lära av. Justera ner om CPC blir högre än väntat — pausa annonsgrupper med CPC över 10 kr snarare än att låta budgeten ätas upp av ett enda dyrt sökord.
 
+**Max CPC: 3 kr** (manuellt bud, inte Smart Bidding förrän Alternativ B nedan är på plats). Vid 49 kr/brev håller break-even bara om kostnaden per klick ligger lågt — 3 kr ger marginal även vid en försiktig konverteringsgrad. Sätt takbudet på 3 kr per sökord/annonsgrupp i Google Ads, och pausa annonsgrupper som inte får klick alls på den nivån istället för att höja taket.
+
 ## Annonsgrupp 1: Arvskiftesavtal
 **Landningssida:** [arvskifte-mall.html](https://efterplan.se/arvskifte-mall.html)
 
