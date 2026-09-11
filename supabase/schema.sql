@@ -18,10 +18,20 @@ create table if not exists public.plans (
   id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null references public.users(id) on delete cascade,
   state_json text not null default '{}',
+  -- T258 (moats): var i processen ärendet befinner sig, avlett ur state_json
+  -- av supabase-client.js (bouppRegDatum satt? 'arvskifte'-uppgiften avbockad?)
+  -- vid varje savePlan(). Inte användarinmatat — bara en läsbar återspegling.
+  phase      text not null default 'bouppteckning'
+             check (phase in ('bouppteckning', 'arvskifte', 'klar')),
   updated_at timestamptz not null default now()
 );
 
 create unique index if not exists plans_user_id_key on public.plans(user_id);
+
+-- Backfill för databaser där plans skapades innan phase-kolumnen fanns.
+alter table public.plans
+  add column if not exists phase text not null default 'bouppteckning'
+  check (phase in ('bouppteckning', 'arvskifte', 'klar'));
 
 create table if not exists public.task_completions (
   id           uuid primary key default gen_random_uuid(),

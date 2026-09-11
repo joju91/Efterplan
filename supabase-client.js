@@ -133,13 +133,38 @@ const SUPABASE_CONFIG = {
     return currentUser;
   }
 
+  // T258 (moats) — härleder ärendets fas ur samma data som redan sparas, så
+  // inget extra fält behöver fyllas i av användaren. bouppRegDatum satt →
+  // bouppteckningen är klar och boet är i arvskiftesfasen; 'arvskifte'-
+  // uppgiften avbockad → hela ärendet är klart.
+  function derivePhase(snapObj) {
+    try {
+      const innerState = snapObj.efterplan_state ? JSON.parse(snapObj.efterplan_state) : {};
+      const tasks = snapObj.efterplan_tasks ? JSON.parse(snapObj.efterplan_tasks) : {};
+      const arvskifte = tasks.arvskifte;
+      const arvskifteDone = arvskifte === true || (arvskifte && arvskifte.done === true);
+      if (arvskifteDone) return 'klar';
+      if (innerState.bouppRegDatum) return 'arvskifte';
+      return 'bouppteckning';
+    } catch (_) {
+      return 'bouppteckning';
+    }
+  }
+
   async function savePlan(stateJson) {
     await initSupabase();
     if (!client || !currentUser) return null;
+    let snapObj = stateJson;
+    if (typeof stateJson === 'string') {
+      try { snapObj = JSON.parse(stateJson); } catch (_) { snapObj = {}; }
+    }
     const payload = typeof stateJson === 'string' ? stateJson : JSON.stringify(stateJson);
     const { data, error } = await client
       .from('plans')
-      .upsert({ user_id: currentUser.id, state_json: payload }, { onConflict: 'user_id' })
+      .upsert(
+        { user_id: currentUser.id, state_json: payload, phase: derivePhase(snapObj) },
+        { onConflict: 'user_id' }
+      )
       .select('id, updated_at')
       .single();
     if (error) { console.warn('[efterplan] savePlan', error); return null; }
