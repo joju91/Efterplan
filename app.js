@@ -202,12 +202,39 @@ function showScreen(id) {
 
 function goToLanding() {
   showScreen('screen-landing');
-  // Visa "Fortsätt din plan" om det finns en sparad plan att återvända till.
+  // Visa "Fortsätt din plan" om det finns en sparad plan att återvända till —
+  // med namn och färdigandel, så det känns som *deras* pågående ärende och
+  // inte en generisk knapp.
   const cont = document.getElementById('landing-continue');
-  if (cont) {
-    let hasPlan = false;
-    try { hasPlan = !!localStorage.getItem('efterplan_state'); } catch (e) {}
-    cont.hidden = !hasPlan;
+  if (!cont) return;
+  let savedState = null;
+  try {
+    const raw = localStorage.getItem('efterplan_state');
+    if (raw) savedState = JSON.parse(raw);
+  } catch (e) {}
+  cont.hidden = !savedState;
+  if (!savedState) return;
+
+  const labelEl = document.getElementById('landing-continue-label');
+  const progressEl = document.getElementById('landing-continue-progress');
+  if (labelEl) {
+    labelEl.textContent = savedState.name
+      ? `Fortsätt planen för ${savedState.name} →`
+      : 'Fortsätt din plan →';
+  }
+  if (progressEl) {
+    let doneCount = 0, totalCount = 0;
+    try {
+      const tasks = JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
+      totalCount = Object.keys(tasks).length;
+      doneCount = Object.values(tasks).filter(t => t === true || (t && t.done)).length;
+    } catch (e) {}
+    if (totalCount > 0) {
+      progressEl.textContent = `${doneCount} av ${totalCount} uppgifter klara`;
+      progressEl.hidden = false;
+    } else {
+      progressEl.hidden = true;
+    }
   }
 }
 
