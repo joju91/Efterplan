@@ -32,6 +32,8 @@ jobs:
             https://efterplan.se/checklista-dodsbo.html
             https://efterplan.se/bouppteckning-guide.html
             https://efterplan.se/dodsannons.html
+            https://efterplan.se/vad-gora-nar-nagon-dor.html
+            https://efterplan.se/gratis-checklista-abonnemang.html
           # configPath, INTE budgetPath: budgetPath är Lighthouse "budgets.json"
           # -formatet (ett annat, inkompatibelt schema) och utan någotdera
           # hoppar actionen tyst över assert-steget helt, se T225-sessionen.
