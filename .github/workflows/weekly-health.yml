@@ -16,13 +16,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Broken link check
-        uses: lycheeverse/lychee-action@v1
+        uses: nick-fields/retry@v3
         with:
-          args: >-
-            --verbose --no-progress
-            --exclude '^https://fonts\.(gstatic|googleapis)\.com/$'
-            './**/*.html'
-          fail: true
+          # lychee-action laddar ner sin binär från GitHub Releases vid varje
+          # körning (ingen cache) — en sporadisk CDN-hicka gav "not in gzip
+          # format" och en falsk röd körning 2026-09-14. Retry:ar hela steget
+          # (inte bara nedladdningen) så en riktig trasig länk fortfarande
+          # fäller jobbet, bara efter 3 försök istället för 1.
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 15
+          shell: bash
+          command: |
+            rm -rf "$HOME/.local/bin/lychee" lychee-*.tar.gz lychee
+            curl -sSL -o lychee.tar.gz \
+              "https://github.com/lycheeverse/lychee/releases/download/v0.15.0/lychee-v0.15.0-x86_64-unknown-linux-gnu.tar.gz"
+            tar -xzf lychee.tar.gz
+            mkdir -p "$HOME/.local/bin"
+            install -t "$HOME/.local/bin" -D lychee
+            "$HOME/.local/bin/lychee" --verbose --no-progress \
+              --exclude '^https://fonts\.(gstatic|googleapis)\.com/$' \
+              './**/*.html'
 
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@v11
