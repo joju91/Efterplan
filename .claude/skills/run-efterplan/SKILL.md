@@ -7,26 +7,27 @@ Efterplan is a static HTML/CSS/vanilla-JS site (no build step, no bundler)
 plus a handful of Vercel serverless functions under `api/`. There are two
 separate things to drive here, and they don't run the same way:
 
-- **Frontend UI** — served locally via `.claude/launch.json`'s "Efterplan
-  static" config (`python -m http.server 3001`), driven with the
-  `mcp__Claude_Browser__*` tools (this environment's off-the-shelf
-  browser harness — no `chromium-cli` binary here, use these instead).
-- **`/api/*` endpoints** — Vercel serverless functions. The static
-  server does **not** serve these. Drive them with `curl` against the
-  deployed site (`https://efterplan.se`) directly.
+- **Frontend UI** — served locally via `python -m http.server 3001`, driven
+  with `mcp__Claude_Browser__*` tools if available, otherwise Playwright
+  (see fallback below).
+- **`/api/*` endpoints** — Vercel serverless functions. The static server
+  does **not** serve these. Drive them with `curl` against the deployed site
+  (`https://efterplan.se`) directly.
 
 All paths below are relative to the repo root.
 
 ## Prerequisites
 
-Nothing to install — Python 3 (for `http.server`) and Node/npx are
-already present in this environment. No `npm install` needed for the
-frontend; it's plain HTML/CSS/JS with no build step.
+Nothing to install — Python 3 (for `http.server`) and Node are already
+present in this environment. Playwright is at `/opt/node22/lib/node_modules/playwright`
+with Chromium at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`. No
+`npm install` needed for the frontend; it's plain HTML/CSS/JS with no build step.
 
-## Run (agent path) — Frontend UI
+## Run (agent path) — Frontend UI via mcp__Claude_Browser__*
 
-1. Launch the static server + open a tab (uses the config already in
-   `.claude/launch.json`):
+Use this path if `mcp__Claude_Browser__preview_start` is available in the session.
+
+1. Launch the static server + open a tab:
 
    ```
    mcp__Claude_Browser__preview_start { "name": "Efterplan static" }
@@ -92,6 +93,91 @@ actually displayed in the UI — if it errors with "Browser pane is not
 displayed," fall back to `get_page_text` (`mcp__Claude_Browser__get_page_text`)
 or `read_page` to verify content/state instead of a visual capture.
 
+---
+
+## Run (agent path) — Frontend UI via Playwright (fallback)
+
+Use this path when `mcp__Claude_Browser__*` tools are NOT available (e.g.
+cloud/scheduled sessions). Verified working 2026-09-22.
+
+**Import:** Playwright is a CommonJS module — use default import, not named:
+
+```js
+import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
+const { chromium } = pkg;
+```
+
+**Launch server first:**
+
+```bash
+cd /home/user/Efterplan
+python3 -m http.server 3001 --directory . &>/tmp/http.log &
+sleep 1
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/   # should print 200
+```
+
+**Drive the app — complete onboarding helper:**
+
+```js
+import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
+const { chromium } = pkg;
+
+const browser = await chromium.launch({
+  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  headless: true
+});
+const page = await browser.newPage();
+
+// Helper: click first VISIBLE button matching regex
+async function clickVisible(label, regex) {
+  const btns = page.locator('button').filter({ hasText: regex });
+  const count = await btns.count();
+  for (let i = 0; i < count; i++) {
+    const btn = btns.nth(i);
+    if (await btn.isVisible()) { await btn.click(); console.log('Clicked:', label); return true; }
+  }
+  console.log('NOT FOUND (visible):', label); return false;
+}
+
+await page.goto('http://localhost:3001/', { waitUntil: 'networkidle' });
+
+// Full onboarding: Börja här → Förälder → 4×Nästa/Visa min plan
+await page.locator('text=Börja här').first().click();
+await page.locator('button, [role="button"]').filter({ hasText: /Förälder/i }).first().click();
+await clickVisible('Nästa 1→2', /Nästa/i);
+await page.waitForTimeout(400);
+await clickVisible('Nästa 2→3', /Nästa/i);
+await page.waitForTimeout(400);
+await clickVisible('Nästa 3→4', /Nästa/i);
+await page.waitForTimeout(400);
+await clickVisible('Visa min plan', /Visa min plan|Nästa/i);
+await page.waitForTimeout(800);
+
+// Verify plan screen
+const tabs = await page.locator('.plan-tab').allTextContents();
+console.log('Tabs:', tabs);   // Min plan, Dokument, Bouppteckning, Arkiv
+
+await browser.close();
+```
+
+**Key gotcha for Nästa-clicks:** the app keeps ALL onboarding steps in the
+DOM simultaneously (toggling `display:none`/`flex`). Each step has its own
+`Nästa`-button — only one is visible at a time. Always iterate over all
+matching buttons and click the first **visible** one, never `.first()` alone.
+
+**Expected console errors (harmless in sandbox):** `ERR_TUNNEL_CONNECTION_FAILED`
+for `plausible.io`, `cdn.jsdelivr.net`, Google Fonts — these are blocked by
+the cloud proxy. They don't affect app functionality.
+
+**Stop server when done:**
+
+```bash
+kill $(lsof -ti:3001) 2>/dev/null
+```
+
+---
+
 ## Run (agent path) — `/api/*` endpoints
 
 These only exist on Vercel (production or preview deploys) — there is
@@ -151,3 +237,6 @@ No automated test suite in this repo as of this writing (no
 - **`/api/*` calls made through the local static server 404/fail** —
   it's `python -m http.server`, a pure static file server. Vercel
   functions only run on an actual Vercel deployment.
+- **Playwright is CommonJS** — `import { chromium } from '...'` throws
+  `Named export 'chromium' not found`. Use default import + destructure:
+  `import pkg from '...'; const { chromium } = pkg;`
