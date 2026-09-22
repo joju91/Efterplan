@@ -26,4 +26,4 @@ jobs:
         working-directory: ga4-dashboard
         env:
           PLAUSIBLE_API_KEY: ${{ secrets.PLAUSIBLE_API_KEY }}
-        run: node scripts/funnel-check.mjs "${{ inputs.period }}" >> "$GITHUB_STEP_SUMMARY"
+        run: node scripts/funnel-check.mjs "${{ inputs.period }}" | tee -a "$GITHUB_STEP_SUMMARY"
