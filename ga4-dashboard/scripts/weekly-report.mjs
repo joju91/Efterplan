@@ -14,12 +14,12 @@ import 'dotenv/config';
 const REPO_ROOT = path.resolve(process.cwd(), '..');
 const today     = new Date().toISOString().slice(0, 10);
 const outFile   = path.join(REPO_ROOT, `veckorapport-${today}.md`);
-const propertyId = process.env.GA4_PROPERTY_ID;
+const PLAUSIBLE_SITE_ID = process.env.PLAUSIBLE_SITE_ID || 'efterplan.se';
 
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 
 function buildAuth(extraScopes = []) {
-  const scopes = ['https://www.googleapis.com/auth/analytics.readonly', ...extraScopes];
+  const scopes = [...extraScopes];
   const json = process.env.GA4_SERVICE_ACCOUNT_JSON;
   if (json) {
     let creds;
@@ -59,40 +59,36 @@ async function fetchGscPositions() {
   }
 }
 
-async function ga4(propertyId, body) {
-  const auth = buildAuth();
-  const ad = google.analyticsdata({ version: 'v1beta', auth });
-  const r = await ad.properties.runReport({ property: `properties/${propertyId}`, requestBody: body });
-  return r.data;
+// Sajten bytte spårning från GA4 till Plausible 2026-09-02 (commit c06ab65,
+// scripts/swap-analytics.mjs) — cookiefritt, matchar integritetslöftet.
+// GA4 tar därför inte längre emot data (rapporten visade 0 sessions/users).
+async function plausible(qs) {
+  const apiKey = process.env.PLAUSIBLE_API_KEY;
+  if (!apiKey) throw new Error('PLAUSIBLE_API_KEY missing');
+  const url = `https://plausible.io/api/v1/stats/${qs}${qs.includes('?') ? '&' : '?'}site_id=${encodeURIComponent(PLAUSIBLE_SITE_ID)}`;
+  const r = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || `Plausible ${r.status}`);
+  return j;
 }
 
 async function fetchKpis() {
-  if (!propertyId) return { error: 'GA4_PROPERTY_ID missing' };
-  const range = [{ startDate: '7daysAgo', endDate: 'today' }];
   try {
-    const tot = await ga4(propertyId, {
-      dateRanges: range,
-      metrics: [{ name: 'sessions' }, { name: 'totalUsers' }, { name: 'engagementRate' }],
-    });
-    const ch = await ga4(propertyId, {
-      dateRanges: range,
-      metrics: [{ name: 'sessions' }],
-      dimensions: [{ name: 'sessionDefaultChannelGroup' }],
-    });
-    const ev = await ga4(propertyId, {
-      dateRanges: range,
-      metrics: [{ name: 'eventCount' }],
-      dimensions: [{ name: 'eventName' }],
-      dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: {
-        values: ['onboarding_start', 'plan_generated', 'task_completed']
-      } } },
-    });
+    const agg = await plausible('aggregate?period=7d&metrics=visits,visitors,bounce_rate');
+    const channelsJson = await plausible('breakdown?period=7d&property=visit:channel&metrics=visits');
+    const eventNames = ['onboarding_start', 'plan_generated', 'task_completed'];
+    const events = {};
+    for (const name of eventNames) {
+      const j = await plausible(`aggregate?period=7d&metrics=events&filters=${encodeURIComponent(`event:name==${name}`)}`);
+      events[name] = num(j.results?.events?.value);
+    }
+    const bounceRate = num(agg.results?.bounce_rate?.value);
     return {
-      sessions:   num(tot.rows?.[0]?.metricValues?.[0]?.value),
-      users:      num(tot.rows?.[0]?.metricValues?.[1]?.value),
-      engagement: num(tot.rows?.[0]?.metricValues?.[2]?.value),
-      channels:   (ch.rows || []).map(r => ({ name: r.dimensionValues[0].value, sessions: num(r.metricValues[0].value) })),
-      events:     Object.fromEntries((ev.rows || []).map(r => [r.dimensionValues[0].value, num(r.metricValues[0].value)])),
+      sessions:   num(agg.results?.visits?.value),
+      users:      num(agg.results?.visitors?.value),
+      engagement: (100 - bounceRate) / 100,
+      channels:   (channelsJson.results || []).map(r => ({ name: r.channel, sessions: num(r.visits) })),
+      events,
     };
   } catch (err) {
     return { error: err.message };
@@ -164,11 +160,11 @@ function buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc }) {
   md.push('');
   md.push('---');
   md.push('');
-  md.push('## 🔢 Nyckeltal (7 dagar — GA4)');
+  md.push('## 🔢 Nyckeltal (7 dagar — Plausible)');
   md.push('');
   if (kpis.error) {
     md.push('```');
-    md.push(`GA4-anrop misslyckades: ${kpis.error}`);
+    md.push(`Plausible-anrop misslyckades: ${kpis.error}`);
     md.push('```');
   } else {
     md.push('| Mått | Värde |');
