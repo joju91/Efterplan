@@ -1,0 +1,29 @@
+name: Funnel Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      period:
+        description: 'Plausible period (7d, 30d, 90d, ...)'
+        required: false
+        default: '30d'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install ga4-dashboard deps
+        working-directory: ga4-dashboard
+        run: npm ci
+
+      - name: Run funnel check
+        working-directory: ga4-dashboard
+        env:
+          PLAUSIBLE_API_KEY: ${{ secrets.PLAUSIBLE_API_KEY }}
+        run: node scripts/funnel-check.mjs "${{ inputs.period }}" >> "$GITHUB_STEP_SUMMARY"
