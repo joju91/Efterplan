@@ -33,18 +33,19 @@
 
 | Path | Status | Tid |
 |------|--------|-----|
-| `/` | 200 | 0.24s |
-| `/sambo-arv.html` | 200 | 0.23s |
-| `/efterlevandepension.html` | 200 | 0.07s |
-| `/dodsbo-bostadsratt.html` | 200 | 0.05s |
-| `/vad-gora-nar-nagon-dor.html` | 200 | 0.07s |
+| `/` | 200 | 0.59s |
+| `/sambo-arv.html` | 200 | 0.39s |
+| `/efterlevandepension.html` | 200 | 0.22s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.23s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.18s |
 
 ## 📊 Git-aktivitet
 
-- **6** commits, **7** filer ändrade
+- **7** commits, **8** filer ändrade
 
 ### Commits
 
+- `8c5c48f Veckorapport 2026-09-22 (auto, GitHub Actions)`
 - `3d1053b Veckorapport: byt GA4 mot Plausible för nyckeltal`
 - `3e73633 Uppdatera run-efterplan skill: lägg till Playwright-fallback för molnsessioner`
 - `080505a Roadmap: T263 — community-scan-rutinen blockerad av nätverkspolicy`
@@ -55,7 +56,7 @@
 ## 🔧 Teknisk audit
 
 - **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
-- **Live-sajt:** 200 på 0.24s
+- **Live-sajt:** 200 på 0.59s
 
 ## 🗺️ Roadmap-status
 
