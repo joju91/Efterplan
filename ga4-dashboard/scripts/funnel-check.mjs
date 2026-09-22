@@ -44,6 +44,20 @@ async function eventCount(name) {
   lines.push(`- task_completed: ${taskCompleted}`);
   lines.push('');
 
+  lines.push('## Sidor (pageviews per path)');
+  try {
+    const pages = await plausible(`breakdown?period=${period}&property=event:page&metrics=visitors,pageviews`);
+    const rows = (pages.results || []).sort((a, b) => num(b.pageviews) - num(a.pageviews)).slice(0, 20);
+    if (!rows.length) {
+      lines.push('_Inga sidor hittades._');
+    } else {
+      rows.forEach(r => lines.push(`- ${r.page}: ${r.pageviews} pageviews / ${r.visitors} visitors`));
+    }
+  } catch (err) {
+    lines.push(`_Breakdown misslyckades: ${err.message}_`);
+  }
+  lines.push('');
+
   lines.push('## Steg-för-steg (onboarding_step-event, props.step)');
   try {
     const breakdown = await plausible(`breakdown?period=${period}&property=event:props:step&metrics=events&filters=${encodeURIComponent('event:name==onboarding_step')}`);
