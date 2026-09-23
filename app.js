@@ -51,8 +51,8 @@ function isDocLocked(type) {
 // medveten avvikelse från "ingen Google-kod" (PR #85) — bara för
 // annonskonvertering, ingen GA4-analys.
 const ADS_CONVERSION_ID   = 'AW-18391491446';
-const ADS_LABEL_PLAN      = '';   // konv.etikett — "personlig plan skapad" (mjuk)
-const ADS_LABEL_PURCHASE  = '';   // konv.etikett — "49 kr-köp" (hård, med värde)
+const ADS_LABEL_PLAN      = '07qVCNedmoIdEPbG38FE';   // "Personlig plan skapad" (mjuk)
+const ADS_LABEL_PURCHASE  = '_6NoCNqdmoIdEPbG38FE';   // "Köp 49 kr" (hård, med värde)
 
 // Fånga gclid + utm_* vid landning — för attribution och ev. offline
 // conversion import (Stripe → Ads) senare. Rent localStorage, ingen kod laddas.
