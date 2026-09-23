@@ -77,6 +77,7 @@ const ADS_LABEL_PURCHASE  = '';   // konv.etikett — "49 kr-köp" (hård, med v
 // Ladda Google Ads-taggen — bara om ett konverterings-ID är konfigurerat.
 (function loadAdsTag() {
   if (!ADS_CONVERSION_ID) return;
+  if (typeof window.gtag === 'function') return; // redan laddad statiskt i HTML
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
   window.gtag('js', new Date());
