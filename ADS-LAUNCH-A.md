@@ -1,153 +1,72 @@
-# Google Ads — launch-checklista (Alternativ A: Plausible + UTM)
+# Google Ads — kampanjen är live
 
-Byggd 2026-09-10. Alt A = ingen ny Google-kod, ingen mätcookie. Du gör allt
-i två dashboards; koden är redan klar. AW-taggen (Alt B) finns kvar i
-`app.js` avstängd — spara den till om testet visar att annonser är värt att
-skala. Kampanjstruktur: `google-ads-underlag-2026-08.md`.
-
-**Testomfattning:** bara de två köpnära annonsgrupperna, 75 kr/dag, 2 veckor
-(~1 050 kr). Informationssökorden ("vad gör man när någon dör",
-"bouppteckning") är avsiktligt bortvalda — dyra, konkurrerar med eget
-gratismaterial, konverterar inte till 49 kr.
-
-**Landningssidorna är trycktestade 2026-09-10** (browser, mobil + desktop):
-formulär → generera → färdigt brev + `free_tool_letter_generated`-event.
-Ingen horisontell scroll, inga fel. Tratten är hel — säkert att skicka
-betald trafik dit.
+Startad 2026-09-23. Du behöver bara följa upp — allt är uppsatt.
 
 ---
 
-## ☐ Steg 1 — Plausible (5 min)
+## Vad som körs
 
-[plausible.io](https://plausible.io) → **efterplan.se** → **Settings → Goals
-→ + Add goal → Custom event**. Lägg till dessa (de fyras redan från koden —
-du registrerar dem bara som mål så de räknas som konverteringar):
-
-```
-onboarding_start
-plan_generated
-free_tool_letter_generated
-free_tool_to_app_click
-premium_activated
-```
-
-Viktigast för det här testet: **`free_tool_letter_generated`** (brev skapat
-på landningssidan) och **`premium_activated`** (49 kr betalt).
-
----
-
-## ☐ Steg 2 — Google Ads: trimma kampanjen (10 min)
-
-Logga in → öppna den pausade kampanjen ("vi satte upp allt men aktiverade
-aldrig").
-
-**Behåll två annonsgrupper:**
-
-| Annonsgrupp | Landningssida |
-|---|---|
-| Arvskiftesavtal | `https://efterplan.se/arvskifte-mall.html` |
-| Säga upp abonnemang | `https://efterplan.se/gratis-checklista-abonnemang.html` |
-
-**Pausa** annonsgrupp "Dödsboanmälan" och "Bouppteckning" (behåll dem för
-senare, aktivera inte nu).
-
-**Sökord — behåll (exakt-/frasmatchning):**
-
-Arvskiftesavtal:
-```
-"arvskiftesavtal mall"
-"arvskifte mall gratis"
-"arvskifteshandling mall"
-"mall arvskifte"
-```
-
-Säga upp abonnemang:
-```
-"uppsägningsbrev dödsbo mall"
-"säga upp abonnemang dödsfall"
-"avsluta abonnemang dödsbo"
-```
-
-(Ta bort bredare varianter som "hur skriver man arvskiftesavtal" — mer
-informations- än köpintention.)
-
----
-
-## ☐ Steg 3 — Final URL med UTM (5 min)
-
-Sätt **Final URL** per annonsgrupp. `{keyword}` / `{creative}` fyller Google
-i automatiskt (ValueTrack).
-
-Arvskiftesavtal:
-```
-https://efterplan.se/arvskifte-mall.html?utm_source=google&utm_medium=cpc&utm_campaign=arvskifte&utm_term={keyword}&utm_content={creative}
-```
-
-Säga upp abonnemang:
-```
-https://efterplan.se/gratis-checklista-abonnemang.html?utm_source=google&utm_medium=cpc&utm_campaign=abonnemang&utm_term={keyword}&utm_content={creative}
-```
-
----
-
-## ☐ Steg 4 — Kampanjinställningar & aktivera (5 min)
+**Campaign #1** (Sök) — [ads.google.com](https://ads.google.com)
 
 | Inställning | Värde |
 |---|---|
-| Kampanjtyp | Bara Sök (ej Display, ej Sökpartners) |
-| Geografi | Sverige |
-| Språk | Svenska |
-| Dygnsbudget | **75 kr** |
-| Budstrategi | Maximera antal klick, **max-CPC-tak ~8 kr** |
-| Enheter | Alla (Google klarar mobiljusteringen själv) |
-| Schema | Ingen begränsning |
+| Nätverk | Bara Googles söknätverk |
+| Geografi / språk | Sverige / svenska |
+| Dygnsbudget | **30 kr** |
+| Budstrategi | Maximera klick (inget max-CPC-tak) |
+| Bred matchning | Av |
 
-→ **Sätt kampanjen till Aktiv.**
+| Annonsgrupp | Sökord | Landningssida |
+|---|---|---|
+| Arvskifte | "arvskiftesavtal mall", "arvskifteshandling mall", "mall arvskifte", "arvskifte mall", "hur skriver man arvskiftesavtal", [arvskiftesavtal] | `arvskifte-mall.html` |
+| Säga upp abonnemang | "säga upp abonnemang dödsfall", "avsluta abonnemang dödsbo", "uppsägningsbrev dödsbo mall", "säga upp abonnemang dödsbo", "uppsägning abonnemang dödsfall" | `gratis-checklista-abonnemang.html` |
+
+Landnings-URL:erna har `utm_source=google&utm_medium=cpc&utm_campaign=…` så trafiken syns i Plausible.
+
+**Negativa sökord (kampanjnivå):** gratis, jobb, kurs, mall word, mall excel, blankett, flashback, lön, skatteverket blankett.
+
+Dödsboanmälan och Bouppteckning är medvetet inte med — informationssökningar, dyra, konverterar inte till 49 kr.
 
 ---
 
-## ☐ Steg 5 — Negativa startsökord (klistra in direkt)
+## Mätning
 
-Kampanjnivå → Negativa sökord → klistra in:
+**Plausible** — mål: `free_tool_letter_generated`, `premium_activated` (m.fl.).
+
+**Google Ads** — tagg `AW-18391491446` på `index.html` + båda landningssidorna. Konverteringsåtgärder:
+
+| Åtgärd | Etikett | Skickas från |
+|---|---|---|
+| Personlig plan skapad | `07qVCNedmoIdEPbG38FE` | `generatePlan()` i `app.js` |
+| Köp 49 kr | `_6NoCNqdmoIdEPbG38FE` | `handlePremiumReturn()` i `app.js` (belopp + Stripe-session som `transaction_id`) |
+
+OBS: en testkonvertering från 2026-09-23 (`transaction_id = cs_test`, 49 kr) + en plan-konvertering kan synas — räkna bort dem.
+
+---
+
+## Dag 1–5: kolla varannan dag (2 min)
+
+**Plausible:** Filtrera på `utm_source = google`. Kolla `free_tool_letter_generated`.
+
+**Google Ads → Sökord → Söktermer:** om något ser irrelevant ut, lägg till som negativt sökord.
+
+---
+
+## Dag 5 (2026-09-28): skicka mig det här
+
+Klistra in siffrorna så gör jag analysen åt dig (roadmap T264):
 
 ```
-gratis
-jobb
-kurs
-mall word
-mall excel
-blankett
-flashback
-lön
-skatteverket blankett
+Klick totalt:
+Kostnad totalt:
+Köp 49 kr (Google Ads, konverteringar):
+free_tool_letter_generated (Plausible, utm_source=google):
+premium_activated (Plausible, utm_source=google):
 ```
 
-Lägg till fler varje vecka från **Sökord → Söktermer** (se steg 6).
+**Är det värt att fortsätta?** Tumregel:
+- Kostnad per 49 kr-köp **< 50 kr** → fortsätt, skala
+- Många klick, noll brev → landningssidan är problemet, inte annonsen
+- Kostnad per 49 kr-köp **> 50 kr** konsekvent → stoppa, lägg pengarna på SEO
 
----
-
-## ☐ Steg 6 — Vecka 1: kolla var 2–3 dag (5 min/gång)
-
-- **Google Ads → Sökord → Söktermer:** allt irrelevant → negativt sökord.
-- **Plausible:** filtrera `Visitors` på `Source is google` (eller
-  `utm_source is google`). Titta på **goal-konvertering per landningssida**.
-- Pausa sökord med **0 `free_tool_letter_generated` efter ~15–20 klick**.
-
----
-
-## ☐ Steg 7 — Efter 2 veckor: skicka siffrorna hit
-
-Från Google Ads (per sökord): **klick, kostnad**.
-Från Plausible: **`free_tool_letter_generated`** och **`premium_activated`**
-för `utm_source=google`, gärna per `utm_campaign`.
-
-Klistra in det så räknas kostnad per brev och kostnad per 49 kr-köp ut, med
-rekommendation om vad som ska dödas, behållas eller skalas.
-
-**Tumregel:**
-
-| Utfall | Gör |
-|---|---|
-| Kostnad per 49 kr-köp > ~50 kr genomgående | Stoppa. Betalar inte tillbaka — behåll lärdomarna, lägg pengarna på SEO/outreach |
-| En sökordshink billig + konverterar | Skala den; slå då på AW-taggen (`ADS-SETUP.md`) för Smart Bidding |
-| Mycket klick, inga brev skapade | Landningssidan är problemet — säg till |
+Städa samtidigt: den gamla konverteringsåtgärden "Köp" (felkonfigurerad) kan tas bort under Mål → Konverteringar.
