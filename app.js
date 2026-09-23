@@ -50,7 +50,7 @@ function isDocLocked(type) {
 // mätcookies (_gcl_*) för den som kommer via en annons. Detta är en
 // medveten avvikelse från "ingen Google-kod" (PR #85) — bara för
 // annonskonvertering, ingen GA4-analys.
-const ADS_CONVERSION_ID   = '';   // t.ex. 'AW-123456789'
+const ADS_CONVERSION_ID   = 'AW-18391491446';
 const ADS_LABEL_PLAN      = '';   // konv.etikett — "personlig plan skapad" (mjuk)
 const ADS_LABEL_PURCHASE  = '';   // konv.etikett — "49 kr-köp" (hård, med värde)
 

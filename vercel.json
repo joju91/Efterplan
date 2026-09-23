@@ -16,7 +16,7 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://plausible.io https://vjupkemzpnrahdsljenl.supabase.co; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.google.com https://www.google.se; connect-src 'self' https://plausible.io https://vjupkemzpnrahdsljenl.supabase.co https://www.googletagmanager.com https://www.google.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com https://www.googleadservices.com; frame-src https://td.doubleclick.net https://www.googletagmanager.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
         }
       ]
     },
