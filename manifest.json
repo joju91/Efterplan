@@ -9,7 +9,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F8F7F5",
-  "theme_color": "#2C4A6E",
+  "theme_color": "#1F3A4E",
   "categories": ["utilities", "productivity"],
   "icons": [
     {

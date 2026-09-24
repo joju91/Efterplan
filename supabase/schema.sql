@@ -447,6 +447,7 @@ create table if not exists public.reminder_optins (
 );
 
 create index if not exists reminder_optins_email_idx on public.reminder_optins(lower(email));
+create unique index if not exists reminder_optins_email_unique on public.reminder_optins(lower(email));
 
 alter table public.reminder_optins enable row level security;
 -- Ingen anon/authenticated policy — bara service-rollen (api/subscribe-reminder.js) skriver.

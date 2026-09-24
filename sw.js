@@ -1,10 +1,12 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v16';
+const CACHE = 'efterplan-v17';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
+  './style-tokens.css?v=6',
   './app.js',
+  './supabase-client.js?v=3',
   './manifest.json',
   './icon.svg',
   './og.png',
@@ -44,7 +46,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = e.request.url;
-  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
+  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com') || url.includes('cdn.jsdelivr.net')) {
     e.respondWith(
       caches.open(CACHE).then(cache =>
         cache.match(e.request).then(cached => {

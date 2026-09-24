@@ -36,11 +36,10 @@ export default async function handler(req, res) {
     }
 
     const supa = getSupabaseAdmin();
-    const { error } = await supa.from('reminder_optins').insert({
-      email,
-      death_date: deathDate,
-      optin_types: types,
-    });
+    const { error } = await supa.from('reminder_optins').upsert(
+      { email, death_date: deathDate, optin_types: types },
+      { onConflict: 'email', ignoreDuplicates: false }
+    );
     if (error) {
       console.error('[subscribe-reminder]', error);
       return res.status(500).json({ error: 'db_error' });

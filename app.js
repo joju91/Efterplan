@@ -196,8 +196,15 @@ const state = {
 
 // ─── SCREENS ─────────────────────────────────
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.removeAttribute('role');
+  });
+  const screen = document.getElementById(id);
+  screen.classList.add('active');
+  screen.setAttribute('role', 'main');
+  const skipLink = document.querySelector('.skip-link');
+  if (skipLink) skipLink.setAttribute('href', '#' + id);
   window.scrollTo(0, 0);
 }
 
@@ -401,6 +408,10 @@ function submitReminderOptinIfChecked() {
   const checked = document.getElementById('ob-reminder-optin')?.checked;
   const email = document.getElementById('ob-reminder-email')?.value.trim();
   if (!checked || !email || !window.efterplanAuth) return;
+  if (!email.includes('@')) {
+    showToast('Ange en giltig e-postadress för påminnelse.', 'error');
+    return;
+  }
   const hasDodsboanmalan = state.tasks.some(t => t.id === 'dodsboanmalan');
   const types = hasDodsboanmalan ? ['dodsboanmalan'] : ['bouppteckning', 'inlamning'];
   window.efterplanAuth.subscribeReminder(email, state.deathDate || null, types)
@@ -1486,7 +1497,7 @@ function renderTaskList(containerId, tasks, nextTaskId, globalOffset = 0, sectio
     cardEl.setAttribute('role', 'button');
     cardEl.setAttribute('aria-expanded', 'false');
     cardEl.setAttribute('aria-controls', `expand-${task.id}`);
-    cardEl.setAttribute('aria-label', task.title);
+    cardEl.setAttribute('aria-label', task.title + (isNext ? ', nästa steg' : '') + (task.done ? ', klar' : task.started ? ', påbörjad' : ''));
     cardEl.addEventListener('click', () => toggleTask(task.id));
     cardEl.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTask(task.id); }
@@ -1660,7 +1671,7 @@ function viewBillPhoto(id) {
   const b = state.bills.find(b => b.id === id);
   if (!b || !b.photo) return;
   const w = window.open('', '_blank');
-  if (w) w.document.write(`<title>${escapeHtml(b.desc)}</title><body style="margin:0;background:#222;display:grid;place-items:center;min-height:100vh"><img src="${b.photo}" style="max-width:100%;max-height:100vh;object-fit:contain"></body>`);
+  if (w) { w.document.write(`<title>${escapeHtml(b.desc)}</title><body style="margin:0;background:#222;display:grid;place-items:center;min-height:100vh"><img src="${b.photo}" style="max-width:100%;max-height:100vh;object-fit:contain"></body>`); w.document.close(); }
 }
 function showBillForm() {
   document.getElementById('bill-form').classList.remove('hidden');
@@ -1948,7 +1959,7 @@ function viewDocumentPhoto(id) {
   const d = state.documents.find(d => d.id === id);
   if (!d || !d.photo) return;
   const w = window.open('', '_blank');
-  if (w) w.document.write(`<title>${escapeHtml(d.name)}</title><body style="margin:0;background:#222;display:grid;place-items:center;min-height:100vh"><img src="${d.photo}" style="max-width:100%;max-height:100vh;object-fit:contain"></body>`);
+  if (w) { w.document.write(`<title>${escapeHtml(d.name)}</title><body style="margin:0;background:#222;display:grid;place-items:center;min-height:100vh"><img src="${d.photo}" style="max-width:100%;max-height:100vh;object-fit:contain"></body>`); w.document.close(); }
 }
 
 function renameDocument(id, value) {
@@ -2263,11 +2274,11 @@ function _buildNotifyListInner() {
       <div class="notify-person${p.notified ? ' notified' : ''}">
         <button class="notify-check${p.notified ? ' checked' : ''}"
           onclick="event.stopPropagation();toggleNotified('${safeId}')"
-          aria-label="Markera ${p.name} som meddelad">${p.notified ? '✓' : ''}</button>
-        <span class="notify-name">${p.name}</span>
+          aria-label="Markera ${_esc(p.name)} som meddelad">${p.notified ? '✓' : ''}</button>
+        <span class="notify-name">${escapeHtml(p.name)}</span>
         <button class="notify-remove"
           onclick="event.stopPropagation();removeNotifyPerson('${safeId}')"
-          aria-label="Ta bort ${p.name}">×</button>
+          aria-label="Ta bort ${_esc(p.name)}">×</button>
       </div>`;
   }).join('');
 }
@@ -2750,7 +2761,7 @@ function _doGenerateBulk(sender, email, genBtn) {
     div.className = 'bulk-letter';
     div.innerHTML = `
       <div class="bulk-letter-head">
-        <span class="bulk-letter-name">${letter.service}</span>
+        <span class="bulk-letter-name">${escapeHtml(letter.service)}</span>
         <button class="btn-primary btn-sm" onclick="copyBulkLetter(${i})">Kopiera</button>
       </div>
       <div class="doc-output" id="bletter-${i}">${letter.text}</div>
@@ -3053,6 +3064,7 @@ function printBulkLetters() {
     `<div style="page-break-after:${i < letters.length - 1 ? 'always' : 'auto'};white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.8;padding:40px 50px;">${letter}</div>`
   ).join('');
   const win = window.open('', '_blank');
+  if (!win) { showToast('Din webbläsare blockerade popup-fönstret. Tillåt popups för efterplan.se och försök igen.', 'error'); return; }
   win.document.write(`<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Brev — dödsbo</title></head><body>${pages}</body></html>`);
   win.document.close();
   win.focus();
@@ -3205,7 +3217,7 @@ function openShareModal() {
   document.getElementById('share-modal-status').textContent = '';
   document.getElementById('share-modal-body').innerHTML =
     `<button type="button" class="btn-primary" style="width:100%;" onclick="generateShareLink()">Skapa länk</button>`;
-  document.getElementById('share-modal').classList.remove('hidden');
+  openModal('share-modal');
 }
 
 async function generateShareLink() {
@@ -3266,7 +3278,7 @@ async function tryRenderSharedView() {
       return `<h2 class="plan-title" style="font-size:1.1rem;margin-top:20px">${labels[key]}</h2>
         <ul style="list-style:none;padding:0;margin:0;">
           ${items.map(t => `<li style="padding:8px 0;border-bottom:1px solid var(--border);">
-            <span style="${t.done ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${t.done ? '✓ ' : ''}${t.title}</span>
+            <span style="${t.done ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${t.done ? '✓ ' : ''}${escapeHtml(t.title)}</span>
           </li>`).join('')}
         </ul>`;
     }).join('');
@@ -3515,7 +3527,7 @@ function boppUpdateSummary() {
 }
 
 function _esc(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // Load on init

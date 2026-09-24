@@ -86,8 +86,13 @@ const SUPABASE_CONFIG = {
   function writeLocalSnapshot(snap) {
     if (!snap || typeof snap !== 'object') return;
     for (const k of STATE_KEYS) {
-      if (k in snap && snap[k] != null) {
-        localStorage.setItem(k, snap[k]);
+      if (!(k in snap) || snap[k] == null) continue;
+      const val = snap[k];
+      try {
+        JSON.parse(val);
+        localStorage.setItem(k, val);
+      } catch (_) {
+        console.warn('[efterplan] writeLocalSnapshot: skipping malformed value for key', k);
       }
     }
   }
