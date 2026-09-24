@@ -1,10 +1,14 @@
-import { getStripe, getSupabaseAdmin, normalizeEmail } from './_lib.js';
+import { getStripe, getSupabaseAdmin, normalizeEmail, getClientIp, checkRateLimit } from './_lib.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({ error: 'method_not_allowed' });
   }
+
+  const ip = getClientIp(req);
+  const { limited } = await checkRateLimit('verify-checkout', ip, 20);
+  if (limited) return res.status(429).json({ ok: false, error: 'rate_limited' });
 
   const sessionId = (req.query.session_id || '').toString();
   if (!sessionId.startsWith('cs_')) {

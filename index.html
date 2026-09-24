@@ -100,9 +100,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,30..80;1,9..144,400..600,30..80&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
   <link rel="stylesheet" href="style.css?v=13" />
   <link rel="stylesheet" href="style-tokens.css?v=6" />
   <script type="application/ld+json">
@@ -129,13 +129,13 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: LANDING
 ════════════════════════════════════════════ -->
-<div id="screen-landing" class="screen active" role="main">
+<div id="screen-landing" class="screen active" role="main" tabindex="-1">
   <nav class="nav">
     <div class="logo">Efterplan</div>
     <div class="nav-landing-links">
       <a href="/om.html" class="nav-text-link">Om</a>
       <a href="#section-integritet" class="nav-text-link">Integritet</a>
-      <a href="#" class="nav-text-link" onclick="event.preventDefault();document.getElementById('auth-modal').classList.remove('hidden');">Mitt konto</a>
+      <a href="#" class="nav-text-link" onclick="event.preventDefault();openModal('auth-modal');">Mitt konto</a>
     </div>
   </nav>
   <div class="landing-hero">
@@ -317,7 +317,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: ONBOARDING (fullscreen, conversational)
 ════════════════════════════════════════════ -->
-<div id="screen-onboarding" class="screen" role="main">
+<div id="screen-onboarding" class="screen" tabindex="-1">
 
   <div class="ob-progress-bar-wrap" aria-hidden="true">
     <div class="ob-progress-bar-fill" id="ob-progress-bar-fill"></div>
@@ -509,7 +509,7 @@
 <!-- ═══════════════════════════════════════════
      SCREEN: PLAN (Dashboard)
 ════════════════════════════════════════════ -->
-<div id="screen-plan" class="screen" role="main" tabindex="-1">
+<div id="screen-plan" class="screen" tabindex="-1">
 
   <!-- Nav -->
   <nav class="nav nav-light nav-plan">
@@ -518,7 +518,7 @@
       <div class="logo-tagline">För det som blir kvar när någon är borta</div>
     </div>
     <div class="nav-plan-actions">
-      <button class="btn-ghost btn-sm" id="open-auth" onclick="document.getElementById('auth-modal').classList.remove('hidden')">Mitt konto</button>
+      <button class="btn-ghost btn-sm" id="open-auth" onclick="openModal('auth-modal')">Mitt konto</button>
       <button class="btn-ghost btn-sm" onclick="editAnswers()">Ändra svar</button>
     </div>
   </nav>
@@ -1099,7 +1099,7 @@
   <div class="modal modal-sm">
     <div class="modal-header">
       <h2 class="modal-title" id="auth-modal-title">Mitt konto</h2>
-      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('auth-modal').classList.add('hidden')">✕</button>
+      <button class="modal-close" type="button" aria-label="Stäng" onclick="closeModal('auth-modal')">✕</button>
     </div>
 
     <div id="auth-view-out">
@@ -1129,7 +1129,7 @@
   <div class="modal modal-sm">
     <div class="modal-header">
       <h2 class="modal-title" id="share-modal-title">Dela läsbar länk</h2>
-      <button class="modal-close" type="button" aria-label="Stäng" onclick="document.getElementById('share-modal').classList.add('hidden')">✕</button>
+      <button class="modal-close" type="button" aria-label="Stäng" onclick="closeModal('share-modal')">✕</button>
     </div>
     <p class="modal-sub">Skapar en länk med checklistan (namn och uppgifter, inte personnummer). Innehållet krypteras i din webbläsare — Efterplan kan inte läsa det, bara den som har hela länken kan öppna den.</p>
     <div id="share-modal-body">
@@ -1140,7 +1140,7 @@
 </div>
 
 <!-- T177: Läsbar-länk-vy (visas när ?shared= finns i URL:en) -->
-<div id="shared-view" class="screen" role="main" style="max-width:600px;margin:0 auto;padding:24px 16px;">
+<div id="shared-view" class="screen" tabindex="-1" style="max-width:600px;margin:0 auto;padding:24px 16px;">
   <p class="landing-brand">Efterplan</p>
   <h1 id="shared-view-title" class="plan-title">Delad plan</h1>
   <p class="modal-sub">Det här är en läsbar kopia — inga ändringar sparas här. <a href="/">Skapa din egen plan →</a></p>
@@ -1178,7 +1178,7 @@
     try {
       const tasks = JSON.parse(localStorage.getItem('efterplan_tasks') || '{}');
       const total = Object.keys(tasks).length;
-      const done  = Object.values(tasks).filter(v => v === true).length;
+      const done  = Object.values(tasks).filter(v => v === true || (v && typeof v === 'object' && v.done === true)).length;
       progressEl.textContent = total
         ? `${done} av ${total} steg klara`
         : 'Ingen plan ännu — starta från startsidan.';

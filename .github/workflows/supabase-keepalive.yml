@@ -22,18 +22,18 @@ jobs:
           # Projekt-URL är inte känslig (samma sak som att veta domänen),
           # så den ligger direkt här istället för som ett extra repo-secret.
           SUPABASE_URL: https://vjupkemzpnrahdsljenl.supabase.co
-          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          # Anon-nyckeln räcker för en keep-alive-ping mot /rest/v1/ (OpenAPI-spec).
+          # Använd INTE service-role-nyckeln här — den kringgår RLS i onödan.
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          if [ -z "$SUPABASE_SECRET_KEY" ]; then
-            echo "SUPABASE_SECRET_KEY saknas som repo-secret — se roadmap.md T163."
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "SUPABASE_ANON_KEY saknas som repo-secret — lägg till den i GitHub Settings → Secrets."
             exit 1
           fi
           status=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/users?select=id&limit=1" \
-            -H "apikey: $SUPABASE_SECRET_KEY" \
-            -H "Authorization: Bearer $SUPABASE_SECRET_KEY")
+            "$SUPABASE_URL/rest/v1/" \
+            -H "apikey: $SUPABASE_ANON_KEY")
           echo "HTTP status: $status"
-          cat /tmp/resp.json
           if [ "$status" -ge 400 ]; then
             echo "Oväntat felstatus från Supabase — projektet kan vara pausat eller nyckeln ogiltig."
             exit 1

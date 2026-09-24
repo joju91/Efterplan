@@ -1,4 +1,4 @@
-import { getSupabaseAdmin, normalizeEmail } from './_lib.js';
+import { getSupabaseAdmin, normalizeEmail, getClientIp, checkRateLimit } from './_lib.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -6,11 +6,18 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
+  const ip = getClientIp(req);
+  const { limited } = await checkRateLimit('check-premium', ip, 100);
+  if (limited) return res.status(429).json({ ok: false, error: 'rate_limited' });
+
   const email = normalizeEmail(req.query.email);
   const userId = (req.query.user_id || '').toString().slice(0, 64);
 
   if (!email && !userId) {
     return res.status(400).json({ ok: false, error: 'missing_email_or_user_id' });
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ ok: false, error: 'invalid_email' });
   }
 
   try {

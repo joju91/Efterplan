@@ -1,10 +1,14 @@
-import { getStripe, originFromReq, normalizeEmail } from './_lib.js';
+import { getStripe, originFromReq, normalizeEmail, getClientIp, checkRateLimit } from './_lib.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'method_not_allowed' });
   }
+
+  const ip = getClientIp(req);
+  const { limited } = await checkRateLimit('create-checkout', ip, 10);
+  if (limited) return res.status(429).json({ error: 'rate_limited' });
 
   try {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
