@@ -17,11 +17,13 @@ function supaUrl(path) {
   return `${base}/rest/v1/${path}`;
 }
 
+// Anon key is public by design; access is gated by ADS_AGENT_SECRET at the API layer.
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
+
 function supaHeaders() {
-  const key = process.env.SUPABASE_SECRET_KEY;
   return {
-    'apikey': key,
-    'Authorization': `Bearer ${key}`,
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation',
   };
