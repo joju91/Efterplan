@@ -50,7 +50,6 @@ function main() {
 function exportKeywords(dateStr) {
   var keywords = [];
   var iter = AdsApp.keywords()
-    .withDateRange('LAST_7_DAYS')
     .withCondition('CampaignStatus = ENABLED')
     .orderBy('Cost DESC')
     .get();
