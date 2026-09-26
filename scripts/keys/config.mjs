@@ -36,7 +36,8 @@ export const SERVICES = {
     label: 'Anthropic',
     dashboardUrl: 'https://console.anthropic.com/settings/keys',
     vars: ['ANTHROPIC_API_KEY'],
-    githubSecrets: [],
+    // Läggs nu även till GitHub Actions-secrets — används av google-ads-optimize.yml
+    githubSecrets: ['ANTHROPIC_API_KEY'],
     vercelSensitive: true,
   },
   google: {
@@ -68,5 +69,20 @@ export const SERVICES = {
     vars: [],
     githubSecrets: ['PLAUSIBLE_API_KEY'],
     vercelSensitive: false,
+  },
+  ads_agent: {
+    label: 'Google Ads Agent (delad hemlighet)',
+    // Genereras lokalt — inget externt dashboard.
+    dashboardUrl: null,
+    vars: ['ADS_AGENT_SECRET'],
+    githubSecrets: ['ADS_AGENT_SECRET', 'SUPABASE_URL'],
+    vercelSensitive: false,
+    // Generera ny nyckel: node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+    // Sprid sedan till Vercel (vercel env add ADS_AGENT_SECRET production),
+    // GitHub (gh secret set ADS_AGENT_SECRET), och Google Ads Script Properties.
+    warning:
+      'ADS_AGENT_SECRET är en delad nyckel du genererar själv (se SECRETS.md).\n' +
+      'Den behöver sättas på TRE ställen: Vercel, GitHub Actions, Google Ads Script Properties.\n' +
+      'Se scripts/google-ads/README.md för instruktioner.',
   },
 };
