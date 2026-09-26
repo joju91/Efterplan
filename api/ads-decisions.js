@@ -13,17 +13,18 @@ function verifySecret(incoming) {
 }
 
 function supaUrl(path) {
-  const base = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
-  return `${base}/rest/v1/${path}`;
+  return `${SUPA_URL}/rest/v1/${path}`;
 }
 
-// Anon key is public by design; access is gated by ADS_AGENT_SECRET at the API layer.
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
+// Both values are public by design (project URL + anon key).
+// Access is gated at the API layer by ADS_AGENT_SECRET.
+const SUPA_URL = 'https://vjupkemzpnrahdsljenl.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
 
 function supaHeaders() {
   return {
-    'apikey': SUPABASE_ANON_KEY,
-    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    'apikey': SUPA_ANON,
+    'Authorization': `Bearer ${SUPA_ANON}`,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation',
   };
