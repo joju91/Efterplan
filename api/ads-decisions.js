@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
     if (error) {
       console.error('[ads-decisions] select:', error.message);
-      return res.status(500).json({ error: 'DB error' });
+      return res.status(500).json({ error: 'DB error', detail: error.message, code: error.code });
     }
     return res.json({ decisions: data || [] });
   }
