@@ -51,27 +51,26 @@ function exportKeywords(dateStr) {
   var keywords = [];
   var iter = AdsApp.keywords()
     .withCondition('CampaignStatus = ENABLED')
-    .orderBy('Cost DESC')
+    .withCondition('Status != REMOVED')
     .get();
 
   while (iter.hasNext()) {
     var kw    = iter.next();
     var stats = kw.getStatsFor('LAST_7_DAYS');
-    var cost  = stats.getCost();
+    var cost   = stats.getCost();
     var clicks = stats.getClicks();
     keywords.push({
-      snapshot_date:    dateStr,
-      campaign_name:    kw.getCampaign().getName(),
-      ad_group:         kw.getAdGroup().getName(),
-      keyword:          kw.getText(),
-      match_type:       kw.getMatchType(),
-      impressions:      stats.getImpressions(),
-      clicks:           clicks,
-      cost_micros:      Math.round(cost * 1000000),
-      conversions:      stats.getConversions(),
-      conversion_value: stats.getConversionValue(),
-      avg_cpc_micros:   clicks > 0 ? Math.round((cost / clicks) * 1000000) : 0,
-      quality_score:    kw.getQualityScore() || null,
+      snapshot_date:  dateStr,
+      campaign_name:  kw.getCampaign().getName(),
+      ad_group:       kw.getAdGroup().getName(),
+      keyword:        kw.getText(),
+      match_type:     kw.getMatchType(),
+      impressions:    stats.getImpressions(),
+      clicks:         clicks,
+      cost_micros:    Math.round(cost * 1000000),
+      conversions:    stats.getConversions(),
+      avg_cpc_micros: clicks > 0 ? Math.round((cost / clicks) * 1000000) : 0,
+      quality_score:  kw.getQualityScore() || null,
     });
   }
 
