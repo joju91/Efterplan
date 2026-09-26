@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { getSupabaseAdmin, checkRateLimit, getClientIp } from './_lib.js';
+import { checkRateLimit, getClientIp } from './_lib.js';
 
 function verifySecret(incoming) {
   const expected = process.env.ADS_AGENT_SECRET;
@@ -12,6 +12,21 @@ function verifySecret(incoming) {
   } catch { return false; }
 }
 
+function supaUrl(path) {
+  const base = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+  return `${base}/rest/v1/${path}`;
+}
+
+function supaHeaders() {
+  const key = process.env.SUPABASE_SECRET_KEY;
+  return {
+    'apikey': key,
+    'Authorization': `Bearer ${key}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation',
+  };
+}
+
 export default async function handler(req, res) {
   if (!verifySecret(req.headers['x-ads-agent-secret'])) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -21,21 +36,22 @@ export default async function handler(req, res) {
   const { limited } = await checkRateLimit('ads-decisions', ip, 100);
   if (limited) return res.status(429).json({ error: 'Rate limited' });
 
-  const supa = getSupabaseAdmin();
-
   if (req.method === 'GET') {
-    // Returnera autonomt implementerbara beslut (ej requires_approval)
-    const { data, error } = await supa
-      .from('ads_decisions')
-      .select('id, decision_type, entity_type, entity_name, action, reasoning')
-      .eq('status', 'pending')
-      .order('created_at', { ascending: true })
-      .limit(50);
-
-    if (error) {
-      console.error('[ads-decisions] select:', error.message);
-      return res.status(500).json({ error: 'DB error', detail: error.message, code: error.code });
+    const params = new URLSearchParams({
+      select: 'id,decision_type,entity_type,entity_name,action,reasoning',
+      status: 'eq.pending',
+      order: 'created_at.asc',
+      limit: '50',
+    });
+    const resp = await fetch(`${supaUrl('ads_decisions')}?${params}`, {
+      headers: supaHeaders(),
+    });
+    if (!resp.ok) {
+      const body = await resp.text();
+      console.error('[ads-decisions] GET failed:', resp.status, body);
+      return res.status(500).json({ error: 'DB error' });
     }
+    const data = await resp.json();
     return res.json({ decisions: data || [] });
   }
 
@@ -53,16 +69,20 @@ export default async function handler(req, res) {
     const now = new Date().toISOString();
 
     if (applied.length > 0) {
-      await supa
-        .from('ads_decisions')
-        .update({ status: 'applied', applied_at: now })
-        .in('id', applied);
+      const params = new URLSearchParams({ id: `in.(${applied.join(',')})` });
+      await fetch(`${supaUrl('ads_decisions')}?${params}`, {
+        method: 'PATCH',
+        headers: supaHeaders(),
+        body: JSON.stringify({ status: 'applied', applied_at: now }),
+      });
     }
     if (skipped.length > 0) {
-      await supa
-        .from('ads_decisions')
-        .update({ status: 'skipped' })
-        .in('id', skipped);
+      const params = new URLSearchParams({ id: `in.(${skipped.join(',')})` });
+      await fetch(`${supaUrl('ads_decisions')}?${params}`, {
+        method: 'PATCH',
+        headers: supaHeaders(),
+        body: JSON.stringify({ status: 'skipped' }),
+      });
     }
     return res.json({ ok: true });
   }
