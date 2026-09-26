@@ -25,15 +25,10 @@
  * ============================================================
  */
 
-var PROPS       = PropertiesService.getScriptProperties();
-var BASE_URL    = (PROPS.getProperty('VERCEL_BASE_URL') || 'https://efterplan.se').replace(/\/$/, '');
-var SECRET      = PROPS.getProperty('ADS_AGENT_SECRET') || '';
+var BASE_URL = 'https://efterplan.se';
+var SECRET   = 'wvsXiH_nFl00sAbnTD3R8edXE6_mtX5HFERLj5rfptI';
 
 function main() {
-  if (!SECRET) {
-    Logger.log('FEL: ADS_AGENT_SECRET saknas i Script Properties. Lägg till den och kör igen.');
-    return;
-  }
 
   var now     = new Date();
   var dateStr = Utilities.formatDate(now, 'UTC', 'yyyy-MM-dd');
@@ -55,8 +50,8 @@ function main() {
 function exportKeywords(dateStr) {
   var keywords = [];
   var iter = AdsApp.keywords()
-    .withCondition('CampaignStatus = ENABLED')
     .withDateRange('LAST_7_DAYS')
+    .withCondition('CampaignStatus = ENABLED')
     .orderBy('Cost DESC')
     .get();
 
