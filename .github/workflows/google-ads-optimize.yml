@@ -1,0 +1,76 @@
+name: Google Ads — autonom optimering
+
+on:
+  schedule:
+    # Måndag 08:00 UTC — körs efter weekly-report (07:00) och gsc-positions (06:00)
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installera beroenden
+        working-directory: scripts/google-ads
+        run: npm ci
+
+      - name: Kör optimeringsagent
+        id: optimize
+        working-directory: scripts/google-ads
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          PLAUSIBLE_API_KEY: ${{ secrets.PLAUSIBLE_API_KEY }}
+        run: |
+          node optimize.mjs
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Committa rapport
+        run: |
+          git config user.name  "efterplan-bot"
+          git config user.email "efterplan-bot@users.noreply.github.com"
+          DATE=$(date -u +%Y-%m-%d)
+          FILE="ads-reports/ads-optimization-$DATE.md"
+          if [ -f "$FILE" ]; then
+            git add "$FILE"
+            if git diff --cached --quiet; then
+              echo "Ingen ny rapport."
+            else
+              git commit -m "Google Ads-rapport $DATE (auto, GitHub Actions)"
+              git push
+            fi
+          else
+            echo "Ingen rapport hittades — scriptfel?"
+          fi
+
+      - name: Öppna GitHub Issue med rapport
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          FILE="ads-reports/ads-optimization-$DATE.md"
+          if [ ! -f "$FILE" ]; then exit 0; fi
+          TITLE="Google Ads-optimering $DATE"
+          BODY=$(cat "$FILE")
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" \
+            -d "$(jq -n --arg t "$TITLE" --arg b "$BODY" \
+              '{title:$t, body:$b, labels:["google-ads"]}')" \
+            | jq -r '.html_url // .message'
