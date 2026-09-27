@@ -1082,6 +1082,8 @@ body {
   color: var(--text-soft);
   margin-bottom: 12px;
 }
+.doc-form .plan-title { margin-bottom: 6px; }
+.doc-form .plan-sub   { margin-bottom: 28px; }
 .digital-legend {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -1486,6 +1488,7 @@ body {
   margin-bottom: 12px;
 }
 .modal-btn-full { width: 100%; }
+.auth-panel { padding: 14px; border-radius: 12px; margin-bottom: 16px; }
 
 /* ─── DOC TYPE GRID ──────────────────────────── */
 .doc-type-grid { display: flex; flex-direction: column; gap: 10px; }
@@ -1711,6 +1714,8 @@ body {
 .doc-phone-checklist ul { margin: 0; padding-left: 20px; }
 .doc-phone-checklist li { margin-bottom: 2px; }
 .result-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+.result-actions .btn-primary,
+.result-actions .btn-ghost { max-width: 200px; text-align: center; }
 .copied-msg {
   font-size: 0.85rem;
   color: var(--accent);
@@ -2971,8 +2976,11 @@ body {
 .u-border-radius-10px           { border-radius: 10px; }
 .u-width-full                   { width: 100%; }
 .u-width-80px                   { width: 80px; }
+.u-max-width-200px              { max-width: 200px; }
+.u-max-width-240px              { max-width: 240px; }
 .u-max-width-260px              { max-width: 260px; }
 .u-text-left                    { text-align: left; }
+.u-text-center                  { text-align: center; }
 .u-display-flex                 { display: flex; }
 .u-flex-1                       { flex: 1; }
 .u-gap-8                        { gap: 8px; }
@@ -2988,9 +2996,11 @@ body {
 .u-margin-bottom-8px            { margin-bottom: 8px; }
 .u-margin-bottom-12px           { margin-bottom: 12px; }
 .u-margin-bottom-16px           { margin-bottom: 16px; }
+.u-margin-bottom-24px           { margin-bottom: 24px; }
 .u-margin-bottom-28px           { margin-bottom: 28px; }
 .u-min-height-1-2em             { min-height: 1.2em; }
 .u-background-var-grey-bg       { background: var(--grey-bg, #f5f5f5); }
+#shared-view { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
 .u-background-f0f0f0            { background: #f0f0f0; }
 .u-background-f0f4f8            { background: #f0f4f8; }
 

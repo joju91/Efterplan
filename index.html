@@ -551,7 +551,7 @@
 
       <div class="completion-message" id="completion-message" role="status">
         <p>Du har gått igenom allt. Ta ett djupt andetag — du klarade det.</p>
-        <button class="btn-ghost btn-sm" data-action="printPlan" style="margin-top:12px">Spara som PDF / Skriv ut →</button>
+        <button class="btn-ghost btn-sm u-margin-top-12px" data-action="printPlan">Spara som PDF / Skriv ut →</button>
       </div>
 
       <button class="plan-print-btn" data-action="printPlan" aria-label="Skriv ut eller spara som PDF">
@@ -612,7 +612,7 @@
         <div class="plan-done-icon" aria-hidden="true">✓</div>
         <h2 class="plan-done-title">Allt är genomgånget.</h2>
         <p class="plan-done-sub">Det har tagit tid och kraft — men du har tagit dig igenom det.<br>Ta ett djupt andetag.</p>
-        <button class="btn-ghost btn-sm" data-action="printPlan" style="margin-top:8px">Spara som PDF →</button>
+        <button class="btn-ghost btn-sm u-margin-top-8px" data-action="printPlan">Spara som PDF →</button>
       </div>
 
     </div>
@@ -629,11 +629,11 @@
           <p class="plan-sub">Välj vad du behöver — vi skriver det åt dig.</p>
         </div>
         <div class="form-group" id="sender-address-box">
-          <p class="plan-sub" style="margin-bottom:10px">Din adress (valfritt) — fylls i automatiskt i alla brev nedan.</p>
+          <p class="plan-sub u-margin-bottom-8px">Din adress (valfritt) — fylls i automatiskt i alla brev nedan.</p>
           <label for="doc-sender-address">Gatuadress</label>
           <input type="text" id="doc-sender-address" class="text-input" placeholder="Storgatan 1"
                  onchange="saveSenderAddressFields()">
-          <div class="form-row" style="margin-top:12px">
+          <div class="form-row u-margin-top-12px">
             <div class="form-group">
               <label for="doc-sender-zip">Postnummer</label>
               <input type="text" id="doc-sender-zip" class="text-input" placeholder="123 45" inputmode="numeric" maxlength="6"
@@ -711,8 +711,8 @@
       <!-- Form: Bulk uppsägning -->
       <div id="doc-form-bulk" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Avsluta tjänster</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Fyll i ditt namn och lägg till tjänster — vi skriver alla brev åt dig.</p>
+        <h2 class="plan-title">Avsluta tjänster</h2>
+        <p class="plan-sub">Fyll i ditt namn och lägg till tjänster — vi skriver alla brev åt dig.</p>
         <div class="form-group">
           <label for="bulk-sender">Ditt namn <span class="required">*</span></label>
           <input type="text" id="bulk-sender" class="text-input" placeholder="Ditt fullständiga namn" />
@@ -727,23 +727,23 @@
           <button class="add-row-btn" data-action="addBulkRow">+ Lägg till tjänst</button>
         </div>
         <p class="form-error hidden" id="err-bulk" role="alert"></p>
-        <button class="btn-primary" style="max-width:260px" data-action="generateBulkLetters">Skapa alla brev →</button>
+        <button class="btn-primary u-max-width-260px" data-action="generateBulkLetters">Skapa alla brev →</button>
       </div>
 
       <!-- Result: Bulk -->
       <div id="doc-result-bulk" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Dina brev</h2>
-        <p class="result-note" style="margin-bottom:16px">Kopiera och skicka ett i taget — eller spara alla som PDF.</p>
-        <button class="btn-ghost btn-sm" style="margin-bottom:24px" data-action="printBulkLetters">Skriv ut / Spara som PDF →</button>
+        <h2 class="plan-title">Dina brev</h2>
+        <p class="result-note u-margin-bottom-16px">Kopiera och skicka ett i taget — eller spara alla som PDF.</p>
+        <button class="btn-ghost btn-sm u-margin-bottom-24px" data-action="printBulkLetters">Skriv ut / Spara som PDF →</button>
         <div id="bulk-letters-list"></div>
       </div>
 
       <!-- Form: Uppsägningsbrev -->
       <div id="doc-form-letter" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Uppsägningsbrev</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar.</p>
+        <h2 class="plan-title">Uppsägningsbrev</h2>
+        <p class="plan-sub">Vi skriver brevet — du kopierar och skickar.</p>
         <div class="form-group">
           <label for="letter-service">Tjänstens namn <span class="required">*</span></label>
           <input type="text" id="letter-service" class="text-input" placeholder="t.ex. Spotify, Dagens Nyheter, Elbolaget" />
@@ -761,14 +761,14 @@
           <input type="email" id="letter-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-letter" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" data-action="generateLetter">Skapa brev</button>
+        <button class="btn-primary u-max-width-240px" data-action="generateLetter">Skapa brev</button>
       </div>
 
       <!-- Form: Banknotifiering -->
       <div id="doc-form-bank" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Brev till banken</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar.</p>
+        <h2 class="plan-title">Brev till banken</h2>
+        <p class="plan-sub">Vi skriver brevet — du kopierar och skickar.</p>
         <div class="form-group">
           <label for="bank-name">Bank <span class="required">*</span></label>
           <input type="text" id="bank-name" class="text-input" placeholder="t.ex. Swedbank, Handelsbanken, SEB" />
@@ -786,14 +786,14 @@
           <input type="email" id="bank-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-bank" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" data-action="generateBank">Skapa brev</button>
+        <button class="btn-primary u-max-width-240px" data-action="generateBank">Skapa brev</button>
       </div>
 
       <!-- Form: Dödsannons -->
       <div id="doc-form-annons" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Dödsannons</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Berätta lite — vi formulerar resten.</p>
+        <h2 class="plan-title">Dödsannons</h2>
+        <p class="plan-sub">Berätta lite — vi formulerar resten.</p>
         <div class="form-group">
           <label for="annons-name">Den avlidnes namn <span class="required">*</span></label>
           <input type="text" id="annons-name" class="text-input" placeholder="Fullständigt namn" />
@@ -833,14 +833,14 @@
           <textarea id="annons-ovrigt" class="text-input textarea" placeholder="t.ex. citat, hälsning, önskemål om blombidrag, kontaktuppgifter…" rows="2"></textarea>
         </div>
         <p class="form-error hidden" id="err-annons" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" data-action="generateAnnons">Skapa annons</button>
+        <button class="btn-primary u-max-width-240px" data-action="generateAnnons">Skapa annons</button>
       </div>
 
       <!-- Form: Försäkringsanmälan -->
       <div id="doc-form-forsakring" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Brev till försäkringsbolaget</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar.</p>
+        <h2 class="plan-title">Brev till försäkringsbolaget</h2>
+        <p class="plan-sub">Vi skriver brevet — du kopierar och skickar.</p>
         <div class="form-group">
           <label for="fors-bolag">Försäkringsbolag <span class="required">*</span></label>
           <input type="text" id="fors-bolag" class="text-input" placeholder="t.ex. Folksam, If, Länsförsäkringar, Skandia" />
@@ -858,14 +858,14 @@
           <input type="email" id="fors-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-forsakring" role="alert"></p>
-        <button class="btn-primary" style="max-width:260px" data-action="generateForsakring">Skapa brev</button>
+        <button class="btn-primary u-max-width-260px" data-action="generateForsakring">Skapa brev</button>
       </div>
 
       <!-- Form: Fullmakt (visas om ansvar = flera) -->
       <div id="doc-form-fullmakt" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Fullmakt — dödsbo</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Utser en person att företräda dödsboet gentemot banker och myndigheter. Alla dödsbodelägare bör skriva under i original.</p>
+        <h2 class="plan-title">Fullmakt — dödsbo</h2>
+        <p class="plan-sub">Utser en person att företräda dödsboet gentemot banker och myndigheter. Alla dödsbodelägare bör skriva under i original.</p>
         <div class="form-group">
           <label for="fullmakt-grantor1">Ditt namn (fullmaktsgivare) <span class="required">*</span></label>
           <input type="text" id="fullmakt-grantor1" class="text-input" placeholder="Ditt fullständiga namn" />
@@ -883,14 +883,14 @@
           <input type="text" id="fullmakt-relation" class="text-input" placeholder="t.ex. Son, Dotter, Make" />
         </div>
         <p class="form-error hidden" id="err-fullmakt" role="alert"></p>
-        <button class="btn-primary" style="max-width:260px" data-action="generateFullmakt">Skapa fullmakt</button>
+        <button class="btn-primary u-max-width-260px" data-action="generateFullmakt">Skapa fullmakt</button>
       </div>
 
       <!-- Form: Skatteverket (visas endast om foretag = true) -->
       <div id="doc-form-skatteverket" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Avregistrera F-skatt</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Begär avregistrering av F-skatt och enskild firma hos Skatteverket. Kopiera brevet och skicka via Skatteverkets e-tjänst eller post.</p>
+        <h2 class="plan-title">Avregistrera F-skatt</h2>
+        <p class="plan-sub">Begär avregistrering av F-skatt och enskild firma hos Skatteverket. Kopiera brevet och skicka via Skatteverkets e-tjänst eller post.</p>
         <input type="hidden" id="skv-arende" value="fskatt" />
         <div class="form-group">
           <label for="skv-sender">Ditt namn <span class="required">*</span></label>
@@ -905,14 +905,14 @@
           <input type="email" id="skv-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-skatteverket" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" data-action="generateSkatteverket">Skapa brev</button>
+        <button class="btn-primary u-max-width-240px" data-action="generateSkatteverket">Skapa brev</button>
       </div>
 
       <!-- Form: Hyresvärd (visas om hyresratt = true) -->
       <div id="doc-form-hyresvard" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Brev till hyresvärden</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Formell uppsägning av hyreskontrakt med en månads uppsägningstid (12 kap. 31 § JB). Bifoga dödsbevis.</p>
+        <h2 class="plan-title">Brev till hyresvärden</h2>
+        <p class="plan-sub">Formell uppsägning av hyreskontrakt med en månads uppsägningstid (12 kap. 31 § JB). Bifoga dödsbevis.</p>
         <div class="form-group">
           <label for="hyres-vard">Hyresvärdens namn (valfritt)</label>
           <input type="text" id="hyres-vard" class="text-input" placeholder="t.ex. Stockholmshem, Privat hyresvärd AB" />
@@ -934,14 +934,14 @@
           <input type="email" id="hyres-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-hyresvard" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" data-action="generateHyresvard">Skapa brev</button>
+        <button class="btn-primary u-max-width-240px" data-action="generateHyresvard">Skapa brev</button>
       </div>
 
       <!-- Form: Pensionsmyndigheten (visas om giftSambo eller barn = true) -->
       <div id="doc-form-pension" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" style="margin-bottom:6px">Pensionsmyndigheten</h2>
-        <p class="plan-sub" style="margin-bottom:28px">Ansök om omställningspension (efterlevande make/sambo) eller barnpension. Betalas inte ut retroaktivt — ansök snarast.</p>
+        <h2 class="plan-title">Pensionsmyndigheten</h2>
+        <p class="plan-sub">Ansök om omställningspension (efterlevande make/sambo) eller barnpension. Betalas inte ut retroaktivt — ansök snarast.</p>
         <div class="form-group">
           <label for="pension-typ">Typ av ersättning <span class="required">*</span></label>
           <select id="pension-typ" class="text-input">
@@ -962,13 +962,13 @@
           <input type="email" id="pension-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-pension" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" data-action="generatePension">Skapa brev</button>
+        <button class="btn-primary u-max-width-240px" data-action="generatePension">Skapa brev</button>
       </div>
 
       <!-- Resultat -->
       <div id="doc-result" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
-        <h2 class="plan-title" id="result-title" style="margin-bottom:6px">Klart!</h2>
+        <h2 class="plan-title" id="result-title">Klart!</h2>
         <p class="result-note">Läs igenom och justera om du vill — kopiera sedan och skicka.</p>
         <div class="doc-mode-tabs hidden" id="doc-mode-tabs">
           <button class="doc-mode-tab active" id="doc-mode-tab-brev" data-action="switchDocMode" data-arg="brev">✉ Brev</button>
@@ -980,9 +980,9 @@
           <ul id="doc-phone-checklist-items"></ul>
         </div>
         <div class="result-actions">
-          <button class="btn-primary" style="max-width:200px" data-action="copyDocument">Kopiera</button>
-          <a id="result-mailto" class="btn-ghost" href="mailto:" style="max-width:200px; text-align:center;">Öppna i e-post ✉</a>
-          <button class="btn-ghost" style="max-width:200px" data-action="backToDocChooser">Nytt dokument</button>
+          <button class="btn-primary" data-action="copyDocument">Kopiera</button>
+          <a id="result-mailto" class="btn-ghost" href="mailto:">Öppna i e-post ✉</a>
+          <button class="btn-ghost" data-action="backToDocChooser">Nytt dokument</button>
         </div>
         <p class="copied-msg hidden" id="copied-msg">Kopierat!</p>
       </div>
@@ -1180,7 +1180,7 @@
 
     <div id="auth-view-in" class="hidden">
       <p class="modal-sub">Inloggad som <strong id="auth-email-display"></strong>.</p>
-      <div class="u-background-var-grey-bg" style="padding:14px;border-radius:12px;margin-bottom:16px;">
+      <div class="u-background-var-grey-bg auth-panel">
         <div id="auth-progress" class="u-font-weight-600">Din plan</div>
         <div id="auth-last-sync" class="modal-sub u-margin-top-4px">Senaste synk: hämtar…</div>
       </div>
@@ -1206,7 +1206,7 @@
 </div>
 
 <!-- T177: Läsbar-länk-vy (visas när ?shared= finns i URL:en) -->
-<div id="shared-view" class="screen" tabindex="-1" style="max-width:600px;margin:0 auto;padding:24px 16px;">
+<div id="shared-view" class="screen" tabindex="-1">
   <p class="landing-brand">Efterplan</p>
   <h1 id="shared-view-title" class="plan-title">Delad plan</h1>
   <p class="modal-sub">Det här är en läsbar kopia — inga ändringar sparas här. <a href="/">Skapa din egen plan →</a></p>
