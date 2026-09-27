@@ -686,6 +686,16 @@
             <span class="doc-type-title">Fullmakt</span>
             <span class="doc-type-sub">Ge en person rätt att företräda dödsboet</span>
           </button>
+          <button class="doc-type-btn hidden" data-doc="hyresvard" id="doc-btn-hyresvard" data-action="showDocForm" data-arg="hyresvard">
+            <span class="doc-icon" aria-hidden="true">🏠</span>
+            <span class="doc-type-title">Till hyresvärden</span>
+            <span class="doc-type-sub">Säg upp hyreskontrakt vid dödsfall</span>
+          </button>
+          <button class="doc-type-btn hidden" data-doc="pension" id="doc-btn-pension" data-action="showDocForm" data-arg="pension">
+            <span class="doc-icon" aria-hidden="true">📮</span>
+            <span class="doc-type-title">Pensionsmyndigheten</span>
+            <span class="doc-type-sub">Ansök om omställningspension eller barnpension</span>
+          </button>
         </div>
 
         <!-- Paywall card — dold tills PAYWALL_ENABLED = true i app.js -->
@@ -898,6 +908,63 @@
         <button class="btn-primary" style="max-width:240px" data-action="generateSkatteverket">Skapa brev</button>
       </div>
 
+      <!-- Form: Hyresvärd (visas om hyresratt = true) -->
+      <div id="doc-form-hyresvard" class="doc-form hidden">
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
+        <h2 class="plan-title" style="margin-bottom:6px">Brev till hyresvärden</h2>
+        <p class="plan-sub" style="margin-bottom:28px">Formell uppsägning av hyreskontrakt med en månads uppsägningstid (12 kap. 31 § JB). Bifoga dödsbevis.</p>
+        <div class="form-group">
+          <label for="hyres-vard">Hyresvärdens namn (valfritt)</label>
+          <input type="text" id="hyres-vard" class="text-input" placeholder="t.ex. Stockholmshem, Privat hyresvärd AB" />
+        </div>
+        <div class="form-group">
+          <label for="hyres-adr">Lägenhetens adress (valfritt)</label>
+          <input type="text" id="hyres-adr" class="text-input" placeholder="t.ex. Storgatan 12, 3 tr, 111 23 Stockholm" />
+        </div>
+        <div class="form-group">
+          <label for="hyres-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="hyres-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="hyres-relation">Din relation till den avlidne <span class="required">*</span></label>
+          <input type="text" id="hyres-relation" class="text-input" placeholder="t.ex. Make, Dotter, Son" />
+        </div>
+        <div class="form-group">
+          <label for="hyres-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="hyres-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-hyresvard" role="alert"></p>
+        <button class="btn-primary" style="max-width:240px" data-action="generateHyresvard">Skapa brev</button>
+      </div>
+
+      <!-- Form: Pensionsmyndigheten (visas om giftSambo eller barn = true) -->
+      <div id="doc-form-pension" class="doc-form hidden">
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
+        <h2 class="plan-title" style="margin-bottom:6px">Pensionsmyndigheten</h2>
+        <p class="plan-sub" style="margin-bottom:28px">Ansök om omställningspension (efterlevande make/sambo) eller barnpension. Betalas inte ut retroaktivt — ansök snarast.</p>
+        <div class="form-group">
+          <label for="pension-typ">Typ av ersättning <span class="required">*</span></label>
+          <select id="pension-typ" class="text-input">
+            <option value="omstallning">Omställningspension (efterlevande make/sambo)</option>
+            <option value="barnpension">Barnpension / efterlevandestöd (barn under 20 år)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="pension-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="pension-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="pension-relation">Din relation till den avlidne <span class="required">*</span></label>
+          <input type="text" id="pension-relation" class="text-input" placeholder="t.ex. Make, Sambo, Förälder" />
+        </div>
+        <div class="form-group">
+          <label for="pension-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="pension-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-pension" role="alert"></p>
+        <button class="btn-primary" style="max-width:240px" data-action="generatePension">Skapa brev</button>
+      </div>
+
       <!-- Resultat -->
       <div id="doc-result" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
@@ -1082,7 +1149,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=38" defer></script>
+<script src="app.js?v=39" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

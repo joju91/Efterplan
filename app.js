@@ -1305,6 +1305,10 @@ function renderPlan() {
   if (skvBtn) skvBtn.classList.toggle('hidden', !state.foretag);
   const fullmaktBtn = document.getElementById('doc-btn-fullmakt');
   if (fullmaktBtn) fullmaktBtn.classList.toggle('hidden', state.ansvar !== 'flera');
+  const hyresBtn = document.getElementById('doc-btn-hyresvard');
+  if (hyresBtn) hyresBtn.classList.toggle('hidden', !state.hyresratt);
+  const pensionBtn = document.getElementById('doc-btn-pension');
+  if (pensionBtn) pensionBtn.classList.toggle('hidden', !state.giftSambo && !state.barn);
 
   document.getElementById('count-today').textContent = `${today.length} uppgifter`;
   document.getElementById('count-week').textContent  = `${week.length} uppgifter`;
@@ -2666,6 +2670,27 @@ function showDocForm(type) {
     if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
   }
 
+  if (type === 'hyresvard') {
+    const sEl = document.getElementById('hyres-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('hyres-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+    const rEl = document.getElementById('hyres-relation');
+    if (rEl && !rEl.value && relation) rEl.value = relation;
+  }
+  if (type === 'pension') {
+    const sEl = document.getElementById('pension-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('pension-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+    const rEl = document.getElementById('pension-relation');
+    if (rEl && !rEl.value && relation) rEl.value = relation;
+    if (state.barn && !state.giftSambo) {
+      const tEl = document.getElementById('pension-typ');
+      if (tEl) tEl.value = 'barnpension';
+    }
+  }
+
   document.getElementById(`doc-form-${type}`).classList.remove('hidden');
   window.scrollTo(0, 0);
 }
@@ -2923,6 +2948,113 @@ Vad behöver ni av mig för att gå vidare — dödsbevis, försäkringsnummer, 
     ],
   });
 }
+
+function generateHyresvard() {
+  const vard     = document.getElementById('hyres-vard').value.trim();
+  const adr      = document.getElementById('hyres-adr').value.trim();
+  const sender   = document.getElementById('hyres-sender').value.trim();
+  const relation = document.getElementById('hyres-relation').value.trim();
+  const email    = document.getElementById('hyres-email').value.trim();
+  clearFormError('err-hyresvard');
+  if (!sender || !relation || !email) { showFormError('err-hyresvard', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+  const vardLine = vard ? `Till: ${vard}` : 'Till: Hyresvärden';
+  const adrLine  = adr ? `\nAvser: ${adr}` : '';
+
+  showDocResult('Brev till hyresvärden', `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+${vardLine}
+Ärende: Uppsägning av hyreskontrakt — dödsfall${adrLine}
+
+Hej,
+
+Jag skriver angående hyresavtalet för ${deceased} (personnr ${personnr}), som har gått bort.
+
+Jag är ${relation} och företräder dödsboet. Jag säger härmed upp hyresavtalet med en månads uppsägningstid från detta brev, i enlighet med 12 kap. 31 § jordabalken.
+
+Var vänlig bekräfta uppsägningen och meddela datum och tid för besiktning och nyckelöverlämnande. Dödsbevis bifogas.
+
+Med vänliga hälsningar,
+
+${sender}
+${relation} till ${deceased}
+${email}`, 'Uppsägning av hyreskontrakt — dödsfall', {
+    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort, och jag ringer angående hens hyreslägenhet.
+
+Jag vill säga upp lägenheten. Kan ni bekräfta uppsägningstiden och när ni vill ha nycklarna tillbaka?
+
+Jag kan mejla dödsbevis och en skriftlig uppsägning — vad behöver ni av mig?`,
+    checklist: [
+      'Den deceased personnummer',
+      'Lägenhetens adress',
+      'Din relation till den deceased',
+      'Dödsbevis (begärs av hyresvärden)',
+    ],
+  });
+}
+
+
+function generatePension() {
+  const typ      = document.getElementById('pension-typ').value;
+  const sender   = document.getElementById('pension-sender').value.trim();
+  const relation = document.getElementById('pension-relation').value.trim();
+  const email    = document.getElementById('pension-email').value.trim();
+  clearFormError('err-pension');
+  if (!sender || !relation || !email) { showFormError('err-pension', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+
+  const typTexts = {
+    omstallning: {
+      arende: 'Ansökan om omställningspension',
+      body: `Jag kontaktar er för att ansöka om omställningspension med anledning av att min ${relation}, ${deceased} (personnr ${personnr}), har gått bort.\n\nJag uppfyller villkoren för omställningspension (gemensamt hushåll, ej ålderspension). Jag ber er bekräfta att ansökan tagits emot och informera om nästa steg.\n\nOmställningspension betalas inte ut retroaktivt — jag ansöker därför snarast.`,
+    },
+    barnpension: {
+      arende: 'Ansökan om barnpension och efterlevandestöd',
+      body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}), förälder till barn under 20 år, har gått bort.\n\nJag ber er informera om rätten till barnpension och eventuellt efterlevandestöd för barnet/barnen, samt hur ansökan görs.`,
+    },
+  };
+
+  const { arende, body } = typTexts[typ] || typTexts.omstallning;
+
+  showDocResult(`Pensionsmyndigheten — ${arende}`, `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+Till: Pensionsmyndigheten
+Ärende: ${arende}
+
+Hej,
+
+${body}
+
+Dödsbevis bifogas. Kontakta mig för ytterligare dokumentation.
+
+Med vänliga hälsningar,
+
+${sender}
+${relation} till ${deceased}
+${email}`, arende, {
+    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort. Jag ringer för att ${typ === 'barnpension' ? 'fråga om barnpension för ett barn under 20 år' : 'ansöka om omställningspension'}.
+
+Kan ni bekräfta vad som gäller och vad jag behöver skicka in?
+
+${typ !== 'barnpension' ? 'Observera att omställningspension inte betalas ut retroaktivt — det är viktigt att ansöka snabbt.' : ''}`,
+    checklist: [
+      'Den deceased personnummer',
+      'Ditt eget personnummer',
+      'Din relation till den deceased',
+    ],
+  });
+}
+
 
 function generateAnnons() {
   const name      = document.getElementById('annons-name').value.trim();
@@ -3600,6 +3732,8 @@ document.addEventListener('click', function dispatchAction(e) {
     case 'generateBank':         generateBank(); break;
     case 'generateBulkLetters':  generateBulkLetters(); break;
     case 'generateForsakring':   generateForsakring(); break;
+    case 'generateHyresvard':    generateHyresvard(); break;
+    case 'generatePension':      generatePension(); break;
     case 'generateFullmakt':     generateFullmakt(); break;
     case 'generateLetter':       generateLetter(); break;
     case 'generateShareLink':    generateShareLink(); break;
