@@ -25,13 +25,14 @@
  * ============================================================
  */
 
-var PROPS    = PropertiesService.getScriptProperties();
-var BASE_URL = (PROPS.getProperty('VERCEL_BASE_URL') || 'https://efterplan.se').replace(/\/$/, '');
-var SECRET   = PROPS.getProperty('ADS_AGENT_SECRET') || '';
+var BASE_URL = 'https://efterplan.se';
+// Sätt rätt värde nedan — hämta från SECRETS.md / Vercel env ADS_AGENT_SECRET
+// OBS: ändra bara i Google Ads-editorn, committa INTE nyckeln till git
+var SECRET   = 'REPLACE_WITH_ADS_AGENT_SECRET';
 
 function main() {
-  if (!SECRET) {
-    Logger.log('FEL: ADS_AGENT_SECRET saknas i Script Properties. Lägg till den och kör igen.');
+  if (!SECRET || SECRET === 'REPLACE_WITH_ADS_AGENT_SECRET') {
+    Logger.log('FEL: Ersätt REPLACE_WITH_ADS_AGENT_SECRET med rätt värde i skript-editorn.');
     return;
   }
 
