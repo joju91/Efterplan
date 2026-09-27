@@ -8,7 +8,7 @@
   </url>
   <url>
     <loc>https://efterplan.se/vad-gora-nar-nagon-dor.html</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -38,7 +38,7 @@
   </url>
   <url>
     <loc>https://efterplan.se/efterlevandepension.html</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -266,6 +266,18 @@
   </url>
   <url>
     <loc>https://efterplan.se/internationellt-arv.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://efterplan.se/dodsbo-eget-foretag.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://efterplan.se/tjanstepension-dodsfall.html</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
