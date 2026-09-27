@@ -19,3 +19,14 @@ cowork-veckorapport-*.md
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
 secrets-input.txt
+
+# Hemligheter — får aldrig committas
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*service-account*.json
+*credentials*.json
+secrets*.txt
+secrets*.json

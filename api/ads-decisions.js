@@ -16,10 +16,10 @@ function supaUrl(path) {
   return `${SUPA_URL}/rest/v1/${path}`;
 }
 
-// Both values are public by design (project URL + anon key).
+// Anon-nyckeln är publik per design, men hålls ändå utanför källkoden.
 // Access is gated at the API layer by ADS_AGENT_SECRET.
-const SUPA_URL = 'https://vjupkemzpnrahdsljenl.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
+const SUPA_URL = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
+const SUPA_ANON = process.env.SUPABASE_ANON_KEY;
 
 function supaHeaders() {
   return {
