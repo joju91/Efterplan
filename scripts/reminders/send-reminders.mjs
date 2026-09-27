@@ -7,8 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 const RESEND_KEY   = process.env.RESEND_API_KEY;
-// RESEND_FROM: sätt till 'Efterplan <påminnelse@efterplan.se>' när domänen är verifierad i Resend.
-// Utan RESEND_FROM används Resends egna testdomän (fungerar utan DNS-verifiering, men visas som avsändare).
+// RESEND_FROM sätts som GitHub-secret. Defaultar till onboarding@resend.dev vid lokal testning.
 const FROM         = process.env.RESEND_FROM || 'Efterplan <onboarding@resend.dev>';
 const BASE_URL     = 'https://efterplan.se';
 
