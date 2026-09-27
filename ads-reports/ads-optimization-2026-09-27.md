@@ -1,6 +1,6 @@
 # Google Ads — optimering 2026-09-27
 
-**Sammanfattning:** Claude API-fel: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011CfUMRfWEVRiJTT2yU7ndu"}. Rapport visar rådata utan AI-analys.
+**Sammanfattning:** Groq API-fel: 404 {"error":{"message":"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.","type":"invalid_request_error","code":"model_not_found"}}. Rapport visar rådata utan AI-analys.
 
 ## Nyckeltal (senaste 30 dagar)
 
