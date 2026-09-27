@@ -1,0 +1,33 @@
+name: Skicka deadline-påminnelser
+
+# T136/T228 — Körs dagligen och skickar påminnelsemail via Resend till
+# prenumeranter som angett ett dödsdatum och inte avregistrerat sig.
+# Triggar 14 dagar och 3 dagar före respektive deadline (bouppteckning,
+# inlämning, dödsboanmälan). Duplikatskydd via reminders_sent-kolumnen.
+
+on:
+  schedule:
+    # 07:00 UTC dagligen (09:00 svensk sommartid, 08:00 vintertid)
+    - cron: '0 7 * * *'
+  workflow_dispatch:  # manuell körning från Actions-fliken
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Installera beroenden
+        run: npm ci --omit=dev
+
+      - name: Skicka påminnelser
+        env:
+          SUPABASE_URL: https://vjupkemzpnrahdsljenl.supabase.co
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: node scripts/reminders/send-reminders.mjs
