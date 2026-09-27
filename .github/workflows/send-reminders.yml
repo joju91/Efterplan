@@ -30,4 +30,7 @@ jobs:
           SUPABASE_URL: https://vjupkemzpnrahdsljenl.supabase.co
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          # Valfritt: sätt RESEND_FROM i secrets när efterplan.se-domänen är verifierad i Resend.
+          # Utan den används onboarding@resend.dev (fungerar direkt utan DNS-setup).
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
         run: node scripts/reminders/send-reminders.mjs
