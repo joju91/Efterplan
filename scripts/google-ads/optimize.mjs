@@ -79,23 +79,28 @@ async function main() {
   let summary = 'Rapport-läge — inga beslut genererade.';
 
   if (!REPORT_ONLY) {
-    // 7. Analysera med Claude
-    const result = await analyzeWithClaude(metrics, searchTerms, budget, plausible, existingDecisions, today);
-    decisions = result.decisions ?? [];
-    summary = result.summary ?? '';
+    try {
+      // 7. Analysera med Claude
+      const result = await analyzeWithClaude(metrics, searchTerms, budget, plausible, existingDecisions, today);
+      decisions = result.decisions ?? [];
+      summary = result.summary ?? '';
 
-    // 8. Spara beslut i Supabase
-    if (decisions.length > 0) {
-      const rows = decisions.map(d => ({
-        decision_type: d.decision_type,
-        entity_type: d.entity_type ?? null,
-        entity_name: d.entity_name ?? null,
-        action: d.action ?? {},
-        reasoning: d.reasoning ?? '',
-        status: d.status ?? 'pending',
-      }));
-      const { error: insErr } = await supabase.from('ads_decisions').insert(rows);
-      if (insErr) console.error('[ads-optimize] insert decisions:', insErr.message);
+      // 8. Spara beslut i Supabase
+      if (decisions.length > 0) {
+        const rows = decisions.map(d => ({
+          decision_type: d.decision_type,
+          entity_type: d.entity_type ?? null,
+          entity_name: d.entity_name ?? null,
+          action: d.action ?? {},
+          reasoning: d.reasoning ?? '',
+          status: d.status ?? 'pending',
+        }));
+        const { error: insErr } = await supabase.from('ads_decisions').insert(rows);
+        if (insErr) console.error('[ads-optimize] insert decisions:', insErr.message);
+      }
+    } catch (claudeErr) {
+      console.error('[ads-optimize] Claude API fel:', claudeErr.message);
+      summary = `Claude API-fel: ${claudeErr.message}. Rapport visar rådata utan AI-analys.`;
     }
   }
 
