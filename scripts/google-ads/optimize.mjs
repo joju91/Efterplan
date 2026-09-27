@@ -3,7 +3,7 @@
  * Körs av .github/workflows/google-ads-optimize.yml (måndag 08:00 UTC)
  * Kan även köras manuellt: node scripts/google-ads/optimize.mjs
  */
-import Anthropic from '@anthropic-ai/sdk';
+import Groq from 'groq-sdk';
 import { createClient } from '@supabase/supabase-js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -13,7 +13,7 @@ const __dir = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dir, '..', '..');
 const REPORTS_DIR = join(REPO_ROOT, 'ads-reports');
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const supabase = createClient(
   process.env.SUPABASE_URL || 'https://vjupkemzpnrahdsljenl.supabase.co',
   process.env.SUPABASE_SECRET_KEY
@@ -100,7 +100,7 @@ async function main() {
       }
     } catch (claudeErr) {
       console.error('[ads-optimize] Claude API fel:', claudeErr.message);
-      summary = `Claude API-fel: ${claudeErr.message}. Rapport visar rådata utan AI-analys.`;
+      summary = `Groq API-fel: ${claudeErr.message}. Rapport visar rådata utan AI-analys.`;
     }
   }
 
@@ -171,7 +171,6 @@ function aggregate(rows) {
   return { keywords, totals };
 }
 
-// System-prompt cachas av Anthropic (>1024 tokens, static)
 const SYSTEM_PROMPT = `Du är en expert på Google Ads-optimering för efterplan.se — en gratis svensk webbtjänst som hjälper anhöriga att hantera praktiska dödsboärenden. Gratis personlig checklista + dokument-paket för 49 kr (engångsbetalning).
 
 Målgrupp: Svenska anhöriga strax efter ett dödsfall. Sökintention: transaktionsnära (mall, brev, guide).
@@ -234,23 +233,23 @@ ${JSON.stringify(plausible, null, 2)}
 
 BEFINTLIGA BESLUT (undvik duplikat): ${existingStr}`;
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+  const response = await groq.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
     max_tokens: 2000,
-    // System-prompten är statisk och stor nog för prompt caching (>1024 tokens)
-    system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
-    messages: [{ role: 'user', content: userMsg }],
+    response_format: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: userMsg },
+    ],
   });
 
-  const text = response.content[0]?.text ?? '';
+  const text = response.choices[0]?.message?.content ?? '';
   try {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('No JSON found');
-    return JSON.parse(match[0]);
+    return JSON.parse(text);
   } catch (e) {
-    console.error('[ads-optimize] Claude parse error:', e.message);
+    console.error('[ads-optimize] Groq parse error:', e.message);
     console.error('Raw:', text.slice(0, 300));
-    return { decisions: [], summary: 'Kunde inte parsa Claude-svar.' };
+    return { decisions: [], summary: 'Kunde inte parsa Groq-svar.' };
   }
 }
 
