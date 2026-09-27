@@ -1,6 +1,6 @@
 # Google Ads — optimering 2026-09-27
 
-**Sammanfattning:** Groq API-fel: 404 {"error":{"message":"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.","type":"invalid_request_error","code":"model_not_found"}}. Rapport visar rådata utan AI-analys.
+**Sammanfattning:** Groq API-fel: 400 {"error":{"message":"The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.","type":"invalid_request_error","code":"model_decommissioned"}}. Rapport visar rådata utan AI-analys.
 
 ## Nyckeltal (senaste 30 dagar)
 
