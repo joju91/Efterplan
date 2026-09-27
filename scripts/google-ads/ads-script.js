@@ -25,10 +25,15 @@
  * ============================================================
  */
 
-var BASE_URL = 'https://efterplan.se';
-var SECRET   = 'REDACTED';
+var PROPS    = PropertiesService.getScriptProperties();
+var BASE_URL = (PROPS.getProperty('VERCEL_BASE_URL') || 'https://efterplan.se').replace(/\/$/, '');
+var SECRET   = PROPS.getProperty('ADS_AGENT_SECRET') || '';
 
 function main() {
+  if (!SECRET) {
+    Logger.log('FEL: ADS_AGENT_SECRET saknas i Script Properties. Lägg till den och kör igen.');
+    return;
+  }
 
   var now     = new Date();
   var dateStr = Utilities.formatDate(now, 'UTC', 'yyyy-MM-dd');
