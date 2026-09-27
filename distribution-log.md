@@ -13,6 +13,26 @@ Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kan
 
 **Känt gap:** Fas 1-research (hitta specifika aktiva trådar att svara i) kunde inte köras — websökningen hade ingen tillförlitlig åtkomst till Reddit/Flashback-sökning. Alla tre poster är därför egna inlägg, inte trådsvar. Om Jonas vill trådsvar istället: leta upp 1–2 aktiva trådar manuellt och klistra in länkarna, så skrivs skräddarsydda svar.
 
+## 2026-09-27 — trådsvar Flashback + Familjeliv
+
+Community-scan via WebSearch (Flashback + Familjeliv, Reddit ej indexerat). Hittade 10 aktiva/relevanta trådar att svara i med Efterplan som resurs. Utkast i `community-svar-2026-09-27.md`.
+
+| Datum | Forum | Tråd | Status |
+|-------|-------|------|--------|
+| 2026-09-27 | Flashback | [t3679761 Dödsbo inkasso](https://www.flashback.org/t3679761) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Flashback | [t3678270 Beställa till dödsbo](https://www.flashback.org/t3678270) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Flashback | [t3317780 Dödsbo med skuld](https://www.flashback.org/t3317780) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Flashback | [t3314685 Hantering av dödsbo](https://www.flashback.org/t3314685) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Flashback | [t3276683 Frågor om dödsbo](https://www.flashback.org/t3276683) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Familjeliv | [81654217 Avliden släkting](https://www.familjeliv.se/forum/thread/81654217-avliden-slakting-hur-dodsboet-hanteras) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Familjeliv | [81302808 Sambo, barn och dödsfall](https://www.familjeliv.se/forum/thread/81302808-sambo-barn-och-dodsfall) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Familjeliv | [74803427 Dödsbo hur lång tid](https://www.familjeliv.se/forum/thread/74803427-dodsbo-hur-lang-tid-tar-det) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Familjeliv | [71836404 Städa dödsbo](https://www.familjeliv.se/forum/thread/71836404-ar-jag-anvarig-for-att-stada-dodsbo) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Familjeliv | [42187802 Bouppteckning DIY](https://www.familjeliv.se/forum/thread/42187802-hur-gor-man-en-bouppteckning-i-ett-dodsbo-sjalv) | Utkast klar — väntar på manuell postning |
+| 2026-09-27 | Reddit r/sweden | Ej indexerat av sökmotorn | Sök manuellt: reddit.com/r/sweden sök "dödsbo" sortera Nytt |
+
+**Nästa steg:** Jonas kollar om trådarna är aktiva (senaste svar < 3 mån) och postar utkast från `community-svar-2026-09-27.md`. Anpassa svaret om tråden tar annan vinkel. Uppdatera logg med URL + engagemang.
+
 ## 2026-09-25 — nya utkast + uppföljning
 
 Samma sökbegränsning kvarstår (bekräftat igen 2026-09-25) — fortfarande inga
