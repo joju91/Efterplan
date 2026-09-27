@@ -132,7 +132,7 @@
     <div class="nav-landing-links">
       <a href="/om.html" class="nav-text-link">Om</a>
       <a href="#section-integritet" class="nav-text-link">Integritet</a>
-      <a href="#" class="nav-text-link" onclick="event.preventDefault();openModal('auth-modal');">Mitt konto</a>
+      <a href="#" class="nav-text-link" data-action="openModal" data-arg="auth-modal">Mitt konto</a>
     </div>
   </nav>
   <div class="landing-hero">
@@ -145,8 +145,8 @@
         <li>Bara det som faktiskt är ditt att göra</li>
         <li>Du kan stänga och komma tillbaka senare</li>
       </ul>
-      <button class="btn-primary btn-large" onclick="startOnboarding()">Börja här</button>
-      <button class="btn-ghost landing-continue" id="landing-continue" hidden onclick="resumePlan()">Fortsätt din plan →</button>
+      <button class="btn-primary btn-large" data-action="startOnboarding">Börja här</button>
+      <button class="btn-ghost landing-continue" id="landing-continue" hidden data-action="resumePlan">Fortsätt din plan →</button>
       <p class="landing-note">Gratis. Det du fyller i finns kvar — även om du stänger sidan.</p>
       <p class="landing-note landing-note--pricing"><strong>Gratis:</strong> hela checklistan och planen. <strong>49 kr engångsbetalning:</strong> breven till banken, Skatteverket och de andra myndigheterna.</p>
     </div>
@@ -243,7 +243,7 @@
     <p>Efterplan byggdes för att göra en av livets svåraste perioder lite lättare att navigera. Vi hjälper dig strukturera det praktiska — utan att du ska behöva söka information på egen hand i sorgen.</p>
     <p>Myndigheterna (t.ex. Pensionsmyndighetens Efterlevandeguiden) har den officiella informationen om vad som gäller. Efterplan konkurrerar inte om det — vi hjälper dig istället <em>göra</em> det: en personlig, prioriterad checklista utifrån just din situation, ifyllda brevmallar och en plats att samla allt på.</p>
     <p>Har du frågor, hittat något fel eller vill ge feedback? Hör av dig: <a class="landing-contact-link" href="#" data-mail="jonas.soderstrom43" data-domain="gmail.com"
-       onclick="this.href='mailto:'+this.dataset.mail+'@'+this.dataset.domain">Kontakt</a></p>
+       data-action="mailto">Kontakt</a></p>
     <p class="legal-disclaimer">Efterplan ger inte juridisk rådgivning. Informationen är av generell karaktär och baserad på svenska förhållanden. Vid tveksamheter — konsultera en jurist eller begravningsbyrå.</p>
   </section>
 
@@ -263,7 +263,7 @@
   <footer class="landing-footer">
     <p>© 2026 Efterplan &nbsp;·&nbsp;
        <a href="#" data-mail="jonas.soderstrom43" data-domain="gmail.com"
-          onclick="this.href='mailto:'+this.dataset.mail+'@'+this.dataset.domain">Kontakt</a> &nbsp;·&nbsp;
+          data-action="mailto">Kontakt</a> &nbsp;·&nbsp;
        <a href="#section-integritet">Integritet</a> &nbsp;·&nbsp;
        <a href="/om.html">Om</a>
     </p>
@@ -321,7 +321,7 @@
   </div>
 
   <div class="ob-topbar">
-    <button class="ob-back" id="ob-back-btn" onclick="obBack()">← Tillbaka</button>
+    <button class="ob-back" id="ob-back-btn" data-action="obBack">← Tillbaka</button>
     <div class="ob-dots" id="ob-dots"></div>
     <div class="u-width-80px"></div>
   </div>
@@ -336,13 +336,13 @@
         <p class="ob-hint">Det hjälper oss förstå vad som behöver göras.</p>
         <p class="ob-reassure">Du kan inte göra fel — vi guidar dig hela vägen.</p>
         <div class="ob-choices">
-          <button class="ob-choice" data-key="relation" data-val="make" onclick="obChoose(this)">Make / maka</button>
-          <button class="ob-choice" data-key="relation" data-val="forälder" onclick="obChoose(this)">Förälder</button>
-          <button class="ob-choice" data-key="relation" data-val="barn" onclick="obChoose(this)">Barn</button>
-          <button class="ob-choice" data-key="relation" data-val="syskon" onclick="obChoose(this)">Syskon</button>
-          <button class="ob-choice" data-key="relation" data-val="annan" onclick="obChoose(this)">Annan anhörig</button>
+          <button class="ob-choice" data-key="relation" data-val="make" data-action="obChoose">Make / maka</button>
+          <button class="ob-choice" data-key="relation" data-val="forälder" data-action="obChoose">Förälder</button>
+          <button class="ob-choice" data-key="relation" data-val="barn" data-action="obChoose">Barn</button>
+          <button class="ob-choice" data-key="relation" data-val="syskon" data-action="obChoose">Syskon</button>
+          <button class="ob-choice" data-key="relation" data-val="annan" data-action="obChoose">Annan anhörig</button>
         </div>
-        <button class="ob-next-btn" onclick="obGoTo(2)" disabled>Nästa →</button>
+        <button class="ob-next-btn" data-action="obGoTo" data-arg="2" disabled>Nästa →</button>
       </div>
     </div>
 
@@ -452,7 +452,7 @@
           </label>
         </div>
         <p class="ob-skip">Vet du inte säkert? Hoppa bara vidare — du kan ändra senare.</p>
-        <button class="ob-next-btn ob-next-sticky" onclick="obGoTo(3)">Nästa →</button>
+        <button class="ob-next-btn ob-next-sticky" data-action="obGoTo" data-arg="3">Nästa →</button>
       </div>
     </div>
 
@@ -483,7 +483,7 @@
         </label>
         <input type="email" id="ob-reminder-email" class="ob-text-input hidden" placeholder="din@epost.se" autocomplete="email" aria-label="E-post för påminnelser" />
 
-        <button class="ob-next-btn" onclick="obGoTo(4)">Nästa →</button>
+        <button class="ob-next-btn" data-action="obGoTo" data-arg="4">Nästa →</button>
       </div>
     </div>
 
@@ -496,7 +496,7 @@
         <input type="text" id="deceased-personnr" class="ob-text-input" placeholder="ÅÅÅÅMMDD-XXXX" autocomplete="off"
           aria-label="Den avlidnes personnummer" inputmode="numeric"
           onkeydown="if(event.key==='Enter') generatePlan()" />
-        <button class="ob-next-btn" onclick="generatePlan()">Visa min plan →</button>
+        <button class="ob-next-btn" data-action="generatePlan">Visa min plan →</button>
       </div>
     </div>
 
@@ -515,18 +515,18 @@
       <div class="logo-tagline">För det som blir kvar när någon är borta</div>
     </div>
     <div class="nav-plan-actions">
-      <button class="btn-ghost btn-sm" id="open-auth" onclick="openModal('auth-modal')">Mitt konto</button>
-      <button class="btn-ghost btn-sm" onclick="editAnswers()">Ändra svar</button>
+      <button class="btn-ghost btn-sm" id="open-auth" data-action="openModal" data-arg="auth-modal">Mitt konto</button>
+      <button class="btn-ghost btn-sm" data-action="editAnswers">Ändra svar</button>
     </div>
   </nav>
 
   <!-- Tabs -->
   <div class="plan-tabs-bar">
     <div class="plan-tabs">
-      <button class="plan-tab active" id="tab-plan" onclick="switchTab('plan')">Min plan</button>
-      <button class="plan-tab" id="tab-docs" onclick="switchTab('docs')">Dokument</button>
-      <button class="plan-tab" id="tab-bopp" onclick="switchTab('bopp')">Bouppteckning</button>
-      <button class="plan-tab" id="tab-arkiv" onclick="switchTab('arkiv')">Arkiv</button>
+      <button class="plan-tab active" id="tab-plan" data-action="switchTab" data-arg="plan">Min plan</button>
+      <button class="plan-tab" id="tab-docs" data-action="switchTab" data-arg="docs">Dokument</button>
+      <button class="plan-tab" id="tab-bopp" data-action="switchTab" data-arg="bopp">Bouppteckning</button>
+      <button class="plan-tab" id="tab-arkiv" data-action="switchTab" data-arg="arkiv">Arkiv</button>
     </div>
   </div>
 
@@ -542,17 +542,17 @@
         </div>
         <div class="progress-summary" id="progress-summary" aria-live="polite"></div>
         <p class="digital-legend">🟢 Går att göra digitalt med ditt eget BankID · 🟡 Delvis digitalt — vissa steg kan kräva telefon, möte eller post · 🔴 Kräver post eller original i fysisk form</p>
-        <button class="btn-print-inline" onclick="printPlan()">Skriv ut / Spara som PDF</button>
-        <button class="btn-print-inline" onclick="openShareModal()">🔗 Dela läsbar länk</button>
-        <button class="btn-print-inline" id="hide-done-all" onclick="toggleHideDoneAll()">Dölj alla klara uppgifter</button>
+        <button class="btn-print-inline" data-action="printPlan">Skriv ut / Spara som PDF</button>
+        <button class="btn-print-inline" data-action="openShareModal">🔗 Dela läsbar länk</button>
+        <button class="btn-print-inline" id="hide-done-all" data-action="toggleHideDoneAll">Dölj alla klara uppgifter</button>
       </div>
 
       <div class="completion-message" id="completion-message" role="status">
         <p>Du har gått igenom allt. Ta ett djupt andetag — du klarade det.</p>
-        <button class="btn-ghost btn-sm" onclick="printPlan()" style="margin-top:12px">Spara som PDF / Skriv ut →</button>
+        <button class="btn-ghost btn-sm" data-action="printPlan" style="margin-top:12px">Spara som PDF / Skriv ut →</button>
       </div>
 
-      <button class="plan-print-btn" onclick="printPlan()" aria-label="Skriv ut eller spara som PDF">
+      <button class="plan-print-btn" data-action="printPlan" aria-label="Skriv ut eller spara som PDF">
         <span>PDF</span>
       </button>
 
@@ -565,7 +565,7 @@
             <h2 class="section-title">Gör idag</h2>
             <span class="section-count" id="count-today"></span>
             <span class="section-done-badge hidden" id="badge-today">✓ Klar</span>
-            <button class="section-hide-done-btn" id="hide-done-today" onclick="toggleHideDoneSection('today')">Dölj klara</button>
+            <button class="section-hide-done-btn" id="hide-done-today" data-action="toggleHideDoneSection" data-arg="today">Dölj klara</button>
           </div>
           <div class="task-list" id="tasks-today"></div>
         </div>
@@ -577,7 +577,7 @@
             <span class="section-coming-tag">Fylls på efterhand</span>
             <span class="section-count" id="count-week"></span>
             <span class="section-done-badge hidden" id="badge-week">✓ Klar</span>
-            <button class="section-hide-done-btn" id="hide-done-week" onclick="toggleHideDoneSection('week')">Dölj klara</button>
+            <button class="section-hide-done-btn" id="hide-done-week" data-action="toggleHideDoneSection" data-arg="week">Dölj klara</button>
           </div>
           <div class="task-list" id="tasks-week"></div>
         </div>
@@ -589,7 +589,7 @@
             <span class="section-coming-tag">Fylls på efterhand</span>
             <span class="section-count" id="count-later"></span>
             <span class="section-done-badge hidden" id="badge-later">✓ Klar</span>
-            <button class="section-hide-done-btn" id="hide-done-later" onclick="toggleHideDoneSection('later')">Dölj klara</button>
+            <button class="section-hide-done-btn" id="hide-done-later" data-action="toggleHideDoneSection" data-arg="later">Dölj klara</button>
           </div>
           <div class="task-list" id="tasks-later"></div>
         </div>
@@ -610,7 +610,7 @@
         <div class="plan-done-icon" aria-hidden="true">✓</div>
         <h2 class="plan-done-title">Allt är genomgånget.</h2>
         <p class="plan-done-sub">Det har tagit tid och kraft — men du har tagit dig igenom det.<br>Ta ett djupt andetag.</p>
-        <button class="btn-ghost btn-sm" onclick="printPlan()" style="margin-top:8px">Spara som PDF →</button>
+        <button class="btn-ghost btn-sm" data-action="printPlan" style="margin-top:8px">Spara som PDF →</button>
       </div>
 
     </div>
@@ -644,7 +644,7 @@
             </div>
           </div>
         </div>
-        <button class="doc-bulk-cta" data-doc="bulk" onclick="showDocForm('bulk')">
+        <button class="doc-bulk-cta" data-doc="bulk" data-action="showDocForm" data-arg="bulk">
           <span class="doc-bulk-icon" aria-hidden="true">⚡</span>
           <div class="doc-bulk-text">
             <span class="doc-bulk-title">Avsluta flera tjänster på en gång</span>
@@ -653,33 +653,33 @@
           <span class="doc-bulk-arrow">→</span>
         </button>
         <div class="doc-type-grid">
-          <button class="doc-type-btn" data-doc="forsakring" onclick="showDocForm('forsakring')">
+          <button class="doc-type-btn" data-doc="forsakring" data-action="showDocForm" data-arg="forsakring">
             <span class="doc-badge doc-badge--free">Gratis</span>
             <span class="doc-icon" aria-hidden="true">🛡</span>
             <span class="doc-type-title">Till försäkringsbolaget</span>
             <span class="doc-type-sub">Meddela dödsfallet — och missa inte liv-/tjänstegrupplivförsäkring (TGL) som kan betalas ut</span>
           </button>
-          <button class="doc-type-btn" data-doc="letter" onclick="showDocForm('letter')">
+          <button class="doc-type-btn" data-doc="letter" data-action="showDocForm" data-arg="letter">
             <span class="doc-icon" aria-hidden="true">✉</span>
             <span class="doc-type-title">Uppsägningsbrev</span>
             <span class="doc-type-sub">Avsluta ett abonnemang</span>
           </button>
-          <button class="doc-type-btn" data-doc="bank" onclick="showDocForm('bank')">
+          <button class="doc-type-btn" data-doc="bank" data-action="showDocForm" data-arg="bank">
             <span class="doc-icon" aria-hidden="true">🏦</span>
             <span class="doc-type-title">Till banken</span>
             <span class="doc-type-sub">Meddela banken om dödsfallet</span>
           </button>
-          <button class="doc-type-btn" data-doc="annons" onclick="showDocForm('annons')">
+          <button class="doc-type-btn" data-doc="annons" data-action="showDocForm" data-arg="annons">
             <span class="doc-icon" aria-hidden="true">📰</span>
             <span class="doc-type-title">Dödsannons</span>
             <span class="doc-type-sub">Formulera ett minnesvärigt meddelande</span>
           </button>
-          <button class="doc-type-btn" data-doc="skatteverket" id="doc-btn-skatteverket" onclick="showDocForm('skatteverket')">
+          <button class="doc-type-btn" data-doc="skatteverket" id="doc-btn-skatteverket" data-action="showDocForm" data-arg="skatteverket">
             <span class="doc-icon" aria-hidden="true">🏛</span>
             <span class="doc-type-title">Skatteverket</span>
             <span class="doc-type-sub">Avsluta F-skatt / enskild firma</span>
           </button>
-          <button class="doc-type-btn" data-doc="fullmakt" id="doc-btn-fullmakt" onclick="showDocForm('fullmakt')">
+          <button class="doc-type-btn" data-doc="fullmakt" id="doc-btn-fullmakt" data-action="showDocForm" data-arg="fullmakt">
             <span class="doc-icon" aria-hidden="true">📋</span>
             <span class="doc-type-title">Fullmakt</span>
             <span class="doc-type-sub">Ge en person rätt att företräda dödsboet</span>
@@ -691,14 +691,14 @@
           <div class="paywall-lock" aria-hidden="true">🔒</div>
           <h2 class="paywall-title">Lås upp banken, Skatteverket och fullmakten — 49 kr</h2>
           <p class="paywall-desc">Försäkringsbrevet är gratis. För 49 kr låser du upp resten — brev till banken, Skatteverket, fullmakt för dödsboet, dödsannons och uppsägning av abonnemang.</p>
-          <button class="btn-primary paywall-cta" onclick="handlePaywallCTA()">Lås upp — 49 kr</button>
+          <button class="btn-primary paywall-cta" data-action="handlePaywallCTA">Lås upp — 49 kr</button>
           <p class="paywall-note">Engångsbetalning. Inga prenumerationer.</p>
         </div>
       </div>
 
       <!-- Form: Bulk uppsägning -->
       <div id="doc-form-bulk" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Avsluta tjänster</h2>
         <p class="plan-sub" style="margin-bottom:28px">Fyll i ditt namn och lägg till tjänster — vi skriver alla brev åt dig.</p>
         <div class="form-group">
@@ -712,24 +712,24 @@
         <div class="form-group">
           <label>Tjänster att avsluta</label>
           <div id="bulk-rows"></div>
-          <button class="add-row-btn" onclick="addBulkRow()">+ Lägg till tjänst</button>
+          <button class="add-row-btn" data-action="addBulkRow">+ Lägg till tjänst</button>
         </div>
         <p class="form-error hidden" id="err-bulk" role="alert"></p>
-        <button class="btn-primary" style="max-width:260px" onclick="generateBulkLetters()">Skapa alla brev →</button>
+        <button class="btn-primary" style="max-width:260px" data-action="generateBulkLetters">Skapa alla brev →</button>
       </div>
 
       <!-- Result: Bulk -->
       <div id="doc-result-bulk" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Dina brev</h2>
         <p class="result-note" style="margin-bottom:16px">Kopiera och skicka ett i taget — eller spara alla som PDF.</p>
-        <button class="btn-ghost btn-sm" style="margin-bottom:24px" onclick="printBulkLetters()">Skriv ut / Spara som PDF →</button>
+        <button class="btn-ghost btn-sm" style="margin-bottom:24px" data-action="printBulkLetters">Skriv ut / Spara som PDF →</button>
         <div id="bulk-letters-list"></div>
       </div>
 
       <!-- Form: Uppsägningsbrev -->
       <div id="doc-form-letter" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Uppsägningsbrev</h2>
         <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar.</p>
         <div class="form-group">
@@ -749,12 +749,12 @@
           <input type="email" id="letter-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-letter" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" onclick="generateLetter()">Skapa brev</button>
+        <button class="btn-primary" style="max-width:240px" data-action="generateLetter">Skapa brev</button>
       </div>
 
       <!-- Form: Banknotifiering -->
       <div id="doc-form-bank" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Brev till banken</h2>
         <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar.</p>
         <div class="form-group">
@@ -774,12 +774,12 @@
           <input type="email" id="bank-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-bank" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" onclick="generateBank()">Skapa brev</button>
+        <button class="btn-primary" style="max-width:240px" data-action="generateBank">Skapa brev</button>
       </div>
 
       <!-- Form: Dödsannons -->
       <div id="doc-form-annons" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Dödsannons</h2>
         <p class="plan-sub" style="margin-bottom:28px">Berätta lite — vi formulerar resten.</p>
         <div class="form-group">
@@ -803,12 +803,12 @@
         <div class="form-group">
           <label for="annons-memory">Berätta något om personen <span class="form-label-hint">(valfritt)</span></label>
           <div class="phrase-chips" id="memory-chips" role="group" aria-label="Välj fraser">
-            <button type="button" class="phrase-chip" onclick="toggleMemoryPhrase(this)">Varm och omtänksam</button>
-            <button type="button" class="phrase-chip" onclick="toggleMemoryPhrase(this)">Älskade naturen</button>
-            <button type="button" class="phrase-chip" onclick="toggleMemoryPhrase(this)">Levde för familjen</button>
-            <button type="button" class="phrase-chip" onclick="toggleMemoryPhrase(this)">Passionerad trädgårdsodlare</button>
-            <button type="button" class="phrase-chip" onclick="toggleMemoryPhrase(this)">Glad och skrattande</button>
-            <button type="button" class="phrase-chip" onclick="toggleMemoryPhrase(this)">Älskade musik</button>
+            <button type="button" class="phrase-chip" data-action="toggleMemoryPhrase">Varm och omtänksam</button>
+            <button type="button" class="phrase-chip" data-action="toggleMemoryPhrase">Älskade naturen</button>
+            <button type="button" class="phrase-chip" data-action="toggleMemoryPhrase">Levde för familjen</button>
+            <button type="button" class="phrase-chip" data-action="toggleMemoryPhrase">Passionerad trädgårdsodlare</button>
+            <button type="button" class="phrase-chip" data-action="toggleMemoryPhrase">Glad och skrattande</button>
+            <button type="button" class="phrase-chip" data-action="toggleMemoryPhrase">Älskade musik</button>
           </div>
           <textarea id="annons-memory" class="text-input textarea" placeholder="Lägg till egna ord om du vill…" rows="2"></textarea>
         </div>
@@ -821,12 +821,12 @@
           <textarea id="annons-ovrigt" class="text-input textarea" placeholder="t.ex. citat, hälsning, önskemål om blombidrag, kontaktuppgifter…" rows="2"></textarea>
         </div>
         <p class="form-error hidden" id="err-annons" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" onclick="generateAnnons()">Skapa annons</button>
+        <button class="btn-primary" style="max-width:240px" data-action="generateAnnons">Skapa annons</button>
       </div>
 
       <!-- Form: Försäkringsanmälan -->
       <div id="doc-form-forsakring" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Brev till försäkringsbolaget</h2>
         <p class="plan-sub" style="margin-bottom:28px">Vi skriver brevet — du kopierar och skickar.</p>
         <div class="form-group">
@@ -846,12 +846,12 @@
           <input type="email" id="fors-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-forsakring" role="alert"></p>
-        <button class="btn-primary" style="max-width:260px" onclick="generateForsakring()">Skapa brev</button>
+        <button class="btn-primary" style="max-width:260px" data-action="generateForsakring">Skapa brev</button>
       </div>
 
       <!-- Form: Fullmakt (visas om ansvar = flera) -->
       <div id="doc-form-fullmakt" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Fullmakt — dödsbo</h2>
         <p class="plan-sub" style="margin-bottom:28px">Utser en person att företräda dödsboet gentemot banker och myndigheter. Alla dödsbodelägare bör skriva under i original.</p>
         <div class="form-group">
@@ -871,12 +871,12 @@
           <input type="text" id="fullmakt-relation" class="text-input" placeholder="t.ex. Son, Dotter, Make" />
         </div>
         <p class="form-error hidden" id="err-fullmakt" role="alert"></p>
-        <button class="btn-primary" style="max-width:260px" onclick="generateFullmakt()">Skapa fullmakt</button>
+        <button class="btn-primary" style="max-width:260px" data-action="generateFullmakt">Skapa fullmakt</button>
       </div>
 
       <!-- Form: Skatteverket (visas endast om foretag = true) -->
       <div id="doc-form-skatteverket" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" style="margin-bottom:6px">Avregistrera F-skatt</h2>
         <p class="plan-sub" style="margin-bottom:28px">Begär avregistrering av F-skatt och enskild firma hos Skatteverket. Kopiera brevet och skicka via Skatteverkets e-tjänst eller post.</p>
         <input type="hidden" id="skv-arende" value="fskatt" />
@@ -893,17 +893,17 @@
           <input type="email" id="skv-email" class="text-input" placeholder="din@epost.se" />
         </div>
         <p class="form-error hidden" id="err-skatteverket" role="alert"></p>
-        <button class="btn-primary" style="max-width:240px" onclick="generateSkatteverket()">Skapa brev</button>
+        <button class="btn-primary" style="max-width:240px" data-action="generateSkatteverket">Skapa brev</button>
       </div>
 
       <!-- Resultat -->
       <div id="doc-result" class="doc-form hidden">
-        <button class="back-btn" onclick="backToDocChooser()">← Tillbaka</button>
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title" id="result-title" style="margin-bottom:6px">Klart!</h2>
         <p class="result-note">Läs igenom och justera om du vill — kopiera sedan och skicka.</p>
         <div class="doc-mode-tabs hidden" id="doc-mode-tabs">
-          <button class="doc-mode-tab active" id="doc-mode-tab-brev" onclick="switchDocMode('brev')">✉ Brev</button>
-          <button class="doc-mode-tab" id="doc-mode-tab-telefon" onclick="switchDocMode('telefon')">📞 Vad du kan säga i telefon</button>
+          <button class="doc-mode-tab active" id="doc-mode-tab-brev" data-action="switchDocMode" data-arg="brev">✉ Brev</button>
+          <button class="doc-mode-tab" id="doc-mode-tab-telefon" data-action="switchDocMode" data-arg="telefon">📞 Vad du kan säga i telefon</button>
         </div>
         <div class="doc-output" id="doc-output-text"></div>
         <div class="doc-phone-checklist hidden" id="doc-phone-checklist">
@@ -911,9 +911,9 @@
           <ul id="doc-phone-checklist-items"></ul>
         </div>
         <div class="result-actions">
-          <button class="btn-primary" style="max-width:200px" onclick="copyDocument()">Kopiera</button>
+          <button class="btn-primary" style="max-width:200px" data-action="copyDocument">Kopiera</button>
           <a id="result-mailto" class="btn-ghost" href="mailto:" style="max-width:200px; text-align:center;">Öppna i e-post ✉</a>
-          <button class="btn-ghost" style="max-width:200px" onclick="backToDocChooser()">Nytt dokument</button>
+          <button class="btn-ghost" style="max-width:200px" data-action="backToDocChooser">Nytt dokument</button>
         </div>
         <p class="copied-msg hidden" id="copied-msg">Kopierat!</p>
       </div>
@@ -946,7 +946,7 @@
       <section class="bopp-section">
         <div class="bopp-section-header">
           <h3 class="bopp-section-title">Dödsbodelägare</h3>
-          <button class="btn-ghost btn-sm" onclick="boppAddDelbagare()">+ Lägg till</button>
+          <button class="btn-ghost btn-sm" data-action="boppAddDelbagare">+ Lägg till</button>
         </div>
         <p class="bopp-section-hint">De som har rätt att delta i bouppteckningen — arvingar och eventuella testamentstagare.</p>
         <div id="bopp-delbagare-list"></div>
@@ -956,7 +956,7 @@
       <section class="bopp-section">
         <div class="bopp-section-header">
           <h3 class="bopp-section-title">Tillgångar</h3>
-          <button class="btn-ghost btn-sm" onclick="boppAddTillgang()">+ Lägg till</button>
+          <button class="btn-ghost btn-sm" data-action="boppAddTillgang">+ Lägg till</button>
         </div>
         <p class="bopp-section-hint">Bank, fastighet, bil, bohag, värdepapper, livförsäkring m.m. Skriv uppskattade belopp — exakta värden fastställs senare.</p>
         <div id="bopp-tillgangar-list"></div>
@@ -966,7 +966,7 @@
       <section class="bopp-section">
         <div class="bopp-section-header">
           <h3 class="bopp-section-title">Skulder</h3>
-          <button class="btn-ghost btn-sm" onclick="boppAddSkuld()">+ Lägg till</button>
+          <button class="btn-ghost btn-sm" data-action="boppAddSkuld">+ Lägg till</button>
         </div>
         <p class="bopp-section-hint">Banklån, kreditkort, obetald hyra, skatteskulder m.m. Du ärver inte skulder — de betalas ur dödsboet om det finns tillgångar.</p>
         <div id="bopp-skulder-list"></div>
@@ -984,7 +984,7 @@
       </div>
 
       <div class="arkiv-actions">
-        <button class="btn-ghost arkiv-scan-btn" onclick="document.getElementById('doc-photo-input').click()" aria-label="Fota dokument">
+        <button class="btn-ghost arkiv-scan-btn" data-action="triggerInput" data-arg="doc-photo-input" aria-label="Fota dokument">
           <span aria-hidden="true">📷</span> Fota dokument
         </button>
       </div>
@@ -992,10 +992,10 @@
       <p class="arkiv-scan-status hidden" id="doc-scan-status" role="status"></p>
 
       <div class="arkiv-filters" id="arkiv-filters">
-        <button class="arkiv-filter-btn active" data-filter="alla" onclick="setDocumentFilter('alla')">Alla</button>
-        <button class="arkiv-filter-btn" data-filter="viktig" onclick="setDocumentFilter('viktig')">Viktiga</button>
-        <button class="arkiv-filter-btn" data-filter="mellan" onclick="setDocumentFilter('mellan')">Kanske</button>
-        <button class="arkiv-filter-btn" data-filter="onodig" onclick="setDocumentFilter('onodig')">Onödiga</button>
+        <button class="arkiv-filter-btn active" data-filter="alla" data-action="setDocumentFilter" data-arg="alla">Alla</button>
+        <button class="arkiv-filter-btn" data-filter="viktig" data-action="setDocumentFilter" data-arg="viktig">Viktiga</button>
+        <button class="arkiv-filter-btn" data-filter="mellan" data-action="setDocumentFilter" data-arg="mellan">Kanske</button>
+        <button class="arkiv-filter-btn" data-filter="onodig" data-action="setDocumentFilter" data-arg="onodig">Onödiga</button>
       </div>
 
       <ul id="arkiv-list" class="arkiv-list"></ul>
@@ -1010,10 +1010,10 @@
         <div class="bills-header">
           <h2 class="section-title">Räkningar</h2>
           <div class="bills-header-actions">
-            <button class="btn-ghost bills-scan-btn" onclick="document.getElementById('bill-photo-input').click()" aria-label="Fota räkning">
+            <button class="btn-ghost bills-scan-btn" data-action="triggerInput" data-arg="bill-photo-input" aria-label="Fota räkning">
               <span aria-hidden="true">📷</span> Fota
             </button>
-            <button class="btn-ghost bills-add-btn" onclick="showBillForm()">+ Lägg till</button>
+            <button class="btn-ghost bills-add-btn" data-action="showBillForm">+ Lägg till</button>
           </div>
         </div>
         <p class="bills-intro">Räkningar till dödsboet kommer ofta in utan förvarning, och du har inte tillgång till kontots transaktioner — bara rätt att betala. De sparas här tillsammans med övriga papper från dödsboet. Lista dem när de dyker upp och bocka av när de är betalda, så tappar du inte koll.</p>
@@ -1022,14 +1022,14 @@
         <div class="bill-form hidden" id="bill-form">
           <div class="bill-photo-preview hidden" id="bill-photo-preview">
             <img id="bill-photo-preview-img" alt="Förhandsvisning av räkning">
-            <button type="button" class="bill-photo-clear" onclick="clearBillPhoto()" aria-label="Ta bort foto">×</button>
+            <button type="button" class="bill-photo-clear" data-action="clearBillPhoto" aria-label="Ta bort foto">×</button>
           </div>
           <input type="text" id="bill-desc-input" aria-label="Beskrivning" placeholder="Beskrivning (t.ex. Telia faktura)" class="bill-input">
           <input type="number" id="bill-amount-input" aria-label="Belopp i kronor" placeholder="Belopp (kr)" class="bill-input bill-amount-input">
           <p class="form-error hidden" id="err-bills" role="alert"></p>
           <div class="bill-form-actions">
-            <button class="btn-primary" onclick="submitBill()">Lägg till</button>
-            <button class="btn-ghost" onclick="hideBillForm()">Avbryt</button>
+            <button class="btn-primary" data-action="submitBill">Lägg till</button>
+            <button class="btn-ghost" data-action="hideBillForm">Avbryt</button>
           </div>
         </div>
         <ul id="bills-list" class="bills-list"></ul>
@@ -1042,7 +1042,7 @@
 
 <div id="undo-toast" class="undo-toast hidden" role="status" aria-live="polite">
   <span>Uppgift markerad som klar.</span>
-  <button onclick="undoTaskDone()">Ångra</button>
+  <button data-action="undoTaskDone">Ångra</button>
 </div>
 
 <div id="app-toast" class="app-toast hidden" role="status" aria-live="polite">
@@ -1073,14 +1073,14 @@
       <li>Läs mer: <a href="./vad-gora-nar-nagon-dor.html" class="co-link">Vad gör man när någon dör?</a></li>
     </ul>
     <div class="co-actions">
-      <button class="btn-primary co-pdf-btn" onclick="printPlan()">Spara som PDF</button>
-      <button class="btn-ghost co-close-btn" onclick="closeCompletionOverlay()">Tillbaka till planen</button>
+      <button class="btn-primary co-pdf-btn" data-action="printPlan">Spara som PDF</button>
+      <button class="btn-ghost co-close-btn" data-action="closeCompletionOverlay">Tillbaka till planen</button>
     </div>
   </div>
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=37" defer></script>
+<script src="app.js?v=38" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
@@ -1096,7 +1096,7 @@
   <div class="modal modal-sm">
     <div class="modal-header">
       <h2 class="modal-title" id="auth-modal-title">Mitt konto</h2>
-      <button class="modal-close" type="button" aria-label="Stäng" onclick="closeModal('auth-modal')">✕</button>
+      <button class="modal-close" type="button" aria-label="Stäng" data-action="closeModal" data-arg="auth-modal">✕</button>
     </div>
 
     <div id="auth-view-out">
@@ -1126,11 +1126,11 @@
   <div class="modal modal-sm">
     <div class="modal-header">
       <h2 class="modal-title" id="share-modal-title">Dela läsbar länk</h2>
-      <button class="modal-close" type="button" aria-label="Stäng" onclick="closeModal('share-modal')">✕</button>
+      <button class="modal-close" type="button" aria-label="Stäng" data-action="closeModal" data-arg="share-modal">✕</button>
     </div>
     <p class="modal-sub">Skapar en länk med checklistan (namn och uppgifter, inte personnummer). Innehållet krypteras i din webbläsare — Efterplan kan inte läsa det, bara den som har hela länken kan öppna den.</p>
     <div id="share-modal-body">
-      <button type="button" class="btn-primary" style="width:100%;" onclick="generateShareLink()">Skapa länk</button>
+      <button type="button" class="btn-primary" style="width:100%;" data-action="generateShareLink">Skapa länk</button>
     </div>
     <p id="share-modal-status" class="modal-sub" style="margin-top:12px;min-height:1.2em;"></p>
   </div>

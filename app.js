@@ -3532,3 +3532,91 @@ function _esc(str) {
 
 // Load on init
 document.addEventListener('DOMContentLoaded', () => { boppLoad(); });
+
+// T260: event delegation — ersätter 101 inline onclick-attribut
+document.addEventListener('click', function dispatchAction(e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const a = el.dataset.action;
+  const v = el.dataset.arg || '';
+  if (el.tagName === 'A') e.preventDefault();
+  switch (a) {
+    case 'startOnboarding':          startOnboarding(); break;
+    case 'resumePlan':               resumePlan(); break;
+    case 'generatePlan':             generatePlan(); break;
+    case 'editAnswers':              editAnswers(); break;
+    case 'obBack':                   obBack(); break;
+    case 'obGoTo':                   obGoTo(+v); break;
+    case 'obChoose':                 obChoose(el); break;
+    case 'switchTab':                switchTab(v); break;
+    case 'toggleHideDoneSection':    toggleHideDoneSection(v); break;
+    case 'toggleHideDoneAll':        toggleHideDoneAll(); break;
+    case 'printPlan':                printPlan(); break;
+    case 'printBulkLetters':         printBulkLetters(); break;
+    case 'openShareModal':           openShareModal(); break;
+    case 'undoTaskDone':             undoTaskDone(); break;
+    case 'showBillForm':             showBillForm(); break;
+    case 'hideBillForm':             hideBillForm(); break;
+    case 'submitBill':               submitBill(); break;
+    case 'handlePaywallCTA':         handlePaywallCTA(); break;
+    case 'backToDocChooser':         backToDocChooser(); break;
+    case 'switchDocMode':            switchDocMode(v); break;
+    case 'showDocForm':              showDocForm(v); break;
+    case 'setDocumentFilter':        setDocumentFilter(v); break;
+    case 'openModal':                openModal(v); break;
+    case 'toggleMemoryPhrase':       toggleMemoryPhrase(el); break;
+    case 'print':                    window.print(); break;
+    case 'mailto':
+      window.location.href = 'mailto:' + el.dataset.mail + '@' + el.dataset.domain;
+      break;
+    case 'closeAuthModal': {
+      const m = document.getElementById('auth-modal');
+      if (m) m.classList.add('hidden');
+      break;
+    }
+    case 'plausibleFreeToApp':
+      if (window.plausible) window.plausible('free_tool_to_app_click', { props: { area: v } });
+      break;
+    case 'removeHeir': {
+      const node = document.getElementById('am-heir-' + el.dataset.id);
+      if (node) node.remove();
+      if (typeof renderAssetOwnerOptions === 'function') renderAssetOwnerOptions();
+      break;
+    }
+    case 'removeAsset': {
+      const node = document.getElementById('am-asset-' + el.dataset.id);
+      if (node) node.remove();
+      break;
+    }
+    case 'addBulkRow':           addBulkRow(); break;
+    case 'boppAddDelbagare':     boppAddDelbagare(); break;
+    case 'boppAddSkuld':         boppAddSkuld(); break;
+    case 'boppAddTillgang':      boppAddTillgang(); break;
+    case 'clearBillPhoto':       clearBillPhoto(); break;
+    case 'closeCompletionOverlay': closeCompletionOverlay(); break;
+    case 'closeModal':           closeModal(v); break;
+    case 'copyDocument':         copyDocument(); break;
+    case 'generateAnnons':       generateAnnons(); break;
+    case 'generateBank':         generateBank(); break;
+    case 'generateBulkLetters':  generateBulkLetters(); break;
+    case 'generateForsakring':   generateForsakring(); break;
+    case 'generateFullmakt':     generateFullmakt(); break;
+    case 'generateLetter':       generateLetter(); break;
+    case 'generateShareLink':    generateShareLink(); break;
+    case 'generateSkatteverket': generateSkatteverket(); break;
+    case 'triggerInput': {
+      const target = document.getElementById(v);
+      if (target) target.click();
+      break;
+    }
+    // Per-sida funktioner (definierade i inline scripts på respektive sida)
+    case 'generateNotice':   if (typeof generateNotice   === 'function') generateNotice(); break;
+    case 'generateFreeLetter': if (typeof generateFreeLetter === 'function') generateFreeLetter(); break;
+    case 'generateAgreement': if (typeof generateAgreement === 'function') generateAgreement(); break;
+    case 'copyNotice':       if (typeof copyNotice       === 'function') copyNotice(); break;
+    case 'copyFreeLetter':   if (typeof copyFreeLetter   === 'function') copyFreeLetter(); break;
+    case 'copyAgreement':    if (typeof copyAgreement    === 'function') copyAgreement(); break;
+    case 'addHeir':          if (typeof addHeir          === 'function') addHeir(); break;
+    case 'addAsset':         if (typeof addAsset         === 'function') addAsset(); break;
+  }
+});
