@@ -1,6 +1,6 @@
 # Google Ads — optimering 2026-09-27
 
-**Sammanfattning:** Claude API-fel: 401 {"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"},"request_id":"req_011CfULSoR9QqyonjmwkBRSg"}. Rapport visar rådata utan AI-analys.
+**Sammanfattning:** Claude API-fel: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011CfUMRfWEVRiJTT2yU7ndu"}. Rapport visar rådata utan AI-analys.
 
 ## Nyckeltal (senaste 30 dagar)
 
