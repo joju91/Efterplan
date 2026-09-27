@@ -55,6 +55,11 @@ export default async function handler(req, res) {
       currency: session.currency || null,
     });
   } catch (err) {
+    // Stripe throws StripeInvalidRequestError ("No such checkout.session") for
+    // unknown IDs — that's a bad-input error, not a server fault.
+    if (err?.type === 'StripeInvalidRequestError' || err?.statusCode === 404) {
+      return res.status(400).json({ ok: false, error: 'session_not_found' });
+    }
     console.error('[verify-checkout]', err);
     return res.status(500).json({ ok: false, error: 'verify_failed' });
   }
