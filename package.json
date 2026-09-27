@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Vercel serverless functions for Efterplan (Stripe + Supabase). The static site itself has no build step.",
-  "engines": { "node": ">=18" },
+  "engines": { "node": ">=22.0.0" },
   "scripts": {
     "keys": "node scripts/keys/menu.mjs",
     "keys:sync": "node scripts/keys/sync.mjs",

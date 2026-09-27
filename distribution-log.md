@@ -13,6 +13,22 @@ Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kan
 
 **Känt gap:** Fas 1-research (hitta specifika aktiva trådar att svara i) kunde inte köras — websökningen hade ingen tillförlitlig åtkomst till Reddit/Flashback-sökning. Alla tre poster är därför egna inlägg, inte trådsvar. Om Jonas vill trådsvar istället: leta upp 1–2 aktiva trådar manuellt och klistra in länkarna, så skrivs skräddarsydda svar.
 
+## 2026-09-25 — nya utkast + uppföljning
+
+Samma sökbegränsning kvarstår (bekräftat igen 2026-09-25) — fortfarande inga
+verifierbara färska Flashback/Reddit-trådar. Nya texter i
+`att-posta-2026-09-25.md`:
+
+| Datum | Kanal | Typ | Status |
+|-------|-------|-----|--------|
+| 2026-09-25 | r/sweden | Eget inlägg | Utkast klart, väntar på manuell postning |
+| 2026-09-25 | LinkedIn | Eget inlägg | Utkast klart, väntar på manuell postning |
+| 2026-09-25 | Flashback (Juridik/Ekonomi) | Nytt ämne | Utkast klart, väntar på manuell postning |
+| 2026-09-25 | Råd & Rön | Uppföljningsmejl | Utkast klart, inget svar sedan aug |
+| 2026-09-25 | Svenska kyrkan | Uppföljningsmejl | Utkast klart, inget svar sedan aug |
+| 2026-09-25 | Anhörigas Riksförbund | Ny outreach | Utkast klart, ej skickat |
+| 2026-09-25 | Rika Tillsammans | Ny outreach | Utkast klart, ej skickat |
+
 ## Outreach-uppföljning 2026-08-15
 
 | Mål | Adress | Status |

@@ -40,8 +40,12 @@ jobs:
           FILE="veckorapport-$(date -u +%Y-%m-%d).md"
           if [ -f "$FILE" ]; then
             git add "$FILE"
+            # Inkludera roadmap.md om den ändrats av rapport-scriptet
+            if [ -f "roadmap.md" ] && ! git diff --quiet -- roadmap.md; then
+              git add roadmap.md
+            fi
             if git diff --cached --quiet; then
-              echo "Ingen förändring i $FILE — hoppar över commit."
+              echo "Ingen förändring — hoppar över commit."
             else
               git commit -m "Veckorapport $(date -u +%Y-%m-%d) (auto, GitHub Actions)"
               git push
