@@ -137,22 +137,22 @@
       <h2>2. Arvingar och testamentstagare</h2>
       <p>Lägg till alla som ska skriva under avtalet.</p>
       <div id="am-heirs"></div>
-      <button type="button" class="btn-ghost btn-sm am-add" onclick="addHeir()">+ Lägg till arvinge</button>
+      <button type="button" class="btn-ghost btn-sm am-add" data-action="addHeir">+ Lägg till arvinge</button>
 
       <h2>3. Tillgångar och fördelning</h2>
       <p>Lägg till varje tillgång, dess värde och vem som ska få den. Ange "Delas lika" om flera arvingar delar en tillgång.</p>
       <div id="am-assets"></div>
-      <button type="button" class="btn-ghost btn-sm am-add" onclick="addAsset()">+ Lägg till tillgång</button>
+      <button type="button" class="btn-ghost btn-sm am-add" data-action="addAsset">+ Lägg till tillgång</button>
 
       <p class="form-error hidden" id="am-err"></p>
-      <button class="btn-primary" onclick="generateAgreement()">Skapa arvskiftesavtal →</button>
+      <button class="btn-primary" data-action="generateAgreement">Skapa arvskiftesavtal →</button>
 
       <div id="am-result-section" class="hidden">
         <h3>Ditt arvskiftesavtal</h3>
         <div class="doc-output" id="am-agreement-text"></div>
         <div class="result-actions">
-          <button class="btn-primary btn-sm" onclick="copyAgreement()">Kopiera</button>
-          <button class="btn-ghost btn-sm" onclick="window.print()">Skriv ut / spara som PDF</button>
+          <button class="btn-primary btn-sm" data-action="copyAgreement">Kopiera</button>
+          <button class="btn-ghost btn-sm" data-action="print">Skriv ut / spara som PDF</button>
         </div>
         <p class="copied-msg hidden" id="am-copied">Kopierat!</p>
         <p class="form-label-hint" style="margin-top:10px;">Skriv ut ett exemplar per arvinge, eller skriv under samma original och ta kopior efteråt. Samtliga arvingar måste underteckna för att avtalet ska gälla.</p>
@@ -160,7 +160,7 @@
 
       <div class="seo-cta">
         <p>Behöver du hjälp med hela dödsboet, inte bara arvskiftesavtalet — bouppteckning, bank, bostad och fler brev?</p>
-        <a href="/" class="btn-primary" onclick="window.plausible && window.plausible('free_tool_to_app_click', { props: {area:'arvskifte_mall'} })">Skapa din fullständiga plan gratis →</a>
+        <a href="/" class="btn-primary" data-action="plausibleFreeToApp" data-arg="arvskifte_mall">Skapa din fullständiga plan gratis →</a>
       </div>
 
       <h2>Vanliga frågor</h2>
@@ -219,7 +219,7 @@
           <label for="am-heir-pnr-${id}">Personnummer</label>
           <input type="text" id="am-heir-pnr-${id}" class="text-input" placeholder="ÅÅÅÅMMDD-XXXX" value="${personnr ? escapeHtmlAttr(personnr) : ''}">
         </div>
-        <button type="button" class="am-remove" onclick="document.getElementById('am-heir-${id}').remove(); renderAssetOwnerOptions();" title="Ta bort" aria-label="Ta bort arvinge">✕</button>
+        <button type="button" class="am-remove" data-action="removeHeir" data-id="${id}" title="Ta bort" aria-label="Ta bort arvinge">✕</button>
       `;
       document.getElementById('am-heirs').appendChild(div);
       renderAssetOwnerOptions();
@@ -244,7 +244,7 @@
           <label for="am-asset-owner-${id}">Tilldelas</label>
           <select id="am-asset-owner-${id}" class="text-input"></select>
         </div>
-        <button type="button" class="am-remove" onclick="document.getElementById('am-asset-${id}').remove();" title="Ta bort" aria-label="Ta bort tillgång">✕</button>
+        <button type="button" class="am-remove" data-action="removeAsset" data-id="${id}" title="Ta bort" aria-label="Ta bort tillgång">✕</button>
       `;
       document.getElementById('am-assets').appendChild(div);
       renderAssetOwnerOptions();

@@ -179,14 +179,14 @@
       </div>
 
       <p class="form-error hidden" id="dn-err"></p>
-      <button class="btn-primary" onclick="generateNotice()">Skapa dödsannons →</button>
+      <button class="btn-primary" data-action="generateNotice">Skapa dödsannons →</button>
 
       <div id="dn-result-section" class="hidden">
         <h3>Din dödsannons</h3>
         <div class="doc-output" id="dn-notice-text"></div>
         <div class="result-actions">
-          <button class="btn-primary btn-sm" onclick="copyNotice()">Kopiera</button>
-          <button class="btn-ghost btn-sm" onclick="window.print()">Skriv ut / spara som PDF</button>
+          <button class="btn-primary btn-sm" data-action="copyNotice">Kopiera</button>
+          <button class="btn-ghost btn-sm" data-action="print">Skriv ut / spara som PDF</button>
         </div>
         <p class="copied-msg hidden" id="dn-copied">Kopierat!</p>
         <p class="form-label-hint" style="margin-top:10px;">Utkast. Läs igenom och ändra fritt innan du lämnar texten till tidningen eller begravningsbyrån. Tidningen sätter den slutliga radbrytningen och lägger till eventuell symbol och foto.</p>
