@@ -1,8 +1,10 @@
 import { timingSafeEqual } from 'crypto';
 import { checkRateLimit, getClientIp } from './_lib.js';
 
-const SUPA_URL  = 'https://vjupkemzpnrahdsljenl.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
+// Server-side secret key (sb_secret_… or legacy service_role) — bypasses RLS.
+// Access is gated at the API layer by ADS_AGENT_SECRET.
+const SUPA_URL = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
+const SUPA_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function verifySecret(incoming) {
   const expected = process.env.ADS_AGENT_SECRET;
@@ -20,8 +22,7 @@ async function supaUpsert(table, rows, onConflict) {
   const resp = await fetch(url, {
     method: 'POST',
     headers: {
-      'apikey': SUPA_ANON,
-      'Authorization': `Bearer ${SUPA_ANON}`,
+      'apikey': SUPA_KEY,
       'Content-Type': 'application/json',
       'Prefer': 'resolution=merge-duplicates,return=minimal',
     },

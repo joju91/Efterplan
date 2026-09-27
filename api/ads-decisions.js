@@ -16,15 +16,14 @@ function supaUrl(path) {
   return `${SUPA_URL}/rest/v1/${path}`;
 }
 
-// Anon-nyckeln är publik per design, men hålls ändå utanför källkoden.
+// Server-side secret key (sb_secret_… or legacy service_role) — bypasses RLS.
 // Access is gated at the API layer by ADS_AGENT_SECRET.
 const SUPA_URL = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
-const SUPA_ANON = process.env.SUPABASE_ANON_KEY;
+const SUPA_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function supaHeaders() {
   return {
-    'apikey': SUPA_ANON,
-    'Authorization': `Bearer ${SUPA_ANON}`,
+    'apikey': SUPA_KEY,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation',
   };
