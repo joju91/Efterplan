@@ -1,6 +1,6 @@
 # Google Ads — optimering 2026-09-27
 
-**Sammanfattning:** Groq API-fel: 400 {"error":{"message":"The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.","type":"invalid_request_error","code":"model_decommissioned"}}. Rapport visar rådata utan AI-analys.
+**Sammanfattning:** Ingen åtgärd föreslogs eftersom inga nyckelord uppfyller kriterierna för paus, negativ, ny nyckelordsaddition eller budgetändring baserat på den tillgängliga datan.
 
 ## Nyckeltal (senaste 30 dagar)
 
