@@ -3,47 +3,53 @@
  * Groq-driven autonom agent för Efterplan GitHub Actions.
  * Läge: 'roadmap' (implementera ticket) eller 'autofix' (fixa deploy-fel).
  *
- * Verktyg: glob, grep, read_file, write_file, move_file, done, skip
+ * Designad för låg token-förbrukning: agenten använder bash (grep/sed/find)
+ * för att utforska och modifiera filer utan att skicka filinnehåll till LLM.
+ * read_file finns men är reserverad för små filer (<3 KB).
  */
 
 import Groq from 'groq-sdk';
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
-import { globSync } from 'glob';
 
 const MODE = process.argv[2];
 const MODEL = 'openai/gpt-oss-120b';
-const MAX_TURNS = 30;
-const MAX_FILE_BYTES = 60_000;
+const MAX_TURNS = 15;
+const MAX_FILE_BYTES = 3_000;
+const MAX_OUTPUT_CHARS = 2_000;
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // ── Verktygsimplementationer ────────────────────────────────────────────────
 
-function toolGlob({ pattern }) {
-  const files = globSync(pattern, { ignore: ['.git/**', 'node_modules/**', 'scripts/agent/node_modules/**'] });
-  return files.length ? files.join('\n') : 'Inga filer matchar mönstret.';
-}
+// Tillåtna bash-kommandon: enbart säkra utforsknings- och modifieringskommandon
+const BASH_ALLOWLIST = ['find', 'grep', 'sed', 'ls', 'cat', 'git', 'wc', 'head', 'tail', 'mkdir'];
 
-function toolGrep({ pattern, glob: g }) {
-  const args = ['-rl'];
-  if (g) args.push('--include=' + g);
-  args.push(pattern, '.');
-  const r = spawnSync('grep', args, { encoding: 'utf8' });
-  const out = r.stdout.trim().replace(/^\.\//gm, '');
-  return out || 'Inga träffar.';
+function toolBash({ command }) {
+  const cmd = command.trim().split(/\s+/)[0];
+  if (!BASH_ALLOWLIST.includes(cmd)) {
+    return `Fel: "${cmd}" är inte tillåtet. Tillåtna: ${BASH_ALLOWLIST.join(', ')}`;
+  }
+  const r = spawnSync('bash', ['-c', command], {
+    encoding: 'utf8',
+    cwd: process.cwd(),
+    timeout: 15_000
+  });
+  const out = ((r.stdout || '') + (r.stderr || '')).trim();
+  return out.slice(0, MAX_OUTPUT_CHARS) || '(inget output)';
 }
 
 function toolReadFile({ file }) {
-  if (!fs.existsSync(file)) return `Fel: ${file} saknas.`;
+  if (!fs.existsSync(file)) return `Fel: ${file} saknas`;
   const buf = fs.readFileSync(file);
   if (buf.length > MAX_FILE_BYTES)
-    return buf.slice(0, MAX_FILE_BYTES).toString('utf8') + '\n[...TRUNKERAD — filen är för stor...]';
+    return `Fel: ${file} är ${buf.length} bytes — för stor (max ${MAX_FILE_BYTES}). Använd grep/sed istället.`;
   return buf.toString('utf8');
 }
 
 function toolWriteFile({ file, content }) {
+  if (content.length > 50_000) return 'Fel: content är för stort. Använd sed för att modifiera filer.';
   const dir = path.dirname(file);
   if (dir !== '.') fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(file, content, 'utf8');
@@ -51,42 +57,27 @@ function toolWriteFile({ file, content }) {
 }
 
 function toolMoveFile({ from: src, to: dst }) {
-  if (!fs.existsSync(src)) return `Fel: ${src} saknas.`;
+  if (!fs.existsSync(src)) return `Fel: ${src} saknas`;
   const dir = path.dirname(dst);
   if (dir !== '.') fs.mkdirSync(dir, { recursive: true });
   fs.renameSync(src, dst);
-  return `Flyttad: ${src} → ${dst}`;
+  return `OK: ${src} → ${dst}`;
 }
 
-const TOOLS = { glob: toolGlob, grep: toolGrep, read_file: toolReadFile, write_file: toolWriteFile, move_file: toolMoveFile };
+const TOOLS_IMPL = { bash: toolBash, read_file: toolReadFile, write_file: toolWriteFile, move_file: toolMoveFile };
 
-// ── Verktygsdefinitioner för Groq ──────────────────────────────────────────
+// ── Verktygsdefinitioner ────────────────────────────────────────────────────
 
 const TOOL_DEFS = [
   {
     type: 'function',
     function: {
-      name: 'glob',
-      description: 'Lista filer som matchar ett glob-mönster (t.ex. *.html, api/*.js)',
+      name: 'bash',
+      description: 'Kör ett bash-kommando. Tillåtna prefix: find, grep, sed, ls, cat, git, wc, head, tail, mkdir. Använd grep för att hitta mönster, sed -i för att modifiera filer in-place.',
       parameters: {
         type: 'object',
-        properties: { pattern: { type: 'string' } },
-        required: ['pattern']
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'grep',
-      description: 'Sök text i filer. Returnerar filnamn med träffar.',
-      parameters: {
-        type: 'object',
-        properties: {
-          pattern: { type: 'string', description: 'Sökterm eller regex' },
-          glob: { type: 'string', description: 'Filmönster, t.ex. *.html' }
-        },
-        required: ['pattern']
+        properties: { command: { type: 'string', description: 'Bash-kommando att köra' } },
+        required: ['command']
       }
     }
   },
@@ -94,10 +85,10 @@ const TOOL_DEFS = [
     type: 'function',
     function: {
       name: 'read_file',
-      description: 'Läs en fils innehåll',
+      description: 'Läs en liten fil (<3 KB). Använd för ticket-filer och konfig. Stora filer: använd grep/cat+head istället.',
       parameters: {
         type: 'object',
-        properties: { file: { type: 'string', description: 'Relativ sökväg' } },
+        properties: { file: { type: 'string' } },
         required: ['file']
       }
     }
@@ -106,12 +97,12 @@ const TOOL_DEFS = [
     type: 'function',
     function: {
       name: 'write_file',
-      description: 'Skriv komplett nytt innehåll till en fil. Skapar filen om den saknas.',
+      description: 'Skriv en ny liten fil. För att modifiera befintliga filer: använd bash sed -i.',
       parameters: {
         type: 'object',
         properties: {
-          file: { type: 'string', description: 'Relativ sökväg' },
-          content: { type: 'string', description: 'Komplett nytt filinnehåll' }
+          file: { type: 'string' },
+          content: { type: 'string', description: 'Komplett filinnehåll (max 50 KB)' }
         },
         required: ['file', 'content']
       }
@@ -124,10 +115,7 @@ const TOOL_DEFS = [
       description: 'Flytta eller byt namn på en fil',
       parameters: {
         type: 'object',
-        properties: {
-          from: { type: 'string' },
-          to: { type: 'string' }
-        },
+        properties: { from: { type: 'string' }, to: { type: 'string' } },
         required: ['from', 'to']
       }
     }
@@ -136,12 +124,10 @@ const TOOL_DEFS = [
     type: 'function',
     function: {
       name: 'done',
-      description: 'Alla ändringar är gjorda och klara. Committar med angivet meddelande.',
+      description: 'Klart. Committar alla ändringar med angivet meddelande.',
       parameters: {
         type: 'object',
-        properties: {
-          commit_message: { type: 'string', description: 'Git commit-meddelande' }
-        },
+        properties: { commit_message: { type: 'string' } },
         required: ['commit_message']
       }
     }
@@ -150,12 +136,10 @@ const TOOL_DEFS = [
     type: 'function',
     function: {
       name: 'skip',
-      description: 'Inget att göra — hoppar över utan att commita.',
+      description: 'Inget att göra — avslutar utan ändringar.',
       parameters: {
         type: 'object',
-        properties: {
-          reason: { type: 'string' }
-        },
+        properties: { reason: { type: 'string' } },
         required: ['reason']
       }
     }
@@ -165,39 +149,33 @@ const TOOL_DEFS = [
 // ── Systemprompts ───────────────────────────────────────────────────────────
 
 const SYSTEM = {
-  roadmap: `Du är efterplan-bot, en autonom kodredigerare för Efterplan (svensk webbtjänst för dödsbohantering, statiska HTML-filer + Vercel serverless API).
-Du implementerar exakt en ticket per körning.
+  roadmap: `Du är efterplan-bot, autonom kodredigerare för Efterplan (statisk webbplats, HTML/CSS/JS + Vercel serverless API).
+Implementera exakt en ticket per körning.
+
+Strategi: Använd bash (grep, sed -i, find) för att utforska och modifiera filer — skicka INTE stora filinnehåll i svaret.
 
 Arbetsflöde:
-1. Kör glob('claude/open/*.md') för att lista tickets.
-2. Läs varje ticket och hitta frontmatter-fälten priority (heltal, 1=högst), payment (true/false), legal (true/false).
-3. Välj ticketen med lägst priority-nummer som har payment:false OCH legal:false. Om inga sådana finns → skip().
-4. Läs de relevanta källfilerna och förstå vad som ska ändras.
-5. Implementera exakt vad ticketen beskriver.
-6. Flytta ticket-filen från claude/open/ till claude/done/ med move_file().
-7. Anropa done() med ett beskrivande commit-meddelande.
+1. read_file("claude/open/...") för att läsa tickets. Välj lägst priority-nummer med payment:false och legal:false. Om inga finns → skip().
+2. Använd grep för att förstå mönster i koden.
+3. Använd sed -i för in-place-redigering av filer. Verifiera med grep efteråt.
+4. move_file: flytta ticket från claude/open/ till claude/done/.
+5. done() med commit-meddelande.
 
-Absoluta gränser — rör ALDRIG dessa filer:
-api/create-checkout.js, api/verify-checkout.js, api/stripe-webhook.js, api/check-premium.js
+Rör ALDRIG: api/create-checkout.js, api/verify-checkout.js, api/stripe-webhook.js, api/check-premium.js`,
 
-Max ${MAX_TURNS} verktygsanrop per körning.`,
+  autofix: `Du är efterplan-bot. En Vercel-deploy misslyckades. Implementera minimal fix.
 
-  autofix: `Du är efterplan-bot. En Vercel-deploy av Efterplan misslyckades.
-Implementera den minsta möjliga fix som löser det specifika deploy-felet.
+Strategi: Använd bash (grep, sed -i) — skicka INTE stora filinnehåll i svaret.
 
-Absoluta gränser — rör ALDRIG dessa filer:
-api/create-checkout.js, api/verify-checkout.js, api/stripe-webhook.js, api/check-premium.js
-
-Om felet inte kan identifieras eller fixas: skapa claude/autofix-notes/<datum>.md med analys och anropa done().
-Avsluta alltid med done() eller skip().
-
-Max ${MAX_TURNS} verktygsanrop per körning.`
+Rör ALDRIG: api/create-checkout.js, api/verify-checkout.js, api/stripe-webhook.js, api/check-premium.js
+Om ej fixbart: write_file("claude/autofix-notes/<datum>.md") med analys, sedan done().
+Avsluta alltid med done() eller skip().`
 };
 
-// ── Groq-anrop med auto-retry på rate limit ─────────────────────────────────
+// ── Groq-anrop med retry vid rate limit ────────────────────────────────────
 
 async function callGroq(messages) {
-  for (let attempt = 0; attempt < 5; attempt++) {
+  for (let attempt = 0; attempt < 6; attempt++) {
     try {
       return await groq.chat.completions.create({
         model: MODEL,
@@ -205,31 +183,27 @@ async function callGroq(messages) {
         tools: TOOL_DEFS,
         tool_choice: 'auto',
         temperature: 0.1,
-        max_tokens: 4096
+        max_tokens: 1024
       });
     } catch (e) {
       if (e.status === 429) {
-        // Extrahera väntetid ur felmeddelandet, annars 15s
         const match = String(e.message).match(/try again in ([\d.]+)s/i);
         const wait = Math.ceil(parseFloat(match?.[1] || '15')) + 2;
-        console.log(`Rate limit — väntar ${wait}s (försök ${attempt + 1}/5)...`);
+        console.log(`Rate limit — väntar ${wait}s (försök ${attempt + 1}/6)...`);
         await new Promise(r => setTimeout(r, wait * 1000));
       } else {
         throw e;
       }
     }
   }
-  throw new Error('Rate limit kvarstår efter 5 försök.');
+  throw new Error('Rate limit kvarstår efter 6 försök.');
 }
 
-// Håll konversationshistorik liten: systemmeddelande + user + senaste N turns
-function trimMessages(messages, keepTurns = 6) {
-  const system = messages[0];
-  const user = messages[1];
+// Håll kontext liten: behåll system + user + senaste 3 turns
+function trimMessages(messages) {
+  const fixed = messages.slice(0, 2);
   const rest = messages.slice(2);
-  // Varje "turn" = 1 assistant + N tool results. Behåll de senaste keepTurns.
-  if (rest.length <= keepTurns * 4) return messages;
-  return [system, user, ...rest.slice(-keepTurns * 4)];
+  return rest.length <= 12 ? messages : [...fixed, ...rest.slice(-12)];
 }
 
 // ── Huvudloop ───────────────────────────────────────────────────────────────
@@ -242,12 +216,20 @@ async function run() {
 
   let initialMsg;
   if (MODE === 'roadmap') {
-    initialMsg = 'Lista tickets i claude/open/ och implementera den med högst prioritet som uppfyller filterkraven.';
+    // Lista tickets i prompten direkt för att spara ett API-anrop
+    const ticketFiles = fs.existsSync('claude/open')
+      ? fs.readdirSync('claude/open').filter(f => f.endsWith('.md'))
+      : [];
+    if (ticketFiles.length === 0) {
+      console.log('Inga tickets i claude/open/ — avslutar.');
+      return;
+    }
+    initialMsg = `Tickets i claude/open/:\n${ticketFiles.join('\n')}\n\nLäs dem och implementera den med högst prioritet.`;
   } else {
-    const sha = process.env.DEPLOY_SHA || '(okänd commit)';
+    const sha = process.env.DEPLOY_SHA || '(okänd)';
     const desc = process.env.DEPLOY_DESC || '(inget felmeddelande)';
-    const log = process.env.DEPLOY_LOG || '';
-    initialMsg = `Vercel-deploy misslyckades.\nCommit: ${sha}\nFelmeddelande: ${desc}${log ? '\nLogg: ' + log : ''}\n\nUndersök och fixa.`;
+    const log = process.env.DEPLOY_LOG ? `\nLogg: ${process.env.DEPLOY_LOG}` : '';
+    initialMsg = `Vercel-deploy misslyckades.\nCommit: ${sha}\nFelmeddelande: ${desc}${log}\n\nUndersök och fixa.`;
   }
 
   let messages = [
@@ -260,55 +242,51 @@ async function run() {
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     messages = trimMessages(messages);
     const response = await callGroq(messages);
-
     const msg = response.choices[0].message;
     messages.push(msg);
 
     if (!msg.tool_calls?.length) {
       if (msg.content) console.log('Agent:', msg.content);
-      console.log('Inga fler verktygsanrop — avslutar loop.');
+      console.log('Inga fler verktygsanrop — avslutar.');
       break;
     }
 
-    const toolResults = [];
+    const results = [];
     let finished = false;
 
     for (const tc of msg.tool_calls) {
       let args = {};
-      try { args = JSON.parse(tc.function.arguments); } catch { /* lämna args tomt */ }
+      try { args = JSON.parse(tc.function.arguments); } catch { /* lämna tomt */ }
 
       const name = tc.function.name;
-      console.log(`[${turn + 1}] ${name}(${JSON.stringify(args).slice(0, 100)})`);
+      console.log(`[${turn + 1}] ${name}(${JSON.stringify(args).slice(0, 120)})`);
 
       let result;
       if (name === 'done') {
         commitMessage = args.commit_message || 'chore: autonom uppdatering';
-        result = 'OK — commit-meddelande registrerat.';
+        result = 'OK';
         finished = true;
       } else if (name === 'skip') {
         console.log('Skip:', args.reason);
-        result = 'OK — hoppar över.';
+        result = 'OK';
         finished = true;
-      } else if (TOOLS[name]) {
-        try { result = TOOLS[name](args); } catch (e) { result = `Fel: ${e.message}`; }
+      } else if (TOOLS_IMPL[name]) {
+        try { result = TOOLS_IMPL[name](args); } catch (e) { result = `Fel: ${e.message}`; }
       } else {
         result = `Fel: okänt verktyg "${name}"`;
       }
 
-      toolResults.push({ tool_call_id: tc.id, role: 'tool', content: String(result) });
+      results.push({ tool_call_id: tc.id, role: 'tool', content: String(result).slice(0, MAX_OUTPUT_CHARS) });
     }
 
-    messages.push(...toolResults);
+    messages.push(...results);
     if (finished) break;
   }
 
-  // Commita om agenten anropade done()
   if (commitMessage) {
     spawnSync('git', ['add', '-A'], { stdio: 'inherit' });
     const r = spawnSync('git', ['commit', '-m', commitMessage], { stdio: 'inherit' });
-    if (r.status !== 0) {
-      console.log('Inga staged ändringar att commita — avslutar utan commit.');
-    }
+    if (r.status !== 0) console.log('Inga staged ändringar — inget commit.');
   } else {
     console.log('done() anropades inte — inga ändringar committades.');
   }
