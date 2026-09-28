@@ -819,3 +819,11 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 | T271 | Traffic-sprint, budget 0 kr: 3 klistra-in-klara distributionsinlägg (Reddit r/sweden, LinkedIn, Flashback) + 2 uppföljningsmejl till kontakter utan svar sedan aug (Råd & Rön, Svenska kyrkan) + 2 ny outreach (Anhörigas Riksförbund, Rika Tillsammans). Sparat i `att-posta-2026-09-25.md`, loggat i `distribution-log.md`. Postning kräver Owner. | 2026-09-25 | Fas 28 | Session | 🟠 | Distribution | ⧖ Väntar på Owner: posta/skicka |
 | T272 | Söktrådsforskning (Flashback/Reddit) fortfarande opålitlig via WebSearch — bekräftat igen 2026-09-25. Om tillförlitlig sökväg blir tillgänglig (inloggad session, Reddit API), bygg om trådbevakningen kring den. | 2026-09-25 | Fas 28 | Session | 🟢 | Research | ☐ |
 | T273 | `scripts/google-ads/optimize.mjs`: `analyzeWithClaude()` kraschade okontrollerat när `ANTHROPIC_API_KEY` var ogiltig — inget rapportfil skrevs. Lagt in try/catch runt Claude-blocket (steg 7–8); vid API-fel sätts `summary` till felmeddelande och skriptet fortsätter skriva en datarådrapport utan AI-analys. **Kräver Owner:** uppdatera `ANTHROPIC_API_KEY` i GitHub Actions-secrets för att Claude-analysen ska fungera (`gh secret set ANTHROPIC_API_KEY`). | 2026-09-27 | Fas 12 | Session | 🟠 | Infra/Dev | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-09-28
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T274 | `auth-modal.html` saknar `<meta name="description">` — auth-modalen är en indexerbar HTML-sida men har ingen meta-description. Ger tomt snippet-text i SERP och kan sänka CTR för sidan. Lägg till en beskrivande `<meta name="description" content="...">` i `<head>`. Fil: `auth-modal.html`. Issue: https://github.com/joju91/Efterplan/issues/115 | 2026-09-28 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
