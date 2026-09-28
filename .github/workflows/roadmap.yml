@@ -1,8 +1,8 @@
 name: roadmap
 
-# Nattlig cron: väljer den ticket med högst prioritet i claude/open/
-# som inte rör betalflöde eller juridik, implementerar den och öppnar
-# en PR. Om inga passande tickets finns — avslutar utan åtgärd.
+# Nattlig cron: Groq-agenten väljer den ticket med högst prioritet i
+# claude/open/ som inte rör betalflöde eller juridik, implementerar
+# den och öppnar en PR. Inget passande ticket = avslutar tyst.
 # Mergar aldrig automatiskt.
 
 on:
@@ -35,9 +35,10 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Installera Claude Code
+      - name: Installera agentberoenden
         if: steps.check.outputs.count != '0'
-        run: npm install -g @anthropic-ai/claude-code@latest
+        working-directory: scripts/agent
+        run: npm install
 
       - name: Konfigurera git
         if: steps.check.outputs.count != '0'
@@ -53,38 +54,11 @@ jobs:
           git checkout -b "$BRANCH"
           echo "name=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Kör Claude Code roadmap
+      - name: Kör Groq-agent (roadmap)
         if: steps.check.outputs.count != '0'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          claude --dangerously-skip-permissions -p \
-          "Du är efterplan-bot. Välj och implementera en ticket från claude/open/.
-
-          ## Steg 1 — Välj rätt ticket
-          1. Lista alla .md-filer i claude/open/ med Glob.
-          2. Läs varje fil och hitta dessa frontmatter-fält: priority (heltal, 1=högst),
-             payment (true/false), legal (true/false).
-          3. Filtrera bort alla tickets där payment=true ELLER legal=true.
-          4. Bland kvarvarande: välj den med lägst priority-nummer.
-          5. Om inga tickets passerar filtret — avsluta utan att göra några ändringar.
-
-          ## Steg 2 — Implementera
-          6. Läs ticket-filen noggrant. Förstå vad som ska göras och acceptanskriterierna.
-          7. Läs relevanta källfiler i repot.
-          8. Implementera exakt vad ticketen beskriver — varken mer eller mindre.
-          9. Verifiera att ändrade filer har korrekt syntax (inga trasiga HTML/JS/CSS).
-
-          ## Steg 3 — Avsluta
-          10. Flytta ticket-filen från claude/open/ till claude/done/ (skapa mappen om den saknas).
-          11. Committa ALLT med: git add -A && git commit -m '<kortnamn>: <vad som gjordes>'
-              där kortnamnet är ticket-filens namn utan sifferprefixet.
-
-          ## Absoluta gränser — rör ALDRIG
-          - api/create-checkout.js, api/verify-checkout.js, api/stripe-webhook.js, api/check-premium.js
-          - Juridiska texter, GDPR-text, integritetspolicyer, villkorssidor
-          - Max en ticket per körning" \
-          --allowedTools "Read,Write,Edit,Bash,Glob,Grep"
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/agent/index.mjs roadmap
 
       - name: Pusha och öppna PR
         if: steps.check.outputs.count != '0'
@@ -92,14 +66,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{ steps.branch.outputs.name }}
         run: |
-          # Kontrollera om Claude lämnade nya commits
           if ! git log origin/main..HEAD --oneline 2>/dev/null | grep -q .; then
-            echo "Inga commits — ingen ticket implementerades (inga passande tickets, eller alla filtrerade)"
+            echo "Inga commits — ingen passande ticket implementerades."
             exit 0
           fi
 
-          COMMIT_SUMMARY=$(git log origin/main..HEAD --oneline)
-          TICKET_DONE=$(git diff --name-only origin/main HEAD | grep "^claude/done/" | head -1 || echo "okänd")
+          COMMITS=$(git log origin/main..HEAD --oneline)
+          TICKET=$(git diff --name-only origin/main HEAD | grep "^claude/done/" | head -1 || echo "")
           PR_TITLE=$(git log origin/main..HEAD --oneline | head -1 | sed 's/^[a-f0-9]* //')
 
           git push origin "$BRANCH"
@@ -110,15 +83,15 @@ jobs:
             --head "$BRANCH" \
             --body "## Automatisk roadmap-implementation
 
-          **Implementerad ticket:** \`$TICKET_DONE\`
+          $([ -n "$TICKET" ] && echo "**Implementerad ticket:** \`$TICKET\`" || echo "")
 
-          Claude Code valde och implementerade ticketen med högst prioritet från \`claude/open/\`
+          Groq-agenten valde och implementerade ticketen med högst prioritet från \`claude/open/\`
           som inte rör betalflöde eller juridik. Granska ändringarna innan merge.
 
           ### Commits
           \`\`\`
-          $COMMIT_SUMMARY
+          $COMMITS
           \`\`\`
 
           ---
-          _Genererad automatiskt av [roadmap-workflow](.github/workflows/roadmap.yml)_"
+          _Genererad automatiskt av [roadmap](.github/workflows/roadmap.yml)_"

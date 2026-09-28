@@ -1,7 +1,7 @@
 name: autofix
 
 # Triggas när en Vercel-deploy misslyckas (Production). Klonar den
-# misslyckade commiten, låter Claude Code analysera och fixa felet,
+# misslyckade commiten, låter Groq-agenten analysera och fixa felet,
 # och öppnar en PR. Mergar aldrig automatiskt.
 
 on:
@@ -19,7 +19,6 @@ permissions:
 
 jobs:
   fix:
-    # Kör vid riktig deploy-failure (Production) ELLER manuell dispatch
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.deployment_status.state == 'failure' &&
@@ -29,7 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Vid deploy-event: kolla ut den exakta commit som failade
           ref: ${{ github.event.deployment.sha || github.sha }}
           fetch-depth: 0
 
@@ -37,8 +35,9 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Installera Claude Code
-        run: npm install -g @anthropic-ai/claude-code@latest
+      - name: Installera agentberoenden
+        working-directory: scripts/agent
+        run: npm install
 
       - name: Konfigurera git
         run: |
@@ -52,46 +51,13 @@ jobs:
           git checkout -b "$BRANCH"
           echo "name=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Kör Claude Code autofix
+      - name: Kör Groq-agent (autofix)
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEPLOY_SHA: ${{ github.event.deployment.sha || github.sha }}
-          DEPLOY_REF: ${{ github.event.deployment.ref || github.ref }}
-          DEPLOY_ENV: ${{ github.event.deployment.environment || 'workflow_dispatch' }}
           DEPLOY_DESC: ${{ github.event.deployment_status.description || inputs.deploy_description }}
           DEPLOY_LOG: ${{ github.event.deployment_status.log_url || '' }}
-        run: |
-          claude --dangerously-skip-permissions -p \
-          "Du är efterplan-bot. En Vercel-deploy av Efterplan misslyckades. Analysera och fixa felet.
-
-          ## Deploy-info
-          Commit: $DEPLOY_SHA
-          Ref: $DEPLOY_REF
-          Miljö: $DEPLOY_ENV
-          Felmeddelande: $DEPLOY_DESC
-          Logg-URL: $DEPLOY_LOG
-
-          ## Uppgift
-          1. Läs felmeddelandet noggrant. Identifiera vilken fil/rad som orsakar felet.
-          2. Läs berörda filer och förstå problemet.
-          3. Implementera den minsta möjliga fix som löser deploy-felet.
-          4. Committa ändringen med git (git add -A && git commit -m 'fix: <beskrivning>').
-
-          ## Absoluta gränser — rör ALDRIG
-          - api/create-checkout.js
-          - api/verify-checkout.js
-          - api/stripe-webhook.js
-          - api/check-premium.js
-          - Juridiska texter, GDPR-text, villkorssidor
-
-          ## Fallback
-          Om du inte kan avgöra vad felet är utifrån tillgänglig info:
-          Skapa filen claude/autofix-notes/$(date +%Y%m%d-%H%M%S).md med:
-          - Vad du undersökte
-          - Vad du hittade
-          - Vad som behöver manuell granskning
-          Committa den filen." \
-          --allowedTools "Read,Write,Edit,Bash,Glob,Grep"
+        run: node scripts/agent/index.mjs autofix
 
       - name: Pusha och öppna PR
         env:
@@ -101,15 +67,13 @@ jobs:
           DEPLOY_DESC: ${{ github.event.deployment_status.description || inputs.deploy_description }}
           DEPLOY_LOG: ${{ github.event.deployment_status.log_url || '' }}
         run: |
-          # Kontrollera om Claude lämnade nya commits
           if ! git log origin/main..HEAD --oneline 2>/dev/null | grep -q .; then
-            echo "Inga commits från Claude — hoppar över PR-skapandet"
+            echo "Inga commits från agenten — hoppar över PR."
             exit 0
           fi
 
           git push origin "$BRANCH"
-
-          COMMIT_SUMMARY=$(git log origin/main..HEAD --oneline)
+          COMMITS=$(git log origin/main..HEAD --oneline)
 
           gh pr create \
             --title "autofix: Vercel-deploy misslyckades (${DEPLOY_SHA:0:7})" \
@@ -119,15 +83,15 @@ jobs:
 
           **Commit:** \`$DEPLOY_SHA\`
           **Felmeddelande:** $DEPLOY_DESC
-          $([ -n "$DEPLOY_LOG" ] && echo "**Deployment-logg:** $DEPLOY_LOG" || echo "")
+          $([ -n "$DEPLOY_LOG" ] && echo "**Logg:** $DEPLOY_LOG" || true)
 
-          Claude Code analyserade deploy-felet och implementerade en fix.
+          Groq-agenten analyserade deploy-felet och implementerade en fix.
           Granska diff:en innan merge.
 
-          ### Commits i denna PR
+          ### Commits
           \`\`\`
-          $COMMIT_SUMMARY
+          $COMMITS
           \`\`\`
 
           ---
-          _Genererad automatiskt av [autofix-workflow](.github/workflows/autofix.yml)_"
+          _Genererad automatiskt av [autofix](.github/workflows/autofix.yml)_"

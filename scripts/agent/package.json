@@ -1,0 +1,9 @@
+{
+  "name": "efterplan-agent",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "groq-sdk": "^0.9.0",
+    "glob": "^11.0.0"
+  }
+}
