@@ -13,7 +13,7 @@ import { spawnSync } from 'child_process';
 import { globSync } from 'glob';
 
 const MODE = process.argv[2];
-const MODEL = 'llama-3.1-70b-versatile';
+const MODEL = 'openai/gpt-oss-120b';
 const MAX_TURNS = 30;
 const MAX_FILE_BYTES = 60_000;
 
