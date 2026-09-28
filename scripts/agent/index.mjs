@@ -181,7 +181,7 @@ async function callGroq(messages) {
         model: MODEL,
         messages,
         tools: TOOL_DEFS,
-        tool_choice: 'auto',
+        tool_choice: 'required',
         temperature: 0.1,
         max_tokens: 1024
       });
