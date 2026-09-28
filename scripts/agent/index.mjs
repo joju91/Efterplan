@@ -194,6 +194,44 @@ Avsluta alltid med done() eller skip().
 Max ${MAX_TURNS} verktygsanrop per körning.`
 };
 
+// ── Groq-anrop med auto-retry på rate limit ─────────────────────────────────
+
+async function callGroq(messages) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      return await groq.chat.completions.create({
+        model: MODEL,
+        messages,
+        tools: TOOL_DEFS,
+        tool_choice: 'auto',
+        temperature: 0.1,
+        max_tokens: 4096
+      });
+    } catch (e) {
+      if (e.status === 429) {
+        // Extrahera väntetid ur felmeddelandet, annars 15s
+        const match = String(e.message).match(/try again in ([\d.]+)s/i);
+        const wait = Math.ceil(parseFloat(match?.[1] || '15')) + 2;
+        console.log(`Rate limit — väntar ${wait}s (försök ${attempt + 1}/5)...`);
+        await new Promise(r => setTimeout(r, wait * 1000));
+      } else {
+        throw e;
+      }
+    }
+  }
+  throw new Error('Rate limit kvarstår efter 5 försök.');
+}
+
+// Håll konversationshistorik liten: systemmeddelande + user + senaste N turns
+function trimMessages(messages, keepTurns = 6) {
+  const system = messages[0];
+  const user = messages[1];
+  const rest = messages.slice(2);
+  // Varje "turn" = 1 assistant + N tool results. Behåll de senaste keepTurns.
+  if (rest.length <= keepTurns * 4) return messages;
+  return [system, user, ...rest.slice(-keepTurns * 4)];
+}
+
 // ── Huvudloop ───────────────────────────────────────────────────────────────
 
 async function run() {
@@ -212,7 +250,7 @@ async function run() {
     initialMsg = `Vercel-deploy misslyckades.\nCommit: ${sha}\nFelmeddelande: ${desc}${log ? '\nLogg: ' + log : ''}\n\nUndersök och fixa.`;
   }
 
-  const messages = [
+  let messages = [
     { role: 'system', content: SYSTEM[MODE] },
     { role: 'user', content: initialMsg }
   ];
@@ -220,13 +258,8 @@ async function run() {
   let commitMessage = null;
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const response = await groq.chat.completions.create({
-      model: MODEL,
-      messages,
-      tools: TOOL_DEFS,
-      tool_choice: 'auto',
-      temperature: 0.1
-    });
+    messages = trimMessages(messages);
+    const response = await callGroq(messages);
 
     const msg = response.choices[0].message;
     messages.push(msg);
