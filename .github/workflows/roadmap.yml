@@ -1,0 +1,124 @@
+name: roadmap
+
+# Nattlig cron: väljer den ticket med högst prioritet i claude/open/
+# som inte rör betalflöde eller juridik, implementerar den och öppnar
+# en PR. Om inga passande tickets finns — avslutar utan åtgärd.
+# Mergar aldrig automatiskt.
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 01:00 UTC varje natt
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Kontrollera om det finns tickets
+        id: check
+        run: |
+          count=$(find claude/open -name "*.md" 2>/dev/null | wc -l)
+          echo "Hittade $count ticket(s) i claude/open/"
+          echo "count=$count" >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.count != '0'
+        with:
+          node-version: '22'
+
+      - name: Installera Claude Code
+        if: steps.check.outputs.count != '0'
+        run: npm install -g @anthropic-ai/claude-code@latest
+
+      - name: Konfigurera git
+        if: steps.check.outputs.count != '0'
+        run: |
+          git config user.name "efterplan-bot"
+          git config user.email "efterplan-bot@users.noreply.github.com"
+
+      - name: Skapa roadmap-branch
+        if: steps.check.outputs.count != '0'
+        id: branch
+        run: |
+          BRANCH="roadmap/$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          echo "name=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Kör Claude Code roadmap
+        if: steps.check.outputs.count != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude --dangerously-skip-permissions -p \
+          "Du är efterplan-bot. Välj och implementera en ticket från claude/open/.
+
+          ## Steg 1 — Välj rätt ticket
+          1. Lista alla .md-filer i claude/open/ med Glob.
+          2. Läs varje fil och hitta dessa frontmatter-fält: priority (heltal, 1=högst),
+             payment (true/false), legal (true/false).
+          3. Filtrera bort alla tickets där payment=true ELLER legal=true.
+          4. Bland kvarvarande: välj den med lägst priority-nummer.
+          5. Om inga tickets passerar filtret — avsluta utan att göra några ändringar.
+
+          ## Steg 2 — Implementera
+          6. Läs ticket-filen noggrant. Förstå vad som ska göras och acceptanskriterierna.
+          7. Läs relevanta källfiler i repot.
+          8. Implementera exakt vad ticketen beskriver — varken mer eller mindre.
+          9. Verifiera att ändrade filer har korrekt syntax (inga trasiga HTML/JS/CSS).
+
+          ## Steg 3 — Avsluta
+          10. Flytta ticket-filen från claude/open/ till claude/done/ (skapa mappen om den saknas).
+          11. Committa ALLT med: git add -A && git commit -m '<kortnamn>: <vad som gjordes>'
+              där kortnamnet är ticket-filens namn utan sifferprefixet.
+
+          ## Absoluta gränser — rör ALDRIG
+          - api/create-checkout.js, api/verify-checkout.js, api/stripe-webhook.js, api/check-premium.js
+          - Juridiska texter, GDPR-text, integritetspolicyer, villkorssidor
+          - Max en ticket per körning" \
+          --allowedTools "Read,Write,Edit,Bash,Glob,Grep"
+
+      - name: Pusha och öppna PR
+        if: steps.check.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          # Kontrollera om Claude lämnade nya commits
+          if ! git log origin/main..HEAD --oneline 2>/dev/null | grep -q .; then
+            echo "Inga commits — ingen ticket implementerades (inga passande tickets, eller alla filtrerade)"
+            exit 0
+          fi
+
+          COMMIT_SUMMARY=$(git log origin/main..HEAD --oneline)
+          TICKET_DONE=$(git diff --name-only origin/main HEAD | grep "^claude/done/" | head -1 || echo "okänd")
+          PR_TITLE=$(git log origin/main..HEAD --oneline | head -1 | sed 's/^[a-f0-9]* //')
+
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "roadmap: $PR_TITLE" \
+            --base main \
+            --head "$BRANCH" \
+            --body "## Automatisk roadmap-implementation
+
+          **Implementerad ticket:** \`$TICKET_DONE\`
+
+          Claude Code valde och implementerade ticketen med högst prioritet från \`claude/open/\`
+          som inte rör betalflöde eller juridik. Granska ändringarna innan merge.
+
+          ### Commits
+          \`\`\`
+          $COMMIT_SUMMARY
+          \`\`\`
+
+          ---
+          _Genererad automatiskt av [roadmap-workflow](.github/workflows/roadmap.yml)_"
