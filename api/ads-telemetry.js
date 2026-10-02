@@ -1,10 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { checkRateLimit, getClientIp } from './_lib.js';
-
-const SUPA_URL  = 'https://vjupkemzpnrahdsljenl.supabase.co';
-// Publishable-nyckeln (publik, samma som supabase-client.js). Legacy-JWT:n
-// avvisas av Supabase sedan 2026-09-28 (401).
-const SUPA_ANON = 'sb_publishable_8eZKlNPSB5gH0gDYO8pb0Q__5w2kYs3';
+import { checkRateLimit, getClientIp, supabaseRest, supabaseServerHeaders } from './_lib.js';
 
 function verifySecret(incoming) {
   const expected = process.env.ADS_AGENT_SECRET;
@@ -18,14 +13,10 @@ function verifySecret(incoming) {
 }
 
 async function supaUpsert(table, rows, onConflict) {
-  const url = `${SUPA_URL}/rest/v1/${table}?on_conflict=${encodeURIComponent(onConflict)}`;
+  const url = supabaseRest(`${table}?on_conflict=${encodeURIComponent(onConflict)}`);
   const resp = await fetch(url, {
     method: 'POST',
-    headers: {
-      'apikey': SUPA_ANON,
-      'Content-Type': 'application/json',
-      'Prefer': 'resolution=merge-duplicates,return=minimal',
-    },
+    headers: supabaseServerHeaders({ Prefer: 'resolution=merge-duplicates,return=minimal' }),
     body: JSON.stringify(rows),
   });
   if (!resp.ok) {

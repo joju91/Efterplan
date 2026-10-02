@@ -7,12 +7,38 @@ export function getStripe() {
   return new Stripe(key, { apiVersion: '2024-11-20.acacia' });
 }
 
-export function getSupabaseAdmin() {
-  const url = process.env.SUPABASE_URL;
+// SUPABASE_URL i Vercel har legat som ".../rest/v1", vilket gav
+// ".../rest/v1/rest/v1/..." (404/PGRST125). Klipp bort sökvägen så bara
+// projektets bas-URL används.
+function supabaseBaseUrl() {
+  const url = (process.env.SUPABASE_URL || '').trim();
+  return url.replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+}
+
+function supabaseServerKey() {
   // Stöder både nya sb_secret_* och äldre service_role JWT.
-  const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+}
+
+export function getSupabaseAdmin() {
+  const url = supabaseBaseUrl();
+  const key = supabaseServerKey();
   if (!url || !key) throw new Error('SUPABASE_URL / SUPABASE_SECRET_KEY missing');
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+
+// Rå REST-anrop med servernyckeln (för ads-API:erna, som kör fetch direkt).
+export function supabaseRest(path) {
+  return `${supabaseBaseUrl()}/rest/v1/${path}`;
+}
+
+export function supabaseServerHeaders(extra = {}) {
+  const key = supabaseServerKey();
+  if (!key) throw new Error('SUPABASE_SECRET_KEY missing');
+  const headers = { apikey: key, 'Content-Type': 'application/json', ...extra };
+  // Legacy service_role är en JWT och vill ha Bearer; sb_secret_* räcker i apikey.
+  if (key.startsWith('eyJ')) headers.Authorization = `Bearer ${key}`;
+  return headers;
 }
 
 export async function readRawBody(req) {

@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { checkRateLimit, getClientIp } from './_lib.js';
+import { checkRateLimit, getClientIp, supabaseRest, supabaseServerHeaders } from './_lib.js';
 
 function verifySecret(incoming) {
   const expected = process.env.ADS_AGENT_SECRET;
@@ -12,24 +12,10 @@ function verifySecret(incoming) {
   } catch { return false; }
 }
 
-function supaUrl(path) {
-  return `${SUPA_URL}/rest/v1/${path}`;
-}
-
-// Both values are public by design (project URL + anon key).
-// Access is gated at the API layer by ADS_AGENT_SECRET.
-const SUPA_URL = 'https://vjupkemzpnrahdsljenl.supabase.co';
-// Publishable-nyckeln (publik, samma som supabase-client.js). Legacy-JWT:n
-// avvisas av Supabase sedan 2026-09-28 (401).
-const SUPA_ANON = 'sb_publishable_8eZKlNPSB5gH0gDYO8pb0Q__5w2kYs3';
-
-function supaHeaders() {
-  return {
-    'apikey': SUPA_ANON,
-    'Content-Type': 'application/json',
-    'Prefer': 'return=representation',
-  };
-}
+// ads_*-tabellerna är stängda för anon (migration ads_revoke_anon,
+// 2026-09-27), så vi går via servernyckeln. Åtkomst styrs av ADS_AGENT_SECRET.
+const supaUrl = supabaseRest;
+const supaHeaders = () => supabaseServerHeaders({ Prefer: 'return=representation' });
 
 export default async function handler(req, res) {
   if (!verifySecret(req.headers['x-ads-agent-secret'])) {
