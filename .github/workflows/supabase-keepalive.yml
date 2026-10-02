@@ -22,17 +22,17 @@ jobs:
           # Projekt-URL är inte känslig (samma sak som att veta domänen),
           # så den ligger direkt här istället för som ett extra repo-secret.
           SUPABASE_URL: https://vjupkemzpnrahdsljenl.supabase.co
-          # Anon-nyckeln räcker för en keep-alive-ping mot /rest/v1/ (OpenAPI-spec).
-          # Använd INTE service-role-nyckeln här — den kringgår RLS i onödan.
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # Publishable-nyckeln är publik (ligger i supabase-client.js), så den
+          # behöver inget repo-secret. Använd INTE service-role-nyckeln här.
+          SUPABASE_KEY: sb_publishable_8eZKlNPSB5gH0gDYO8pb0Q__5w2kYs3
         run: |
-          if [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "SUPABASE_ANON_KEY saknas som repo-secret — lägg till den i GitHub Settings → Secrets."
-            exit 1
-          fi
+          # Riktig tabellfråga i stället för /rest/v1/ (OpenAPI-spec), som inte
+          # längre accepterar publika nycklar (gav 401 från 2026-09-28).
+          # RLS kan ge en tom lista — det är fortfarande 200 och ett DB-anrop.
           status=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/" \
-            -H "apikey: $SUPABASE_ANON_KEY")
+            "$SUPABASE_URL/rest/v1/ads_budget?select=daily_budget_sek&limit=1" \
+            -H "apikey: $SUPABASE_KEY")
+          cat /tmp/resp.json; echo
           echo "HTTP status: $status"
           if [ "$status" -ge 400 ]; then
             echo "Oväntat felstatus från Supabase — projektet kan vara pausat eller nyckeln ogiltig."
