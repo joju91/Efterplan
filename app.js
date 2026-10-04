@@ -3334,6 +3334,17 @@ function showCompletionOverlay() {
   if (first) setTimeout(() => first.focus(), 50);
   overlay.addEventListener('keydown', _coEscHandler);
   track('plan_completed');
+  // T231: diskret, frivillig nudge för inloggning/synk — bara om användaren
+  // inte redan är inloggad. Döljs tyst om Supabase inte är konfigurerat
+  // eller getCurrentUser() misslyckas (t.ex. offline).
+  if (window.efterplanAuth && typeof window.efterplanAuth.getCurrentUser === 'function') {
+    window.efterplanAuth.getCurrentUser().then(user => {
+      if (!user) {
+        const nudge = document.getElementById('co-sync-nudge');
+        if (nudge) nudge.classList.remove('hidden');
+      }
+    }).catch(() => {});
+  }
 }
 
 function closeCompletionOverlay() {
