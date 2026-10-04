@@ -676,6 +676,11 @@
             <span class="doc-type-title">Dödsannons</span>
             <span class="doc-type-sub">Formulera ett minnesvärigt meddelande</span>
           </button>
+          <button class="doc-type-btn" data-doc="digitalarv" data-action="showDocForm" data-arg="digitalarv">
+            <span class="doc-icon" aria-hidden="true">💻</span>
+            <span class="doc-type-title">Digitala konton</span>
+            <span class="doc-type-sub">Facebook, Google, Apple/iCloud m.fl. — minnesmärkning eller radering</span>
+          </button>
           <button class="doc-type-btn" data-doc="skatteverket" id="doc-btn-skatteverket" data-action="showDocForm" data-arg="skatteverket">
             <span class="doc-icon" aria-hidden="true">🏛</span>
             <span class="doc-type-title">Skatteverket</span>
@@ -938,6 +943,39 @@
       </div>
 
       <!-- Form: Pensionsmyndigheten (visas om giftSambo eller barn = true) -->
+      <div id="doc-form-digitalarv" class="doc-form hidden">
+        <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
+        <h2 class="plan-title">Digitala konton</h2>
+        <p class="plan-sub">Varje plattform har egna rutiner för dödsfall — vi skriver en begäran anpassad efter vilken du väljer.</p>
+        <div class="form-group">
+          <label for="digitalarv-plattform">Plattform <span class="required">*</span></label>
+          <select id="digitalarv-plattform" class="text-input">
+            <option value="facebook">Facebook / Instagram (Meta)</option>
+            <option value="google">Google (Gmail, Drive, Foton)</option>
+            <option value="apple">Apple / iCloud</option>
+            <option value="ovrigt">Annan tjänst</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="digitalarv-tjanst">Tjänstens namn (om "Annan tjänst" valt ovan)</label>
+          <input type="text" id="digitalarv-tjanst" class="text-input" placeholder="t.ex. Klarna, Spotify, PayPal" />
+        </div>
+        <div class="form-group">
+          <label for="digitalarv-sender">Ditt namn <span class="required">*</span></label>
+          <input type="text" id="digitalarv-sender" class="text-input" placeholder="Ditt fullständiga namn" />
+        </div>
+        <div class="form-group">
+          <label for="digitalarv-relation">Din relation till den avlidne <span class="required">*</span></label>
+          <input type="text" id="digitalarv-relation" class="text-input" placeholder="t.ex. Make, Dotter, Son" />
+        </div>
+        <div class="form-group">
+          <label for="digitalarv-email">Din e-post <span class="required">*</span></label>
+          <input type="email" id="digitalarv-email" class="text-input" placeholder="din@epost.se" />
+        </div>
+        <p class="form-error hidden" id="err-digitalarv" role="alert"></p>
+        <button class="btn-primary u-max-width-240px" data-action="generateDigitalArv">Skapa begäran</button>
+      </div>
+
       <div id="doc-form-pension" class="doc-form hidden">
         <button class="back-btn" data-action="backToDocChooser">← Tillbaka</button>
         <h2 class="plan-title">Pensionsmyndigheten</h2>
