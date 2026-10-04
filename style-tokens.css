@@ -242,3 +242,27 @@ details.info-box summary:focus-visible {
 details.info-box p {
   margin: 0.5rem 0 0;
 }
+
+/* T137 — preliminär arvsfördelning i bouppteckningen */
+.bopp-row--wrap { flex-wrap: wrap; }
+.bopp-check-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-basis: 100%;
+  min-height: 44px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.bopp-check-inline input { width: 20px; height: 20px; flex: none; }
+.bopp-field { display: flex; flex-direction: column; gap: 4px; margin: 0 0 1rem; }
+.bopp-field-label { font-weight: 600; color: var(--ink); }
+.bopp-warn {
+  border-left: 3px solid var(--ember);
+  background: var(--paper-soft);
+  color: var(--ink);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+.bopp-select--full { flex-basis: 100%; order: 3; }
+.bopp-row--wrap .bopp-check-inline { order: 4; }
