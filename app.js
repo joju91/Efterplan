@@ -321,6 +321,16 @@ function obChoose(btn) {
   btn.closest('.ob-choices').querySelectorAll('.ob-choice').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 
+  // T229: "Make/maka" betyder juridiskt att den avlidna var gift — förifyll
+  // giftSambo (annars missas t.ex. bodelningspåminnelsen om kryssrutan glöms).
+  // Bara ett ja-läge, aldrig ett nej-läge: ett annat relationsval avmarkerar inte
+  // rutan igen, så ett manuellt kryss som redan finns där aldrig skrivs över.
+  if (key === 'relation' && val === 'make') {
+    state.giftSambo = true;
+    const giftSamboBox = document.querySelector('#ob-step-2 input[data-key="giftSambo"]');
+    if (giftSamboBox) giftSamboBox.checked = true;
+  }
+
   // Enable the Nästa button for this step
   const step = btn.closest('.ob-step');
   const nextBtn = step?.querySelector('.ob-next-btn');
