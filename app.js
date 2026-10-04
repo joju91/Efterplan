@@ -2510,6 +2510,7 @@ function switchTab(name) {
   document.querySelectorAll('.plan-tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('active');
   document.getElementById(`tabcontent-${name}`).classList.add('active');
+  if (name === 'bopp') boppUpdateSummary(); // T137: arvsfördelningen beror på state.testamente
   window.scrollTo(0, 0);
 }
 
@@ -3507,9 +3508,10 @@ async function handlePaywallCTA() {
 const BOPP_KEY = 'efterplan_bouppteckning';
 
 const boppData = {
-  delbagare:  [],  // [{ namn, roll }]
-  tillgangar: [],  // [{ beskrivning, varde }]
+  delbagare:  [],  // [{ namn, roll, barnTyp, avstarArv }] — barnTyp: null|'barn'|'gemensamt'|'sarkullbarn' (T137)
+  tillgangar: [],  // [{ beskrivning, varde, samboegendom }] — samboegendom bara relevant vid sambo (T137)
   skulder:    [],  // [{ beskrivning, belopp }]
+  civilstand: null, // T137 — 'gift' | 'sambo' | 'ensam' | null
 };
 
 // T208 — förifyllda default-rader istället för en tom lista: användaren slipper komma på
@@ -3543,6 +3545,7 @@ function boppLoad() {
       boppData.delbagare  = saved.delbagare  || [];
       boppData.tillgangar = saved.tillgangar || [];
       boppData.skulder    = saved.skulder    || [];
+      boppData.civilstand = saved.civilstand || null;
     } else if (raw === null) {
       // Första besöket i Bouppteckning (inget sparat ännu) — starta med vanliga rader
       // istället för en tom lista. Ifyllningsbara och borttagbara som vanligt.
@@ -3553,6 +3556,8 @@ function boppLoad() {
 }
 
 function boppRender() {
+  const cs = document.getElementById('bopp-civilstand');
+  if (cs) cs.value = boppData.civilstand || '';
   boppRenderSection('delbagare',  'bopp-delbagare-list',  boppRowDelbagare);
   boppRenderSection('tillgangar', 'bopp-tillgangar-list', boppRowTillgang);
   boppRenderSection('skulder',    'bopp-skulder-list',    boppRowSkuld);
@@ -3576,29 +3581,62 @@ function boppRenderSection(key, containerId, rowFn) {
 
 function boppRowDelbagare(item, i) {
   const row = document.createElement('div');
-  row.className = 'bopp-row';
+  row.className = 'bopp-row bopp-row--wrap';
+  // T137: barnTyp/avstarArv bara för arvingar. Gemensamt barn/särkullbarn spelar
+  // bara roll när den avlidne var gift — annars ärver alla barn direkt.
+  const gift = boppData.civilstand === 'gift';
+  const bt = item.barnTyp || '';
+  const barnTypHtml = item.roll !== 'arvinge' ? '' : gift ? `
+    <select class="bill-input bopp-select bopp-select--full" aria-label="Är arvingen barn till den avlidne?" onchange="boppSetBarnTyp(${i},this.value)">
+      <option value=""${!bt?' selected':''}>Inte barn till den avlidne</option>
+      <option value="gemensamt"${bt==='gemensamt'?' selected':''}>Gemensamt barn med maken/makan</option>
+      <option value="sarkullbarn"${bt==='sarkullbarn'?' selected':''}>Särkullbarn</option>
+      ${bt==='barn'?'<option value="barn" selected>Barn — ange gemensamt eller särkull</option>':''}
+    </select>` : `
+    <select class="bill-input bopp-select bopp-select--full" aria-label="Är arvingen barn till den avlidne?" onchange="boppSetBarnTyp(${i},this.value)">
+      <option value=""${!bt?' selected':''}>Inte barn till den avlidne</option>
+      <option value="barn"${bt?' selected':''}>Barn till den avlidne</option>
+    </select>`;
+  // Bara särkullbarn kan välja att avstå till förmån för efterlevande make/maka
+  // (3 kap. 9 § ÄB). Gemensamma barns rätt skjuts upp automatiskt enligt lag.
+  const avstarHtml = item.roll === 'arvinge' && gift && bt === 'sarkullbarn' ? `
+    <label class="bopp-check-inline">
+      <input type="checkbox" ${item.avstarArv?'checked':''}
+        onchange="boppData.delbagare[${i}].avstarArv=this.checked;boppSave();boppUpdateSummary()">
+      Avstår sitt arv tills vidare till förmån för maken/makan (3 kap. 9 § ÄB)
+    </label>` : '';
   row.innerHTML = `
     <input class="bill-input bopp-input-name" type="text" placeholder="Namn" aria-label="Dödsbodelägarens namn" value="${_esc(item.namn)}"
       oninput="boppData.delbagare[${i}].namn=this.value;boppSave()">
-    <select class="bill-input bopp-select" aria-label="Roll i dödsboet" onchange="boppData.delbagare[${i}].roll=this.value;boppSave()">
+    <select class="bill-input bopp-select" aria-label="Roll i dödsboet" onchange="boppData.delbagare[${i}].roll=this.value;boppSave();boppRender()">
       <option value="arvinge"${item.roll==='arvinge'?' selected':''}>Arvinge</option>
       <option value="testamentstagare"${item.roll==='testamentstagare'?' selected':''}>Testamentstagare</option>
       <option value="efterlevande_make"${item.roll==='efterlevande_make'?' selected':''}>Efterlevande make/maka</option>
       <option value="annan"${item.roll==='annan'?' selected':''}>Annan</option>
     </select>
-    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort delägare">×</button>`;
+    ${barnTypHtml}
+    <button class="bopp-remove" onclick="boppRemove('delbagare',${i})" aria-label="Ta bort delägare">×</button>
+    ${avstarHtml}`;
   return row;
 }
 
 function boppRowTillgang(item, i) {
   const row = document.createElement('div');
-  row.className = 'bopp-row';
+  row.className = boppData.civilstand === 'sambo' ? 'bopp-row bopp-row--wrap' : 'bopp-row';
+  // T137: vid sambo delas bara samboegendom i bodelningen (sambolagen 2003:376).
+  const samboHtml = boppData.civilstand === 'sambo' ? `
+    <label class="bopp-check-inline">
+      <input type="checkbox" ${item.samboegendom?'checked':''}
+        onchange="boppData.tillgangar[${i}].samboegendom=this.checked;boppSave();boppUpdateSummary()">
+      Samboegendom — gemensam bostad eller bohag köpt för att användas tillsammans
+    </label>` : '';
   row.innerHTML = `
     <input class="bill-input bopp-input-name" type="text" placeholder="Beskrivning (t.ex. Bankkonto Swedbank)" aria-label="Tillgångens beskrivning" value="${_esc(item.beskrivning)}"
       oninput="boppData.tillgangar[${i}].beskrivning=this.value;boppSave()">
     <input class="bill-input bopp-input-amount" type="number" placeholder="Belopp (kr)" aria-label="Tillgångens värde i kronor" value="${_esc(String(item.varde||''))}"
       oninput="boppData.tillgangar[${i}].varde=this.value;boppSave();boppUpdateSummary()">
-    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort tillgång">×</button>`;
+    <button class="bopp-remove" onclick="boppRemove('tillgangar',${i})" aria-label="Ta bort tillgång">×</button>
+    ${samboHtml}`;
   return row;
 }
 
@@ -3615,7 +3653,7 @@ function boppRowSkuld(item, i) {
 }
 
 function boppAddDelbagare() {
-  boppData.delbagare.push({ namn: '', roll: 'arvinge' });
+  boppData.delbagare.push({ namn: '', roll: 'arvinge', barnTyp: null, avstarArv: false });
   boppSave();
   boppRenderSection('delbagare', 'bopp-delbagare-list', boppRowDelbagare);
   const inputs = document.querySelectorAll('#bopp-delbagare-list .bopp-input-name');
@@ -3623,7 +3661,7 @@ function boppAddDelbagare() {
 }
 
 function boppAddTillgang() {
-  boppData.tillgangar.push({ beskrivning: '', varde: '' });
+  boppData.tillgangar.push({ beskrivning: '', varde: '', samboegendom: false });
   boppSave();
   boppRenderSection('tillgangar', 'bopp-tillgangar-list', boppRowTillgang);
   const inputs = document.querySelectorAll('#bopp-tillgangar-list .bopp-input-name');
@@ -3656,6 +3694,99 @@ function boppUpdateSummary() {
     el('bopp-sum-netto').textContent = fmt(netto);
     el('bopp-sum-netto').classList.toggle('bopp-netto-neg', netto < 0);
   }
+  boppRenderArvsfordelning(boppComputeArvsfordelning(netto));
+}
+
+function boppSetCivilstand(val) {
+  boppData.civilstand = val || null;
+  boppSave();
+  boppRender();
+}
+
+function boppSetBarnTyp(i, val) {
+  const d = boppData.delbagare[i];
+  d.barnTyp = val || null;
+  if (d.barnTyp !== 'sarkullbarn') d.avstarArv = false;
+  boppSave();
+  boppRender();
+}
+
+// T137 — preliminär arvsfördelning, bara arvsklass 1 (barn). Medvetet utanför:
+// giftorättsgodsets bodelning vid äktenskap, basbeloppsreglerna (3 kap. 1 § ÄB,
+// 18 § sambolagen), barnbarn/istadarätt, arvsklass 2–3 och testamentets fördelning.
+function boppComputeArvsfordelning(netto) {
+  const cs = boppData.civilstand;
+  const res = { cs, netto, samboegendom: 0, samboBodelning: 0, kvarlatenskap: netto,
+    barn: [], makeAndel: 0, oklaraBarn: 0, testamente: !!state.testamente };
+  if (!cs || netto <= 0) return res;
+
+  if (cs === 'sambo') {
+    res.samboegendom = boppData.tillgangar
+      .filter(t => t.samboegendom)
+      .reduce((s, t) => s + (parseFloat(t.varde) || 0), 0);
+    // Bodelning: samboegendomen delas lika — hälften går till efterlevande sambo.
+    res.samboBodelning = Math.min(res.samboegendom / 2, netto);
+    res.kvarlatenskap = netto - res.samboBodelning;
+  }
+
+  const gift = cs === 'gift';
+  const barn = boppData.delbagare.filter(d => d.roll === 'arvinge' && d.barnTyp);
+  res.oklaraBarn = gift ? barn.filter(d => d.barnTyp === 'barn').length : 0;
+  if (barn.length === 0) {
+    // Inga barn: make/maka ärver allt (3 kap. 1 § ÄB). Sambo ärver inte enligt lag.
+    if (gift) res.makeAndel = res.kvarlatenskap;
+    return res;
+  }
+
+  const arvslott = res.kvarlatenskap / barn.length;
+  let direktTotal = 0;
+  res.barn = barn.map(d => {
+    // Gift: gemensamma barn får vänta (efterarv), särkullbarn ärver direkt om de inte
+    // avstår. Inte gift: alla barn ärver direkt (2 kap. 1 § ÄB).
+    const vantar = gift && (d.barnTyp !== 'sarkullbarn' || d.avstarArv);
+    const direkt = vantar ? 0 : arvslott;
+    direktTotal += direkt;
+    return { namn: d.namn || 'Namnlös arvinge', barnTyp: d.barnTyp, arvslott, laglott: arvslott / 2, direkt, vantar };
+  });
+  if (gift) res.makeAndel = res.kvarlatenskap - direktTotal;
+  return res;
+}
+
+function boppRenderArvsfordelning(r) {
+  const el = document.getElementById('bopp-arvsfordelning');
+  if (!el) return;
+  const fmt = n => Math.round(n).toLocaleString('sv-SE') + ' kr';
+  const row = (label, value) => `<div class="bopp-summary-row"><span>${label}</span><strong>${value}</strong></div>`;
+
+  if (!r.cs) { el.innerHTML = '<p class="bopp-empty">Välj civilstånd ovan för att se fördelningen.</p>'; return; }
+  if (r.netto <= 0) { el.innerHTML = '<p class="bopp-empty">Nettovärdet är noll eller negativt — det finns inget arv att fördela. Fyll i tillgångar och skulder ovan.</p>'; return; }
+
+  let html = '<div class="bopp-summary">';
+  if (r.cs === 'sambo') {
+    html += row(`Bodelning: hälften av samboegendomen (${fmt(r.samboegendom)}) till efterlevande sambo`, fmt(r.samboBodelning));
+  }
+  html += row('Att fördela som arv', fmt(r.kvarlatenskap));
+  r.barn.forEach(b => {
+    const status = !b.vantar ? 'ärver nu'
+      : b.barnTyp === 'sarkullbarn' ? 'har avstått — ärver när maken/makan dör'
+      : 'ärver när maken/makan dör';
+    const laglott = r.testamente ? ` (laglott ${fmt(b.laglott)})` : '';
+    html += row(`${_esc(b.namn)} — ${status}`, fmt(b.arvslott) + laglott);
+  });
+  if (r.cs === 'gift') html += row('Maken/makan (med fri förfoganderätt)', fmt(r.makeAndel));
+  html += '</div>';
+
+  if (r.oklaraBarn) {
+    html += '<p class="bopp-warn">Ange för varje barn om det är gemensamt med maken/makan eller ett särkullbarn — det avgör vem som ärver nu.</p>';
+  }
+  if (!r.barn.length && r.cs !== 'gift') {
+    html += '<p class="bopp-empty">Inga barn markerade. Då ärver föräldrar eller syskon (arvsklass 2), annars far- och morföräldrar — det räknar vi inte ut här. En sambo ärver inte enligt lag utan testamente.</p>';
+  }
+  if (r.testamente) {
+    html += '<p class="bopp-warn">Testamente finns. Barn har alltid rätt till sin laglott — hälften av arvslotten. Ett barn som får mindre måste begära jämkning inom sex månader från att testamentet delgavs.</p>';
+  }
+  html += '<p class="bopp-section-hint">Preliminär beräkning enligt ärvdabalkens grundregler — inte juridisk rådgivning. Bodelning mellan makar, basbeloppsregler och testamentets innehåll räknas inte in. Rådgör med jurist om boet är komplicerat.</p>';
+  el.innerHTML = html;
 }
 
 function _esc(str) {
