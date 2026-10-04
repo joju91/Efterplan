@@ -64,10 +64,16 @@ jobs:
           TITLE="Veckorapport $DATE"
           # GH:s issue-body har 65k-gräns — våra rapporter är några kB, så det räcker.
           BODY=$(cat "$FILE")
-          curl -sS -X POST \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" \
-            -d "$(jq -n --arg t "$TITLE" --arg b "$BODY" '{title:$t, body:$b, labels:["veckorapport"]}')" \
-            | jq -r '.html_url // .message'
+          API="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
+          AUTH=(-H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28")
+          # Uppdatera dagens issue om den redan finns (t.ex. vid manuell omkörning) i stället för att skapa en dubblett.
+          EXISTING=$(curl -sS "${AUTH[@]}" "$API?state=open&labels=veckorapport&per_page=100" \
+            | jq -r --arg t "$TITLE" '[.[] | select(.title == $t)][0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            curl -sS -X PATCH "${AUTH[@]}" "$API/$EXISTING" \
+              -d "$(jq -n --arg b "$BODY" '{body:$b}')" | jq -r '.html_url // .message'
+          else
+            curl -sS -X POST "${AUTH[@]}" "$API" \
+              -d "$(jq -n --arg t "$TITLE" --arg b "$BODY" '{title:$t, body:$b, labels:["veckorapport"]}')" \
+              | jq -r '.html_url // .message'
+          fi

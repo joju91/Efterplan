@@ -219,3 +219,26 @@ body {
   color: var(--ink-muted);
   font-family: var(--font-mono);
 }
+
+/* Expanderbar faktaruta i uppgiftsbeskrivningar */
+details.info-box {
+  border-left: 3px solid var(--accent);
+  background: var(--paper-soft);
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+}
+details.info-box summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ink);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+details.info-box summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+details.info-box p {
+  margin: 0.5rem 0 0;
+}
