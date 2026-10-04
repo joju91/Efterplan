@@ -728,6 +728,7 @@ Säg även upp betaltjänster som Klarna, PayPal, spelkonton — logga aldrig in
     time: 'ca 1–2 timmar',
     link: null,
     triggers: [],
+    hasDoc: 'digitalarv',
     checklist: [
       { key: 'facebook',  label: 'Facebook / Instagram' },
       { key: 'google',    label: 'Google-konto (Gmail, Drive, Foton)' },
@@ -2697,6 +2698,14 @@ function showDocForm(type) {
       if (tEl) tEl.value = 'barnpension';
     }
   }
+  if (type === 'digitalarv') {
+    const sEl = document.getElementById('digitalarv-sender');
+    if (sEl && !sEl.value && sender.name) sEl.value = sender.name;
+    const eEl = document.getElementById('digitalarv-email');
+    if (eEl && !eEl.value && sender.email) eEl.value = sender.email;
+    const rEl = document.getElementById('digitalarv-relation');
+    if (rEl && !rEl.value && relation) rEl.value = relation;
+  }
 
   document.getElementById(`doc-form-${type}`).classList.remove('hidden');
   window.scrollTo(0, 0);
@@ -3062,6 +3071,74 @@ ${typ !== 'barnpension' ? 'Observera att omställningspension inte betalas ut re
   });
 }
 
+
+function generateDigitalArv() {
+  const plattform = document.getElementById('digitalarv-plattform').value;
+  const tjanst     = document.getElementById('digitalarv-tjanst').value.trim();
+  const sender     = document.getElementById('digitalarv-sender').value.trim();
+  const relation   = document.getElementById('digitalarv-relation').value.trim();
+  const email      = document.getElementById('digitalarv-email').value.trim();
+  clearFormError('err-digitalarv');
+  if (!sender || !relation || !email) { showFormError('err-digitalarv', 'Fyll i alla fält markerade med *.'); return; }
+  if (plattform === 'ovrigt' && !tjanst) { showFormError('err-digitalarv', 'Ange tjänstens namn.'); return; }
+  saveSenderInfo(sender, email);
+
+  const { deceased, personnr, today } = getDocContext();
+
+  // T142: varje plattform har egna rutiner (se avsluta_konton-tasken) —
+  // brevet anpassas efter vald plattform istället för att vara generiskt.
+  const plattformTexts = {
+    facebook: {
+      mottagare: 'Facebook/Instagram (Meta)',
+      arende: 'Begäran om minnesmärkning eller radering av konto — dödsfall',
+      body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gått bort.\n\nJag ber er antingen minnesmärka kontot (visas som "Till minne av") eller radera det, enligt Metas rutiner för avlidna användares konton.\n\nBifogat finns dödsbevis som styrker dödsfallet.`,
+    },
+    google: {
+      mottagare: 'Google',
+      arende: 'Begäran om tillgång till avliden anhörigs konto',
+      body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gått bort.\n\nOm en inställning för "Hantering av inaktiva konton" inte redan är aktiv önskar jag ansöka om tillgång till relevant innehåll (e-post, Drive, Foton) som nära anhörig, enligt Googles rutiner för avlidna användares konton.\n\nJag bifogar dödsbevis och är tillgänglig för ytterligare dokumentation.`,
+    },
+    apple: {
+      mottagare: 'Apple',
+      arende: 'Begäran om tillgång till avliden anhörigs Apple-ID/iCloud',
+      body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gått bort.\n\nOm ingen digital arvskontakt ("Legacy Contact") var förinställd på kontot önskar jag information om vad som krävs för att få tillgång till foton och filer i iCloud — jag förstår att detta normalt kräver ett domstolsbeslut/arvsintyg, och ber er bekräfta exakt vilken dokumentation som behövs i detta fall.\n\nDödsbevis bifogas.`,
+    },
+    ovrigt: {
+      mottagare: tjanst,
+      arende: 'Avslutning av konto — dödsfall',
+      body: `Jag kontaktar er angående kontot hos er som stod i ${deceased}s (personnr ${personnr}) namn, som tyvärr har gått bort.\n\nJag ber er avsluta kontot/tjänsten och bekräfta skriftligen att det är genomfört. Vid eventuellt kvarstående tillgodohavande, vänligen återbetala till dödsboet.\n\nDödsbevis bifogas.`,
+    },
+  };
+
+  const { mottagare, arende, body } = plattformTexts[plattform] || plattformTexts.ovrigt;
+
+  showDocResult(`${mottagare} — ${arende}`, `${sender}
+${email}${formatSenderAddressBlock()}
+
+${today}
+
+Till: ${mottagare}
+Ärende: ${arende}
+
+Hej,
+
+${body}
+
+Med vänliga hälsningar,
+
+${sender}
+${relation} till ${deceased}
+${email}`, arende, {
+    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort, och jag ringer angående kontot hos er.
+
+Kan ni berätta vad som krävs för att ${plattform === 'facebook' ? 'minnesmärka eller avsluta kontot' : plattform === 'ovrigt' ? 'avsluta tjänsten' : 'få tillgång till eller avsluta kontot'}?`,
+    checklist: [
+      'Den avlidnes personnummer',
+      'Ditt eget namn och relation till den avlidne',
+      'Dödsbevis (redo att skicka in digitalt eller per post)',
+    ],
+  });
+}
 
 function generateAnnons() {
   const name      = document.getElementById('annons-name').value.trim();
@@ -3879,6 +3956,7 @@ document.addEventListener('click', function dispatchAction(e) {
     case 'generateAnnons':       generateAnnons(); break;
     case 'generateBank':         generateBank(); break;
     case 'generateBulkLetters':  generateBulkLetters(); break;
+    case 'generateDigitalArv':   generateDigitalArv(); break;
     case 'generateForsakring':   generateForsakring(); break;
     case 'generateHyresvard':    generateHyresvard(); break;
     case 'generatePension':      generatePension(); break;
