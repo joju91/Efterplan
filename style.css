@@ -46,6 +46,7 @@
   --grey-bg:      #EFE8D8;
   --green:        #2E6A48;
   --danger:       #A23423;
+  --white:        #fff;
 
   --radius:       10px;
   --radius-sm:    6px;
@@ -108,7 +109,7 @@
   top: -100%;
   left: 8px;
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
   padding: 8px 16px;
   border-radius: 0 0 6px 6px;
   font-size: 0.85rem;
@@ -896,7 +897,7 @@ body {
 /* Next button */
 .ob-next-btn {
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
   border: none;
   border-radius: var(--radius-sm);
   padding: 14px 28px;
@@ -1297,7 +1298,7 @@ body {
 .task-expand-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .task-expand-btn {
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
   border: none;
   border-radius: var(--radius-sm);
   padding: 9px 18px;
@@ -1320,7 +1321,7 @@ body {
   font-family: var(--font);
   transition: var(--transition);
 }
-.task-expand-doc:hover { background: var(--accent); color: #fff; }
+.task-expand-doc:hover { background: var(--accent); color: var(--white); }
 .task-expand-done {
   font-size: 0.85rem;
   color: var(--accent);
@@ -1349,7 +1350,7 @@ body {
   gap: 14px;
   width: 100%;
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
   border: none;
   border-radius: var(--radius);
   padding: 18px 20px;
@@ -1576,7 +1577,7 @@ body {
   align-items: center;
   gap: 16px;
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
   border-radius: var(--radius);
   padding: 16px 20px;
   margin-bottom: 32px;
@@ -1751,7 +1752,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   background: var(--text-primary);
-  color: #fff;
+  color: var(--white);
   padding: 12px 20px;
   border-radius: var(--radius-sm);
   display: flex;
@@ -1768,7 +1769,7 @@ body {
 .undo-toast button {
   background: none;
   border: 1px solid rgba(255,255,255,0.4);
-  color: #fff;
+  color: var(--white);
   padding: 4px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -1790,7 +1791,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   background: var(--text-primary);
-  color: #fff;
+  color: var(--white);
   padding: 12px 20px;
   border-radius: var(--radius-sm);
   z-index: 300;
@@ -1913,7 +1914,7 @@ body {
 .notify-check.checked {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--white);
 }
 .notify-name {
   flex: 1;
@@ -1961,7 +1962,7 @@ body {
 }
 .notify-add-btn:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
 }
 /* ─── Onboarding progress bar ─── */
 .ob-progress-bar-wrap {
@@ -2200,7 +2201,7 @@ body {
   height: 44px;
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(44,74,110,0.28);
@@ -2483,7 +2484,7 @@ body {
 }
 .task-expand-phone--secondary:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--white);
 }
 
 /* ═══════════════════════════════════════════
@@ -2570,7 +2571,7 @@ body {
   background: var(--paper-soft);
   border-radius: 10px;
   font-size: 0.8rem;
-  color: var(--text-muted, #888);
+  color: var(--text-muted);
   letter-spacing: 0.01em;
 }
 .trust-sep { opacity: 0.4; }
@@ -2580,7 +2581,7 @@ body {
 .bills-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .bills-add-btn { font-size: 0.85rem; padding: 6px 12px; }
 .bills-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-.bill-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); }
+.bill-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--paper-card); border: 1px solid var(--border); border-radius: var(--radius); }
 .bill-item.paid .bill-desc { text-decoration: line-through; color: var(--text-soft); }
 .bill-check { width: 20px; height: 20px; padding: 12px; margin: -12px; border: 2px solid var(--border); border-radius: 50%; background: none; cursor: pointer; flex-shrink: 0; transition: background 0.15s, border-color 0.15s; }
 .bill-item.paid .bill-check { background: var(--green); border-color: var(--green); }
@@ -2605,7 +2606,7 @@ body {
   cursor: pointer; transition: var(--transition); font-family: var(--font);
 }
 .arkiv-filter-btn:hover { border-color: var(--accent); }
-.arkiv-filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.arkiv-filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--white); }
 .arkiv-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .arkiv-item { display: flex; gap: 12px; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); align-items: flex-start; }
 .arkiv-thumb { width: 52px; height: 52px; object-fit: cover; border-radius: var(--radius-sm); flex-shrink: 0; cursor: pointer; background: var(--bg); border: 1px solid var(--border); }
@@ -2628,9 +2629,9 @@ body {
   font-size: 0.72rem; padding: 3px 9px; border-radius: 20px; border: 1.5px solid var(--border);
   background: none; color: var(--text-soft); cursor: pointer; transition: var(--transition); font-family: var(--font);
 }
-.arkiv-flag-btn.active[data-flag="viktig"] { background: var(--green); border-color: var(--green); color: #fff; }
-.arkiv-flag-btn.active[data-flag="mellan"] { background: var(--yellow); border-color: var(--yellow); color: #fff; }
-.arkiv-flag-btn.active[data-flag="onodig"] { background: var(--grey); border-color: var(--grey); color: #fff; }
+.arkiv-flag-btn.active[data-flag="viktig"] { background: var(--green); border-color: var(--green); color: var(--white); }
+.arkiv-flag-btn.active[data-flag="mellan"] { background: var(--yellow); border-color: var(--yellow); color: var(--white); }
+.arkiv-flag-btn.active[data-flag="onodig"] { background: var(--grey); border-color: var(--grey); color: var(--white); }
 .arkiv-explain-row { margin-top: 6px; }
 .arkiv-explain-btn {
   background: none; border: 1px solid var(--border); border-radius: var(--radius-sm);
@@ -2667,7 +2668,7 @@ body {
   transition: background 0.15s, color 0.15s;
 }
 .btn-print-inline::before { content: '⬇'; font-size: 0.72rem; }
-.btn-print-inline:hover { background: var(--accent); color: #fff; }
+.btn-print-inline:hover { background: var(--accent); color: var(--white); }
 
 /* ═══ FREE PREVIEW (T030) ════════════════════ */
 .section--coming .task-list { opacity: 0.55; }
@@ -2861,6 +2862,15 @@ body {
   max-width: var(--measure);
 }
 
+/* T122: mallruta/exempelruta i textsidor (t.ex. dödsannons-mallen) */
+.content-callout {
+  background: var(--paper-soft);
+  border-left: 3px solid var(--ink-teal);
+  padding: 1em 1.5em;
+  margin: 1em 0;
+  font-style: italic;
+}
+
 /* Small byline under the lead paragraph — when a guide's content was last checked */
 .seo-article .seo-updated {
   font-size: var(--fs-xs);
@@ -2999,10 +3009,10 @@ body {
 .u-margin-bottom-24px           { margin-bottom: 24px; }
 .u-margin-bottom-28px           { margin-bottom: 28px; }
 .u-min-height-1-2em             { min-height: 1.2em; }
-.u-background-var-grey-bg       { background: var(--grey-bg, #f5f5f5); }
+.u-background-var-grey-bg       { background: var(--grey-bg); }
 #shared-view { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
-.u-background-f0f0f0            { background: #f0f0f0; }
-.u-background-f0f4f8            { background: #f0f4f8; }
+.u-background-f0f0f0            { background: var(--grey-bg); }
+.u-background-f0f4f8            { background: var(--grey-bg); }
 
 /* ─── BOUPPTECKNING TAB ──────────────────────── */
 .bopp-summary {
