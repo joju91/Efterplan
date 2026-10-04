@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { checkRateLimit, getClientIp } from './_lib.js';
+import { checkRateLimit, getClientIp, supabaseRest, supabaseServerHeaders } from './_lib.js';
 
 function verifySecret(incoming) {
   const expected = process.env.ADS_AGENT_SECRET;
@@ -12,23 +12,10 @@ function verifySecret(incoming) {
   } catch { return false; }
 }
 
-function supaUrl(path) {
-  return `${SUPA_URL}/rest/v1/${path}`;
-}
-
-// Both values are public by design (project URL + anon key).
-// Access is gated at the API layer by ADS_AGENT_SECRET.
-const SUPA_URL = 'https://vjupkemzpnrahdsljenl.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
-
-function supaHeaders() {
-  return {
-    'apikey': SUPA_ANON,
-    'Authorization': `Bearer ${SUPA_ANON}`,
-    'Content-Type': 'application/json',
-    'Prefer': 'return=representation',
-  };
-}
+// ads_*-tabellerna är stängda för anon (migration ads_revoke_anon,
+// 2026-09-27), så vi går via servernyckeln. Åtkomst styrs av ADS_AGENT_SECRET.
+const supaUrl = supabaseRest;
+const supaHeaders = () => supabaseServerHeaders({ Prefer: 'return=representation' });
 
 export default async function handler(req, res) {
   if (!verifySecret(req.headers['x-ads-agent-secret'])) {

@@ -1,8 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { checkRateLimit, getClientIp } from './_lib.js';
-
-const SUPA_URL  = 'https://vjupkemzpnrahdsljenl.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdXBrZW16cG5yYWhkc2xqZW5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTI4MDUsImV4cCI6MjA5MjU2ODgwNX0.GGc8xCc8vj4EO3nOdM8WTb0igP31L-31XlxgTafN5Bo';
+import { checkRateLimit, getClientIp, supabaseRest, supabaseServerHeaders } from './_lib.js';
 
 function verifySecret(incoming) {
   const expected = process.env.ADS_AGENT_SECRET;
@@ -16,15 +13,10 @@ function verifySecret(incoming) {
 }
 
 async function supaUpsert(table, rows, onConflict) {
-  const url = `${SUPA_URL}/rest/v1/${table}?on_conflict=${encodeURIComponent(onConflict)}`;
+  const url = supabaseRest(`${table}?on_conflict=${encodeURIComponent(onConflict)}`);
   const resp = await fetch(url, {
     method: 'POST',
-    headers: {
-      'apikey': SUPA_ANON,
-      'Authorization': `Bearer ${SUPA_ANON}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'resolution=merge-duplicates,return=minimal',
-    },
+    headers: supabaseServerHeaders({ Prefer: 'resolution=merge-duplicates,return=minimal' }),
     body: JSON.stringify(rows),
   });
   if (!resp.ok) {

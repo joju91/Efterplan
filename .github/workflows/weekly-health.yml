@@ -15,6 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Domain redirect check
+        # www och http ska nå https://efterplan.se/ enbart via 301/308
+        run: |
+          fail=0
+          for u in https://www.efterplan.se/ http://www.efterplan.se/ http://efterplan.se/; do
+            codes=$(curl -sIL "$u" | awk '/^HTTP/{print $2}')
+            final=$(curl -sL -o /dev/null -w '%{url_effective}' "$u")
+            echo "$u -> [$codes] $final"
+            for c in $codes; do case "$c" in 301|308|200) ;; *) echo "::error::$u ger $c, väntade 301/308"; fail=1 ;; esac; done
+            [ "$final" = https://efterplan.se/ ] || { echo "::error::$u landar på $final"; fail=1; }
+          done
+          exit $fail
+
       - name: Broken link check
         uses: lycheeverse/lychee-action@v1
         with:

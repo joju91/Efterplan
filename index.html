@@ -101,7 +101,7 @@
   <link rel="preload" href="/fonts/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxeKYY.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="/fonts/fonts.css" />
   <link rel="stylesheet" href="style.css?v=13" fetchpriority="high" />
-  <link rel="stylesheet" href="style-tokens.css?v=6" />
+  <link rel="stylesheet" href="style-tokens.css?v=7" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -1041,6 +1041,24 @@
         <div id="bopp-skulder-list"></div>
       </section>
 
+      <!-- Preliminär arvsfördelning (T137) -->
+      <section class="bopp-section" aria-labelledby="bopp-arv-title">
+        <div class="bopp-section-header">
+          <h3 class="bopp-section-title" id="bopp-arv-title">Preliminär arvsfördelning</h3>
+        </div>
+        <p class="bopp-section-hint">Markera vilka arvingar som är barn till den avlidne, så räknar vi ut ungefär hur arvet fördelas.</p>
+        <label class="bopp-field">
+          <span class="bopp-field-label">Den avlidne var</span>
+          <select class="bill-input bopp-select" id="bopp-civilstand" aria-label="Den avlidnes civilstånd" onchange="boppSetCivilstand(this.value)">
+            <option value="">Välj …</option>
+            <option value="gift">Gift</option>
+            <option value="sambo">Sambo</option>
+            <option value="ensam">Varken gift eller sambo</option>
+          </select>
+        </label>
+        <div id="bopp-arvsfordelning" aria-live="polite"></div>
+      </section>
+
     </div>
   </div>
 
@@ -1149,7 +1167,7 @@
 </div>
 
 <script src="supabase-client.js?v=3" defer></script>
-<script src="app.js?v=39" defer></script>
+<script src="app.js?v=40" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
