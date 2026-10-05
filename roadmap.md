@@ -827,3 +827,11 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T274 | `auth-modal.html` saknar `<meta name="description">` — auth-modalen är en indexerbar HTML-sida men har ingen meta-description. Ger tomt snippet-text i SERP och kan sänka CTR för sidan. Lägg till en beskrivande `<meta name="description" content="...">` i `<head>`. Fil: `auth-modal.html`. Issue: https://github.com/joju91/Efterplan/issues/115 | 2026-09-28 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-10-05
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T275 | **stripe 23.0 major version** — `npm outdated` visar `stripe Latest: 23.0.0` mot package.json `^22.1.1` (lock vid 22.6.2). Stripe 23 är en major bump; granska changelog för breaking changes (apiVersion-krav, borttagna metoder, Node.js miniversion). Uppdatera package.json `^22.1.1 → ^23.x`, kör `npm update stripe`, verifiera att `api/_lib.js` (`stripe(key, { apiVersion })`) och `api/verify-checkout.js` fortfarande fungerar. Fil: `package.json`, `api/_lib.js`. Issue: https://github.com/joju91/Efterplan/issues/136 | 2026-10-05 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
