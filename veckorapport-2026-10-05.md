@@ -1,50 +1,77 @@
-# Efterplan — 2026-10-05
+# Efterplan Veckorapport — 2026-10-05
 
-🔢 Sessions: — | Organisk: — | Onboarding: — | Plan: —
-*(GA4 SAKNAS — molnsandlådan saknar credentials, hoppar över DEL 1)*
-
-🔧 Uptime: ✅ (weekly-health 2026-09-28 + 2026-10-03: success) | Sårbarheter: 0 (ga4-dashboard)
-   - `stripe` major version 23.0.0 tillgänglig — package.json låst på `^22.1.1` (`package.json`, rad ~3)
-   - Proxy blockerar direkt HTTP-anrop till efterplan.se från sandboxen (403) — ej en riktig downtime
-
-📣 Google Ads har kört sedan 2026-09-23 (17 klick, 123 kr, 0 riktiga köp per T264) — 2-veckorsgränsen nås 2026-10-07, prioritera att hämta Ads conversion-data och ta beslut om skala/stoppa innan budget byggs ut ytterligare.
-
-🎫 Nya tickets: T275 – stripe 23.0 major version (#136)
-
-✅ Åtgärder att godkänna:
-| # | Åtgärd | Fil | P |
-|---|--------|-----|---|
-| 1 | Granska stripe 23 changelog + uppgradera `^22.1.1 → ^23.x` | `package.json`, `api/_lib.js` | 🟡 |
+> Genererad automatiskt av GitHub Actions (`.github/workflows/weekly-report.yml`).
 
 ---
 
-## Detaljer
+## 🔢 Nyckeltal (7 dagar — Plausible)
 
-### Roadmap-status
-- **Klara:** 218 ✔
-- **Pågår:** 12 ⧖
-- **Ej startade:** 32 ☐
+| Mått | Värde |
+|------|-------|
+| Sessions | **95** |
+| Users | 91 |
+| Engagement rate | 26.0% |
+| Organisk andel | 25 (26.3%) |
+| onboarding_start | 8 (8.4% av sessions) |
+| plan_generated | 3 (37.5% av onboarding_start) |
+| task_completed | 12 |
 
-### Pågående (urval)
-- T060 — Push notifications (koden finns på ej-mergrad branch `origin/codex/t060-checkpoints`, ej på main)
-- T271 — Traffic-sprint (inlägg klara, väntar på Owner för postning)
-- T263 — Community-scan blockerad av nätverkspolicy (Owner-beslut krävs)
-- T270 — GA4-månadsanalys blockerad (Owner-inloggning krävs)
+**Kanaler:**
 
-### Nästa öppna tickets
-- T001 — Read the entire Manifest sheet and confirm scope
-- T003 — Register company / sole proprietorship + apply for F-tax
-- T004 — Open business bank account
+- Paid Search: 61
+- Organic Search: 25
+- Direct: 6
+- Referral: 3
 
-### Ny ticket denna vecka
-- **T275** — stripe 23.0 major version upgrade ([#136](https://github.com/joju91/Efterplan/issues/136))
+## 🔍 GSC — Sidor på position 11–25 (90 dagar)
 
-### Kodfynd
-- Inga TODOs/FIXMEs i JS/HTML
-- ga4-dashboard npm audit: 0 sårbarheter
-- `auth-modal.html` saknar meta description → T274 (☐) sedan 2026-09-28
+| Pos | Klick | Visn | CTR | Sida |
+|-----|-------|------|-----|------|
+| 24.6 | 10 | 5848 | 0.2% | `/gravsten.html` |
+| 11.2 | 41 | 2075 | 2.0% | `/dodsannons.html` |
 
-### Webbhälsa (GitHub Actions)
-- weekly-health run #13 (2026-09-28, scheduled): ✅ success
-- weekly-health run #14 (2026-10-03, manuell): ✅ success
-- Uptime, broken links, Lighthouse CI: alla gröna vid senaste körning
+## 🟢 Uptime
+
+| Path | Status | Tid |
+|------|--------|-----|
+| `/` | 200 | 0.27s |
+| `/sambo-arv.html` | 200 | 0.42s |
+| `/efterlevandepension.html` | 200 | 0.10s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.09s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.13s |
+
+## 📊 Git-aktivitet
+
+- **15** commits, **70** filer ändrade
+
+### Commits
+
+- `26bf792 Veckorapport 2026-10-05: auto-tickets + status`
+- `364af52 T147: Supabase Storage-synk för Arkiv-dokument`
+- `7124096 Auto: uppdatera sitemap.xml (GitHub Actions)`
+- `435f820 T137: preliminär arvsfördelning i bouppteckningen (#131)`
+- `49cfb8a Juridiskt ansvar-ruta i bouppteckning + inga dubblett-issues från rapporterna (#130)`
+- `76eb51e Plocka in kvarvarande ändringar från gamla PR:er (#129)`
+- `2b575a9 Hälsokoll: verifiera att www/http omdirigeras permanent till https://efterplan.se (#128)`
+- `dafd021 Lägg till checkmail-skill som avmärker CC-trådar efter genomgång (#127)`
+- `d1a9a35 Ads-API: servernyckel + rätta SUPABASE_URL med /rest/v1 på slutet (#126)`
+- `5df01f1 ads-telemetry/ads-decisions: byt legacy-JWT mot publishable-nyckeln (#125)`
+- `bdd0bbf Keep-Alive: pinga en tabell med publishable-nyckeln (#124)`
+- `1c9df27 Add rel="noopener noreferrer" to external links in HTML files (#122)`
+- `df9be0f Auto: uppdatera sitemap.xml (GitHub Actions)`
+- `3ed28af Fix: knapparna på gratisverktygen gjorde ingenting (#123)`
+- `580165f Google Ads-rapport 2026-09-28 (auto, GitHub Actions)`
+
+## 🔧 Teknisk audit
+
+- **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
+- **Live-sajt:** 200 på 0.27s
+
+## 🗺️ Roadmap-status
+
+| Status | Antal |
+|--------|-------|
+| ✔ Klara | 224 |
+| ⧖ Pågår | 14 |
+| ☐ Ej startade | 36 |
+
