@@ -16,6 +16,94 @@ läsa tråden i sin helhet först.
 
 ---
 
+## 2026-10-05
+
+**Forum:** Flashback Forum (Ekonomi/Juridik)
+**Tråd:** [Vägra skriva på dödsbo (bouppteckning)](https://www.flashback.org/t620371)
+**Fråga:** En dödsbodelägare vägrar skriva under bouppteckningen/arvskiftet —
+bland annat i en diskuterad situation där en bostadsrätt ska säljas och en
+delägare tycker fördelningen är orättvis. Eftersom alla delägare normalt
+måste skriva under stoppar det hela processen.
+
+**Föreslaget svar:**
+> Om en delägare vägrar skriva på går det inte att tvinga fram en underskrift,
+> men det finns en väg framåt: ni kan ansöka hos tingsrätten om att få en
+> **boutredningsman** utsedd. Den personen (ofta en jurist) tar över
+> förvaltningen av dödsboet åt alla delägare och kan genomföra bouppteckning
+> och skifte även om någon inte går med på det frivilligt — i sista hand
+> genom tvångsskifte. Kostnaden tas ur dödsboets tillgångar.
+>
+> Innan ni går den vägen kan det vara värt att höra om det egentligen handlar
+> om bristande information snarare än ovilja — en förklaring av hur
+> värderingen gjorts löser ofta mer än man tror. Går det inte att enas är
+> boutredningsman den formella lösningen.
+
+---
+
+**Forum:** Familjeliv.se
+**Tråd:** [Bouppteckning och osämja?](https://www.familjeliv.se/forum/thread/62223055-bouppteckning-och-osamja)
+**Fråga:** Trådstartaren skriver om en väninna som är särkullbarn/bröstarvinge
+men hölls utanför av den nya familjen — fick inte veta om dödsfallet förrän
+två dagar innan begravningen, och riskerar att hållas utanför bouppteckningen
+också.
+
+**Föreslaget svar:**
+> Som bröstarvinge (barn till den avlidne, även särkullbarn) har din väninna
+> en lagstadgad rätt till sin del av arvet och rätt att kallas till och
+> närvara vid bouppteckningsförrättningen — det går inte att göra en giltig
+> bouppteckning och hoppa över en arvinge, Skatteverket har uppgifter om
+> vilka barn den avlidne hade.
+>
+> Om familjen inte hör av sig: hon kan själv kontakta Skatteverket och fråga
+> om en bouppteckning anmälts eller registrerats för dödsboet, och begära att
+> bli kallad. Går det inte att lösa i godo kan kommunens
+> konsumentrådgivning/juristbyråer med rättshjälp hjälpa till att driva
+> frågan. Bra att hon agerar innan bouppteckningen registreras — svårare att
+> rätta till efteråt.
+
+---
+
+**Forum:** Familjeliv.se
+**Tråd:** [Efter en bouppteckning är klar...](https://www.familjeliv.se/forum/thread/23500024-efter-en-bouppteckning-ar-klar)
+**Fråga:** Vad händer om en räkning dyker upp till dödsboet efter att
+bouppteckningen är klar och kontona stängda — måste arvingarna betala den
+själva?
+
+**Föreslaget svar:**
+> Om bouppteckningen var komplett och alla konton redan är avslutade och
+> arvet utskiftat ska ni normalt inte behöva skjuta till pengar själva för en
+> räkning som dykt upp efteråt — men om en borgenär kan visa att en skuld
+> missades i bouppteckningen kan de begära att den görs om, och då kan
+> utbetalt arv behöva återföras till boet för att täcka skulden innan ny
+> fördelning görs.
+>
+> Ett vanligt knep för att undvika det: vänta med att göra slutskiftet tills
+> ni är säkra på att inga fler räkningar är på väg (t.ex. kvarskatt), eller
+> håll kvar en liten summa på dödsboets konto som buffert ett par månader
+> innan ni delar ut sista slanten.
+
+---
+
+**Forum:** Familjeliv.se
+**Tråd:** [hämta saker ur dödsbo innan boupptecknin??](https://www.familjeliv.se/forum/thread/46454826-hamta-saker-ur-dodsbo-innan-boupptecknin)
+**Fråga:** Får dödsbodelägarna, om de är överens, ta ut saker ur dödsboet
+innan bouppteckningen är klar — till exempel för att "rädda" dem om boet har
+skulder och risk för utmätning?
+
+**Föreslaget svar:**
+> Nej, även om alla delägare är överens räknas allt som tillhörde den
+> avlidne som dödsboets egendom tills bouppteckningen är gjord, och det ska
+> finnas kvar och redovisas där. Att plocka ut saker i förväg — särskilt om
+> boet har skulder — kan räknas som undanskaffande av tillgångar och i värsta
+> fall bedrägeri mot borgenärerna.
+>
+> Undantaget är saker du kan visa med kvitto eller liknande att du själv
+> köpt och äger — då har de aldrig varit boets egendom och du får hämta dem,
+> men gör det öppet och med dödsbodelägarnas/boutredarens vetskap, och skriv
+> upp vad du tar. Allt annat väntar till bouppteckningen är registrerad.
+
+---
+
 ## 2026-09-07
 
 **Forum:** Flashback Forum (Ekonomi/Juridik)
