@@ -153,6 +153,8 @@ async function handlePremiumReturn() {
       const kr = typeof data.amount_total === 'number' ? data.amount_total / 100 : 49;
       adsConversion(ADS_LABEL_PURCHASE, { value: kr, transactionId: sessionId });
       showToast('Tack! Premium är upplåst på den här enheten.', 'success');
+      // Visa breven direkt — även för den som kom via ett gratisverktyg utan sparad plan.
+      if (typeof openDocsDirect === 'function') openDocsDirect();
     } else {
       showToast('Vi kunde inte bekräfta betalningen direkt. Försök ladda om sidan om en stund.', 'error');
     }
@@ -3485,12 +3487,34 @@ async function handlePaywallCTA() {
   }
 }
 
+// ─── DIREKTLÄNK TILL DOKUMENT ─────────────────
+// ?doc=bank m.fl. från gratisverktygen öppnar Dokument-fliken direkt, utan att
+// besökaren först måste gå igenom onboardingen. Breven fungerar utan plan.
+const DIRECT_DOC_TYPES = ['bank', 'skatteverket', 'fullmakt', 'forsakring', 'letter', 'bulk', 'annons'];
+
+function openDocsDirect(type) {
+  showScreen('screen-plan');
+  switchTab('docs');
+  if (type && DIRECT_DOC_TYPES.includes(type)) showDocForm(type);
+}
+
+function takeDirectDocParam() {
+  const params = new URLSearchParams(window.location.search);
+  const doc = params.get('doc');
+  if (!doc || !DIRECT_DOC_TYPES.includes(doc)) return null;
+  params.delete('doc');
+  const qs = params.toString();
+  history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+  return doc;
+}
+
 // ─── INIT ─────────────────────────────────────
 (async function init() {
   // T177: en delad länk (?shared=...#k=...) vinner alltid över lokalt sparad state.
   if (await tryRenderSharedView()) return;
 
   initSenderAddressFields(); // oberoende av vilken gren nedan som körs — bara localStorage-återställning
+  const directDoc = takeDirectDocParam();
   // Restore own plan from localStorage
   try {
     const saved = localStorage.getItem('efterplan_state');
@@ -3504,9 +3528,12 @@ async function handlePaywallCTA() {
       loadDocuments();
       renderPlan();
       showScreen('screen-plan');
+      if (directDoc) openDocsDirect(directDoc);
       return;
     }
   } catch(e) {}
+
+  if (directDoc) { openDocsDirect(directDoc); return; }
 
   // PWA shortcut: ./#start forces onboarding even on revisit
   if (window.location.hash === '#start') {
