@@ -52,6 +52,21 @@ const rows = (res.data.rows || [])
   .sort((a, b) => b.clicks - a.clicks)
   .slice(0, 20);
 
+// Sökord per sida — visar vad varje sida faktiskt syns på, så titlar/innehåll
+// kan riktas mot verkliga sökningar i stället för gissningar.
+const qRes = await sc.searchanalytics.query({
+  siteUrl: SITE,
+  requestBody: { startDate, endDate, dimensions: ['page', 'query'], rowLimit: 1000 },
+});
+const qRows = (qRes.data.rows || []).sort((a, b) => b.impressions - a.impressions).slice(0, 60);
+console.log(`\n═══ efterplan.se — Topp 60 sökord efter visningar (${startDate} → ${endDate}) ═══\n`);
+console.log('Pos'.padEnd(7) + 'Klick'.padEnd(8) + 'Vis'.padEnd(10) + 'Sida'.padEnd(36) + 'Sökord');
+console.log('─'.repeat(90));
+for (const r of qRows) {
+  const url = r.keys[0].replace('https://efterplan.se/', '/');
+  console.log(r.position.toFixed(1).padEnd(7) + String(r.clicks).padEnd(8) + String(r.impressions).padEnd(10) + url.padEnd(36) + r.keys[1]);
+}
+
 if (!rows.length) {
   console.log('Inga sidor på position 11–25 hittades under perioden.');
   process.exit(0);
