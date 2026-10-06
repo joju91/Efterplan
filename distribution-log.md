@@ -1,5 +1,10 @@
 # Efterplan — Community distribution log
 
+> **BESLUT (Jonas, 2026-10-06) — gäller permanent, ta inte upp igen:**
+> - **Svenska kyrkan:** har tackat nej (decentraliserad organisation). Kontakta inte igen, föreslå inte uppföljning.
+> - **Rika Tillsammans:** ingen mejl-outreach. Använd i stället deras forum (rikatillsammans.se/forum) för trådsvar.
+
+
 Loggar organisk distribution körd av `community-distributor`-skillen. Ingen kanal är MCP-kopplad ännu — Jonas postar manuellt efter godkännande, Claude loggar här.
 
 | Datum | Kanal | Produkt | Typ | Status | Engagemang |
@@ -45,9 +50,9 @@ verifierbara färska Flashback/Reddit-trådar. Nya texter i
 | 2026-09-25 | LinkedIn | Eget inlägg | Utkast klart, väntar på manuell postning |
 | 2026-09-25 | Flashback (Juridik/Ekonomi) | Nytt ämne | Utkast klart, väntar på manuell postning |
 | 2026-09-25 | Råd & Rön | Uppföljningsmejl | Utkast klart, inget svar sedan aug |
-| 2026-09-25 | Svenska kyrkan | Uppföljningsmejl | Utkast klart, inget svar sedan aug |
+| 2026-09-25 | Svenska kyrkan | Uppföljningsmejl | Avslutat — tackat nej (2026-10-06) |
 | 2026-09-25 | Anhörigas Riksförbund | Ny outreach | Utkast klart, ej skickat |
-| 2026-09-25 | Rika Tillsammans | Ny outreach | Utkast klart, ej skickat |
+| 2026-09-25 | Rika Tillsammans | Ny outreach | Struken — forum i stället (2026-10-06) |
 
 ## Outreach-uppföljning 2026-08-15
 

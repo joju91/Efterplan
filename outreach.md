@@ -1,12 +1,17 @@
 # Outreach-mejl — efterplan.se
 
+> **BESLUT (Jonas, 2026-10-06) — gäller permanent, ta inte upp igen:**
+> - **Svenska kyrkan:** har tackat nej (decentraliserad organisation). Kontakta inte igen, föreslå inte uppföljning.
+> - **Rika Tillsammans:** ingen mejl-outreach. Använd i stället deras forum (rikatillsammans.se/forum) för trådsvar.
+
+
 ## Status (verifierad mot Gmail-etiketten Arbete/Efterplan, 2026-08-14)
 
 | Mål | Status | Datum | Not |
 |---|---|---|---|
 | sorg.se | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
 | SPES | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
-| Svenska kyrkan | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
+| Svenska kyrkan | ✔ Skickat | 12 apr | Tackat nej (decentraliserat) — kontakta ej igen |
 | 1177.se | ✔ Skickat | — | **Nej** |
 | Aftonbladet | Okänt | — | Ej verifierat, lämnas okänt |
 | Råd & Rön | ✔ Skickat | 12 apr | Ingen bekräftad respons ännu |
