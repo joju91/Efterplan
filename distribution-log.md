@@ -96,3 +96,7 @@ Utkast i `community-svar-2026-10-06.md` och `community-svar-rikatillsammans-2026
 | 2026-10-06 | Familjeliv | [82052508 Ta över dödsbo utan att diskutera](https://www.familjeliv.se/forum/thread/82052508-far-man-ta-over-ett-dodsbo-utan-att-ens-diskutera-med-den-andra-arvingen) | Utkast klar — väntar på manuell postning |
 | 2026-10-06 | Familjeliv | [81712799 Banken har spärrat kontot](https://www.familjeliv.se/forum/thread/81712799-banken-har-sparrat-kontot) | Utkast klar — väntar på manuell postning |
 | 2026-10-06 | Familjeliv | [82411676 Kompisens sambo död, huset](https://www.familjeliv.se/forum/thread/82411676-kompisens-sambo-dod-vad-hander-med-huset/4) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Rika Tillsammans | [Problem med bouppteckning](https://rikatillsammans.se/forum/t/problem-med-bouppteckning-vad-galler/56180) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Rika Tillsammans | [Värde på byggnad vid bouppteckning](https://rikatillsammans.se/forum/t/varde-pa-byggnad-vid-bouppteckning/99762) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Rika Tillsammans | [Prisvärd hjälp med bouppteckning](https://rikatillsammans.se/forum/t/prisvard-hjalp-med-dodsbouppteckning-och-ev-bodelning/41446) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Rika Tillsammans | [Testamentera allt till sambo](https://rikatillsammans.se/forum/t/testamentera-bort-allt-till-sambo-hur-skriva/79306) | Utkast klar — väntar på manuell postning |

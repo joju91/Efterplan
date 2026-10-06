@@ -94,8 +94,6 @@ redan har fått ett tydligt svar, och hänvisa vidare.*
 > Börja med att begära ut dödsboanmälan från Skatteverket så ni ser vad
 > som faktiskt registrerades. Är det stora värden inblandade är det här en
 > fråga där det lönar sig att låta en familjejurist räkna på det.
-</content>
-</invoke>
 
 ---
 

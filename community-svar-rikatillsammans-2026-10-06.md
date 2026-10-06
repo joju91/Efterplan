@@ -79,5 +79,63 @@ så svara bara om det finns något att tillföra.*
 > ska med i bouppteckningen, ta in två–tre offerter (många drar av värdet
 > på det de kan sälja vidare), och betala från dödsboets konto så att
 > kostnaden hamnar rätt.
-</content>
-</invoke>
+
+---
+
+## 6. Problem med bouppteckning. Vad gäller?
+https://rikatillsammans.se/forum/t/problem-med-bouppteckning-vad-galler/56180
+*Exakt problem okänt — läs tråden först. Svaret täcker det vanligaste
+missförståndet.*
+
+> En sak många inte vet: alla dödsbodelägare behöver inte skriva under
+> bouppteckningen. Det räcker att bouppgivaren (den som bäst känner till
+> boet) och två förrättningspersoner skriver under. Delägarna ska kallas
+> och har rätt att vara med, men en delägare som vägrar eller inte dyker
+> upp kan inte stoppa bouppteckningen.
+>
+> Det är arvskiftet som kräver allas underskrift — inte bouppteckningen.
+> Hinner ni inte inom tre månader kan ni begära anstånd hos Skatteverket
+> innan fristen går ut.
+
+## 7. Värde på byggnad vid bouppteckning?
+https://rikatillsammans.se/forum/t/varde-pa-byggnad-vid-bouppteckning/99762
+*Juridik-kategorin, relativt högt tråd-ID.*
+
+> För en fastighet är det vanligt att ange taxeringsvärdet i
+> bouppteckningen. Har byggnaden inget eget taxeringsvärde, till exempel
+> en stuga på arrenderad mark, anger man ett uppskattat marknadsvärde —
+> en mäklarvärdering är bra underlag.
+>
+> Värdet i bouppteckningen påverkar inte skatten om ni säljer senare. Då
+> räknas vinsten från det den avlidne en gång betalade. Däremot kan värdet
+> spela roll när ni fördelar arvet mellan er, så det är klokt att vara
+> överens om det.
+
+## 8. Prisvärd hjälp med dödsbouppteckning och ev bodelning
+https://rikatillsammans.se/forum/t/prisvard-hjalp-med-dodsbouppteckning-och-ev-bodelning/41446
+*Äldre tråd — svara bara om den har nyare inlägg.*
+
+> Ett enkelt dödsbo går bra att göra själv: Skatteverkets blankett,
+> värdebesked per dödsdagen från banken, två förrättningspersoner som inte
+> själva är delägare, och sedan skicka in originalet. Det kostar ingenting.
+>
+> Om den avlidne var gift ska bodelningen göras först, och då kan det
+> vara värt att ta hjälp — särskilt om det finns fastighet, särkullbarn
+> eller testamente.
+>
+> Jag har byggt en gratis checklista som går igenom ordningen steg för steg,
+> om det hjälper: https://efterplan.se
+
+## 9. Testamentera bort allt till sambo, hur skriva?
+https://rikatillsammans.se/forum/t/testamentera-bort-allt-till-sambo-hur-skriva/79306
+*Planeringsfråga, inte dödsbo — ingen länk.*
+
+> Det viktigaste är formkraven: testamentet ska vara skriftligt och
+> undertecknat, och två vittnen ska vara närvarande samtidigt och skriva
+> under. Vittnena får inte vara din sambo eller någon annan som ärver
+> enligt testamentet, och inte nära släkt till dem.
+>
+> Har du barn kan du inte testamentera bort deras laglott — hälften av det
+> de annars skulle ärva. Utan barn kan du testamentera allt till sambon.
+> Förvara originalet säkert, till exempel i ett testamentsregister hos en
+> begravningsbyrå eller jurist.
