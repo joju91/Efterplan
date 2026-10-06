@@ -53,7 +53,7 @@ Hittade aktiva/relevanta trådar via WebSearch. Kan ej läsa full tråd (sandbox
 **Utkast:**
 > Kortsvar: det finns inga genvägar men det finns en bra ordning att köra.
 >
-> **Inom 1 vecka:** Kontakta bank (frys konton), ta hand om post, säg upp löpande abonnemang som kostar pengar (streaming, gym, tidning), dödsbevis från begravningsbyrå.
+> **Inom 1 vecka:** Kontakta bank (frys konton), ta hand om post, säg upp löpande abonnemang som kostar pengar (streaming, gym, tidning), beställ dödsfallsintyg med släktutredning från Skatteverket.
 >
 > **Inom 3 månader:** Bouppteckning måste hållas (och skickas till Skatteverket inom ytterligare en månad). OBS: sedan 1 juli 2026 behövs ingen bestyrkt kopia längre (SFS 2026:251) — men man skickar fortfarande per post; Skatteverkets e-tjänst för digital inlämning öppnar inte förrän 2027.
 >
@@ -71,7 +71,7 @@ Hittade aktiva/relevanta trådar via WebSearch. Kan ej läsa full tråd (sandbox
 >
 > - **Vem ansvarar:** alla dödsbodelägare ansvarar gemensamt för förvaltningen
 > - **Vem ärver:** make/maka, sedan barn (särkullbarn direkt, gemensamma barn efter att efterlevande make/maka fått leva av boet); vid testamente styr testamentet
-> - **Tidsfrister:** bouppteckning ska vara klar inom 4 månader, anmäld till Skatteverket senast en månad efter förrättningen
+> - **Tidsfrister:** bouppteckningen ska förrättas inom 3 månader från dödsfallet och lämnas in till Skatteverket senast en månad efter förrättningen
 >
 > https://efterplan.se har gratis steg-för-steg-guide med brev och checklistor om det hjälper.
 
@@ -85,13 +85,13 @@ Hittade aktiva/relevanta trådar via WebSearch. Kan ej läsa full tråd (sandbox
 **Utkast:**
 > Det är mycket att hålla reda på direkt efter ett dödsfall. Enklaste vägen:
 >
-> Börja med att skaffa dödsbevis (begravningsbyrån hjälper) och dödfallsintyg (inkl. släktutredning) från Skatteverket — de visar vem som är dödsbodelägare.
+> Börja med att beställa dödsfallsintyg med släktutredning från Skatteverket — de visar vem som är dödsbodelägare.
 >
 > Sen är det bra att hålla en lista på vad som ska göras:
 > - Kontakta alla banker (frys konton, ta reda på saldon per dödsdagen)
 > - Säg upp abonnemang och hyresavtal i tid
 > - Inventera försäkringar (begravningsförsäkring? livförsäkring?)
-> - Bouppteckning inom 3 mån (kan nu skickas digitalt till Skatteverket sedan juli 2026)
+> - Bouppteckning inom 3 mån (skickas fortfarande på papper — Skatteverkets e-tjänst öppnar tidigast 2027)
 >
 > Det finns en gratis checklista och guide på https://efterplan.se som listar allt i ordning och genererar färdiga brev till bank och myndigheter. Har hjälpt många i exakt den här situationen.
 
@@ -152,11 +152,11 @@ Hittade aktiva/relevanta trådar via WebSearch. Kan ej läsa full tråd (sandbox
 > Det går utmärkt att göra själv. Sedan 1 juli 2026 behöver ni inte längre skicka med en bestyrkt kopia (SFS 2026:251) — skickar fortfarande per post men enklare. Skatteverkets e-tjänst för helt digital inlämning beräknas öppna 2027.
 >
 > Stegen:
-> 1. Utse en *förrättningsman* (kan vara en av arvingarna, behöver ingen utbildning)
-> 2. Kalla alla dödsbodelägare + dödsbodelägares make/sambo i god tid (minst 2 veckor)
+> 1. Utse två *förrättningspersoner* — kunniga och trovärdiga personer som inte själva är dödsbodelägare (vänner eller bekanta går bra)
+> 2. Kalla alla dödsbodelägare, efterarvingar och eventuella testamentstagare i god tid — sedan juli 2026 ska personnummer anges för alla som kallas
 > 3. Samla in alla uppgifter: bankutdrag per dödsdagen, fastighetsvärde (taxeringsvärde), skulder, försäkringar
 > 4. Fyll i Skatteverkets blankett eller skriv i fritext enligt 20 kap ÄB
-> 5. Alla delägare undertecknar (eller bekräftar digitalt — om Skatteverket hunnit öppna e-tjänsten)
+> 5. Bouppgivaren (den som bäst känner till boet) och båda förrättningspersonerna skriver under
 > 6. Skicka till Skatteverket inom en månad efter förrättningsdatumet
 >
 > https://efterplan.se har gratis bouppteckningsguide och genererar en sammanställning automatiskt baserat på era svar.
