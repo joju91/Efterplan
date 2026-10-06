@@ -93,3 +93,4 @@ Utkast i `community-svar-2026-10-06.md` och `community-svar-rikatillsammans-2026
 | 2026-10-06 | Familjeliv | [80273226 Efterarv efter dödsboanmälan](https://www.familjeliv.se/forum/thread/80273226-efterarv-efter-dodsboanmalan/3) | Utkast klar — väntar på manuell postning |
 | 2026-10-06 | Rika Tillsammans | [Sälja fonder i ett dödsbo](https://rikatillsammans.se/forum/t/salja-fonder-i-ett-dodsbo/71874) | Utkast klar — väntar på manuell postning |
 | 2026-10-06 | Rika Tillsammans | [Arv fonder/aktier](https://rikatillsammans.se/forum/t/arv-fonder-aktier/79499) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Familjeliv | [82052508 Ta över dödsbo utan att diskutera](https://www.familjeliv.se/forum/thread/82052508-far-man-ta-over-ett-dodsbo-utan-att-ens-diskutera-med-den-andra-arvingen) | Utkast klar — väntar på manuell postning |

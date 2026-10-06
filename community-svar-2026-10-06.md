@@ -96,3 +96,27 @@ redan har fått ett tydligt svar, och hänvisa vidare.*
 > fråga där det lönar sig att låta en familjejurist räkna på det.
 </content>
 </invoke>
+
+---
+
+## 6. Familjeliv — "Får man ta över ett dödsbo utan att ens diskutera med den andra arvingen?"
+https://www.familjeliv.se/forum/thread/82052508-far-man-ta-over-ett-dodsbo-utan-att-ens-diskutera-med-den-andra-arvingen
+*Högt tråd-ID → sannolikt färsk. En arvinge verkar ha tagit över dödsboet på egen hand.*
+
+> Nej. Dödsbodelägarna förvaltar dödsboet tillsammans, och ingen av er får
+> på egen hand sälja, flytta eller ta saker ur boet utan att den andra går
+> med på det. Det gäller även om den ena bor närmast eller "alltid skött
+> allt".
+>
+> Det du kan göra:
+> 1. Be om att få bli kallad till bouppteckningen — du har rätt att vara med,
+>    och allt som fanns på dödsdagen ska tas upp där, även sådant som redan
+>    har flyttats.
+> 2. Be banken om besked på vilka konton som finns och vem som har
+>    fullmakt. Som dödsbodelägare har du rätt att få veta.
+> 3. Kommer ni inte överens kan vem som helst av er ansöka hos tingsrätten
+>    om en boutredningsman, som tar över förvaltningen åt er båda.
+>    Kostnaden tas ur dödsboet.
+>
+> Ofta räcker det att skriftligt och sakligt påpeka att allt ska göras
+> gemensamt — många vet helt enkelt inte om det.
