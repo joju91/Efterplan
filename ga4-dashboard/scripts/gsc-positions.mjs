@@ -85,6 +85,19 @@ for (const r of rows) {
   console.log(`${pos}${clk}${imp}${ctr} ${url}`);
 }
 
+// Topp-sökord för just dessa sidor — de ligger närmast första sidan.
+for (const r of rows) {
+  const page = r.keys[0];
+  const pq = (qRes.data.rows || [])
+    .filter(q => q.keys[0] === page)
+    .sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions)
+    .slice(0, 20);
+  console.log(`\n── Sökord för ${page.replace('https://efterplan.se/', '/')} ──`);
+  for (const q of pq) {
+    console.log(q.position.toFixed(1).padEnd(7) + String(q.clicks).padEnd(8) + String(q.impressions).padEnd(10) + q.keys[1]);
+  }
+}
+
 console.log('\n💡 Optimera dessa sidor:');
 console.log('   1. Flytta upp keywordet till <title>, <h1> och första stycket');
 console.log('   2. Gör sidan bättre än de 3 länkarna ovanför dig');
