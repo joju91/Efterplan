@@ -2808,6 +2808,13 @@ body {
   transition: text-decoration-color .15s ease;
 }
 .seo-article a:hover { text-decoration-color: var(--ember); }
+/* Knapplänkar i artikeln ska behålla knappens färger — utan detta vinner
+   .seo-article a (högre specificitet) och texten blir grön på grön bakgrund. */
+.seo-article a.btn-primary,
+.seo-article a.btn-primary:hover {
+  color: var(--paper);
+  text-decoration: none;
+}
 
 .seo-article ul, .seo-article ol {
   padding-left: 0;
@@ -2894,6 +2901,15 @@ body {
 .seo-cta .btn-primary {
   width: auto;
   padding: 12px 22px;
+}
+/* Liten not under knappen (t.ex. pris) — inte i CTA-rubrikens kursiva stil. */
+.seo-cta .btn-primary + p {
+  margin: var(--space-sm) 0 0;
+  font-family: var(--font);
+  font-variation-settings: normal;
+  font-style: normal;
+  font-size: var(--fs-sm);
+  color: var(--ink-muted);
 }
 
 .seo-footer {
