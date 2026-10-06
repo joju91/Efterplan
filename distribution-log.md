@@ -81,3 +81,15 @@ verifierbara färska Flashback/Reddit-trådar. Nya texter i
 | Efterlevandeguiden | — | Uteslutet | Drivs av Pensionsmyndigheten/Skatteverket/Försäkringskassan — fel typ av mål |
 | Kommuners anhörigstöd | — | Uteslutet | Ingen central kontakt, utspritt per stadsdel/kommun — för lågt hävstång per ansträngning |
 | Fenix begravning | — | Uteslutet | Tungt digitaliserad byrå (10 Mkr finansiering), trolig konkurrensrisk, ej säkert avfärdad |
+
+## 2026-10-06 — trådsvar Familjeliv + Rika Tillsammans
+
+Utkast i `community-svar-2026-10-06.md` och `community-svar-rikatillsammans-2026-10-06.md`. Trådarna är inte lästa i sin helhet (forumen blockerade i molnmiljön).
+
+| Datum | Forum | Tråd | Status |
+|-------|-------|------|--------|
+| 2026-10-06 | Familjeliv | [83115739 Utbetalning vid arvsskifte](https://www.familjeliv.se/forum/thread/83115739-utbetalning-vid-arvsskifte) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Familjeliv | [75278037 Utan syskon när föräldrarna går bort](https://www.familjeliv.se/forum/thread/75278037-utan-syskon-den-dagen-mina-foraldrar-gar-bort) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Familjeliv | [80273226 Efterarv efter dödsboanmälan](https://www.familjeliv.se/forum/thread/80273226-efterarv-efter-dodsboanmalan/3) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Rika Tillsammans | [Sälja fonder i ett dödsbo](https://rikatillsammans.se/forum/t/salja-fonder-i-ett-dodsbo/71874) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Rika Tillsammans | [Arv fonder/aktier](https://rikatillsammans.se/forum/t/arv-fonder-aktier/79499) | Utkast klar — väntar på manuell postning |
