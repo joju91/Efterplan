@@ -120,3 +120,47 @@ https://www.familjeliv.se/forum/thread/82052508-far-man-ta-over-ett-dodsbo-utan-
 >
 > Ofta räcker det att skriftligt och sakligt påpeka att allt ska göras
 > gemensamt — många vet helt enkelt inte om det.
+
+---
+
+## 7. Familjeliv — "Banken har spärrat kontot"
+https://www.familjeliv.se/forum/thread/81712799-banken-har-sparrat-kontot
+*Ålder okänd — kolla datum på senaste inlägget innan du svarar.*
+
+> Det är normalt — banken spärrar kontot när den får veta om dödsfallet,
+> ofta automatiskt via Skatteverket. Kort, BankID och Swish slutar fungera,
+> men pengarna finns kvar.
+>
+> Begravningen och löpande räkningar som hyra, el och försäkring kan
+> oftast betalas från kontot ändå. Ring banken och fråga hur de vill ha
+> det — de brukar vilja se dödsfallsintyg med släktutredning från
+> Skatteverket, och ibland en fullmakt från alla dödsbodelägare. Skicka
+> fakturorna till banken eller betala via dödsboets ombud.
+>
+> Resten av pengarna friges när bouppteckningen är registrerad. Betala
+> helst inte ur egen ficka under tiden, och spara kvitton om du gör det.
+
+---
+
+## 8. Familjeliv — "Kompisens sambo död, vad händer med huset?"
+https://www.familjeliv.se/forum/thread/82411676-kompisens-sambo-dod-vad-hander-med-huset/4
+*Enligt sökutdraget startad maj 2023, men minst fyra sidor — svara bara om
+tråden fortfarande är aktiv. Svaret är också användbart för den som läser i efterhand.*
+
+> Det viktigaste för din kompis just nu: en sambo ärver inte, men har rätt
+> att begära **bodelning** av samboegendomen — gemensam bostad och bohag
+> som skaffats för att bo tillsammans. Begäran måste göras **senast när
+> bouppteckningen förrättas**, annars försvinner rätten. Säg till
+> skriftligt i god tid.
+>
+> Vid bodelningen har den efterlevande sambon dessutom rätt att få ut
+> minst två prisbasbelopp ur samboegendomen, om det finns så mycket.
+>
+> Om huset bara stod på den avlidne och det inte fanns testamente ärver
+> barnen. Är barnen minderåriga kopplas överförmyndaren in för deras arv,
+> och den som företräder barnen kan behöva vara någon annan än din kompis
+> om hens egna intressen krockar med barnens. Barnen kan också ha rätt
+> till barnpension från Pensionsmyndigheten.
+>
+> Med ett hus och minderåriga barn är det värt att ta hjälp av en
+> familjejurist, men bodelningsbegäran kan hen skicka själv redan nu.

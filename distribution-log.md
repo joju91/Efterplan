@@ -94,3 +94,5 @@ Utkast i `community-svar-2026-10-06.md` och `community-svar-rikatillsammans-2026
 | 2026-10-06 | Rika Tillsammans | [Sälja fonder i ett dödsbo](https://rikatillsammans.se/forum/t/salja-fonder-i-ett-dodsbo/71874) | Utkast klar — väntar på manuell postning |
 | 2026-10-06 | Rika Tillsammans | [Arv fonder/aktier](https://rikatillsammans.se/forum/t/arv-fonder-aktier/79499) | Utkast klar — väntar på manuell postning |
 | 2026-10-06 | Familjeliv | [82052508 Ta över dödsbo utan att diskutera](https://www.familjeliv.se/forum/thread/82052508-far-man-ta-over-ett-dodsbo-utan-att-ens-diskutera-med-den-andra-arvingen) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Familjeliv | [81712799 Banken har spärrat kontot](https://www.familjeliv.se/forum/thread/81712799-banken-har-sparrat-kontot) | Utkast klar — väntar på manuell postning |
+| 2026-10-06 | Familjeliv | [82411676 Kompisens sambo död, huset](https://www.familjeliv.se/forum/thread/82411676-kompisens-sambo-dod-vad-hander-med-huset/4) | Utkast klar — väntar på manuell postning |
