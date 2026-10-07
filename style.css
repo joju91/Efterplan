@@ -1,32 +1,32 @@
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   EFTERPLAN â€” Stylesheet
-   Tone: Warm, trustworthy, clear â€” Swedish editorial
+/* ═══════════════════════════════════════════
+   EFTERPLAN — Stylesheet
+   Tone: Warm, trustworthy, clear — Swedish editorial
    T088: Frontend-uppgradering (design polish, non-generic)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 
 
 :root {
-  /* â”€â”€ Paper & ink (warm, oklch-derived) â”€â”€ */
+  /* ── Paper & ink (warm, oklch-derived) ── */
   --paper:        #F6F1E7;  /* warm off-white, like uncoated book stock */
   --paper-soft:   #EFE8D8;  /* slightly deeper tone for section backs */
   --paper-card:   #FBF7EE;  /* softest card surface, not pure white */
-  --ink:          #14192B;  /* deep warm ink â€” not pure black */
+  --ink:          #14192B;  /* deep warm ink — not pure black */
   --ink-soft:     #394156;  /* body-emphasis / sub */
-  --ink-muted:    #485063;  /* meta, captions â€” 7.17:1 on paper, passes AAA */
+  --ink-muted:    #485063;  /* meta, captions — 7.17:1 on paper, passes AAA */
   --rule:         #E3DCCB;  /* warm border, tinted toward paper */
   --rule-strong:  #CFC6B1;
 
-  /* â”€â”€ Primary accent: deep ink-teal (trustworthy, pÃ¥litlig) â”€â”€ */
+  /* ── Primary accent: deep ink-teal (trustworthy, pålitlig) ── */
   --ink-teal:     #1F3A4E;
   --ink-teal-dk:  #142739;
   --ink-teal-tn:  #E7EEF2;  /* tinted surface, 8% */
 
-  /* â”€â”€ Secondary accent: burnished terracotta (warm, human) â”€â”€ */
+  /* ── Secondary accent: burnished terracotta (warm, human) ── */
   --ember:        #B4552E;
   --ember-dk:     #8E3F1E;
   --ember-tn:     #F5E7DE;
 
-  /* â”€â”€ Legacy mappings (do not remove â€” used throughout app) â”€â”€ */
+  /* ── Legacy mappings (do not remove — used throughout app) ── */
   --bg:           var(--paper);
   --bg-card:      var(--paper-card);
   --text-primary: var(--ink);
@@ -54,12 +54,12 @@
   --shadow-sm:    0 1px 2px rgba(20,25,43,.05);
   --transition:   0.2s ease;
 
-  /* â”€â”€ Typography: distinctive display + humanist body â”€â”€ */
+  /* ── Typography: distinctive display + humanist body ── */
   --font-display: 'Fraunces', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
   --font:         'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* â”€â”€ Fluid type scale (mobile â†’ desktop) â”€â”€ */
+  /* ── Fluid type scale (mobile → desktop) ── */
   --fs-xs:    clamp(0.75rem, 0.73rem + 0.08vw, 0.8rem);
   --fs-sm:    clamp(0.875rem, 0.85rem + 0.12vw, 0.95rem);
   --fs-base:  clamp(1rem, 0.97rem + 0.15vw, 1.08rem);
@@ -69,7 +69,7 @@
   --fs-2xl:   clamp(1.95rem, 1.6rem + 1.6vw, 2.85rem);
   --fs-3xl:   clamp(2.4rem, 1.9rem + 2.5vw, 4rem);
 
-  /* â”€â”€ Fluid spacing (8-based, breathing on larger screens) â”€â”€ */
+  /* ── Fluid spacing (8-based, breathing on larger screens) ── */
   --space-2xs: clamp(0.25rem, 0.22rem + 0.12vw, 0.35rem);
   --space-xs:  clamp(0.5rem,  0.45rem + 0.2vw,  0.7rem);
   --space-sm:  clamp(0.75rem, 0.65rem + 0.4vw,  1.05rem);
@@ -85,13 +85,13 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Global .hidden â€” vissa komponenter (auth-vyn, rÃ¤kningsformulÃ¤ret) saknade
-   egen scoped .hidden-regel och renderades trots klassen. En regel fÃ¶r alla.
+/* Global .hidden — vissa komponenter (auth-vyn, räkningsformuläret) saknade
+   egen scoped .hidden-regel och renderades trots klassen. En regel för alla.
    Komponentspecifika `.x.hidden { display: block !important }` (t.ex. print)
-   har hÃ¶gre specificitet och vinner fortfarande. */
+   har högre specificitet och vinner fortfarande. */
 .hidden { display: none !important; }
 
-/* SkÃ¤rmlÃ¤sar-only (anvÃ¤nds av bl.a. inloggnings-formulÃ¤rets etikett) */
+/* Skärmläsar-only (används av bl.a. inloggnings-formulärets etikett) */
 .sr-only {
   position: absolute;
   width: 1px; height: 1px;
@@ -102,7 +102,7 @@
   border: 0;
 }
 
-/* â”€â”€â”€ SKIP LINK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── SKIP LINK ──────────────────────────────── */
 .skip-link {
   position: absolute;
   top: -100%;
@@ -119,9 +119,9 @@
 }
 .skip-link:focus { top: 0; }
 
-/* â”€â”€â”€ FOCUS STYLES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-/* En enda fokusregel fÃ¶r hela sajten. Konsumerar --focus-ring
-   (djup sage, ~7.6:1 mot papper). Ã„ndra tokenet i style-tokens.css. */
+/* ─── FOCUS STYLES ──────────────────────────── */
+/* En enda fokusregel för hela sajten. Konsumerar --focus-ring
+   (djup sage, ~7.6:1 mot papper). Ändra tokenet i style-tokens.css. */
 :focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
@@ -131,7 +131,7 @@
 body {
   font-family: var(--font);
   font-feature-settings: 'ss01', 'ss03', 'cv11';
-  /* Warm paper base with two very soft radial tints â€” depth without noise.
+  /* Warm paper base with two very soft radial tints — depth without noise.
      Painted on body background so stacking of sticky/fixed children is untouched. */
   background-color: var(--paper);
   background-image:
@@ -152,12 +152,12 @@ body {
   color: var(--paper);
 }
 
-/* â”€â”€â”€ SCREENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── SCREENS ──────────────────────────────── */
 .screen { display: none; }
 .screen.active { display: block; }
 .screen.active#screen-onboarding { display: flex; }
 
-/* â”€â”€â”€ NAV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── NAV ───────────────────────────────────── */
 .nav {
   display: flex;
   align-items: center;
@@ -202,7 +202,7 @@ body {
   gap: 8px;
 }
 
-/* â”€â”€â”€ BUTTONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── BUTTONS ────────────────────────────────── */
 .btn-primary {
   background: var(--ink-teal);
   color: var(--paper);
@@ -240,8 +240,8 @@ body {
   border-radius: 8px;
 }
 
-/* SekundÃ¤r vÃ¤g fÃ¶r Ã¥tervÃ¤ndande besÃ¶kare med sparad plan.
-   #id fÃ¶r att vinna Ã¶ver .btn-ghost { width: 100% } lÃ¤ngre ned. */
+/* Sekundär väg för återvändande besökare med sparad plan.
+   #id för att vinna över .btn-ghost { width: 100% } längre ned. */
 #landing-continue.landing-continue {
   width: auto;
   margin-top: var(--space-sm);
@@ -282,7 +282,7 @@ body {
 }
 .back-btn:hover { color: var(--text-primary); }
 
-/* â”€â”€â”€ NAV LANDING LINKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── NAV LANDING LINKS ──────────────────────── */
 .nav-landing-links {
   display: flex;
   gap: 20px;
@@ -294,7 +294,7 @@ body {
   text-decoration: none;
   font-weight: 500;
   transition: color 0.15s;
-  /* T160: WCAG 2.5.8 â€” 44x44px klickyta utan att rubba den visuella positionen */
+  /* T160: WCAG 2.5.8 — 44x44px klickyta utan att rubba den visuella positionen */
   display: inline-flex;
   align-items: center;
   padding: 13px 8px;
@@ -302,15 +302,15 @@ body {
 }
 .nav-text-link:hover { color: var(--text-primary); }
 
-/* â”€â”€â”€ NAV PLAN ACTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── NAV PLAN ACTIONS ───────────────────────── */
 .nav-plan-actions {
   display: flex;
   gap: 8px;
   align-items: center;
 }
-/* â”€â”€â”€ LANDING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-/* Sticky nav mÃ¥ste ha solid yta â€” annars glider brÃ¶dtext under
-   ordmÃ¤rket vid scroll (olÃ¤sbart). Matchar .seo-nav pÃ¥ innehÃ¥llssidorna. */
+/* ─── LANDING ────────────────────────────────── */
+/* Sticky nav måste ha solid yta — annars glider brödtext under
+   ordmärket vid scroll (oläsbart). Matchar .seo-nav på innehållssidorna. */
 #screen-landing .nav {
   background: var(--paper);
   border-bottom: 1px solid var(--rule);
@@ -323,7 +323,7 @@ body {
   background: transparent;
   position: relative;
 }
-/* Editorial ornament â€” asymmetric rule, purposeful (not decorative filler) */
+/* Editorial ornament — asymmetric rule, purposeful (not decorative filler) */
 .landing-hero::after {
   content: '';
   position: absolute;
@@ -457,7 +457,7 @@ body {
   .landing-headline { max-width: 16ch; }
 }
 
-/* â”€â”€â”€ LANDING SECTIONS (Om / Integritet / FAQ) â”€â”€ */
+/* ─── LANDING SECTIONS (Om / Integritet / FAQ) ── */
 .landing-section {
   max-width: 720px;
   margin: 0 auto;
@@ -498,7 +498,7 @@ body {
   text-decoration: none;
 }
 .landing-contact-link:hover { text-decoration: underline; }
-/* Fix #16: ta bort !important â€” mer specifik selektor rÃ¤cker */
+/* Fix #16: ta bort !important — mer specifik selektor räcker */
 .landing-section .legal-disclaimer {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -567,12 +567,12 @@ body {
   color: var(--accent);
 }
 
-/* â”€â”€â”€ HUR DET FUNGERAR (T155) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── HUR DET FUNGERAR (T155) ────────────────── */
 .landing-section--howto {
   max-width: 920px;
 }
-/* "SÃ¥ hÃ¤r gÃ¥r det till" â€” numrerad stegsekvens, inte en kort-strip.
-   Editorial: siffran bÃ¤r tyngden, inget kort-krom. 2 kolonner pÃ¥ desktop. */
+/* "Så här går det till" — numrerad stegsekvens, inte en kort-strip.
+   Editorial: siffran bär tyngden, inget kort-krom. 2 kolonner på desktop. */
 .howto-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -587,7 +587,7 @@ body {
   padding-top: 2px;
   border-top: 1px solid var(--rule);
 }
-.howto-card--2, .howto-card--4 { /* tint-varianterna borttagna â€” lugnare */ }
+.howto-card--2, .howto-card--4 { /* tint-varianterna borttagna — lugnare */ }
 .howto-num {
   display: inline-flex;
   align-items: center;
@@ -617,7 +617,7 @@ body {
   max-width: none;
 }
 
-/* â”€â”€â”€ LANDING FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── LANDING FOOTER ─────────────────────────── */
 .landing-footer {
   background: var(--ink);
   color: color-mix(in oklab, var(--paper) 55%, transparent);
@@ -638,7 +638,7 @@ body {
   border-bottom-color: var(--ember);
 }
 
-/* â”€â”€â”€ ONBOARDING (fullscreen conversational) â”€â”€â”€ */
+/* ─── ONBOARDING (fullscreen conversational) ─── */
 #screen-onboarding {
   height: 100vh;
   height: 100dvh;
@@ -846,7 +846,7 @@ body {
   border-color: var(--accent);
 }
 .ob-check input:checked ~ .ob-check-box::after {
-  content: 'âœ“';
+  content: '✓';
   color: white;
   font-size: 11px;
   font-weight: 800;
@@ -892,7 +892,7 @@ body {
 }
 .ob-text-input:focus {
   border-bottom-color: var(--accent);
-  box-shadow: 0 2px 0 0 var(--accent); /* synligt fokusindikator fÃ¶r tangentbord */
+  box-shadow: 0 2px 0 0 var(--accent); /* synligt fokusindikator för tangentbord */
 }
 .ob-text-input::placeholder { color: var(--text-muted); }
 
@@ -926,7 +926,7 @@ body {
   margin: 16px 0 6px;
 }
 
-/* â”€â”€â”€ T193: BOSTADSFLÃ–DE â€” undersektion â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── T193: BOSTADSFLÖDE — undersektion ─────── */
 .ob-fastighet-details {
   margin: 4px 0 12px 16px;
   padding: 12px 0 4px 12px;
@@ -947,7 +947,7 @@ body {
 }
 .ob-check--sub { margin-top: 6px; }
 
-/* â”€â”€â”€ CHOICE GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── CHOICE GRID ────────────────────────────── */
 .choice-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -978,7 +978,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* â”€â”€â”€ CHECKBOX GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── CHECKBOX GRID ──────────────────────────── */
 .checkbox-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1003,7 +1003,7 @@ body {
 .checkbox-btn input { accent-color: var(--accent); width: 16px; height: 16px; }
 .checkbox-label { font-size: 0.9rem; font-weight: 500; }
 
-/* â”€â”€â”€ TEXT INPUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TEXT INPUT ─────────────────────────────── */
 .text-input {
   width: 100%;
   border: 1.5px solid var(--rule-strong);
@@ -1019,7 +1019,7 @@ body {
 .text-input::placeholder { color: var(--text-muted); }
 .textarea { resize: vertical; min-height: 80px; }
 
-/* â”€â”€â”€ TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TABS ───────────────────────────────────── */
 .plan-tabs-bar {
   background: var(--bg);
   position: fixed;
@@ -1062,7 +1062,7 @@ body {
 .plan-tab-content { display: none; }
 .plan-tab-content.active { display: block; }
 
-/* â”€â”€â”€ PLAN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── PLAN ───────────────────────────────────── */
 .plan-wrap {
   max-width: 700px;
   margin: 0 auto;
@@ -1110,7 +1110,7 @@ body {
 }
 .progress-summary strong { color: var(--accent); }
 
-/* â”€â”€â”€ TASK SECTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TASK SECTIONS ──────────────────────────── */
 .task-sections { display: flex; flex-direction: column; gap: 36px; }
 .task-section {}
 .section-header {
@@ -1153,7 +1153,7 @@ body {
 .section-hide-done-btn:hover { color: var(--text-primary); border-color: var(--accent); }
 .task-wrap--hidden-done { display: none; }
 
-/* â”€â”€â”€ TASK CARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TASK CARD ──────────────────────────────── */
 .task-list { display: flex; flex-direction: column; gap: 8px; }
 .task-wrap { display: flex; flex-direction: column; }
 .task-card {
@@ -1174,7 +1174,7 @@ body {
 }
 .task-card.done {
   opacity: 0.72;
-  cursor: pointer;  /* klickbar fÃ¶r att visa Ã…ngra */
+  cursor: pointer;  /* klickbar för att visa Ångra */
 }
 .task-check {
   width: 22px;
@@ -1194,7 +1194,7 @@ body {
   border-color: var(--accent);
 }
 .task-check.checked::after {
-  content: 'âœ“';
+  content: '✓';
   color: white;
   font-size: 12px;
   font-weight: 700;
@@ -1345,7 +1345,7 @@ body {
   color: var(--text-primary);
 }
 
-/* â”€â”€â”€ BULK UPPSÃ„GNING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── BULK UPPSÄGNING ────────────────────────── */
 .doc-bulk-cta {
   display: flex;
   align-items: center;
@@ -1432,7 +1432,7 @@ body {
 .btn-sm { padding: 8px 14px !important; font-size: 0.85rem !important; min-height: 44px; }
 
 
-/* â”€â”€â”€ MODALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── MODALS ─────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1496,7 +1496,7 @@ body {
 .modal-btn-full { width: 100%; }
 .auth-panel { padding: 14px; border-radius: 12px; margin-bottom: 16px; }
 
-/* â”€â”€â”€ DOC TYPE GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── DOC TYPE GRID ──────────────────────────── */
 .doc-type-grid { display: flex; flex-direction: column; gap: 10px; }
 .doc-type-btn {
   position: relative;
@@ -1514,7 +1514,7 @@ body {
 }
 .doc-type-btn:hover { border-color: var(--accent); background: var(--accent-light); }
 
-/* Betald/gratis-markÃ¶r pÃ¥ brevknapparna */
+/* Betald/gratis-markör på brevknapparna */
 .doc-badge {
   position: absolute;
   top: 10px;
@@ -1533,7 +1533,7 @@ body {
 }
 .doc-type-btn.doc-locked::after,
 .doc-bulk-cta.doc-locked::after {
-  content: 'LÃ¥s upp Â· 49 kr';
+  content: 'Lås upp · 49 kr';
   position: absolute;
   top: 10px;
   right: 12px;
@@ -1548,7 +1548,7 @@ body {
 }
 .doc-bulk-cta { position: relative; }
 
-/* Kort blink nÃ¤r ett lÃ¥st brev klickas */
+/* Kort blink när ett låst brev klickas */
 @keyframes paywallFlash {
   0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 45%, transparent); }
   100% { box-shadow: 0 0 0 14px color-mix(in oklab, var(--accent) 0%, transparent); }
@@ -1563,7 +1563,7 @@ body {
 .doc-type-title { font-size: 0.97rem; font-weight: 600; }
 .doc-type-sub { font-size: 0.85rem; color: var(--text-soft); }
 
-/* â”€â”€â”€ FORM ERROR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── FORM ERROR ─────────────────────────────── */
 .form-error {
   color: var(--red);
   font-size: 0.85rem;
@@ -1576,7 +1576,7 @@ body {
 }
 .form-error.hidden { display: none; }
 
-/* â”€â”€â”€ BÃ–RJA HÃ„R â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── BÖRJA HÄR ──────────────────────────────── */
 .start-here {
   display: flex;
   align-items: center;
@@ -1620,7 +1620,7 @@ body {
 }
 .task-next-badge { display: none; }
 
-/* â”€â”€â”€ DIGITAL/FYSISK-INDIKATOR (T192) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── DIGITAL/FYSISK-INDIKATOR (T192) ────────── */
 .task-digital-badge {
   display: inline-block;
   font-size: 0.85em;
@@ -1629,7 +1629,7 @@ body {
   vertical-align: -1px;
 }
 
-/* â”€â”€â”€ DOC FORMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── DOC FORMS ──────────────────────────────── */
 #doc-chooser.hidden { display: none; }
 .doc-form { display: flex; flex-direction: column; gap: 0; }
 .doc-form.hidden { display: none; }
@@ -1663,7 +1663,7 @@ body {
 }
 .form-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
 
-/* â”€â”€â”€ DOC OUTPUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── DOC OUTPUT ─────────────────────────────── */
 .doc-output {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -1730,7 +1730,7 @@ body {
 }
 .copied-msg.hidden { display: none; }
 
-/* â”€â”€â”€ TASK MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TASK MODAL ─────────────────────────────── */
 .task-modal-desc {
   color: var(--text-soft);
   font-size: 0.95rem;
@@ -1751,7 +1751,7 @@ body {
 }
 .task-modal-actions { display: flex; flex-direction: column; gap: 10px; }
 
-/* â”€â”€â”€ UNDO TOAST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── UNDO TOAST ─────────────────────────────── */
 .undo-toast {
   position: fixed;
   bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px);
@@ -1791,7 +1791,7 @@ body {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* â”€â”€â”€ APP TOAST (generic, non-blocking â€” ersÃ¤tter alert()) â”€â”€â”€â”€ */
+/* ─── APP TOAST (generic, non-blocking — ersätter alert()) ──── */
 .app-toast {
   position: fixed;
   bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 12px);
@@ -1812,7 +1812,7 @@ body {
 .app-toast.is-error { background: var(--red); }
 .app-toast.is-success { background: var(--green); }
 
-/* â”€â”€â”€ STARTED TASK STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── STARTED TASK STATE ─────────────────────── */
 .task-card.started {
   border-color: var(--accent);
   background: var(--accent-light);
@@ -1822,7 +1822,7 @@ body {
   background: var(--accent-light);
 }
 .task-check.started::after {
-  content: 'â€“';
+  content: '–';
   color: var(--accent);
   font-size: 14px;
   font-weight: 700;
@@ -1842,7 +1842,7 @@ body {
   letter-spacing: 0.4px;
   text-transform: uppercase;
 }
-/* â”€â”€â”€ NOTIFY LIST (kontaktrundringen task) â”€â”€â”€ */
+/* ─── NOTIFY LIST (kontaktrundringen task) ─── */
 .notify-list-section {
   margin: 12px 0 6px;
   border-top: 1px solid var(--border);
@@ -1971,7 +1971,7 @@ body {
   background: var(--accent);
   color: #fff;
 }
-/* â”€â”€â”€ Onboarding progress bar â”€â”€â”€ */
+/* ─── Onboarding progress bar ─── */
 .ob-progress-bar-wrap {
   position: absolute;
   top: 0;
@@ -1991,7 +1991,7 @@ body {
   transition: transform 0.35s ease;
 }
 
-/* â”€â”€â”€ Offline banner â”€â”€â”€ */
+/* ─── Offline banner ─── */
 .offline-banner {
   position: fixed;
   top: 0;
@@ -2049,7 +2049,7 @@ body {
   background: var(--bg-card);
 }
 
-/* â”€â”€â”€ TASK RESOURCES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TASK RESOURCES ─────────────────────────── */
 .task-resources {
   display: flex;
   flex-direction: column;
@@ -2066,7 +2066,7 @@ body {
 }
 .task-resource-link:hover { color: var(--accent); text-decoration: underline; }
 
-/* â”€â”€â”€ OB OPTIONAL LABEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── OB OPTIONAL LABEL ──────────────────────── */
 .ob-optional {
   font-size: 0.85rem;
   font-weight: 400;
@@ -2074,7 +2074,7 @@ body {
   font-style: italic;
 }
 
-/* â”€â”€â”€ PROGRESS BAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── PROGRESS BAR ───────────────────────────── */
 .progress-bar-wrap {
   height: 4px;
   background: var(--border);
@@ -2092,7 +2092,7 @@ body {
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* â”€â”€â”€ COMPLETION STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── COMPLETION STATE ───────────────────────── */
 .completion-message {
   display: none;
   background: var(--accent-light);
@@ -2110,7 +2110,7 @@ body {
   line-height: 1.6;
 }
 
-/* â”€â”€â”€ TASK ENTRANCE ANIMATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TASK ENTRANCE ANIMATION ────────────────── */
 @keyframes taskIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -2119,14 +2119,14 @@ body {
   animation: taskIn 0.3s ease both;
 }
 
-/* â”€â”€â”€ TASK CARD KEYBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── TASK CARD KEYBOARD ─────────────────────── */
 .task-card[tabindex="0"]:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: var(--radius);
 }
 
-/* â”€â”€â”€ RESPONSIVE (desktop up) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── RESPONSIVE (desktop up) ────────────────── */
 @media (min-width: 601px) {
   :root {
     --nav-height: 65px;
@@ -2142,7 +2142,7 @@ body {
   .nav-actions { display: flex; }
   .task-expand { padding: 14px 20px 18px 52px; }
 
-  /* â”€â”€ Top tab navigation (desktop) â”€â”€ */
+  /* ── Top tab navigation (desktop) ── */
   .plan-tabs-bar {
     position: sticky;
     top: var(--nav-height);
@@ -2175,9 +2175,9 @@ body {
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    SECTION DONE BADGE
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .section-done-badge {
   display: inline-flex;
   align-items: center;
@@ -2197,9 +2197,9 @@ body {
   display: none;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    PDF / PRINT BUTTON (floating)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .plan-print-btn {
   position: fixed;
   bottom: calc(var(--bottom-nav-height) + 16px);
@@ -2227,13 +2227,13 @@ body {
   .plan-print-btn { bottom: 24px; right: 24px; width: 48px; height: 48px; }
 }
 
-/* â”€â”€ Tablet (601â€“1023px) â”€â”€ */
+/* ── Tablet (601–1023px) ── */
 @media (min-width: 601px) and (max-width: 1023px) {
   .plan-wrap { padding: 24px 32px 100px; }
   .seo-article { max-width: 660px; }
 }
 
-/* â”€â”€ Desktop large (1024px+) â”€â”€ */
+/* ── Desktop large (1024px+) ── */
 @media (min-width: 1024px) {
   .plan-wrap { max-width: 860px; padding: 40px 40px 80px; }
   .nav { padding: 20px 60px; }
@@ -2242,9 +2242,9 @@ body {
   .seo-article { max-width: 740px; }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    PAYWALL CARD
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .paywall-card {
   border: 1.5px solid var(--rule-strong);
   border-radius: var(--radius);
@@ -2284,9 +2284,9 @@ body {
   margin-top: 10px;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   T030 â€” LOCKED TASK CARD + PREVIEW CTA
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   T030 — LOCKED TASK CARD + PREVIEW CTA
+════════════════════════════════════════════ */
 .task-card--locked {
   opacity: 0.55;
   cursor: default;
@@ -2337,9 +2337,9 @@ body {
   font-size: 0.92rem;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    PRINT / PDF EXPORT
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 @media print {
   /* Show only the plan tab content */
   body > *:not(#screen-plan) { display: none !important; }
@@ -2374,7 +2374,7 @@ body {
 
   /* Task card layout for print */
   .task-wrap { break-inside: avoid; margin-bottom: 10px; }
-  /* "DÃ¶lj klara" Ã¤r bara ett skÃ¤rmfilter â€” den sparade/utskrivna planen ska alltid
+  /* "Dölj klara" är bara ett skärmfilter — den sparade/utskrivna planen ska alltid
      visa alla uppgifter (klara syns nedtonade, se .task-card.done nedan). */
   .task-wrap--hidden-done { display: block !important; }
   .task-card { box-shadow: none; border: 1px solid #ccc; border-radius: 0; margin-bottom: 0; }
@@ -2397,7 +2397,7 @@ body {
 
   /* Footer with URL */
   #screen-plan::after {
-    content: "Efterplan â€” efterplan.se";
+    content: "Efterplan — efterplan.se";
     display: block;
     text-align: center;
     font-size: 0.75rem;
@@ -2408,9 +2408,9 @@ body {
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    COMPLETION OVERLAY
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .completion-overlay {
   position: fixed;
   inset: 0;
@@ -2473,15 +2473,15 @@ body {
   display: flex; flex-direction: column; gap: 8px;
 }
 .co-next-steps li { font-size: 0.9rem; color: var(--text-soft); padding-left: 18px; position: relative; }
-.co-next-steps li::before { content: 'â†’'; position: absolute; left: 0; color: var(--accent); }
+.co-next-steps li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
 .co-link { color: var(--accent); text-decoration: underline; }
 .co-actions { display: flex; flex-direction: column; gap: 10px; }
 .co-pdf-btn  { width: 100%; }
 .co-close-btn { width: 100%; font-size: 0.9rem; color: var(--text-muted); }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    PHONE 2 (secondary action, e.g. 1177)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .task-expand-phone--secondary {
   background: var(--accent-light);
   color: var(--accent);
@@ -2494,9 +2494,9 @@ body {
   color: #fff;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    TASK CHECKLIST (e.g. digitala konton)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .task-checklist {
   margin: 14px 0 8px;
   border: 1px solid var(--border);
@@ -2538,9 +2538,9 @@ body {
   cursor: pointer;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    PLAN DONE FOOTER
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+════════════════════════════════════════════ */
 .plan-done-footer {
   text-align: center;
   padding: 48px 24px 72px;
@@ -2568,7 +2568,7 @@ body {
 }
 
 
-/* â•â•â• TRUST BAND â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══ TRUST BAND ════════════════════════════ */
 .trust-band {
   display: flex;
   flex-wrap: wrap;
@@ -2584,7 +2584,7 @@ body {
 }
 .trust-sep { opacity: 0.4; }
 
-/* â•â•â• BILLS (T067) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══ BILLS (T067) ═══════════════════════════ */
 .bills-section { margin: 24px 0 0; }
 .bills-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .bills-add-btn { font-size: 0.85rem; padding: 6px 12px; min-height: 44px; }
@@ -2603,7 +2603,7 @@ body {
 .bill-input { padding: 8px 12px; border: 1px solid var(--rule-strong); border-radius: var(--radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; background: var(--paper-card); }
 .bill-amount-input { max-width: 160px; }
 
-/* â•â•â• ARKIV / DOKUMENTCENTRAL (T143â€“T148) â•â•â• */
+/* ═══ ARKIV / DOKUMENTCENTRAL (T143–T148) ═══ */
 .arkiv-actions { margin-bottom: 4px; }
 .arkiv-scan-status { font-size: 0.85rem; color: var(--text-soft); margin: 6px 0 4px; }
 .arkiv-scan-status--error { color: var(--red); }
@@ -2659,7 +2659,7 @@ body {
 .arkiv-privacy-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }
 .bill-form-actions { display: flex; gap: 8px; }
 
-/* â•â•â• PDF PRINT BUTTON (T050) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══ PDF PRINT BUTTON (T050) ════════════════ */
 .btn-print-inline {
   display: inline-flex;
   align-items: center;
@@ -2675,10 +2675,10 @@ body {
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.btn-print-inline::before { content: 'â¬‡'; font-size: 0.72rem; }
+.btn-print-inline::before { content: '⬇'; font-size: 0.72rem; }
 .btn-print-inline:hover { background: var(--accent); color: #fff; }
 
-/* â•â•â• FREE PREVIEW (T030) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══ FREE PREVIEW (T030) ════════════════════ */
 .section--coming .task-list { opacity: 0.55; }
 .section-coming-tag {
   font-size: 0.7rem;
@@ -2691,7 +2691,7 @@ body {
   white-space: nowrap;
 }
 
-/* â•â•â• SEO PAGES (T061, uppdaterad T088) â•â•â•â•â•â•â•â•â• */
+/* ═══ SEO PAGES (T061, uppdaterad T088) ═════════ */
 .seo-nav {
   display: flex;
   justify-content: space-between;
@@ -2746,7 +2746,7 @@ body {
   margin-bottom: 0.25rem;
 }
 
-/* Lead paragraph â€” first p after h1 gets editorial lead treatment */
+/* Lead paragraph — first p after h1 gets editorial lead treatment */
 .seo-article h1 + p:not(.article-meta),
 .seo-article .article-meta + p {
   font-size: var(--fs-md);
@@ -2817,8 +2817,8 @@ body {
   transition: text-decoration-color .15s ease;
 }
 .seo-article a:hover { text-decoration-color: var(--ember); }
-/* KnapplÃ¤nkar i artikeln ska behÃ¥lla knappens fÃ¤rger â€” utan detta vinner
-   .seo-article a (hÃ¶gre specificitet) och texten blir grÃ¶n pÃ¥ grÃ¶n bakgrund. */
+/* Knapplänkar i artikeln ska behålla knappens färger — utan detta vinner
+   .seo-article a (högre specificitet) och texten blir grön på grön bakgrund. */
 .seo-article a.btn-primary,
 .seo-article a.btn-primary:hover {
   color: var(--paper);
@@ -2877,7 +2877,7 @@ body {
   max-width: var(--measure);
 }
 
-/* Small byline under the lead paragraph â€” when a guide's content was last checked */
+/* Small byline under the lead paragraph — when a guide's content was last checked */
 .seo-article .seo-updated {
   font-size: var(--fs-xs);
   color: var(--ink-soft);
@@ -2885,7 +2885,7 @@ body {
   margin: calc(-1 * var(--space-sm)) 0 var(--space-lg);
 }
 
-/* Inline CTA box â€” editorial, not generic "card" */
+/* Inline CTA box — editorial, not generic "card" */
 .seo-cta {
   background: var(--paper-soft);
   border: 1px solid var(--rule);
@@ -2911,7 +2911,7 @@ body {
   width: auto;
   padding: 12px 22px;
 }
-/* Liten not under knappen (t.ex. pris) â€” inte i CTA-rubrikens kursiva stil. */
+/* Liten not under knappen (t.ex. pris) — inte i CTA-rubrikens kursiva stil. */
 .seo-cta .btn-primary + p {
   margin: var(--space-sm) 0 0;
   font-family: var(--font);
@@ -2947,9 +2947,9 @@ body {
   color: var(--ink-teal);
   text-decoration-color: var(--ember);
 }
-/* Footer-sitemap: flÃ¶de av block-lÃ¤nkar med tillrÃ¤cklig trÃ¤ffyta (>=40px,
-   WCAG 2.5.8). Text-separatorerna (Â·) i markup kollapsas via font-size:0
-   pÃ¥ behÃ¥llaren och Ã¥terstÃ¤lls pÃ¥ lÃ¤nkarna. */
+/* Footer-sitemap: flöde av block-länkar med tillräcklig träffyta (>=40px,
+   WCAG 2.5.8). Text-separatorerna (·) i markup kollapsas via font-size:0
+   på behållaren och återställs på länkarna. */
 .landing-footer-links {
   display: flex;
   flex-wrap: wrap;
@@ -2969,9 +2969,9 @@ body {
   background: color-mix(in oklab, var(--paper) 12%, transparent);
 }
 
-/* Fokusregeln bor nu hÃ¶gst upp (en enda :focus-visible, --focus-ring). */
+/* Fokusregeln bor nu högst upp (en enda :focus-visible, --focus-ring). */
 
-/* â”€â”€â”€ REDUCED MOTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── REDUCED MOTION ─────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -2979,7 +2979,7 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  /* NollstÃ¤ll hover-fÃ¶rflyttningar generellt, inte bara primÃ¤rknappen */
+  /* Nollställ hover-förflyttningar generellt, inte bara primärknappen */
   .btn-primary:hover,
   .btn-large:hover,
   .task-card:hover,
@@ -2989,7 +2989,7 @@ body {
   }
 }
 
-/* Utility classes for moved inline styles (T123/T249) â€” deduplicated */
+/* Utility classes for moved inline styles (T123/T249) — deduplicated */
 .u-padding-8                    { padding: 8px; }
 .u-padding-8-12                 { padding: 8px 12px; }
 .u-padding-12-14                { padding: 12px 14px; }
@@ -3029,7 +3029,7 @@ body {
 .u-background-f0f0f0            { background: #f0f0f0; }
 .u-background-f0f4f8            { background: #f0f4f8; }
 
-/* â”€â”€â”€ BOUPPTECKNING TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── BOUPPTECKNING TAB ──────────────────────── */
 .bopp-summary {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -3119,4 +3119,3 @@ body {
   .bopp-input-amount { width: 100%; }
   .bopp-select { width: 100%; }
 }
-
