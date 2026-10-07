@@ -1,4 +1,4 @@
-// Efterplan — Supabase client (T051/T052/T053)
+// Efterplan â€” Supabase client (T051/T052/T053)
 // Loads @supabase/supabase-js v2 UMD bundle from CDN, exposes a tiny API on
 // window.efterplanAuth. Silently no-ops if SUPABASE_CONFIG is empty, so the
 // static site keeps working offline for signed-out users.
@@ -26,7 +26,7 @@ const SUPABASE_CONFIG = {
   let currentUser = null;
   let syncTimer = null;
   let documentsSyncTimer = null;
-  const uploadedDocIds = new Set(); // T147: undvik att ladda upp samma foto flera gånger per session
+  const uploadedDocIds = new Set(); // T147: undvik att ladda upp samma foto flera gÃ¥nger per session
 
   function isConfigured() {
     return !!(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey);
@@ -86,14 +86,40 @@ const SUPABASE_CONFIG = {
       const raw = localStorage.getItem(k);
       if (raw != null) snap[k] = raw;
     }
-    return snap;
+    return sanitizeSnapshot(snap).snapshot;
+  }
+
+  // Personnummer is kept on this device only, even when the rest of the plan
+  // is synchronized. Also used to remove values written by older versions.
+  function sanitizeSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') return { snapshot, removedPersonnr: false };
+    const clean = { ...snapshot };
+    let removedPersonnr = false;
+    try {
+      const state = JSON.parse(clean.efterplan_state || '{}');
+      if (Object.prototype.hasOwnProperty.call(state, 'personnr')) {
+        delete state.personnr;
+        clean.efterplan_state = JSON.stringify(state);
+        removedPersonnr = true;
+      }
+    } catch (_) { /* preserve malformed local state for the existing recovery path */ }
+    return { snapshot: clean, removedPersonnr };
   }
 
   function writeLocalSnapshot(snap) {
     if (!snap || typeof snap !== 'object') return;
+    const clean = sanitizeSnapshot(snap).snapshot;
+    // Preserve this device's locally stored number while replacing the rest
+    // of the plan from the account snapshot.
+    try {
+      const localState = JSON.parse(localStorage.getItem('efterplan_state') || '{}');
+      const nextState = JSON.parse(clean.efterplan_state || '{}');
+      if (localState.personnr) nextState.personnr = localState.personnr;
+      clean.efterplan_state = JSON.stringify(nextState);
+    } catch (_) {}
     for (const k of STATE_KEYS) {
-      if (!(k in snap) || snap[k] == null) continue;
-      const val = snap[k];
+      if (!(k in clean) || clean[k] == null) continue;
+      const val = clean[k];
       try {
         JSON.parse(val);
         localStorage.setItem(k, val);
@@ -110,18 +136,25 @@ const SUPABASE_CONFIG = {
     const remoteAt = remote.updated_at ? new Date(remote.updated_at).getTime() : 0;
     const localAtRaw = localStorage.getItem(LOCAL_UPDATED_AT);
     const localAt = localAtRaw ? new Date(localAtRaw).getTime() : 0;
-    if (remoteAt <= localAt) return;
     try {
       const parsed = JSON.parse(remote.state_json);
-      writeLocalSnapshot(parsed);
+      const sanitized = sanitizeSnapshot(parsed);
+      if (remoteAt <= localAt) {
+        // Migrate older cloud snapshots that may still contain a personnummer,
+        // while preserving the newer local plan as the source of truth.
+        if (sanitized.removedPersonnr) await savePlan(readLocalSnapshot());
+        return;
+      }
+      writeLocalSnapshot(sanitized.snapshot);
       localStorage.setItem(LOCAL_UPDATED_AT, remote.updated_at || new Date().toISOString());
-      window.dispatchEvent(new CustomEvent('efterplan:remote-hydrated', { detail: parsed }));
+      if (sanitized.removedPersonnr) await savePlan(readLocalSnapshot());
+      window.dispatchEvent(new CustomEvent('efterplan:remote-hydrated', { detail: sanitized.snapshot }));
     } catch (_) { /* ignore malformed remote JSON */ }
   }
 
   async function signInWithMagicLink(email) {
     await initSupabase();
-    if (!client) throw new Error('Supabase är inte konfigurerad');
+    if (!client) throw new Error('Supabase Ã¤r inte konfigurerad');
     return client.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: window.location.origin + '/' },
@@ -142,6 +175,14 @@ const SUPABASE_CONFIG = {
     const { data } = await client.auth.getUser();
     currentUser = data && data.user ? data.user : null;
     return currentUser;
+  }
+
+  async function getAccessToken() {
+    await initSupabase();
+    if (!client) return null;
+    const { data, error } = await client.auth.getSession();
+    if (error) return null;
+    return data?.session?.access_token || null;
   }
 
   async function savePlan(stateJson) {
@@ -215,11 +256,11 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
-  // ── T147: Arkiv-dokument-synk (Storage + documents-tabell) ──────
-  // localStorage (state.documents, med base64-foton) förblir source-of-truth
-  // för icke-inloggade/offline, exakt som planen redan fungerar. Inloggade
-  // användare får dessutom en synk hit: fotot laddas upp som binär blob till
-  // Storage-bucketen 'documents', bara metadata + sökväg går i Postgres.
+  // â”€â”€ T147: Arkiv-dokument-synk (Storage + documents-tabell) â”€â”€â”€â”€â”€â”€
+  // localStorage (state.documents, med base64-foton) fÃ¶rblir source-of-truth
+  // fÃ¶r icke-inloggade/offline, exakt som planen redan fungerar. Inloggade
+  // anvÃ¤ndare fÃ¥r dessutom en synk hit: fotot laddas upp som binÃ¤r blob till
+  // Storage-bucketen 'documents', bara metadata + sÃ¶kvÃ¤g gÃ¥r i Postgres.
   function dataUrlToBlob(dataUrl) {
     const [header, base64] = dataUrl.split(',');
     const mimeMatch = /data:([^;]+);base64/.exec(header || '');
@@ -247,8 +288,8 @@ const SUPABASE_CONFIG = {
       for (const doc of documents) {
         if (!doc || !doc.id) continue;
         let storagePath = doc._storagePath || null;
-        // Bara ladda upp binärdatan en gång per session/foto — base64:an ändras
-        // aldrig efter att dokumentet skapats, bara metadata (namn, flagga) gör.
+        // Bara ladda upp binÃ¤rdatan en gÃ¥ng per session/foto â€” base64:an Ã¤ndras
+        // aldrig efter att dokumentet skapats, bara metadata (namn, flagga) gÃ¶r.
         if (doc.photo && typeof doc.photo === 'string' && doc.photo.startsWith('data:') && !uploadedDocIds.has(doc.id)) {
           const uploaded = await uploadDocumentPhoto(doc.id, doc.photo);
           if (uploaded) { storagePath = uploaded; uploadedDocIds.add(doc.id); }
@@ -257,7 +298,7 @@ const SUPABASE_CONFIG = {
           user_id: currentUser.id,
           client_id: doc.id,
           name: doc.name || '',
-          category: doc.category || 'Övrigt',
+          category: doc.category || 'Ã–vrigt',
           doc_date: doc.date || null,
           flag: doc.flag || null,
           image_hash: doc.imageHash || null,
@@ -268,10 +309,10 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
-  // T147: explicit borttagning (inte en diff mot hela listan — en diff hade
-  // kunnat råka radera dokument som bara ännu inte hunnit hydreras ner på en
-  // ny enhet, om en synk triggas innan hydrateDocumentsFromRemote() är klar).
-  // deleteDocument() i app.js skickar det här eventet direkt vid borttagning.
+  // T147: explicit borttagning (inte en diff mot hela listan â€” en diff hade
+  // kunnat rÃ¥ka radera dokument som bara Ã¤nnu inte hunnit hydreras ner pÃ¥ en
+  // ny enhet, om en synk triggas innan hydrateDocumentsFromRemote() Ã¤r klar).
+  // deleteDocument() i app.js skickar det hÃ¤r eventet direkt vid borttagning.
   async function deleteRemoteDocument(clientId) {
     if (!client || !currentUser || !clientId) return;
     const { data: row } = await client
@@ -312,18 +353,18 @@ const SUPABASE_CONFIG = {
       let photo = null;
       if (row.storage_path) {
         const { data: signed } = await client.storage.from('documents')
-          .createSignedUrl(row.storage_path, 60 * 60 * 24); // 24h — tillräckligt för en session, förnyas vid nästa inloggning
+          .createSignedUrl(row.storage_path, 60 * 60 * 24); // 24h â€” tillrÃ¤ckligt fÃ¶r en session, fÃ¶rnyas vid nÃ¤sta inloggning
         photo = signed ? signed.signedUrl : null;
       }
       added.push({
         id: row.client_id,
         name: row.name || '',
-        category: row.category || 'Övrigt',
+        category: row.category || 'Ã–vrigt',
         date: row.doc_date || '',
         flag: row.flag || null,
         photo,
         imageHash: row.image_hash || null,
-        _storagePath: row.storage_path || null, // undviker onödig re-upload av redan synkade foton
+        _storagePath: row.storage_path || null, // undviker onÃ¶dig re-upload av redan synkade foton
       });
     }
     if (!added.length) return;
@@ -331,10 +372,10 @@ const SUPABASE_CONFIG = {
     window.dispatchEvent(new CustomEvent('efterplan:documents-hydrated', { detail: added }));
   }
 
-  // ── T177: zero-knowledge delning ────────────────
+  // â”€â”€ T177: zero-knowledge delning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Servern lagrar bara krypterad text (AES-GCM). Nyckeln finns aldrig i en
-  // request till Supabase — den stannar i URL-fragmentet (#k=...), som
-  // webbläsare aldrig skickar över nätverket. Se supabase/schema.sql.
+  // request till Supabase â€” den stannar i URL-fragmentet (#k=...), som
+  // webblÃ¤sare aldrig skickar Ã¶ver nÃ¤tverket. Se supabase/schema.sql.
   function bufToBase64url(buf) {
     let bin = '';
     new Uint8Array(buf).forEach(b => { bin += String.fromCharCode(b); });
@@ -350,28 +391,33 @@ const SUPABASE_CONFIG = {
 
   async function createSharedLink(plainObj) {
     await initSupabase();
-    if (!client) throw new Error('Supabase är inte konfigurerad');
+    if (!client) throw new Error('Supabase Ã¤r inte konfigurerad');
     const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const plaintext = new TextEncoder().encode(JSON.stringify(plainObj));
     const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
     const rawKey = await crypto.subtle.exportKey('raw', key);
 
-    const { data, error } = await client.rpc('create_shared_plan', {
-      ciphertext_in: bufToBase64url(cipherBuf),
-      iv_in: bufToBase64url(iv.buffer),
+    const response = await fetch('/api/create-shared-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ciphertext: bufToBase64url(cipherBuf),
+        iv: bufToBase64url(iv.buffer),
+      }),
     });
-    if (error) throw error;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.id) throw new Error(data.error || 'share_create_failed');
 
     const keyStr = bufToBase64url(rawKey);
-    return `${window.location.origin}/?shared=${data}#k=${keyStr}`;
+    return `${window.location.origin}/?shared=${data.id}#k=${keyStr}`;
   }
 
   async function resolveSharedLink(id, keyStr) {
     await initSupabase();
-    if (!client) throw new Error('Supabase är inte konfigurerad');
+    if (!client) throw new Error('Supabase Ã¤r inte konfigurerad');
     const { data, error } = await client.rpc('get_shared_plan_v2', { id_in: id });
-    if (error || !data) throw (error || new Error('Länken hittades inte'));
+    if (error || !data) throw (error || new Error('LÃ¤nken hittades inte'));
 
     const rawKey = base64urlToBuf(keyStr);
     const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']);
@@ -381,7 +427,7 @@ const SUPABASE_CONFIG = {
     return JSON.parse(new TextDecoder().decode(plainBuf));
   }
 
-  // ── T178: samtycke till deadline-påminnelser (insamling, inget utskick än) ──
+  // â”€â”€ T178: samtycke till deadline-pÃ¥minnelser (insamling, inget utskick Ã¤n) â”€â”€
   async function subscribeReminder(email, deathDate, types) {
     const r = await fetch('/api/subscribe-reminder', {
       method: 'POST',
@@ -398,6 +444,7 @@ const SUPABASE_CONFIG = {
     signInWithMagicLink,
     signOut,
     getCurrentUser,
+    getAccessToken,
     savePlan,
     loadPlan,
     syncToSupabase,
@@ -410,8 +457,8 @@ const SUPABASE_CONFIG = {
   };
 
   window.addEventListener('efterplan:state-changed', syncToSupabase);
-  // T147: egen event, inte state-changed — dokumentfoton ska INTE gå genom
-  // plans.state_json (för stora/oeffektivt), de synkas separat mot Storage.
+  // T147: egen event, inte state-changed â€” dokumentfoton ska INTE gÃ¥ genom
+  // plans.state_json (fÃ¶r stora/oeffektivt), de synkas separat mot Storage.
   window.addEventListener('efterplan:documents-changed', (e) => syncDocumentsToSupabase(e.detail));
   window.addEventListener('efterplan:document-deleted', (e) => deleteRemoteDocument(e.detail));
 
@@ -421,3 +468,4 @@ const SUPABASE_CONFIG = {
     initSupabase();
   }
 })();
+
