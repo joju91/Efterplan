@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Efterplan – Vad gör man när någon dör? Checklista och guide</title>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const result = params.get('premium');
+      if (result !== 'success' && result !== 'cancelled') return;
+      window.efterplanCheckoutReturn = {
+        result,
+        sessionId: result === 'success' ? params.get('session_id') : null,
+      };
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+    })();
+  </script>
   <meta name="description" content="När någon nyss gått bort — personlig checklista för dödsbo, bouppteckning och färdiga brev. Gratis, ingen registrering, du gör det i din takt." />
   <link rel="canonical" href="https://efterplan.se/" />
   <meta name="google-site-verification" content="tvsYmhpTh_paOHc6Ey-OF2rc0rzPLOMEVcpZpVksodc" />
@@ -175,7 +187,7 @@
       <div class="howto-card howto-card--4">
         <span class="howto-num">4</span>
         <h3>Bocka av i din takt</h3>
-        <p>Planen sparas i din webbläsare. Stäng sidan och kom tillbaka när du orkar — inget försvinner.</p>
+        <p>Planen sparas i din webbläsare. Logga in om du vill synka den mellan dina enheter.</p>
       </div>
     </div>
   </section>
@@ -250,12 +262,12 @@
   <!-- Integritet -->
   <section class="landing-section" id="section-integritet">
     <h2>Din integritet</h2>
-    <p>Utan inloggning lagrar Efterplan all information lokalt i din webbläsare — ingenting skickas till någon server. Loggar du in för att synka planen mellan enheter sparas den (inklusive eventuellt personnummer) i vår databas hos Supabase, skyddad bakom ditt konto. Fotograferar du ett dokument för AI-kategorisering eller AI-förklaring skickas bilden till Anthropics API för den analysen.</p>
-    <p>Rensar du webbläsarens data försvinner allt som bara finns lokalt. Är du inloggad, radera kontot för att ta bort synkad data helt.</p>
+    <p>Planen sparas i din webbläsare. Om du loggar in synkas planen och arkivets foton och uppgifter till Efterplans databas (Supabase). Personnumret synkas inte. När du skapar ett brev skickas uppgifterna du fyllt i, inklusive personnumret om du lagt till det, till Efterplans server för att skapa brevet. De sparas inte av den funktionen. Fotograferar du ett dokument för AI-kategorisering eller AI-förklaring skickas bilden till Anthropics API för analysen.</p>
+    <p>Rensar du webbläsarens data försvinner det som bara finns lokalt, men kontots synkade plan och dokument finns kvar. Vill du radera synkad data, kontakta oss via länken under Kontakt. Äldre anmälningar till påminnelsemejl kommer inte att användas för nya utskick; deras uppgifter kan finnas kvar tills du ber oss radera dem.</p>
     <div class="privacy-badges">
-      <span class="privacy-badge">🔒 Ingen server</span>
-      <span class="privacy-badge">🖥 Sparas bara lokalt</span>
-      <span class="privacy-badge">📤 Personnummer delas aldrig</span>
+      <span class="privacy-badge">Planen sparas lokalt</span>
+      <span class="privacy-badge">Synk är valfri</span>
+      <span class="privacy-badge">Personnummer synkas inte</span>
       <span class="privacy-badge">👤 Inget konto krävs</span>
     </div>
   </section>
@@ -476,15 +488,6 @@
           onkeydown="if(event.key==='Enter') obGoTo(4)" />
         <p class="ob-skip">Frivilligt. Du kan lägga till det senare.</p>
 
-        <label class="ob-check ob-check--sub">
-          <input type="checkbox" id="ob-reminder-optin" onchange="toggleReminderEmail()">
-          <span class="ob-check-box"></span>
-          <span class="ob-check-label">Påminn mig via mejl innan viktiga tidsfrister
-            <span class="ob-check-hint">Frivilligt, du kan avsluta när som helst. Vi mejlar inget annat.</span>
-          </span>
-        </label>
-        <input type="email" id="ob-reminder-email" class="ob-text-input hidden" placeholder="din@epost.se" autocomplete="email" aria-label="E-post för påminnelser" />
-
         <button class="ob-next-btn" data-action="obGoTo" data-arg="4">Nästa →</button>
       </div>
     </div>
@@ -494,7 +497,7 @@
       <div class="ob-content">
         <p class="ob-label">Steg 4 av 4</p>
         <h2 class="ob-title">Den avlidnas personnummer?</h2>
-        <p class="ob-hint">Helt frivilligt. Fyller du i den avlidnas personnummer nu skriver vi in det åt dig i alla brev — annars fyller du i det för hand direkt i breven. Sparas bara lokalt i din webbläsare, aldrig på någon server.</p>
+        <p class="ob-hint">Helt frivilligt. Fyller du i personnumret skriver vi in det i breven. Det sparas bara i din webbläsare och synkas inte. När du skapar ett brev skickas uppgifterna tillfälligt till vår server för att sätta ihop brevet; de sparas inte där.</p>
         <input type="text" id="deceased-personnr" class="ob-text-input" placeholder="ÅÅÅÅMMDD-XXXX" autocomplete="off"
           aria-label="Den avlidnes personnummer" inputmode="numeric"
           onkeydown="if(event.key==='Enter') generatePlan()" />
@@ -995,7 +998,7 @@
     <div class="plan-wrap">
       <div class="plan-header">
         <h2 class="plan-title">Bouppteckning</h2>
-        <p class="plan-sub">Lista tillgångar, skulder och dödsbodelägare. Sparas lokalt i din webbläsare.</p>
+        <p class="plan-sub">Lista tillgångar, skulder och dödsbodelägare. Sparas lokalt och synkas mellan dina enheter om du loggar in.</p>
       </div>
 
       <!-- Sammanfattning -->
@@ -1067,7 +1070,7 @@
     <div class="plan-wrap">
       <div class="plan-header">
         <h2 class="plan-title">Arkiv</h2>
-        <p class="plan-sub">Ett ställe att spara papper du får från myndigheter, banker och försäkringsbolag — så du slipper leta reda på dem igen om de behövs längre fram (t.ex. vid bouppteckningen). Fota, så föreslår vi kategori och namn åt dig. Sparas bara lokalt i din webbläsare, precis som resten av planen.</p>
+      <p class="plan-sub">Ett ställe att spara papper du får från myndigheter, banker och försäkringsbolag — så du slipper leta reda på dem igen om de behövs längre fram (t.ex. vid bouppteckningen). Fota, så föreslår vi kategori och namn åt dig. Dokumenten sparas i din webbläsare. Är du inloggad synkas foton och uppgifter till ditt konto så att du kommer åt dem på dina enheter.</p>
       </div>
 
       <div class="arkiv-actions">
@@ -1088,7 +1091,7 @@
       <ul id="arkiv-list" class="arkiv-list"></ul>
       <p class="arkiv-empty hidden" id="arkiv-empty">Inga dokument tillagda än — fota det första papperet som dyker upp.</p>
 
-      <p class="arkiv-privacy-note">När du använder "✨ Förklara detta dokument" eller AI-kategorisering skickas bilden till Anthropics API för att analyseras — den sparas inte permanent där, men lämnar din enhet för den analysen. Dokumenten lagras själva bara lokalt i din webbläsare, inte på någon Efterplan-server. Rensar du webbläsarens data försvinner de, så ta gärna en skärmdump av det som är viktigt innan du gör det.</p>
+      <p class="arkiv-privacy-note">Är du inloggad synkas dokumentfoton och uppgifter till ditt konto i Efterplans databas (Supabase). Utan inloggning finns de bara i den här webbläsaren. När du använder AI-kategorisering eller AI-förklaring skickas bilden även till Anthropics API för analys. Rensar du webbläsarens data försvinner den lokala kopian; inloggade användares synkade kopia finns kvar i kontot.</p>
 
       <!-- Räkningar (T067) — flyttad hit från "Min plan" (låg tidigare sist, efter alla
            uppgiftslistor). Räkningar är papper precis som allt annat i Arkivet, så de hör
@@ -1166,11 +1169,11 @@
   </div>
 </div>
 
-<script src="supabase-client.js?v=3" defer></script>
+<script src="supabase-client.js?v=4" defer></script>
 <script src="app.js?v=41" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=19'));
   }
 </script>
 <!-- Analytics: byt ut efterplan.se mot din domän när du registrerat den -->

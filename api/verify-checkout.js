@@ -19,6 +19,9 @@ export default async function handler(req, res) {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+    if (session.mode !== 'payment' || session.metadata?.source !== 'efterplan_paywall') {
+      return res.status(400).json({ ok: false, error: 'session_not_eligible' });
+    }
     if (session.payment_status !== 'paid') {
       return res.status(200).json({ ok: false, status: session.payment_status });
     }

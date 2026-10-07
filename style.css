@@ -268,6 +268,7 @@ body {
   padding: 7px 14px;
   font-size: 0.85rem;
   width: auto;
+  min-height: 44px;
 }
 .back-btn {
   background: none;
@@ -277,6 +278,7 @@ body {
   cursor: pointer;
   padding: 0 0 16px 0;
   display: block;
+  min-height: 44px;
 }
 .back-btn:hover { color: var(--text-primary); }
 
@@ -659,10 +661,11 @@ body {
   color: var(--text-muted);
   font-size: 0.9rem;
   cursor: pointer;
-  padding: 6px 0;
+  padding: 10px 0;
   font-family: var(--font);
   transition: var(--transition);
   width: 80px;
+  min-height: 44px;
   text-align: left;
 }
 .ob-back:hover { color: var(--text-primary); }
@@ -1381,6 +1384,8 @@ body {
   font-size: 1rem;
   cursor: pointer;
   padding: 4px 6px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 4px;
   flex-shrink: 0;
   line-height: 1;
@@ -1392,6 +1397,7 @@ body {
   color: var(--accent);
   border-radius: var(--radius-sm);
   padding: 10px 16px;
+  min-height: 44px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -1423,7 +1429,7 @@ body {
 .bulk-letter-name { font-weight: 700; font-size: 0.95rem; color: var(--accent); }
 .bulk-letter .doc-output { border: none; border-radius: 0; background: var(--bg-card); }
 .bulk-letter .copied-msg { margin: 0 16px 12px; }
-.btn-sm { padding: 8px 14px !important; font-size: 0.85rem !important; }
+.btn-sm { padding: 8px 14px !important; font-size: 0.85rem !important; min-height: 44px; }
 
 
 /* ─── MODALS ─────────────────────────────────── */
@@ -1687,6 +1693,7 @@ body {
   background: none;
   border: none;
   padding: 10px 4px;
+  min-height: 44px;
   margin-right: 14px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -1770,6 +1777,7 @@ body {
   border: 1px solid rgba(255,255,255,0.4);
   color: #fff;
   padding: 4px 12px;
+  min-height: 44px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
@@ -2510,6 +2518,7 @@ body {
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
+  min-height: 44px;
   border-bottom: 1px solid var(--border);
   font-size: 0.88rem;
   cursor: pointer;
@@ -2578,7 +2587,7 @@ body {
 /* ═══ BILLS (T067) ═══════════════════════════ */
 .bills-section { margin: 24px 0 0; }
 .bills-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.bills-add-btn { font-size: 0.85rem; padding: 6px 12px; }
+.bills-add-btn { font-size: 0.85rem; padding: 6px 12px; min-height: 44px; }
 .bills-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .bill-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); }
 .bill-item.paid .bill-desc { text-decoration: line-through; color: var(--text-soft); }
@@ -2602,7 +2611,7 @@ body {
 .arkiv-filter-btn {
   padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 20px;
   background: var(--bg-card); color: var(--text-soft); font-size: 0.85rem; font-weight: 500;
-  cursor: pointer; transition: var(--transition); font-family: var(--font);
+  cursor: pointer; transition: var(--transition); font-family: var(--font); min-height: 44px;
 }
 .arkiv-filter-btn:hover { border-color: var(--accent); }
 .arkiv-filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -2644,7 +2653,7 @@ body {
   color: var(--text-soft); white-space: pre-wrap;
 }
 .arkiv-explain.hidden { display: none; }
-.arkiv-delete { background: none; border: none; color: var(--text-soft); font-size: 1.2rem; cursor: pointer; min-width: 36px; min-height: 36px; flex-shrink: 0; }
+.arkiv-delete { background: none; border: none; color: var(--text-soft); font-size: 1.2rem; cursor: pointer; min-width: 44px; min-height: 44px; flex-shrink: 0; }
 .arkiv-delete:hover { color: var(--red); }
 .arkiv-empty { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 16px 0; }
 .arkiv-privacy-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; line-height: 1.5; }

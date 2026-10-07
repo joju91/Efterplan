@@ -72,7 +72,7 @@ export function getClientIp(req) {
 // Fail-open: om rate-limit-kontrollen själv failar (nätverk, Supabase pausat)
 // släpper vi igenom anropet — en trög/nere rate-limiter ska inte slå ut hela
 // funktionen för alla användare.
-export async function checkRateLimit(bucket, ip, limit) {
+export async function checkRateLimit(bucket, ip, limit, { failClosed = false } = {}) {
   try {
     const supa = getSupabaseAdmin();
     const today = new Date().toISOString().slice(0, 10);
@@ -80,11 +80,18 @@ export async function checkRateLimit(bucket, ip, limit) {
     const { data, error } = await supa.rpc('rate_limit_increment', { key_in: key });
     if (error) {
       console.error('[rate-limit]', bucket, error);
-      return { limited: false };
+      return { limited: failClosed, unavailable: failClosed };
     }
     return { limited: typeof data === 'number' && data > limit, count: data };
   } catch (err) {
     console.error('[rate-limit]', bucket, err);
-    return { limited: false };
+    return { limited: failClosed, unavailable: failClosed };
   }
+}
+
+export function stripeIsLiveMode() {
+  const key = (process.env.STRIPE_SECRET_KEY || '').trim();
+  if (key.startsWith('sk_live_') || key.startsWith('rk_live_')) return true;
+  if (key.startsWith('sk_test_') || key.startsWith('rk_test_')) return false;
+  return null;
 }

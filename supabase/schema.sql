@@ -208,7 +208,7 @@ create policy task_completions_delete_own on public.task_completions
       and p.user_id = auth.uid()
   ));
 
--- share_tokens: owner full control; anon can SELECT active tokens only
+-- share_tokens: owner full control. Anonymous access is through token RPCs only.
 drop policy if exists share_tokens_select_own on public.share_tokens;
 create policy share_tokens_select_own on public.share_tokens
   for select to authenticated
@@ -219,9 +219,6 @@ create policy share_tokens_select_own on public.share_tokens
   ));
 
 drop policy if exists share_tokens_select_active_anon on public.share_tokens;
-create policy share_tokens_select_active_anon on public.share_tokens
-  for select to anon
-  using (active = true);
 
 drop policy if exists share_tokens_insert_own on public.share_tokens;
 create policy share_tokens_insert_own on public.share_tokens
@@ -404,7 +401,8 @@ begin
 end;
 $$;
 
-grant execute on function public.create_shared_plan(text, text) to anon, authenticated;
+revoke execute on function public.create_shared_plan(text, text) from public, anon, authenticated;
+grant execute on function public.create_shared_plan(text, text) to service_role;
 
 create or replace function public.get_shared_plan_v2(id_in uuid)
 returns jsonb
@@ -446,11 +444,23 @@ create table if not exists public.reminder_optins (
   unsubscribed boolean not null default false
 );
 
+-- Stable unsubscribe links; adding a volatile default backfills existing rows.
+alter table public.reminder_optins
+  add column if not exists unsubscribe_token uuid default gen_random_uuid();
+update public.reminder_optins
+   set unsubscribe_token = gen_random_uuid()
+ where unsubscribe_token is null;
+alter table public.reminder_optins
+  alter column unsubscribe_token set default gen_random_uuid(),
+  alter column unsubscribe_token set not null;
+create unique index if not exists reminder_optins_unsubscribe_token_key
+  on public.reminder_optins(unsubscribe_token);
+
 create index if not exists reminder_optins_email_idx on public.reminder_optins(lower(email));
 create unique index if not exists reminder_optins_email_unique on public.reminder_optins(lower(email));
 
 alter table public.reminder_optins enable row level security;
--- Ingen anon/authenticated policy — bara service-rollen (api/subscribe-reminder.js) skriver.
+-- Ingen anon/authenticated policy. Nya anmälningar och utskick är avstängda; service-rollen behövs ännu för gamla avregistreringslänkar.
 
 -- ───────────────────────────────────────────────
 -- T147 — Supabase Storage-synk för Arkiv-dokument.

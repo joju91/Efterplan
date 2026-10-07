@@ -14,23 +14,36 @@ const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked — bara
 // ─── PREMIUM ENTITLEMENT ─────────────────────
 // localStorage is the fast path. Server-side source of truth is Supabase
 // (table `purchases`, written by /api/stripe-webhook). Logged-in users and
-// users returning to a known email get auto-restored via /api/check-premium.
-const PREMIUM_KEY        = 'efterplan_premium';
-const PREMIUM_EMAIL_KEY  = 'efterplan_premium_email';
+// verified buyers restore via a Stripe receipt or their signed-in Supabase account.
+const LEGACY_PREMIUM_KEY  = 'efterplan_premium';
+const PREMIUM_SESSION_KEY = 'efterplan_premium_session';
+let premiumInMemory = false;
+try {
+  localStorage.removeItem(LEGACY_PREMIUM_KEY);
+  localStorage.removeItem('efterplan_premium_email');
+} catch (_) {}
 
 function isPremium() {
-  return localStorage.getItem(PREMIUM_KEY) === '1';
+  return premiumInMemory;
 }
 
-function setPremium(email) {
-  localStorage.setItem(PREMIUM_KEY, '1');
-  if (email) localStorage.setItem(PREMIUM_EMAIL_KEY, email);
+function setPremium(sessionId) {
+  premiumInMemory = true;
+  try {
+    localStorage.removeItem(LEGACY_PREMIUM_KEY); // Legacy flag is never trusted as proof of purchase.
+    localStorage.removeItem('efterplan_premium_email');
+    if (sessionId) localStorage.setItem(PREMIUM_SESSION_KEY, sessionId);
+  } catch (_) { /* private browsing: entitlement remains available for this session */ }
   applyPremiumState();
 }
 
 function clearPremium() {
-  localStorage.removeItem(PREMIUM_KEY);
-  localStorage.removeItem(PREMIUM_EMAIL_KEY);
+  premiumInMemory = false;
+  try {
+    localStorage.removeItem(LEGACY_PREMIUM_KEY);
+    localStorage.removeItem('efterplan_premium_email');
+    localStorage.removeItem(PREMIUM_SESSION_KEY);
+  } catch (_) {}
   applyPremiumState();
 }
 
@@ -117,36 +130,55 @@ function applyPremiumState() {
 }
 
 async function checkPremiumServerSide() {
-  let email = localStorage.getItem(PREMIUM_EMAIL_KEY) || '';
-  let userId = '';
+  // A stored Stripe session is an opaque, server-verifiable receipt. Never
+  // trust the old editable localStorage premium flag.
   try {
-    if (window.efterplanAuth && typeof window.efterplanAuth.getCurrentUser === 'function') {
-      const u = await window.efterplanAuth.getCurrentUser();
-      if (u) { userId = u.id || ''; email = email || u.email || ''; }
+    let sessionId = '';
+    try { sessionId = localStorage.getItem(PREMIUM_SESSION_KEY) || ''; } catch (_) {}
+    if (sessionId) {
+      const r = await fetch(`/api/verify-checkout?session_id=${encodeURIComponent(sessionId)}`);
+      if (r.ok) {
+        const data = await r.json();
+        if (data && data.ok) {
+          setPremium(sessionId);
+          return;
+        }
+        try { localStorage.removeItem(PREMIUM_SESSION_KEY); } catch (_) {}
+      } else if (r.status === 400) {
+        try { localStorage.removeItem(PREMIUM_SESSION_KEY); } catch (_) {}
+      }
     }
-  } catch (_) { /* ignore */ }
-  if (!email && !userId) return;
-  try {
-    const params = new URLSearchParams();
-    if (email)  params.set('email', email);
-    if (userId) params.set('user_id', userId);
-    const r = await fetch(`/api/check-premium?${params.toString()}`);
+
+    const token = window.efterplanAuth?.getAccessToken
+      ? await window.efterplanAuth.getAccessToken()
+      : null;
+    if (!token) return;
+    const r = await fetch('/api/check-premium', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (!r.ok) return;
     const data = await r.json();
-    if (data && data.ok && data.premium) setPremium(email);
+    if (data && data.ok && data.premium) setPremium();
   } catch (_) { /* offline ok */ }
 }
 
 async function handlePremiumReturn() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('premium') !== 'success') return;
-  const sessionId = params.get('session_id');
+  const checkoutReturn = window.efterplanCheckoutReturn;
+  window.efterplanCheckoutReturn = null;
+  if (!checkoutReturn) return;
+  const result = checkoutReturn.result;
+  if (result === 'cancelled') {
+    showToast('Betalningen avbröts. Du har inte debiterats. Du kan fortsätta planen utan att betala.', 'info');
+    return;
+  }
+  if (result !== 'success') return;
+  const sessionId = checkoutReturn.sessionId;
   if (!sessionId) return;
   try {
     const r = await fetch(`/api/verify-checkout?session_id=${encodeURIComponent(sessionId)}`);
     const data = await r.json();
     if (data && data.ok) {
-      setPremium(data.email || '');
+      setPremium(sessionId);
       track('premium_activated');
       // Hård konvertering — 49 kr-köp. transaction_id = Stripe-sessionen
       // (Google Ads deduplicerar, så en omladdning dubbelräknar inte).
@@ -160,10 +192,6 @@ async function handlePremiumReturn() {
     }
   } catch (_) {
     showToast('Kunde inte verifiera betalningen — kolla din inkorg för Stripe-kvittot.', 'error');
-  } finally {
-    // Strip query params so reloads don't re-trigger.
-    const clean = window.location.pathname + window.location.hash;
-    window.history.replaceState({}, '', clean);
   }
 }
 
@@ -356,11 +384,22 @@ function obShowStep(step) {
   el.classList.add('active');
   obCurrentStep = step;
   obUpdateDots(step);
-  document.getElementById('ob-back-btn').style.visibility = step === 1 ? 'hidden' : 'visible';
+  const backButton = document.getElementById('ob-back-btn');
+  backButton.style.visibility = 'visible';
+  backButton.textContent = step === 1 ? '← Avsluta' : '← Tillbaka';
   // Update label dynamically
   const labelEl = el.querySelector('.ob-label');
   if (labelEl) {
     labelEl.textContent = `Steg ${Math.min(step, OB_TOTAL)} av ${OB_TOTAL}`;
+  }
+  // Put focus in the newly shown step so keyboard and screen-reader users
+  // are not left on a control that has just been hidden.
+  const heading = el.querySelector('.ob-title');
+  if (heading) {
+    heading.setAttribute('tabindex', '-1');
+    setTimeout(() => {
+      if (el.classList.contains('active')) heading.focus({ preventScroll: true });
+    }, 220);
   }
   if (OB_FOCUS_IDS[step]) {
     setTimeout(() => document.getElementById(OB_FOCUS_IDS[step])?.focus(), 350);
@@ -400,30 +439,7 @@ function generatePlan() {
   saveTaskState();
   track('plan_generated', { relation: state.relation || 'okänd', has_death_date: !!state.deathDate });
   adsConversion(ADS_LABEL_PLAN); // mjuk konvertering — personlig plan skapad
-  submitReminderOptinIfChecked();
   showScreen('screen-plan');
-}
-
-// T178 — skickar samtycket vidare om användaren kryssat i påminnelse-rutan.
-// Bara insamling, inget faktiskt utskick byggt än (se roadmap.md T136/T178).
-function submitReminderOptinIfChecked() {
-  const checked = document.getElementById('ob-reminder-optin')?.checked;
-  const email = document.getElementById('ob-reminder-email')?.value.trim();
-  if (!checked || !email || !window.efterplanAuth) return;
-  if (!email.includes('@')) {
-    showToast('Ange en giltig e-postadress för påminnelse.', 'error');
-    return;
-  }
-  const hasDodsboanmalan = state.tasks.some(t => t.id === 'dodsboanmalan');
-  const types = hasDodsboanmalan ? ['dodsboanmalan'] : ['bouppteckning', 'inlamning'];
-  window.efterplanAuth.subscribeReminder(email, state.deathDate || null, types)
-    .then(() => track('reminder_optin'))
-    .catch(err => console.warn('[reminder-optin]', err));
-}
-
-function toggleReminderEmail() {
-  const checked = document.getElementById('ob-reminder-optin').checked;
-  document.getElementById('ob-reminder-email').classList.toggle('hidden', !checked);
 }
 
 // ─── RULE ENGINE ─────────────────────────────
@@ -2530,13 +2546,17 @@ function saveSenderInfo(name, email) {
   } catch(e) {}
 }
 function getSenderInfo() {
-  return {
-    name:    localStorage.getItem('efterplan_sender_name')    || '',
-    email:   localStorage.getItem('efterplan_sender_email')   || '',
-    address: localStorage.getItem('efterplan_sender_address') || '',
-    zip:     localStorage.getItem('efterplan_sender_zip')     || '',
-    city:    localStorage.getItem('efterplan_sender_city')    || '',
-  };
+  try {
+    return {
+      name:    localStorage.getItem('efterplan_sender_name')    || '',
+      email:   localStorage.getItem('efterplan_sender_email')   || '',
+      address: localStorage.getItem('efterplan_sender_address') || '',
+      zip:     localStorage.getItem('efterplan_sender_zip')     || '',
+      city:    localStorage.getItem('efterplan_sender_city')    || '',
+    };
+  } catch (_) {
+    return { name: '', email: '', address: '', zip: '', city: '' };
+  }
 }
 function saveSenderAddress(address, zip, city) {
   try {
@@ -2731,6 +2751,7 @@ function showDocPaywall(type) {
 
 // ─── BULK UPPSÄGNING ──────────────────────────
 let _bulkRowId = 0;
+const MAX_BULK_SERVICES = 20;
 
 function initBulkForm() {
   _bulkRowId = 0;
@@ -2741,6 +2762,10 @@ function initBulkForm() {
 }
 
 function addBulkRow() {
+  if (document.querySelectorAll('.bulk-row').length >= MAX_BULK_SERVICES) {
+    showFormError('err-bulk', `Du kan lägga till högst ${MAX_BULK_SERVICES} tjänster i taget.`);
+    return;
+  }
   _bulkRowId++;
   const id = _bulkRowId;
   const row = document.createElement('div');
@@ -2760,56 +2785,15 @@ function removeBulkRow(id) {
 
 function generateBulkLetters() {
   const sender = document.getElementById('bulk-sender').value.trim();
-  const email  = document.getElementById('bulk-email').value.trim();
+  const email = document.getElementById('bulk-email').value.trim();
   clearFormError('err-bulk');
   if (!sender || !email) { showFormError('err-bulk', 'Fyll i ditt namn och din e-post.'); return; }
-
-  // Show loading state — lets browser repaint before synchronous work
-  const genBtn = document.querySelector('#doc-form-bulk .btn-primary');
-  if (genBtn) { genBtn.disabled = true; genBtn.textContent = 'Förbereder brev…'; }
-  requestAnimationFrame(() => setTimeout(() => _doGenerateBulk(sender, email, genBtn), 0));
-}
-
-function _doGenerateBulk(sender, email, genBtn) {
+  const services = [...document.querySelectorAll('.bulk-row')].map(row => ({ name: row.querySelector('.bulk-name').value.trim(), custnr: row.querySelector('.bulk-custnr').value.trim() })).filter(s => s.name);
+  if (!services.length) { showFormError('err-bulk', 'Lägg till minst en tjänst med namn.'); return; }
   saveSenderInfo(sender, email);
-
-  const services = [];
-  document.querySelectorAll('.bulk-row').forEach(row => {
-    const name   = row.querySelector('.bulk-name').value.trim();
-    const custnr = row.querySelector('.bulk-custnr').value.trim();
-    if (name) services.push({ name, custnr });
-  });
-  if (services.length === 0) { showFormError('err-bulk', 'Lägg till minst en tjänst med namn.'); return; }
-
-  const { deceased, personnr, today } = getDocContext();
-
-  const letters = services.map(({ name, custnr }) => ({
-    service: name,
-    text: `${sender}\n${email}${formatSenderAddressBlock()}\n\n${today}\n\nTill: ${name}\nÄrende: Avslutning av abonnemang — dödsfall${custnr ? '\nKundnummer: ' + custnr : ''}\n\nHej,\n\nJag kontaktar er angående abonnemanget som tillhörde ${deceased} (personnr ${personnr}), som tyvärr har gått bort.\n\nJag ber er härmed avsluta abonnemanget snarast möjligt och begär återbetalning för eventuell förbetald period efter avslutsdatum.\n\nJag bifogar dödsbevis och är tillgänglig för frågor via e-post.\n\nVänligen bekräfta avslut skriftligen.\n\nMed vänliga hälsningar,\n\n${sender}\n${email}`,
-  }));
-
-  const container = document.getElementById('bulk-letters-list');
-  container.innerHTML = '';
-  letters.forEach((letter, i) => {
-    const div = document.createElement('div');
-    div.className = 'bulk-letter';
-    div.innerHTML = `
-      <div class="bulk-letter-head">
-        <span class="bulk-letter-name">${escapeHtml(letter.service)}</span>
-        <button class="btn-primary btn-sm" onclick="copyBulkLetter(${i})">Kopiera</button>
-      </div>
-      <div class="doc-output" id="bletter-${i}">${letter.text}</div>
-      <p class="copied-msg hidden" id="bcopied-${i}">Kopierat!</p>`;
-    container.appendChild(div);
-  });
-
-  document.getElementById('doc-chooser').classList.add('hidden');
-  document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
-  document.getElementById('doc-result-bulk').classList.remove('hidden');
-  if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Skapa alla brev →'; }
-  track('doc_generated', { title: 'Bulk uppsägning', count: String(services.length) });
-  window.scrollTo(0, 0);
+  requestPremiumDocument('bulk', { sender, email, services }, 'err-bulk', { button: document.querySelector('#doc-form-bulk .btn-primary') });
 }
+
 
 function copyBulkLetter(i) {
   const text = document.getElementById(`bletter-${i}`).innerText;
@@ -2821,91 +2805,16 @@ function copyBulkLetter(i) {
 }
 
 function generateLetter() {
-  const service = document.getElementById('letter-service').value.trim();
-  const custnr  = document.getElementById('letter-custnr').value.trim();
-  const sender  = document.getElementById('letter-sender').value.trim();
-  const email   = document.getElementById('letter-email').value.trim();
+  const fields = { service: document.getElementById('letter-service').value.trim(), custnr: document.getElementById('letter-custnr').value.trim(), sender: document.getElementById('letter-sender').value.trim(), email: document.getElementById('letter-email').value.trim() };
   clearFormError('err-letter');
-  if (!service || !sender || !email) { showFormError('err-letter', 'Fyll i alla fält markerade med *.'); return; }
-  saveSenderInfo(sender, email);
-
-  const { deceased, personnr, today } = getDocContext();
-  const custnrLine = custnr ? `\nKundnummer: ${custnr}` : '';
-
-  showDocResult('Uppsägningsbrev — ' + service, `${sender}
-${email}${formatSenderAddressBlock()}
-
-${today}
-
-Till: ${service}
-Ärende: Avslutning av abonnemang — dödsfall${custnrLine}
-
-Hej,
-
-Jag kontaktar er angående abonnemanget som tillhörde ${deceased} (personnr ${personnr}), som tyvärr har gått bort.
-
-Jag ber er härmed avsluta abonnemanget snarast möjligt och begär återbetalning för eventuell förbetald period efter avslutsdatum.
-
-Jag bifogar dödsbevis och är tillgänglig för eventuella frågor via e-post.
-
-Vänligen bekräfta avslut skriftligen.
-
-Med vänliga hälsningar,
-
-${sender}
-${email}`);
+  if (!fields.service || !fields.sender || !fields.email) { showFormError('err-letter', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(fields.sender, fields.email); requestPremiumDocument('letter', fields, 'err-letter');
 }
 
 function generateBank() {
-  const bank     = document.getElementById('bank-name').value.trim();
-  const sender   = document.getElementById('bank-sender').value.trim();
-  const relation = document.getElementById('bank-relation').value.trim();
-  const email    = document.getElementById('bank-email').value.trim();
-  clearFormError('err-bank');
-  if (!bank || !sender || !relation || !email) { showFormError('err-bank', 'Fyll i alla fält markerade med *.'); return; }
-  saveSenderInfo(sender, email);
-
-  const { deceased, personnr, today } = getDocContext();
-
-  showDocResult('Brev till ' + bank, `${sender}
-${email}${formatSenderAddressBlock()}
-
-${today}
-
-Till: ${bank}
-Ärende: Dödsfallsnotifiering — begäran om kontospärr och tillgångsinformation
-
-Hej,
-
-Jag skriver till er med anledning av att ${deceased} (personnr ${personnr}) har gått bort. Jag är ${relation} och representerar dödsboet.
-
-Jag begär härmed att:
-
-1. Samtliga konton tillhörande ${deceased} spärras tills bouppteckning är genomförd.
-2. En förteckning över befintliga konton och tillgångar skickas till mig.
-3. Ni bekräftar skriftligen att ni tagit emot detta meddelande.
-
-Dödsbevis bifogas detta brev. Ytterligare dokumentation (bouppteckning, fullmakt) skickas så snart det är tillgängligt.
-
-För frågor, kontakta mig på angiven e-postadress.
-
-Med vänliga hälsningar,
-
-${sender}
-${relation} till ${deceased}
-${email}`, undefined, {
-    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort, och jag ringer för att anmäla dödsfallet.
-
-Kan ni spärra kontona som stod i hens namn, och kan jag få en förteckning över konton och tillgångar?
-
-Jag kan mejla eller posta dödsbeviset till er — vad vill ni ha det till, och behöver ni något mer av mig just nu?`,
-    checklist: [
-      'Den avlidnes personnummer',
-      'Ditt eget namn och personnummer',
-      'Eventuellt kundnummer hos banken',
-      'Din relation till den avlidne',
-    ],
-  });
+  const fields = { bank: document.getElementById('bank-name').value.trim(), sender: document.getElementById('bank-sender').value.trim(), relation: document.getElementById('bank-relation').value.trim(), email: document.getElementById('bank-email').value.trim() };
+  clearFormError('err-bank'); if (!fields.bank || !fields.sender || !fields.relation || !fields.email) { showFormError('err-bank', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(fields.sender, fields.email); requestPremiumDocument('bank', fields, 'err-bank');
 }
 
 function generateForsakring() {
@@ -2959,144 +2868,22 @@ Vad behöver ni av mig för att gå vidare — dödsbevis, försäkringsnummer, 
 }
 
 function generateHyresvard() {
-  const vard     = document.getElementById('hyres-vard').value.trim();
-  const adr      = document.getElementById('hyres-adr').value.trim();
-  const sender   = document.getElementById('hyres-sender').value.trim();
-  const relation = document.getElementById('hyres-relation').value.trim();
-  const email    = document.getElementById('hyres-email').value.trim();
-  clearFormError('err-hyresvard');
-  if (!sender || !relation || !email) { showFormError('err-hyresvard', 'Fyll i alla fält markerade med *.'); return; }
-  saveSenderInfo(sender, email);
-
-  const { deceased, personnr, today } = getDocContext();
-  const vardLine = vard ? `Till: ${vard}` : 'Till: Hyresvärden';
-  const adrLine  = adr ? `\nAvser: ${adr}` : '';
-
-  showDocResult('Brev till hyresvärden', `${sender}
-${email}${formatSenderAddressBlock()}
-
-${today}
-
-${vardLine}
-Ärende: Uppsägning av hyreskontrakt — dödsfall${adrLine}
-
-Hej,
-
-Jag skriver angående hyresavtalet för ${deceased} (personnr ${personnr}), som har gått bort.
-
-Jag är ${relation} och företräder dödsboet. Jag säger härmed upp hyresavtalet med en månads uppsägningstid från detta brev, i enlighet med 12 kap. 31 § jordabalken.
-
-Var vänlig bekräfta uppsägningen och meddela datum och tid för besiktning och nyckelöverlämnande. Dödsbevis bifogas.
-
-Med vänliga hälsningar,
-
-${sender}
-${relation} till ${deceased}
-${email}`, 'Uppsägning av hyreskontrakt — dödsfall', {
-    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort, och jag ringer angående hens hyreslägenhet.
-
-Jag vill säga upp lägenheten. Kan ni bekräfta uppsägningstiden och när ni vill ha nycklarna tillbaka?
-
-Jag kan mejla dödsbevis och en skriftlig uppsägning — vad behöver ni av mig?`,
-    checklist: [
-      'Den deceased personnummer',
-      'Lägenhetens adress',
-      'Din relation till den deceased',
-      'Dödsbevis (begärs av hyresvärden)',
-    ],
-  });
+  const fields = { landlord: document.getElementById('hyres-vard').value.trim(), propertyAddress: document.getElementById('hyres-adr').value.trim(), sender: document.getElementById('hyres-sender').value.trim(), relation: document.getElementById('hyres-relation').value.trim(), email: document.getElementById('hyres-email').value.trim() };
+  clearFormError('err-hyresvard'); if (!fields.sender || !fields.relation || !fields.email) { showFormError('err-hyresvard', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(fields.sender, fields.email); requestPremiumDocument('hyresvard', fields, 'err-hyresvard');
 }
-
 
 function generatePension() {
-  const typ      = document.getElementById('pension-typ').value;
-  const sender   = document.getElementById('pension-sender').value.trim();
-  const relation = document.getElementById('pension-relation').value.trim();
-  const email    = document.getElementById('pension-email').value.trim();
-  clearFormError('err-pension');
-  if (!sender || !relation || !email) { showFormError('err-pension', 'Fyll i alla fält markerade med *.'); return; }
-  saveSenderInfo(sender, email);
-
-  const { deceased, personnr, today } = getDocContext();
-
-  const typTexts = {
-    omstallning: {
-      arende: 'Ansökan om omställningspension',
-      body: `Jag kontaktar er för att ansöka om omställningspension med anledning av att min ${relation}, ${deceased} (personnr ${personnr}), har gått bort.\n\nJag uppfyller villkoren för omställningspension (gemensamt hushåll, ej ålderspension). Jag ber er bekräfta att ansökan tagits emot och informera om nästa steg.\n\nOmställningspension betalas inte ut retroaktivt — jag ansöker därför snarast.`,
-    },
-    barnpension: {
-      arende: 'Ansökan om barnpension och efterlevandestöd',
-      body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}), förälder till barn under 20 år, har gått bort.\n\nJag ber er informera om rätten till barnpension och eventuellt efterlevandestöd för barnet/barnen, samt hur ansökan görs.`,
-    },
-  };
-
-  const { arende, body } = typTexts[typ] || typTexts.omstallning;
-
-  showDocResult(`Pensionsmyndigheten — ${arende}`, `${sender}
-${email}${formatSenderAddressBlock()}
-
-${today}
-
-Till: Pensionsmyndigheten
-Ärende: ${arende}
-
-Hej,
-
-${body}
-
-Dödsbevis bifogas. Kontakta mig för ytterligare dokumentation.
-
-Med vänliga hälsningar,
-
-${sender}
-${relation} till ${deceased}
-${email}`, arende, {
-    text: `Hej, jag heter ${sender}. Jag är ${relation} till ${deceased}, som har gått bort. Jag ringer för att ${typ === 'barnpension' ? 'fråga om barnpension för ett barn under 20 år' : 'ansöka om omställningspension'}.
-
-Kan ni bekräfta vad som gäller och vad jag behöver skicka in?
-
-${typ !== 'barnpension' ? 'Observera att omställningspension inte betalas ut retroaktivt — det är viktigt att ansöka snabbt.' : ''}`,
-    checklist: [
-      'Den deceased personnummer',
-      'Ditt eget personnummer',
-      'Din relation till den deceased',
-    ],
-  });
+  const fields = { type: document.getElementById('pension-typ').value, sender: document.getElementById('pension-sender').value.trim(), relation: document.getElementById('pension-relation').value.trim(), email: document.getElementById('pension-email').value.trim() };
+  clearFormError('err-pension'); if (!fields.sender || !fields.relation || !fields.email) { showFormError('err-pension', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(fields.sender, fields.email); requestPremiumDocument('pension', fields, 'err-pension');
 }
-
 
 function generateAnnons() {
-  const name      = document.getElementById('annons-name').value.trim();
-  const born      = document.getElementById('annons-born').value.trim();
-  const died      = document.getElementById('annons-died').value.trim();
-  const survivors = document.getElementById('annons-survivors').value.trim();
-  const memory    = document.getElementById('annons-memory').value.trim();
-  const funeral   = document.getElementById('annons-funeral').value.trim();
-  const ovrigt    = document.getElementById('annons-ovrigt').value.trim();
-
-  clearFormError('err-annons');
-  if (!name) { showFormError('err-annons', 'Ange den avlidnes namn.'); return; }
-
-  const lifeSpan  = (born && died) ? `${born} – ${died}` : (died ? `Avled ${died}` : '');
-  const memLine   = memory ? `\n${memory}\n` : '';
-  const survLine  = survivors ? `\nEfterlämnas av ${survivors}.` : '';
-  const funLine   = funeral ? `\nBegravning: ${funeral}.` : '\nBegravning meddelas i god tid.';
-  const ovrigtLine = ovrigt ? `\n\n${ovrigt}` : '';
-
-  showDocResult('Dödsannons — ' + name, `${name}
-${lifeSpan}
-${memLine}${survLine}
-${funLine}
-
-Sörjd och saknad.${ovrigtLine}`.trim());
+  const fields = { name: document.getElementById('annons-name').value.trim(), born: document.getElementById('annons-born').value.trim(), died: document.getElementById('annons-died').value.trim(), survivors: document.getElementById('annons-survivors').value.trim(), memory: document.getElementById('annons-memory').value.trim(), funeral: document.getElementById('annons-funeral').value.trim(), other: document.getElementById('annons-ovrigt').value.trim() };
+  clearFormError('err-annons'); if (!fields.name) { showFormError('err-annons', 'Ange den avlidnes namn.'); return; }
+  requestPremiumDocument('annons', fields, 'err-annons');
 }
-
-// T195: telefonmanus bredvid brevet — bara satt för brevtyper där folk
-// oftare ringer än skriver (bank, försäkringsbolag). phoneScript är
-// { text, checklist: [...] } eller null/undefined för övriga brevtyper.
-let docPhoneScript = null;
-let docLetterText  = null;
-let docMode        = 'brev';
 
 function showDocResult(title, text, emailSubject, phoneScript) {
   track('doc_generated', { title: title.split(' — ')[0] });
@@ -3118,6 +2905,61 @@ function showDocResult(title, text, emailSubject, phoneScript) {
   switchDocMode('brev');
 }
 
+async function requestPremiumDocument(type, fields, errorId, options = {}) {
+  const form = document.getElementById(errorId)?.closest('.doc-form');
+  const button = options.button || form?.querySelector('.btn-primary') || null;
+  const oldLabel = button?.textContent || '';
+  if (button) { button.disabled = true; button.setAttribute('aria-busy', 'true'); button.textContent = 'Skapar brev…'; }
+  try {
+    const context = getDocContext();
+    const senderInfo = getSenderInfo();
+    const needsSenderAddress = ['letter', 'bulk', 'bank', 'hyresvard', 'pension', 'skatteverket'].includes(type);
+    const requestContext = type === 'annons' ? {} : context;
+    const token = await window.efterplanAuth?.getAccessToken?.();
+    const sessionId = localStorage.getItem(PREMIUM_SESSION_KEY) || '';
+    const r = await fetch('/api/generate-premium-document', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({
+        type,
+        fields: needsSenderAddress ? { ...fields, address: senderInfo.address || '', zip: senderInfo.zip || '', city: senderInfo.city || '' } : fields,
+        context: requestContext,
+        sessionId,
+      }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 403) {
+      clearPremium(); showDocPaywall(type); return;
+    }
+    if (!r.ok || !data.document) throw new Error('request_failed');
+    const doc = data.document;
+    if (doc.bulk) {
+      const container = document.getElementById('bulk-letters-list');
+      container.replaceChildren();
+      doc.letters.forEach((letter, i) => {
+        const card = document.createElement('div'); card.className = 'bulk-letter';
+        const head = document.createElement('div'); head.className = 'bulk-letter-head';
+        const name = document.createElement('span'); name.className = 'bulk-letter-name'; name.textContent = letter.service;
+        const copy = document.createElement('button'); copy.className = 'btn-primary btn-sm'; copy.textContent = 'Kopiera'; copy.onclick = () => copyBulkLetter(i);
+        const text = document.createElement('div'); text.className = 'doc-output'; text.id = `bletter-${i}`; text.textContent = letter.text;
+        const copied = document.createElement('p'); copied.className = 'copied-msg hidden'; copied.id = `bcopied-${i}`; copied.textContent = 'Kopierat!';
+        head.append(name, copy); card.append(head, text, copied); container.append(card);
+      });
+      document.getElementById('doc-chooser').classList.add('hidden');
+      document.querySelectorAll('.doc-form').forEach(form => form.classList.add('hidden'));
+      document.getElementById('doc-result-bulk').classList.remove('hidden');
+      track('doc_generated', { title: 'Bulk uppsägning', count: String(doc.letters.length) });
+      window.scrollTo(0, 0);
+    } else {
+      showDocResult(doc.title, doc.text, doc.emailSubject, doc.phoneScript);
+    }
+  } catch (_) {
+    showFormError(errorId, 'Brevet kunde inte skapas just nu. Kontrollera anslutningen och försök igen.');
+  } finally {
+    if (button) { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = oldLabel; }
+  }
+}
+
 function switchDocMode(mode) {
   docMode = mode;
   const isPhone = mode === 'telefon' && docPhoneScript;
@@ -3137,63 +2979,16 @@ function switchDocMode(mode) {
 }
 
 function generateSkatteverket() {
-  const arende   = document.getElementById('skv-arende').value;
-  const sender   = document.getElementById('skv-sender').value.trim();
-  const relation = document.getElementById('skv-relation').value.trim();
-  const email    = document.getElementById('skv-email').value.trim();
-  clearFormError('err-skatteverket');
-  if (!sender || !relation || !email) { showFormError('err-skatteverket', 'Fyll i alla fält markerade med *.'); return; }
-  saveSenderInfo(sender, email);
-
-  const { deceased, personnr, today } = getDocContext();
-
-  const arendeTexts = {
-    intyg:    { subject: 'Begäran om dödsfallsintyg och personbevis för dödsbo', body: `Jag kontaktar er för att begära dödsfallsintyg och personbevis avseende dödsboet efter ${deceased} (personnr ${personnr}), som gick bort nyligen.\n\nDokumenten behövs för dödsboets räkning i samband med bouppteckning och kontakt med banker och myndigheter.\n\nJag är ${relation} och dödsbodelägare. Vänligen skicka handlingarna till angiven e-postadress, eller meddela hur ansökan görs via er e-tjänst.` },
-    fskatt:   { subject: 'Begäran om avslut av F-skatt — dödsfall', body: `Jag kontaktar er med anledning av att ${deceased} (personnr ${personnr}) har gått bort och att den av hen bedrivna enskilda näringsverksamheten därmed ska avslutas.\n\nJag ber er avregistrera F-skatten och eventuell mervärdesskatt (moms) med dödsdatum som slutdatum.\n\nJag är ${relation} och företräder dödsboet. Dödsbevis bifogas. Kontakta mig för ytterligare dokumentation.` },
-    slutskatt: { subject: 'Begäran om information om slutlig skatt — dödsfall', body: `Jag kontaktar er angående slutlig skatt för ${deceased} (personnr ${personnr}), som har gått bort.\n\nJag ber er bekräfta om det finns kvarsstående skattefordringar eller skatteåterbäring att reglera, samt hur dödsboet ska gå till väga.\n\nJag är ${relation} och dödsbodelägare. Vänligen kontakta mig på angiven e-postadress.` },
-  };
-
-  const { subject, body } = arendeTexts[arende];
-
-  showDocResult(`Skatteverket — ${subject}`, `${sender}\n${email}${formatSenderAddressBlock()}\n\n${today}\n\nTill: Skatteverket\nÄrende: ${subject}\n\nHej,\n\n${body}\n\nMed vänliga hälsningar,\n\n${sender}\n${relation} till ${deceased}\n${email}`, subject);
+  const fields = { case: document.getElementById('skv-arende').value, sender: document.getElementById('skv-sender').value.trim(), relation: document.getElementById('skv-relation').value.trim(), email: document.getElementById('skv-email').value.trim() };
+  clearFormError('err-skatteverket'); if (!fields.sender || !fields.relation || !fields.email) { showFormError('err-skatteverket', 'Fyll i alla fält markerade med *.'); return; }
+  saveSenderInfo(fields.sender, fields.email); requestPremiumDocument('skatteverket', fields, 'err-skatteverket');
 }
-
 
 function generateFullmakt() {
-  const grantor1 = document.getElementById('fullmakt-grantor1').value.trim();
-  const grantor2 = document.getElementById('fullmakt-grantor2').value.trim();
-  const agent    = document.getElementById('fullmakt-agent').value.trim();
-  const relation = document.getElementById('fullmakt-relation').value.trim();
-  clearFormError('err-fullmakt');
-  if (!grantor1 || !agent) { showFormError('err-fullmakt', 'Fyll i alla fält markerade med *.'); return; }
-
-  const { deceased, personnr, today } = getDocContext();
-  const grantors = grantor2 ? `${grantor1} och ${grantor2}` : grantor1;
-  const agentLine = relation ? `${agent} (${relation})` : agent;
-
-  showDocResult('Fullmakt — dödsbo', `FULLMAKT
-Utfärdad: ${today}
-
-Vi, undertecknade dödsbodelägare efter ${deceased} (personnr ${personnr}), ger härmed
-
-  ${agentLine}
-
-fullmakt att för dödsboets räkning:
-
-• Kontakta och företräda dödsboet gentemot banker och finansinstitut
-• Begära kontoinformation och genomföra betalningar ur dödsboets medel
-• Teckna dödsboets namn i löpande ärenden
-• Kontakta myndigheter (Skatteverket, Kronofogden m.fl.) å dödsboets vägnar
-• Säga upp avtal och abonnemang tillhörande ${deceased}
-
-Fullmakten gäller tills dödsboet är avslutat och ska uppvisas i original vid bankbesök.
-
-
-______________________________    ______________________________
-${grantors}
-Dödsbodelägare                    Datum och ort`);
+  const fields = { grantor1: document.getElementById('fullmakt-grantor1').value.trim(), grantor2: document.getElementById('fullmakt-grantor2').value.trim(), agent: document.getElementById('fullmakt-agent').value.trim(), agentRelation: document.getElementById('fullmakt-relation').value.trim() };
+  clearFormError('err-fullmakt'); if (!fields.grantor1 || !fields.agent) { showFormError('err-fullmakt', 'Fyll i alla fält markerade med *.'); return; }
+  requestPremiumDocument('fullmakt', fields, 'err-fullmakt');
 }
-
 
 function printBulkLetters() {
   const letters = [];
@@ -3202,7 +2997,7 @@ function printBulkLetters() {
   });
   if (!letters.length) return;
   const pages = letters.map((letter, i) =>
-    `<div style="page-break-after:${i < letters.length - 1 ? 'always' : 'auto'};white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.8;padding:40px 50px;">${letter}</div>`
+    `<div style="page-break-after:${i < letters.length - 1 ? 'always' : 'auto'};white-space:pre-wrap;font-family:Georgia,serif;font-size:11pt;line-height:1.8;padding:40px 50px;">${escapeHtml(letter)}</div>`
   ).join('');
   const win = window.open('', '_blank');
   if (!win) { showToast('Din webbläsare blockerade popup-fönstret. Tillåt popups för efterplan.se och försök igen.', 'error'); return; }
@@ -3279,7 +3074,8 @@ function showToast(msg, type) {
   if (!toast || !msgEl) return;
   msgEl.textContent = msg;
   toast.classList.remove('hidden', 'is-error', 'is-success');
-  if (type) toast.classList.add(type === 'error' ? 'is-error' : 'is-success');
+  if (type === 'error') toast.classList.add('is-error');
+  if (type === 'success') toast.classList.add('is-success');
   clearTimeout(_appToastTimer);
   _appToastTimer = setTimeout(() => toast.classList.add('hidden'), 5000);
 }
@@ -3455,20 +3251,31 @@ window.addEventListener('efterplan:documents-hydrated', (e) => {
   added.forEach(d => { if (!existingIds.has(d.id)) state.documents.push(d); });
   if (document.getElementById('arkiv-list')) renderDocuments();
 });
-
 async function handlePaywallCTA() {
+  if (checkoutInFlight) return;
+  checkoutInFlight = true;
+  const button = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null;
+  const originalLabel = button?.textContent || '';
+  if (button) {
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    button.textContent = 'Öppnar betalningen…';
+  }
   track('paywall_cta_clicked');
-  if (isPremium()) return;
+  if (isPremium()) {
+    checkoutInFlight = false;
+    if (button) { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = originalLabel; }
+    return;
+  }
   let email = '';
   let userId = '';
+  let redirecting = false;
   try {
     if (window.efterplanAuth && typeof window.efterplanAuth.getCurrentUser === 'function') {
       const u = await window.efterplanAuth.getCurrentUser();
       if (u) { userId = u.id || ''; email = u.email || ''; }
     }
   } catch (_) { /* anonymous flow is fine */ }
-  if (!email) email = localStorage.getItem(PREMIUM_EMAIL_KEY) || '';
-
   try {
     const r = await fetch('/api/create-checkout', {
       method: 'POST',
@@ -3480,10 +3287,15 @@ async function handlePaywallCTA() {
       showToast('Kunde inte starta betalningen. Försök igen om en stund.', 'error');
       return;
     }
-    if (email) localStorage.setItem(PREMIUM_EMAIL_KEY, email);
+    redirecting = true;
     window.location.href = data.url;
   } catch (err) {
     showToast('Något gick fel mot betaltjänsten. Kontrollera din anslutning och försök igen.', 'error');
+  } finally {
+    if (!redirecting) {
+      checkoutInFlight = false;
+      if (button) { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = originalLabel; }
+    }
   }
 }
 
