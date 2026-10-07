@@ -1,12 +1,12 @@
--- Efterplan â€” Supabase schema (T051/T052/T053)
+-- Efterplan — Supabase schema (T051/T052/T053)
 -- Run top-to-bottom in the Supabase SQL editor.
 -- Safe to re-run: every statement uses IF NOT EXISTS / CREATE OR REPLACE where possible.
 
 create extension if not exists pgcrypto;
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 -- Tables
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 
 create table if not exists public.users (
   id         uuid primary key references auth.users(id) on delete cascade,
@@ -67,8 +67,8 @@ create table if not exists public.purchases (
 create index if not exists purchases_email_idx on public.purchases(lower(email));
 create index if not exists purchases_user_id_idx on public.purchases(user_id);
 
--- Rate limiting (T162) â€” enkel dagsvis rÃ¤knare per nyckel (t.ex. "endpoint:ip:datum").
--- Bara service-rollen (vÃ¥ra /api/*-funktioner) lÃ¤ser/skriver, se rate_limit_increment nedan.
+-- Rate limiting (T162) — enkel dagsvis räknare per nyckel (t.ex. "endpoint:ip:datum").
+-- Bara service-rollen (våra /api/*-funktioner) läser/skriver, se rate_limit_increment nedan.
 create table if not exists public.rate_limits (
   bucket_key text primary key,
   count      integer not null default 0,
@@ -79,9 +79,9 @@ create table if not exists public.rate_limits (
 create unique index if not exists share_tokens_plan_kind_active_key
   on public.share_tokens(plan_id, kind) where active = true;
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 -- Triggers
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -117,9 +117,9 @@ create trigger plans_bump_updated_at
   before update on public.plans
   for each row execute function public.bump_plan_updated_at();
 
--- T162: atomisk "hÃ¤mta och rÃ¤kna upp" fÃ¶r en rate-limit-nyckel. Nyckeln bÃ¤r
--- sjÃ¤lv sitt tidsfÃ¶nster (t.ex. "categorize-document:1.2.3.4:2026-08-12"), sÃ¥
--- ingen separat fÃ¶nster-logik behÃ¶vs â€” en ny dag ger automatiskt en ny nyckel/rad.
+-- T162: atomisk "hämta och räkna upp" för en rate-limit-nyckel. Nyckeln bär
+-- själv sitt tidsfönster (t.ex. "categorize-document:1.2.3.4:2026-08-12"), så
+-- ingen separat fönster-logik behövs — en ny dag ger automatiskt en ny nyckel/rad.
 create or replace function public.rate_limit_increment(key_in text)
 returns integer
 language sql
@@ -136,19 +136,19 @@ $$;
 
 grant execute on function public.rate_limit_increment(text) to service_role;
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 -- Row Level Security
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 
 alter table public.users            enable row level security;
 alter table public.plans            enable row level security;
 alter table public.task_completions enable row level security;
 alter table public.share_tokens     enable row level security;
 alter table public.purchases        enable row level security;
--- No anon/authenticated policies on purchases â€” only the service role
+-- No anon/authenticated policies on purchases — only the service role
 -- (used by /api/* serverless functions) reads/writes this table.
 alter table public.rate_limits      enable row level security;
--- No anon/authenticated policies on rate_limits either â€” only reached via
+-- No anon/authenticated policies on rate_limits either — only reached via
 -- rate_limit_increment() (security definer) from /api/* serverless functions.
 
 -- users: select/update own row only
@@ -252,10 +252,10 @@ create policy share_tokens_delete_own on public.share_tokens
       and p.user_id = auth.uid()
   ));
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 -- Anonymous shared-plan read (bypasses RLS on plans)
 -- Returns the plan's state_json and the token kind when active.
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 
 create or replace function public.get_shared_plan(token_in text)
 returns jsonb
@@ -277,11 +277,11 @@ $$;
 
 grant execute on function public.get_shared_plan(text) to anon, authenticated;
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 -- Anonymous task-toggle for edit-kind tokens.
 -- Only touches the `efterplan_tasks` key of plans.state_json
 -- and the matching row in task_completions. No other fields change.
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
 
 create or replace function public.toggle_shared_task(
   token_in text,
@@ -357,13 +357,13 @@ $$;
 grant execute on function public.toggle_shared_task(text, text, boolean)
   to anon, authenticated;
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- T177 â€” Zero-knowledge delning (lÃ¤sbar lÃ¤nk).
--- INTE den skrotade share_tokens-modellen ovan (T124/T141) â€” servern lagrar
+-- ───────────────────────────────────────────────
+-- T177 — Zero-knowledge delning (läsbar länk).
+-- INTE den skrotade share_tokens-modellen ovan (T124/T141) — servern lagrar
 -- bara krypterad text, aldrig nyckeln. Nyckeln finns bara i URL-fragmentet
--- (#k=...) som webblÃ¤saren aldrig skickar till servern. Supabase (och dÃ¤rmed
--- vi) kan inte lÃ¤sa innehÃ¥llet ens om databasen skulle lÃ¤cka.
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- (#k=...) som webbläsaren aldrig skickar till servern. Supabase (och därmed
+-- vi) kan inte läsa innehållet ens om databasen skulle läcka.
+-- ───────────────────────────────────────────────
 
 create table if not exists public.shared_plans (
   id         uuid primary key default gen_random_uuid(),
@@ -374,8 +374,8 @@ create table if not exists public.shared_plans (
 );
 
 alter table public.shared_plans enable row level security;
--- Ingen anon/authenticated policy pÃ¥ tabellen â€” nÃ¥r bara via RPC:erna nedan,
--- som validerar indata och inte returnerar mer Ã¤n nÃ¶dvÃ¤ndigt.
+-- Ingen anon/authenticated policy på tabellen — når bara via RPC:erna nedan,
+-- som validerar indata och inte returnerar mer än nödvändigt.
 
 create or replace function public.create_shared_plan(ciphertext_in text, iv_in text)
 returns uuid
@@ -428,12 +428,12 @@ $$;
 
 grant execute on function public.get_shared_plan_v2(uuid) to anon, authenticated;
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- T178 â€” Samtycke till deadline-pÃ¥minnelser (insamlingsdelen).
--- Inget faktiskt mejlutskick i denna omgÃ¥ng â€” det krÃ¤ver ett separat val av
--- e-postleverantÃ¶r + cron, se roadmap.md T136/T178. Den hÃ¤r tabellen bara
--- sparar samtycket sÃ¥ det finns att bygga vidare pÃ¥.
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ───────────────────────────────────────────────
+-- T178 — Samtycke till deadline-påminnelser (insamlingsdelen).
+-- Inget faktiskt mejlutskick i denna omgång — det kräver ett separat val av
+-- e-postleverantör + cron, se roadmap.md T136/T178. Den här tabellen bara
+-- sparar samtycket så det finns att bygga vidare på.
+-- ───────────────────────────────────────────────
 
 create table if not exists public.reminder_optins (
   id           uuid primary key default gen_random_uuid(),
@@ -460,26 +460,26 @@ create index if not exists reminder_optins_email_idx on public.reminder_optins(l
 create unique index if not exists reminder_optins_email_unique on public.reminder_optins(lower(email));
 
 alter table public.reminder_optins enable row level security;
--- Ingen anon/authenticated policy. Nya anmÃ¤lningar och utskick Ã¤r avstÃ¤ngda; service-rollen behÃ¶vs Ã¤nnu fÃ¶r gamla avregistreringslÃ¤nkar.
+-- Ingen anon/authenticated policy. Nya anmälningar och utskick är avstängda; service-rollen behövs ännu för gamla avregistreringslänkar.
 
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- T147 â€” Supabase Storage-synk fÃ¶r Arkiv-dokument.
+-- ───────────────────────────────────────────────
+-- T147 — Supabase Storage-synk för Arkiv-dokument.
 -- Fotona i state.documents (base64) fanns tidigare bara i localStorage,
--- aldrig pÃ¥ servern. Metadata gÃ¥r i denna tabell, den binÃ¤ra bilden i en
--- privat Storage-bucket ('documents') â€” inte som text genom state_json,
--- som skulle bli extremt ineffektivt fÃ¶r base64-blobbar.
--- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- aldrig på servern. Metadata går i denna tabell, den binära bilden i en
+-- privat Storage-bucket ('documents') — inte som text genom state_json,
+-- som skulle bli extremt ineffektivt för base64-blobbar.
+-- ───────────────────────────────────────────────
 
 create table if not exists public.documents (
   id           uuid primary key default gen_random_uuid(),
   user_id      uuid not null references public.users(id) on delete cascade,
   client_id    text not null, -- matchar det lokala Date.now()-genererade id:t i state.documents
   name         text not null default '',
-  category     text not null default 'Ã–vrigt',
-  doc_date     text,          -- formaterat visningsdatum frÃ¥n klienten (formatDate()), inte en riktig date-kolumn
+  category     text not null default 'Övrigt',
+  doc_date     text,          -- formaterat visningsdatum från klienten (formatDate()), inte en riktig date-kolumn
   flag         text,
   image_hash   text,
-  storage_path text,          -- sÃ¶kvÃ¤g i 'documents'-bucketen, t.ex. "{user_id}/{client_id}.jpg"
+  storage_path text,          -- sökväg i 'documents'-bucketen, t.ex. "{user_id}/{client_id}.jpg"
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -528,9 +528,9 @@ create policy documents_delete_own on public.documents
   for delete to authenticated
   using (user_id = auth.uid());
 
--- Storage: privat bucket fÃ¶r dokumentfotona (base64 â†’ binÃ¤r blob).
--- Inte public â€” RLS-policies nedan begrÃ¤nsar till Ã¤garens egen mapp
--- ({user_id}/...), signerade URL:er anvÃ¤nds fÃ¶r nedladdning.
+-- Storage: privat bucket för dokumentfotona (base64 → binär blob).
+-- Inte public — RLS-policies nedan begränsar till ägarens egen mapp
+-- ({user_id}/...), signerade URL:er används för nedladdning.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('documents', 'documents', false, 5242880, array['image/jpeg','image/png','image/webp'])
 on conflict (id) do nothing;
