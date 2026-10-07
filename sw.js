@@ -1,12 +1,11 @@
-/* Efterplan — Service Worker */
+/* Efterplan â€” Service Worker */
 const CACHE = 'efterplan-v19';
 const ASSETS = [
   './',
   './index.html',
-  './style.css',
-  './style-tokens.css?v=7',
-  './app.js',
-  './supabase-client.js?v=3',
+  './style.css?v=14',
+  './style-tokens.css?v=7',  './app.js',
+  './supabase-client.js?v=4',
   './manifest.json',
   './icon.svg',
   './og.png',
@@ -42,7 +41,7 @@ self.addEventListener('activate', e => {
 });
 
 // Cache-first: serve from cache, fall back to network
-// Google Fonts: cacha vid första hämtning (annars funkar inte appen offline)
+// Google Fonts: cacha vid fÃ¶rsta hÃ¤mtning (annars funkar inte appen offline)
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = e.request.url;
@@ -64,3 +63,4 @@ self.addEventListener('fetch', e => {
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
+
