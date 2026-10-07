@@ -1,5 +1,11 @@
 # Rika Tillsammans-forumet — trådsvar, utkast 2026-10-06
 
+> **⚠️ POSTA INTE (Jonas, 2026-10-07):** trådarna nedan är flera år gamla.
+> De hittades via sökmotor och datumen kunde inte kontrolleras från
+> molnmiljön. Svaren är sakgranskade och kan återanvändas som FAQ-innehåll
+> på efterplan.se, men ska inte postas i trådarna.
+
+
 Hittade via sökmotor. **Forumet (rikatillsammans.se) är blockerat i den här
 miljön, så trådarna kunde inte läsas i sin helhet** — utkasten bygger på
 rubrik och sökutdrag. Innan du postar: läs tråden, kolla att den är aktiv och

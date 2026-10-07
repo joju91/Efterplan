@@ -1,5 +1,11 @@
 # Community-svar — utkast 2026-10-06
 
+> **⚠️ POSTA INTE (Jonas, 2026-10-07):** trådarna nedan är flera år gamla.
+> De hittades via sökmotor och datumen kunde inte kontrolleras från
+> molnmiljön. Svaren är sakgranskade och kan återanvändas som FAQ-innehåll
+> på efterplan.se, men ska inte postas i trådarna.
+
+
 Nya trådar som inte redan finns i `community-watch.md`, `community-svar-*.md`
 eller community-scan-PR #137. Hittade via sökmotor — **forumen är blockerade i
 den här miljön, så trådarna är inte lästa i sin helhet.** Innan du postar: läs
