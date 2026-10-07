@@ -1,4 +1,4 @@
-// Efterplan â€” Supabase client (T051/T052/T053)
+// Efterplan — Supabase client (T051/T052/T053)
 // Loads @supabase/supabase-js v2 UMD bundle from CDN, exposes a tiny API on
 // window.efterplanAuth. Silently no-ops if SUPABASE_CONFIG is empty, so the
 // static site keeps working offline for signed-out users.
@@ -26,7 +26,7 @@ const SUPABASE_CONFIG = {
   let currentUser = null;
   let syncTimer = null;
   let documentsSyncTimer = null;
-  const uploadedDocIds = new Set(); // T147: undvik att ladda upp samma foto flera gÃ¥nger per session
+  const uploadedDocIds = new Set(); // T147: undvik att ladda upp samma foto flera gånger per session
 
   function isConfigured() {
     return !!(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey);
@@ -154,7 +154,7 @@ const SUPABASE_CONFIG = {
 
   async function signInWithMagicLink(email) {
     await initSupabase();
-    if (!client) throw new Error('Supabase Ã¤r inte konfigurerad');
+    if (!client) throw new Error('Supabase är inte konfigurerad');
     return client.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: window.location.origin + '/' },
@@ -256,11 +256,11 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
-  // â”€â”€ T147: Arkiv-dokument-synk (Storage + documents-tabell) â”€â”€â”€â”€â”€â”€
-  // localStorage (state.documents, med base64-foton) fÃ¶rblir source-of-truth
-  // fÃ¶r icke-inloggade/offline, exakt som planen redan fungerar. Inloggade
-  // anvÃ¤ndare fÃ¥r dessutom en synk hit: fotot laddas upp som binÃ¤r blob till
-  // Storage-bucketen 'documents', bara metadata + sÃ¶kvÃ¤g gÃ¥r i Postgres.
+  // ── T147: Arkiv-dokument-synk (Storage + documents-tabell) ──────
+  // localStorage (state.documents, med base64-foton) förblir source-of-truth
+  // för icke-inloggade/offline, exakt som planen redan fungerar. Inloggade
+  // användare får dessutom en synk hit: fotot laddas upp som binär blob till
+  // Storage-bucketen 'documents', bara metadata + sökväg går i Postgres.
   function dataUrlToBlob(dataUrl) {
     const [header, base64] = dataUrl.split(',');
     const mimeMatch = /data:([^;]+);base64/.exec(header || '');
@@ -288,8 +288,8 @@ const SUPABASE_CONFIG = {
       for (const doc of documents) {
         if (!doc || !doc.id) continue;
         let storagePath = doc._storagePath || null;
-        // Bara ladda upp binÃ¤rdatan en gÃ¥ng per session/foto â€” base64:an Ã¤ndras
-        // aldrig efter att dokumentet skapats, bara metadata (namn, flagga) gÃ¶r.
+        // Bara ladda upp binärdatan en gång per session/foto — base64:an ändras
+        // aldrig efter att dokumentet skapats, bara metadata (namn, flagga) gör.
         if (doc.photo && typeof doc.photo === 'string' && doc.photo.startsWith('data:') && !uploadedDocIds.has(doc.id)) {
           const uploaded = await uploadDocumentPhoto(doc.id, doc.photo);
           if (uploaded) { storagePath = uploaded; uploadedDocIds.add(doc.id); }
@@ -298,7 +298,7 @@ const SUPABASE_CONFIG = {
           user_id: currentUser.id,
           client_id: doc.id,
           name: doc.name || '',
-          category: doc.category || 'Ã–vrigt',
+          category: doc.category || 'Övrigt',
           doc_date: doc.date || null,
           flag: doc.flag || null,
           image_hash: doc.imageHash || null,
@@ -309,10 +309,10 @@ const SUPABASE_CONFIG = {
     }, 2000);
   }
 
-  // T147: explicit borttagning (inte en diff mot hela listan â€” en diff hade
-  // kunnat rÃ¥ka radera dokument som bara Ã¤nnu inte hunnit hydreras ner pÃ¥ en
-  // ny enhet, om en synk triggas innan hydrateDocumentsFromRemote() Ã¤r klar).
-  // deleteDocument() i app.js skickar det hÃ¤r eventet direkt vid borttagning.
+  // T147: explicit borttagning (inte en diff mot hela listan — en diff hade
+  // kunnat råka radera dokument som bara ännu inte hunnit hydreras ner på en
+  // ny enhet, om en synk triggas innan hydrateDocumentsFromRemote() är klar).
+  // deleteDocument() i app.js skickar det här eventet direkt vid borttagning.
   async function deleteRemoteDocument(clientId) {
     if (!client || !currentUser || !clientId) return;
     const { data: row } = await client
@@ -353,18 +353,18 @@ const SUPABASE_CONFIG = {
       let photo = null;
       if (row.storage_path) {
         const { data: signed } = await client.storage.from('documents')
-          .createSignedUrl(row.storage_path, 60 * 60 * 24); // 24h â€” tillrÃ¤ckligt fÃ¶r en session, fÃ¶rnyas vid nÃ¤sta inloggning
+          .createSignedUrl(row.storage_path, 60 * 60 * 24); // 24h — tillräckligt för en session, förnyas vid nästa inloggning
         photo = signed ? signed.signedUrl : null;
       }
       added.push({
         id: row.client_id,
         name: row.name || '',
-        category: row.category || 'Ã–vrigt',
+        category: row.category || 'Övrigt',
         date: row.doc_date || '',
         flag: row.flag || null,
         photo,
         imageHash: row.image_hash || null,
-        _storagePath: row.storage_path || null, // undviker onÃ¶dig re-upload av redan synkade foton
+        _storagePath: row.storage_path || null, // undviker onödig re-upload av redan synkade foton
       });
     }
     if (!added.length) return;
@@ -372,10 +372,10 @@ const SUPABASE_CONFIG = {
     window.dispatchEvent(new CustomEvent('efterplan:documents-hydrated', { detail: added }));
   }
 
-  // â”€â”€ T177: zero-knowledge delning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── T177: zero-knowledge delning ────────────────
   // Servern lagrar bara krypterad text (AES-GCM). Nyckeln finns aldrig i en
-  // request till Supabase â€” den stannar i URL-fragmentet (#k=...), som
-  // webblÃ¤sare aldrig skickar Ã¶ver nÃ¤tverket. Se supabase/schema.sql.
+  // request till Supabase — den stannar i URL-fragmentet (#k=...), som
+  // webbläsare aldrig skickar över nätverket. Se supabase/schema.sql.
   function bufToBase64url(buf) {
     let bin = '';
     new Uint8Array(buf).forEach(b => { bin += String.fromCharCode(b); });
@@ -391,7 +391,7 @@ const SUPABASE_CONFIG = {
 
   async function createSharedLink(plainObj) {
     await initSupabase();
-    if (!client) throw new Error('Supabase Ã¤r inte konfigurerad');
+    if (!client) throw new Error('Supabase är inte konfigurerad');
     const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const plaintext = new TextEncoder().encode(JSON.stringify(plainObj));
@@ -415,9 +415,9 @@ const SUPABASE_CONFIG = {
 
   async function resolveSharedLink(id, keyStr) {
     await initSupabase();
-    if (!client) throw new Error('Supabase Ã¤r inte konfigurerad');
+    if (!client) throw new Error('Supabase är inte konfigurerad');
     const { data, error } = await client.rpc('get_shared_plan_v2', { id_in: id });
-    if (error || !data) throw (error || new Error('LÃ¤nken hittades inte'));
+    if (error || !data) throw (error || new Error('Länken hittades inte'));
 
     const rawKey = base64urlToBuf(keyStr);
     const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']);
@@ -427,7 +427,7 @@ const SUPABASE_CONFIG = {
     return JSON.parse(new TextDecoder().decode(plainBuf));
   }
 
-  // â”€â”€ T178: samtycke till deadline-pÃ¥minnelser (insamling, inget utskick Ã¤n) â”€â”€
+  // ── T178: samtycke till deadline-påminnelser (insamling, inget utskick än) ──
   async function subscribeReminder(email, deathDate, types) {
     const r = await fetch('/api/subscribe-reminder', {
       method: 'POST',
@@ -457,8 +457,8 @@ const SUPABASE_CONFIG = {
   };
 
   window.addEventListener('efterplan:state-changed', syncToSupabase);
-  // T147: egen event, inte state-changed â€” dokumentfoton ska INTE gÃ¥ genom
-  // plans.state_json (fÃ¶r stora/oeffektivt), de synkas separat mot Storage.
+  // T147: egen event, inte state-changed — dokumentfoton ska INTE gå genom
+  // plans.state_json (för stora/oeffektivt), de synkas separat mot Storage.
   window.addEventListener('efterplan:documents-changed', (e) => syncDocumentsToSupabase(e.detail));
   window.addEventListener('efterplan:document-deleted', (e) => deleteRemoteDocument(e.detail));
 
@@ -468,4 +468,3 @@ const SUPABASE_CONFIG = {
     initSupabase();
   }
 })();
-
