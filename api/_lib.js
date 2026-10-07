@@ -8,15 +8,15 @@ export function getStripe() {
 }
 
 // SUPABASE_URL i Vercel har legat som ".../rest/v1", vilket gav
-// ".../rest/v1/rest/v1/..." (404/PGRST125). Klipp bort sÃ¶kvÃ¤gen sÃ¥ bara
-// projektets bas-URL anvÃ¤nds.
+// ".../rest/v1/rest/v1/..." (404/PGRST125). Klipp bort sökvägen så bara
+// projektets bas-URL används.
 function supabaseBaseUrl() {
   const url = (process.env.SUPABASE_URL || '').trim();
   return url.replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
 }
 
 function supabaseServerKey() {
-  // StÃ¶der bÃ¥de nya sb_secret_* och Ã¤ldre service_role JWT.
+  // Stöder både nya sb_secret_* och äldre service_role JWT.
   return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 }
 
@@ -27,7 +27,7 @@ export function getSupabaseAdmin() {
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
-// RÃ¥ REST-anrop med servernyckeln (fÃ¶r ads-API:erna, som kÃ¶r fetch direkt).
+// Rå REST-anrop med servernyckeln (för ads-API:erna, som kör fetch direkt).
 export function supabaseRest(path) {
   return `${supabaseBaseUrl()}/rest/v1/${path}`;
 }
@@ -36,7 +36,7 @@ export function supabaseServerHeaders(extra = {}) {
   const key = supabaseServerKey();
   if (!key) throw new Error('SUPABASE_SECRET_KEY missing');
   const headers = { apikey: key, 'Content-Type': 'application/json', ...extra };
-  // Legacy service_role Ã¤r en JWT och vill ha Bearer; sb_secret_* rÃ¤cker i apikey.
+  // Legacy service_role är en JWT och vill ha Bearer; sb_secret_* räcker i apikey.
   if (key.startsWith('eyJ')) headers.Authorization = `Bearer ${key}`;
   return headers;
 }
@@ -59,8 +59,8 @@ export function normalizeEmail(e) {
   return (e || '').trim().toLowerCase();
 }
 
-// T162: klientens IP fÃ¶r rate-limiting. Vercel sÃ¤tter x-forwarded-for;
-// fÃ¶rsta adressen i listan Ã¤r den faktiska klienten (resten Ã¤r proxy-hopp).
+// T162: klientens IP för rate-limiting. Vercel sätter x-forwarded-for;
+// första adressen i listan är den faktiska klienten (resten är proxy-hopp).
 export function getClientIp(req) {
   const xff = req.headers['x-forwarded-for'];
   if (typeof xff === 'string' && xff.length) return xff.split(',')[0].trim();
@@ -68,10 +68,10 @@ export function getClientIp(req) {
 }
 
 // T162: enkelt per-nyckel dagligt tak, backat av Supabase (samma projekt/secret
-// som redan finns, se T163) istÃ¤llet fÃ¶r att krÃ¤va en ny Upstash/KV-integration.
-// Fail-open: om rate-limit-kontrollen sjÃ¤lv failar (nÃ¤tverk, Supabase pausat)
-// slÃ¤pper vi igenom anropet â€” en trÃ¶g/nere rate-limiter ska inte slÃ¥ ut hela
-// funktionen fÃ¶r alla anvÃ¤ndare.
+// som redan finns, se T163) istället för att kräva en ny Upstash/KV-integration.
+// Fail-open: om rate-limit-kontrollen själv failar (nätverk, Supabase pausat)
+// släpper vi igenom anropet — en trög/nere rate-limiter ska inte slå ut hela
+// funktionen för alla användare.
 export async function checkRateLimit(bucket, ip, limit, { failClosed = false } = {}) {
   try {
     const supa = getSupabaseAdmin();
@@ -95,4 +95,3 @@ export function stripeIsLiveMode() {
   if (key.startsWith('sk_test_') || key.startsWith('rk_test_')) return false;
   return null;
 }
-
