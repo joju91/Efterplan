@@ -1,17 +1,17 @@
-// Explain-document â€” Dokumentcentral: AI-fÃ¶rklaring.
-// Ger en kort, varm fÃ¶rklaring pÃ¥ svenska av vad ett skannat dokument
-// (myndighet/bank/fÃ¶rsÃ¤kring) betyder och vad mottagaren behÃ¶ver gÃ¶ra.
-// KrÃ¤ver ANTHROPIC_API_KEY i Vercel env. Saknas den, eller misslyckas anropet,
-// visar klienten (app.js, explainDocumentAI) bara ett kort statusmeddelande â€”
-// dokumentet fÃ¶rblir fullt anvÃ¤ndbart. AI Ã¤r en assist, aldrig en spÃ¤rr
-// (readme.md: "No AI in the core flow"), samma mÃ¶nster som categorize-document.js.
+// Explain-document — Dokumentcentral: AI-förklaring.
+// Ger en kort, varm förklaring på svenska av vad ett skannat dokument
+// (myndighet/bank/försäkring) betyder och vad mottagaren behöver göra.
+// Kräver ANTHROPIC_API_KEY i Vercel env. Saknas den, eller misslyckas anropet,
+// visar klienten (app.js, explainDocumentAI) bara ett kort statusmeddelande —
+// dokumentet förblir fullt användbart. AI är en assist, aldrig en spärr
+// (readme.md: "No AI in the core flow"), samma mönster som categorize-document.js.
 
 import { getClientIp, checkRateLimit } from './_lib.js';
 
-// Striktare Ã¤n categorize-document (30/dag): samma delade AI-nyckel, men
-// dyrare per anrop (lÃ¤ngre svar, max_tokens 500 mot 200) och klienten cachar
-// svaret i state.documents[].explanation efter fÃ¶rsta lyckade anropet, sÃ¥
-// samma dokument ska aldrig behÃ¶va fÃ¶rklaras om och om igen.
+// Striktare än categorize-document (30/dag): samma delade AI-nyckel, men
+// dyrare per anrop (längre svar, max_tokens 500 mot 200) och klienten cachar
+// svaret i state.documents[].explanation efter första lyckade anropet, så
+// samma dokument ska aldrig behöva förklaras om och om igen.
 const DAILY_LIMIT_PER_IP = 20;
 
 export default async function handler(req, res) {
@@ -64,14 +64,14 @@ export default async function handler(req, res) {
             {
               type: 'text',
               text:
-                'Det hÃ¤r Ã¤r ett foto av ett dokument som hÃ¶r till ett dÃ¶dsbo (en avliden persons kvarlÃ¤mnade papper). ' +
-                'Personen som lÃ¤ser din fÃ¶rklaring Ã¤r troligen en anhÃ¶rig mitt i sorgearbetet, inte van vid myndighets- eller banksprÃ¥k. ' +
+                'Det här är ett foto av ett dokument som hör till ett dödsbo (en avliden persons kvarlämnade papper). ' +
+                'Personen som läser din förklaring är troligen en anhörig mitt i sorgearbetet, inte van vid myndighets- eller bankspråk. ' +
                 'Svara ENDAST med kompakt JSON, inget annat text: {"explanation": "..."}. ' +
-                '"explanation" ska vara en kort fÃ¶rklaring pÃ¥ enkel, varm svenska (3â€“5 meningar, ingen rubrik, inga punktlistor) ' +
-                'av vad dokumentet Ã¤r och vad mottagaren konkret behÃ¶ver gÃ¶ra med det (t.ex. betala, svara, arkivera, eller inget alls). ' +
-                'NÃ¤mn tydligt om det finns en deadline eller ett belopp. Undvik juridiska/byrÃ¥kratiska termer utan att fÃ¶rklara dem enkelt. ' +
-                'Ã„r du osÃ¤ker pÃ¥ vad dokumentet Ã¤r eller vad som krÃ¤vs, sÃ¤g det Ã¤rligt istÃ¤llet fÃ¶r att gissa â€” ' +
-                'gissa aldrig personuppgifter du inte kan lÃ¤sa tydligt.',
+                '"explanation" ska vara en kort förklaring på enkel, varm svenska (3–5 meningar, ingen rubrik, inga punktlistor) ' +
+                'av vad dokumentet är och vad mottagaren konkret behöver göra med det (t.ex. betala, svara, arkivera, eller inget alls). ' +
+                'Nämn tydligt om det finns en deadline eller ett belopp. Undvik juridiska/byråkratiska termer utan att förklara dem enkelt. ' +
+                'Är du osäker på vad dokumentet är eller vad som krävs, säg det ärligt istället för att gissa — ' +
+                'gissa aldrig personuppgifter du inte kan läsa tydligt.',
             },
           ],
         }],
@@ -99,4 +99,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'explain_failed' });
   }
 }
-
