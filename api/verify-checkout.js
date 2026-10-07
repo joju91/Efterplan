@@ -54,12 +54,12 @@ export default async function handler(req, res) {
       ok: true,
       email,
       status: 'paid',
-      amount_total: session.amount_total ?? null, // Ã¶re â€” klienten skickar /100 till Google Ads
+      amount_total: session.amount_total ?? null, // öre — klienten skickar /100 till Google Ads
       currency: session.currency || null,
     });
   } catch (err) {
     // Stripe throws StripeInvalidRequestError ("No such checkout.session") for
-    // unknown IDs â€” that's a bad-input error, not a server fault.
+    // unknown IDs — that's a bad-input error, not a server fault.
     if (err?.type === 'StripeInvalidRequestError' || err?.statusCode === 404) {
       return res.status(400).json({ ok: false, error: 'session_not_found' });
     }
@@ -67,4 +67,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'verify_failed' });
   }
 }
-
