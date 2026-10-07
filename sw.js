@@ -1,4 +1,4 @@
-/* Efterplan â€” Service Worker */
+/* Efterplan — Service Worker */
 const CACHE = 'efterplan-v19';
 const ASSETS = [
   './',
@@ -41,7 +41,7 @@ self.addEventListener('activate', e => {
 });
 
 // Cache-first: serve from cache, fall back to network
-// Google Fonts: cacha vid fÃ¶rsta hÃ¤mtning (annars funkar inte appen offline)
+// Google Fonts: cacha vid första hämtning (annars funkar inte appen offline)
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = e.request.url;
@@ -63,4 +63,3 @@ self.addEventListener('fetch', e => {
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
-
