@@ -1,22 +1,22 @@
-// T145 — Dokumentcentral: AI-kategorisering.
-// Föreslår kategori + kort filnamn åt användaren utifrån ett foto av ett dokument.
-// Kräver ANTHROPIC_API_KEY i Vercel env. Saknas den, eller misslyckas anropet,
-// svarar vi med ett fel — klienten (app.js, categorizeDocumentClientSide) faller
-// då tillbaka till manuell kategorisering. AI är en assist, aldrig en spärr
+// T145 â€” Dokumentcentral: AI-kategorisering.
+// FÃ¶reslÃ¥r kategori + kort filnamn Ã¥t anvÃ¤ndaren utifrÃ¥n ett foto av ett dokument.
+// KrÃ¤ver ANTHROPIC_API_KEY i Vercel env. Saknas den, eller misslyckas anropet,
+// svarar vi med ett fel â€” klienten (app.js, categorizeDocumentClientSide) faller
+// dÃ¥ tillbaka till manuell kategorisering. AI Ã¤r en assist, aldrig en spÃ¤rr
 // (readme.md: "No AI in the core flow").
 //
-// T162 — endpointen är öppen utan inloggning och drar riktiga Anthropic-tokens
-// från Owners delade server-side-nyckel per anrop. Dagligt tak per IP så
-// spam/missbruk inte kan dra obegränsad kostnad.
+// T162 â€” endpointen Ã¤r Ã¶ppen utan inloggning och drar riktiga Anthropic-tokens
+// frÃ¥n Owners delade server-side-nyckel per anrop. Dagligt tak per IP sÃ¥
+// spam/missbruk inte kan dra obegrÃ¤nsad kostnad.
 
 import { getClientIp, checkRateLimit } from './_lib.js';
 
 const CATEGORIES = [
-  'Skatteverket', 'Försäkringskassan', 'Bank', 'Försäkringsbolag',
-  'Hyresvärd/Bostad', 'Pensionsmyndigheten', 'Kronofogden', 'Övrigt',
+  'Skatteverket', 'FÃ¶rsÃ¤kringskassan', 'Bank', 'FÃ¶rsÃ¤kringsbolag',
+  'HyresvÃ¤rd/Bostad', 'Pensionsmyndigheten', 'Kronofogden', 'Ã–vrigt',
 ];
 
-// Generöst för en enskild dödsbo-genomgång (kan lätt bli 10-15 dokument),
+// GenerÃ¶st fÃ¶r en enskild dÃ¶dsbo-genomgÃ¥ng (kan lÃ¤tt bli 10-15 dokument),
 // men stoppar automatiserad spam/missbruk av den delade AI-nyckeln.
 const DAILY_LIMIT_PER_IP = 30;
 
@@ -32,7 +32,10 @@ export default async function handler(req, res) {
   }
 
   const ip = getClientIp(req);
-  const { limited } = await checkRateLimit('categorize-document', ip, DAILY_LIMIT_PER_IP);
+  const { limited, unavailable } = await checkRateLimit('categorize-document', ip, DAILY_LIMIT_PER_IP, { failClosed: true });
+  if (unavailable) {
+    return res.status(503).json({ ok: false, error: 'rate_limit_unavailable' });
+  }
   if (limited) {
     return res.status(429).json({ ok: false, error: 'rate_limited' });
   }
@@ -44,6 +47,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'missing_or_invalid_image' });
   }
   const [, mediaType, base64Data] = match;
+  if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(mediaType)) {
+    return res.status(415).json({ ok: false, error: 'unsupported_image_type' });
+  }
+  if (base64Data.length > 7_000_000) return res.status(413).json({ ok: false, error: 'image_too_large' });
 
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
@@ -63,11 +70,11 @@ export default async function handler(req, res) {
             {
               type: 'text',
               text:
-                'Det här är ett foto av ett dokument som hör till ett dödsbo (en avliden persons kvarlämnade papper). ' +
+                'Det hÃ¤r Ã¤r ett foto av ett dokument som hÃ¶r till ett dÃ¶dsbo (en avliden persons kvarlÃ¤mnade papper). ' +
                 'Svara ENDAST med kompakt JSON, inget annat text: {"category": "...", "name": "..."}. ' +
-                `"category" måste vara exakt ett av: ${CATEGORIES.join(', ')}. ` +
-                '"name" ska vara ett kort, konkret namn på svenska (max 6 ord), t.ex. "Dödsfallsintyg Skatteverket" eller "Slutfaktura Telia". ' +
-                'Är du osäker, välj "Övrigt" och ett neutralt namn — gissa aldrig personuppgifter du inte kan läsa tydligt.',
+                `"category" mÃ¥ste vara exakt ett av: ${CATEGORIES.join(', ')}. ` +
+                '"name" ska vara ett kort, konkret namn pÃ¥ svenska (max 6 ord), t.ex. "DÃ¶dsfallsintyg Skatteverket" eller "Slutfaktura Telia". ' +
+                'Ã„r du osÃ¤ker, vÃ¤lj "Ã–vrigt" och ett neutralt namn â€” gissa aldrig personuppgifter du inte kan lÃ¤sa tydligt.',
             },
           ],
         }],
@@ -88,7 +95,7 @@ export default async function handler(req, res) {
       return res.status(502).json({ ok: false, error: 'ai_bad_response' });
     }
 
-    const category = CATEGORIES.includes(parsed.category) ? parsed.category : 'Övrigt';
+    const category = CATEGORIES.includes(parsed.category) ? parsed.category : 'Ã–vrigt';
     const name = parsed.name.trim().slice(0, 80) || 'Dokument';
 
     return res.status(200).json({ ok: true, category, name });
@@ -97,3 +104,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'categorize_failed' });
   }
 }
+
