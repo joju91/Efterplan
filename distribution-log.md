@@ -81,3 +81,24 @@ verifierbara färska Flashback/Reddit-trådar. Nya texter i
 | Efterlevandeguiden | — | Uteslutet | Drivs av Pensionsmyndigheten/Skatteverket/Försäkringskassan — fel typ av mål |
 | Kommuners anhörigstöd | — | Uteslutet | Ingen central kontakt, utspritt per stadsdel/kommun — för lågt hävstång per ansträngning |
 | Fenix begravning | — | Uteslutet | Tungt digitaliserad byrå (10 Mkr finansiering), trolig konkurrensrisk, ej säkert avfärdad |
+
+## 2026-10-06 — trådsvar Familjeliv + Rika Tillsammans
+
+**Lärdom (2026-10-07):** sökmotorn ger mest gamla trådar och datum kan inte verifieras härifrån. Hitta trådar via forumens egen sökning sorterad på senaste — inte via WebSearch.
+
+Utkast i `community-svar-2026-10-06.md` och `community-svar-rikatillsammans-2026-10-06.md`. Trådarna är inte lästa i sin helhet (forumen blockerade i molnmiljön).
+
+| Datum | Forum | Tråd | Status |
+|-------|-------|------|--------|
+| 2026-10-06 | Familjeliv | [83115739 Utbetalning vid arvsskifte](https://www.familjeliv.se/forum/thread/83115739-utbetalning-vid-arvsskifte) | Gammal tråd — postas ej |
+| 2026-10-06 | Familjeliv | [75278037 Utan syskon när föräldrarna går bort](https://www.familjeliv.se/forum/thread/75278037-utan-syskon-den-dagen-mina-foraldrar-gar-bort) | Gammal tråd — postas ej |
+| 2026-10-06 | Familjeliv | [80273226 Efterarv efter dödsboanmälan](https://www.familjeliv.se/forum/thread/80273226-efterarv-efter-dodsboanmalan/3) | Gammal tråd — postas ej |
+| 2026-10-06 | Rika Tillsammans | [Sälja fonder i ett dödsbo](https://rikatillsammans.se/forum/t/salja-fonder-i-ett-dodsbo/71874) | Gammal tråd — postas ej |
+| 2026-10-06 | Rika Tillsammans | [Arv fonder/aktier](https://rikatillsammans.se/forum/t/arv-fonder-aktier/79499) | Gammal tråd — postas ej |
+| 2026-10-06 | Familjeliv | [82052508 Ta över dödsbo utan att diskutera](https://www.familjeliv.se/forum/thread/82052508-far-man-ta-over-ett-dodsbo-utan-att-ens-diskutera-med-den-andra-arvingen) | Gammal tråd — postas ej |
+| 2026-10-06 | Familjeliv | [81712799 Banken har spärrat kontot](https://www.familjeliv.se/forum/thread/81712799-banken-har-sparrat-kontot) | Gammal tråd — postas ej |
+| 2026-10-06 | Familjeliv | [82411676 Kompisens sambo död, huset](https://www.familjeliv.se/forum/thread/82411676-kompisens-sambo-dod-vad-hander-med-huset/4) | Gammal tråd — postas ej |
+| 2026-10-06 | Rika Tillsammans | [Problem med bouppteckning](https://rikatillsammans.se/forum/t/problem-med-bouppteckning-vad-galler/56180) | Gammal tråd — postas ej |
+| 2026-10-06 | Rika Tillsammans | [Värde på byggnad vid bouppteckning](https://rikatillsammans.se/forum/t/varde-pa-byggnad-vid-bouppteckning/99762) | Gammal tråd — postas ej |
+| 2026-10-06 | Rika Tillsammans | [Prisvärd hjälp med bouppteckning](https://rikatillsammans.se/forum/t/prisvard-hjalp-med-dodsbouppteckning-och-ev-bodelning/41446) | Gammal tråd — postas ej |
+| 2026-10-06 | Rika Tillsammans | [Testamentera allt till sambo](https://rikatillsammans.se/forum/t/testamentera-bort-allt-till-sambo-hur-skriva/79306) | Gammal tråd — postas ej |
