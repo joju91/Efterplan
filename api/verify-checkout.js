@@ -19,6 +19,9 @@ export default async function handler(req, res) {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+    if (session.mode !== 'payment' || session.metadata?.source !== 'efterplan_paywall') {
+      return res.status(400).json({ ok: false, error: 'session_not_eligible' });
+    }
     if (session.payment_status !== 'paid') {
       return res.status(200).json({ ok: false, status: session.payment_status });
     }
@@ -51,12 +54,12 @@ export default async function handler(req, res) {
       ok: true,
       email,
       status: 'paid',
-      amount_total: session.amount_total ?? null, // öre — klienten skickar /100 till Google Ads
+      amount_total: session.amount_total ?? null, // Ã¶re â€” klienten skickar /100 till Google Ads
       currency: session.currency || null,
     });
   } catch (err) {
     // Stripe throws StripeInvalidRequestError ("No such checkout.session") for
-    // unknown IDs — that's a bad-input error, not a server fault.
+    // unknown IDs â€” that's a bad-input error, not a server fault.
     if (err?.type === 'StripeInvalidRequestError' || err?.statusCode === 404) {
       return res.status(400).json({ ok: false, error: 'session_not_found' });
     }
@@ -64,3 +67,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'verify_failed' });
   }
 }
+
