@@ -16,6 +16,88 @@ läsa tråden i sin helhet först.
 
 ---
 
+## 2026-10-12
+
+> **Not om källor:** samma begränsning som tidigare körningar — flashback.org,
+> familjeliv.se och reddit.com går inte att hämta direkt i den här miljön
+> (nätverkspolicyn blockerar dem), och reddit.com verkar dessutom inte
+> indexeras av sökmotorn som används här (site-sökningar och allmänna
+> sökningar gav inga Reddit-träffar alls denna gång). Sammanfattningarna
+> nedan bygger på sökmotor-utdrag av Flashback-trådarna, inte hela tråden.
+> Läs tråden själv via länken innan du svarar eller bedömer om den
+> fortfarande är aktuell.
+
+### Flashback — "Hantering av dödsbo"
+**Länk:** https://www.flashback.org/t3314685
+**Sammanfattning:** Trådstartaren har fått ansvar för en avliden förälders
+dödsbo, där skulderna är större än tillgångarna. Frågar om man får sälja
+möbler/böcker innan bouppteckningen är klar, och när man kan säga upp
+lägenhetskontraktet. Svar i tråden nämner att skulder inte ärvs och
+föreslår en förenklad dödsboanmälan istället för full bouppteckning.
+
+**Föreslaget svar:**
+> Skulder ärvs inte, så du behöver inte oroa dig för att själv bli
+> betalningsskyldig. Om tillgångarna bara räcker till begravningskostnader
+> (eller inte ens det) kan du höra med socialtjänsten i kommunen där din
+> förälder bodde om en **dödsboanmälan** — en förenklad variant av
+> bouppteckning som räcker i såna fall och är gratis.
+>
+> Vänta med att sälja eller slänga saker tills du vet vilken väg ni går
+> (dödsboanmälan eller bouppteckning) — gör en lista/foton på vad som
+> finns innan något flyttas, så finns underlag om något ifrågasätts senare.
+>
+> Hyreskontraktet: kontakta hyresvärden så fort som möjligt och säg upp det
+> skriftligt — dödsboet står för hyran till kontraktet upphör, men ju
+> snabbare det sägs upp desto mindre kostnad för boet.
+>
+> Det är mycket att hålla ordning på mitt i allt annat — en gratis
+> checklista (t.ex. på efterplan.se) kan vara skönt att ha så man ser vad
+> som ska göras i vilken ordning.
+
+### Flashback — "Sälja bil ur dödsbo - förfoganderätt över pengarna?"
+**Länk:** https://www.flashback.org/t3421751
+**Sammanfattning:** Trådstartaren är ensam dödsbodelägare, bouppteckningen
+är gjord (väntar på registrering hos Skatteverket) och boet har inga
+skulder. Vill sälja den avlidnes bil och undrar om pengarna kan betalas in
+direkt till eget konto redan nu, eller om man måste vänta.
+
+**Föreslaget svar:**
+> Så länge bouppteckningen inte är registrerad hos Skatteverket är bilen
+> fortfarande dödsboets egendom, inte din privat — även om du är ensam
+> arvinge. Säkrast är att låta köparen betala in pengarna till dödsboets
+> konto (inte ditt eget), så finns allt dokumenterat om banken eller
+> Skatteverket skulle fråga.
+>
+> När bouppteckningen är registrerad (vanligtvis tar det några veckor efter
+> inlämning) kan du visa registreringsbeviset för banken och få tillgång
+> till boets konto/medel — då är det inget konstigt att föra över till dig
+> själv eftersom du är ensam dödsbodelägare.
+>
+> Spara kvitto/avtal på bilförsäljningen oavsett, så har du underlag klart
+> den dagen boet ska avslutas.
+
+### Flashback — "Bestyrkt kopia bouppteckning"
+**Länk:** https://www.flashback.org/t3607656
+**Sammanfattning:** Fråga om hur man gör en bestyrkt kopia av
+bouppteckningen inför inlämning till Skatteverket — vem som får bestyrka
+kopian och vad som krävs.
+
+**Föreslaget svar:**
+> Skatteverket vill ha in bouppteckningen i original plus en bestyrkt
+> kopia. Bestyrkandet görs enklast genom att någon skriver "Vidimeras,
+> överensstämmer med originalet" på kopian, daterar och skriver sin
+> namnunderskrift och namnförtydligande. Det finns inget krav i lag på att
+> det måste vara en utomstående person — en dödsbodelägare kan vidimera
+> kopian själv, men vill man vara extra noga kan man låta någon utomstående
+> göra det också.
+>
+> Dubbelkolla gärna på Skatteverkets egen sida för bouppteckning innan du
+> skickar in, ifall kraven ändrats sedan den här tråden skrevs — de har
+> bland annat pratat om en e-tjänst som kan ändra på kravet om bestyrkt
+> kopia.
+
+---
+
 ## 2026-09-07
 
 **Forum:** Flashback Forum (Ekonomi/Juridik)
