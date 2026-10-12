@@ -1,51 +1,65 @@
-# Efterplan — 2026-10-12
+# Efterplan Veckorapport — 2026-10-12
 
-🔢 Sessions: GA4 SAKNAS — hoppar över DEL 1 (credentials ej tillgängliga i molnsandlådan)
-
-🔧 Uptime: Ej verifierbar direkt (agent-proxy 403 på utgående HTTPS — sandboxbegränsning, ej sitefel) | Sårbarheter: 1 critical (ga4-dashboard) | Beroenden: @supabase/supabase-js + stripe MISSING i root (vanligt vid färsk checkout utan `npm install`)
-   - `ga4-dashboard`: **CRITICAL** proxy-addr GHSA-jqcg-44mw-7w3h — IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8, fix available). Åtgärd: `cd ga4-dashboard && npm audit fix`. Fil: `ga4-dashboard/package-lock.json`.
-   - `auth-modal.html`: saknar `<meta name="description">` — redan spårad som T274 (☐).
-
-📣 Stripe 23.0 (T275 ☐) och proxy-addr critical är de viktigaste öppna tech-ticketsen — åtgärda dem i samma sprint för att hålla beroenderna säkra och aktuella.
-
-🎫 Nya tickets: T276 – proxy-addr critical i ga4-dashboard (#143 https://github.com/joju91/Efterplan/issues/143)
-
-✅ Åtgärder att godkänna:
-| # | Åtgärd | Fil | P |
-|---|--------|-----|---|
-| 1 | `cd ga4-dashboard && npm audit fix` (fixar proxy-addr GHSA-jqcg-44mw-7w3h, ändrar bara lockfile) | `ga4-dashboard/package-lock.json` | 🔴 |
+> Genererad automatiskt av GitHub Actions (`.github/workflows/weekly-report.yml`).
 
 ---
 
-## Roadmap-status
+## 🔢 Nyckeltal (7 dagar — Plausible)
 
-- Klara: 218
-- Pågår: 12
-- Ej startade: 33
+| Mått | Värde |
+|------|-------|
+| Sessions | **57** |
+| Users | 54 |
+| Engagement rate | 18.0% |
+| Organisk andel | 23 (40.4%) |
+| onboarding_start | 0 (0.0% av sessions) |
+| plan_generated | 0 (0.0% av onboarding_start) |
+| task_completed | 0 |
 
-### Pågående (⧖)
-- T015 — Validate step order with 2–3 real relatives
-- T016 — Adjust order and text based on interviews
-- T032 — Test full purchase flow
-- T034 — Set up Bokio or Fortnox
-- T047 — Analyze drop-off
-- T060 — Push notifications (7/30/90 days)
-- T079 — Betald byrålisting
-- T081 — Analyze drop-off + prioritize top 3 issues
-- T271 — Traffic-sprint (väntar på Owner)
+**Kanaler:**
 
-### Nästa öppna (☐)
-- T001 — Read the entire Manifest sheet and confirm scope
-- T003 — Register company / sole proprietorship + apply for F-tax
-- T274 — auth-modal.html saknar meta description (SEO)
+- Organic Search: 23
+- Paid Search: 19
+- Referral: 10
+- Direct: 5
 
----
+## 🔍 GSC — Sidor på position 11–25 (90 dagar)
 
-## Kodfynd
+| Pos | Klick | Visn | CTR | Sida |
+|-----|-------|------|-----|------|
+| 23.9 | 12 | 6124 | 0.2% | `/gravsten.html` |
 
-| Fynd | Fil | Åtgärd |
-|------|-----|--------|
-| CRITICAL: proxy-addr IP spoofing (GHSA-jqcg-44mw-7w3h) | ga4-dashboard/package-lock.json | `npm audit fix` i ga4-dashboard/ |
-| Saknad meta description | auth-modal.html | T274 (☐), redan ticketad |
+## 🟢 Uptime
 
-Inga TODOs/FIXMEs hittades i JS/HTML-filer.
+| Path | Status | Tid |
+|------|--------|-----|
+| `/` | 200 | 0.20s |
+| `/sambo-arv.html` | 200 | 0.16s |
+| `/efterlevandepension.html` | 200 | 0.08s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.10s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.06s |
+
+## 📊 Git-aktivitet
+
+- **4** commits, **60** filer ändrade
+
+### Commits
+
+- `fef0023 Veckorapport 2026-10-12: auto-tickets + status`
+- `580cc41 Auto: uppdatera sitemap.xml (GitHub Actions)`
+- `d17d359 SEO + konvertering: GSC-riktade sidor, uppsälj på gratisverktygen, osynliga CTA-knappar (#140)`
+- `a3e57c8 Google Ads-rapport 2026-10-05 (auto, GitHub Actions)`
+
+## 🔧 Teknisk audit
+
+- **npm audit (ga4-dashboard):** 1 critical · 0 high · 0 moderate · 0 low
+- **Live-sajt:** 200 på 0.20s
+
+## 🗺️ Roadmap-status
+
+| Status | Antal |
+|--------|-------|
+| ✔ Klara | 224 |
+| ⧖ Pågår | 14 |
+| ☐ Ej startade | 37 |
+
