@@ -843,3 +843,11 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T276 | **proxy-addr critical vulnerability i ga4-dashboard (GHSA-jqcg-44mw-7w3h)** — `npm audit` i `ga4-dashboard/` visar 1 critical: `proxy-addr` sårbar för IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8). Angripare kan kringgå IP-baserad åtkomstkontroll. Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/143 | 2026-10-12 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ☐ |
+
+---
+
+# 💬 ATT DISKUTERA — 2026-10-12
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T277 | **Interaktivt formulär — diskussionspunkt, inget beslut.** Idé: ersätta/komplettera delar av flödet med ett interaktivt formulär (steg-för-steg, en fråga per vy) där användaren fyller i uppgifter som sedan driver checklista, brev och bouppteckning. Frågor att ta ställning till: (1) Vilket problem löser det — vilket steg tappar folk i idag? (2) Ett nytt formulär eller bygga vidare på befintlig onboarding/T126-bouppteckningsformuläret? (3) Hur håller vi "ingen registrering" + localStorage och undviker att det känns som ett myndighetsformulär (anti-referens 2)? (4) Mobil först, en handling per vy, inga tvångsfält. Bygg inget förrän beslut tagits. | 2026-10-12 | Diskussion | Owner | 🟢 | Product | ☐ |
