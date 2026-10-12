@@ -835,3 +835,11 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T275 | **stripe 23.0 major version** — `npm outdated` visar `stripe Latest: 23.0.0` mot package.json `^22.1.1` (lock vid 22.6.2). Stripe 23 är en major bump; granska changelog för breaking changes (apiVersion-krav, borttagna metoder, Node.js miniversion). Uppdatera package.json `^22.1.1 → ^23.x`, kör `npm update stripe`, verifiera att `api/_lib.js` (`stripe(key, { apiVersion })`) och `api/verify-checkout.js` fortfarande fungerar. Fil: `package.json`, `api/_lib.js`. Issue: https://github.com/joju91/Efterplan/issues/136 | 2026-10-05 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-10-12
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T276 | **proxy-addr critical vulnerability i ga4-dashboard (GHSA-jqcg-44mw-7w3h)** — `npm audit` i `ga4-dashboard/` visar 1 critical: `proxy-addr` sårbar för IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8). Angripare kan kringgå IP-baserad åtkomstkontroll. Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/143 | 2026-10-12 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ☐ |
