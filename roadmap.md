@@ -826,7 +826,7 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T274 | `auth-modal.html` saknar `<meta name="description">` — auth-modalen är en indexerbar HTML-sida men har ingen meta-description. Ger tomt snippet-text i SERP och kan sänka CTR för sidan. Lägg till en beskrivande `<meta name="description" content="...">` i `<head>`. Fil: `auth-modal.html`. Issue: https://github.com/joju91/Efterplan/issues/115 | 2026-09-28 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
+| T274 | `auth-modal.html` saknar `<meta name="description">` — auth-modalen är en indexerbar HTML-sida men har ingen meta-description. Ger tomt snippet-text i SERP och kan sänka CTR för sidan. Lägg till en beskrivande `<meta name="description" content="...">` i `<head>`. Fil: `auth-modal.html`. Issue: https://github.com/joju91/Efterplan/issues/115 — Åtgärdat 2026-10-12: filen är ett snippet utan `<head>`, så i stället `X-Robots-Tag: noindex` i `vercel.json`. | 2026-09-28 | Fas 12 | Veckorapport | 🟡 | SEO | ✔ |
 
 ---
 
@@ -842,7 +842,7 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T276 | **proxy-addr critical vulnerability i ga4-dashboard (GHSA-jqcg-44mw-7w3h)** — `npm audit` i `ga4-dashboard/` visar 1 critical: `proxy-addr` sårbar för IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8). Angripare kan kringgå IP-baserad åtkomstkontroll. Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/143 | 2026-10-12 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ☐ |
+| T276 | **proxy-addr critical vulnerability i ga4-dashboard (GHSA-jqcg-44mw-7w3h)** — `npm audit` i `ga4-dashboard/` visar 1 critical: `proxy-addr` sårbar för IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8). Angripare kan kringgå IP-baserad åtkomstkontroll. Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/143 — Åtgärdat 2026-10-12 med `npm audit fix` (0 sårbarheter). | 2026-10-12 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ✔ |
 
 ---
 
