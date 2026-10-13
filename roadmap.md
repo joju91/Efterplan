@@ -826,7 +826,7 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T274 | `auth-modal.html` saknar `<meta name="description">` — auth-modalen är en indexerbar HTML-sida men har ingen meta-description. Ger tomt snippet-text i SERP och kan sänka CTR för sidan. Lägg till en beskrivande `<meta name="description" content="...">` i `<head>`. Fil: `auth-modal.html`. Issue: https://github.com/joju91/Efterplan/issues/115 | 2026-09-28 | Fas 12 | Veckorapport | 🟡 | SEO | ☐ |
+| T274 | `auth-modal.html` saknar `<meta name="description">` — auth-modalen är en indexerbar HTML-sida men har ingen meta-description. Ger tomt snippet-text i SERP och kan sänka CTR för sidan. Lägg till en beskrivande `<meta name="description" content="...">` i `<head>`. Fil: `auth-modal.html`. Issue: https://github.com/joju91/Efterplan/issues/115 — Åtgärdat 2026-10-12: filen är ett snippet utan `<head>`, så i stället `X-Robots-Tag: noindex` i `vercel.json`. | 2026-09-28 | Fas 12 | Veckorapport | 🟡 | SEO | ✔ |
 
 ---
 
@@ -842,4 +842,15 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T276 | **proxy-addr critical vulnerability i ga4-dashboard (GHSA-jqcg-44mw-7w3h)** — `npm audit` i `ga4-dashboard/` visar 1 critical: `proxy-addr` sårbar för IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8). Angripare kan kringgå IP-baserad åtkomstkontroll. Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/143 | 2026-10-12 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ☐ |
+| T276 | **proxy-addr critical vulnerability i ga4-dashboard (GHSA-jqcg-44mw-7w3h)** — `npm audit` i `ga4-dashboard/` visar 1 critical: `proxy-addr` sårbar för IP spoofing via IPv4-mapped IPv6 trust subnet (range >=1.1.0 <2.0.8). Angripare kan kringgå IP-baserad åtkomstkontroll. Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/143 — Åtgärdat 2026-10-12 med `npm audit fix` (0 sårbarheter). | 2026-10-12 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ✔ |
+
+---
+
+# 💬 ATT DISKUTERA — 2026-10-12
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T277 | **Interaktivt formulär — diskussionspunkt, inget beslut.** Idé: ersätta/komplettera delar av flödet med ett interaktivt formulär (steg-för-steg, en fråga per vy) där användaren fyller i uppgifter som sedan driver checklista, brev och bouppteckning. Frågor att ta ställning till: (1) Vilket problem löser det — vilket steg tappar folk i idag? (2) Ett nytt formulär eller bygga vidare på befintlig onboarding/T126-bouppteckningsformuläret? (3) Hur håller vi "ingen registrering" + localStorage och undviker att det känns som ett myndighetsformulär (anti-referens 2)? (4) Mobil först, en handling per vy, inga tvångsfält. Bygg inget förrän beslut tagits. | 2026-10-12 | Diskussion | Owner | 🟢 | Product | ☐ |
+| T278 | **Alla funktioner öppna och gratis.** Ta bort betalväggen så att allt som idag kräver premium (Stripe-checkout, `api/check-premium`, `api/create-checkout`, `api/verify-checkout`) blir fritt för alla. Kartlägg först vilka funktioner som är låsta och var i `app.js` kontrollen sker, uppdatera pristexter/villkor på sajten och avgör vad som händer med befintliga betalande användare och Stripe-kontot. | 2026-10-12 | Diskussion | Owner | 🟠 | Product/Dev | ☐ |
+| T279 | **Buy Me a Coffee.** Lägg till en frivillig "Bjud på en kaffe"-länk (buymeacoffee.com) som ersättning för premium. Diskret placering (t.ex. sidfot och efter genererad plan), aldrig i det akuta flödet. Kräver Buy Me a Coffee-konto (Jonas) och ev. CSP-ändring i `vercel.json` om widget används — en vanlig länk kräver ingen. Hänger ihop med T278. | 2026-10-12 | Diskussion | Owner | 🟡 | Dev/Content | ☐ |
+| T280 | **Test för maximal trafik och data.** Lasttesta efterplan.se och `/api/*` (Vercel-funktioner + Supabase) för att se var gränsen går: samtidiga användare, svarstider, Vercel-/Supabase-kvoter, och hur stor localStorage-data (plan, bouppteckning, arkiv) kan bli innan något går sönder. Kör mot preview-deploy, inte produktion, och undvik att trigga Stripe. | 2026-10-12 | Diskussion | Owner | 🟡 | Dev/QA | ☐ |
