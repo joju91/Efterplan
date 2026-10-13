@@ -4,9 +4,10 @@
 ════════════════════════════════════════════ */
 
 // ─── FEATURE FLAGS ───────────────────────────
-const PAYWALL_ENABLED = true;  // Stripe is wired (api/create-checkout + webhook)
-// Hela checklistan är gratis (Jonas 2026-09-10) — betalning gäller bara
-// breven/dokumenten, inte uppgifterna. Sätt LOCK_TASK_PREVIEW = true för
+// T278 (Jonas 2026-10-13): allt är gratis — även breven. Stripe-koden
+// (api/create-checkout + webhook) ligger kvar men används inte.
+const PAYWALL_ENABLED = false;
+// Hela checklistan är gratis (Jonas 2026-09-10). Sätt LOCK_TASK_PREVIEW = true för
 // att återinföra "första N stegen gratis, resten låsta".
 const LOCK_TASK_PREVIEW = false;
 const PREVIEW_STEPS   = 5;     // T030: first N tasks free, rest locked — bara aktivt om LOCK_TASK_PREVIEW
@@ -117,6 +118,7 @@ function applyPremiumState() {
 }
 
 async function checkPremiumServerSide() {
+  if (!PAYWALL_ENABLED) return;
   let email = localStorage.getItem(PREMIUM_EMAIL_KEY) || '';
   let userId = '';
   try {
