@@ -16,6 +16,62 @@ läsa tråden i sin helhet först.
 
 ---
 
+## 2026-10-19
+
+### Flashback — "Dödsbo på långt avstånd, hjälp!"
+**Länk:** https://www.flashback.org/t3385797
+**Sammanfattning:** Trådstartarens pappa gick bort på en annan ort. Den lokala
+begravningsbyrån ordnar bara själva begravningen. Personen undrar om man ska
+anlita en auktionsfirma, en städfirma och eventuellt en mäklare — de tror att
+dödsboets skulder är större än tillgångarna. Syskonen vill inte hjälpa till,
+och personen är osäker på om det kan finnas kontanter gömda i hemmet som
+riskerar att försvinna om man går snabbt fram med en utrensningsfirma.
+**Förslag på svar:**
+> Tufft att behöva sköta det här på distans och utan hjälp från syskonen.
+> Några saker värda att veta: ni ärver aldrig skulderna personligen — om
+> boets tillgångar inte räcker till skulderna kan en dödsboanmälan hos
+> pappas hemkommun ersätta en full bouppteckning, och kommunen kan i vissa
+> fall bidra till begravningskostnaden om boet saknar pengar.
+>
+> Innan ni kallar in en städ-/auktionsfirma: gå (eller be någon på plats
+> gå) igenom lådor, garderober och papper själva först och leta efter
+> kontanter, smycken och viktiga dokument — sånt försvinner lätt i en snabb
+> utrensning. För att sälja eller tömma boet behöver ni dessutom godkännande
+> från samtliga dödsbodelägare, även ovilliga syskon, annars kan det
+> ifrågasättas senare.
+>
+> Ring gärna kommunens handläggare för dödsboanmälan först — de kan ge
+> besked om er specifika situation innan ni lägger pengar på en firma.
+
+*(Ingen efterplan.se-nämning — frågan är specifik och situationsbunden, en
+länk hade känts påklistrad här.)*
+
+### Flashback — "Sälja saker i ett dödsbo"
+**Länk:** https://www.flashback.org/t3314384
+**Sammanfattning:** Trådstartarens mamma har gått bort. Personen sitter med
+mycket bohag att sälja eller göra sig av med och hanterar allt helt själv.
+Frågan är vad snabbaste och enklaste sättet är att bli klar med det —
+auktionsfirma, loppis, nätet eller annat.
+**Förslag på svar:**
+> Tungt att stå med allt det här själv. Viktigt innan du säljer något: om
+> boets skulder är större än tillgångarna bör ni klargöra det först —
+> annars riskerar du som sålt saker att bli skyldig att ersätta boet för
+> värdet. Räcker tillgångarna bara till begravningen kan en dödsboanmälan
+> hos kommunen ersätta bouppteckningen, vilket är enklare och gratis.
+>
+> Rent praktiskt för själva utrensningen: lägg värdefulla eller personliga
+> saker åt sidan och sälj dem själv (t.ex. på Tradera) om de är värda det,
+> och låt en dödsbofirma eller second hand (Myrorna, Röda Korset) ta hand om
+> resten — går snabbast när man är ensam om allt. Är ni flera
+> dödsbodelägare måste alla vara överens innan något säljs eller slängs,
+> annars kan det bli tvist senare.
+>
+> Om du vill ha en samlad överblick över allt som ska göras — inte bara
+> försäljningen — finns gratis checklistor på efterplan.se. Kan vara skönt
+> att ha när man gör allt på egen hand.
+
+---
+
 ## 2026-09-07
 
 **Forum:** Flashback Forum (Ekonomi/Juridik)
