@@ -522,16 +522,6 @@ Det finns ingen tidsgräns för sorg, och du behöver inte vara klar.`,
 
   // ── WEEK ───────────────────────────────────
   {
-    id: 'begravningsceremoni',
-    title: 'Planera begravningsceremonin',
-    desc: 'Bestäm vem i familjen som ansvarar för vad — och se till att någon förmedlar era önskemål till begravningsbyrån.<br><br>Vem ansvarar för musik? Vem håller tal? Vem ordnar minnesstunden? Vem samlar in den avlidnas eventuella önskemål?',
-    urgency: 'week',
-    time: 'ca 30 min med familjen',
-    link: null,
-    triggers: [],
-    notesPlaceholder: 'Vem ansvarar för vad — musik, tal, minnesstund, önskemål…',
-  },
-  {
     id: 'fullmakt_dodsbo',
     title: 'Upprätta fullmakt för dödsboet',
     urgency: 'week',
