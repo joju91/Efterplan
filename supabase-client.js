@@ -86,14 +86,40 @@ const SUPABASE_CONFIG = {
       const raw = localStorage.getItem(k);
       if (raw != null) snap[k] = raw;
     }
-    return snap;
+    return sanitizeSnapshot(snap).snapshot;
+  }
+
+  // Personnummer is kept on this device only, even when the rest of the plan
+  // is synchronized. Also used to remove values written by older versions.
+  function sanitizeSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') return { snapshot, removedPersonnr: false };
+    const clean = { ...snapshot };
+    let removedPersonnr = false;
+    try {
+      const state = JSON.parse(clean.efterplan_state || '{}');
+      if (Object.prototype.hasOwnProperty.call(state, 'personnr')) {
+        delete state.personnr;
+        clean.efterplan_state = JSON.stringify(state);
+        removedPersonnr = true;
+      }
+    } catch (_) { /* preserve malformed local state for the existing recovery path */ }
+    return { snapshot: clean, removedPersonnr };
   }
 
   function writeLocalSnapshot(snap) {
     if (!snap || typeof snap !== 'object') return;
+    const clean = sanitizeSnapshot(snap).snapshot;
+    // Preserve this device's locally stored number while replacing the rest
+    // of the plan from the account snapshot.
+    try {
+      const localState = JSON.parse(localStorage.getItem('efterplan_state') || '{}');
+      const nextState = JSON.parse(clean.efterplan_state || '{}');
+      if (localState.personnr) nextState.personnr = localState.personnr;
+      clean.efterplan_state = JSON.stringify(nextState);
+    } catch (_) {}
     for (const k of STATE_KEYS) {
-      if (!(k in snap) || snap[k] == null) continue;
-      const val = snap[k];
+      if (!(k in clean) || clean[k] == null) continue;
+      const val = clean[k];
       try {
         JSON.parse(val);
         localStorage.setItem(k, val);
@@ -110,12 +136,19 @@ const SUPABASE_CONFIG = {
     const remoteAt = remote.updated_at ? new Date(remote.updated_at).getTime() : 0;
     const localAtRaw = localStorage.getItem(LOCAL_UPDATED_AT);
     const localAt = localAtRaw ? new Date(localAtRaw).getTime() : 0;
-    if (remoteAt <= localAt) return;
     try {
       const parsed = JSON.parse(remote.state_json);
-      writeLocalSnapshot(parsed);
+      const sanitized = sanitizeSnapshot(parsed);
+      if (remoteAt <= localAt) {
+        // Migrate older cloud snapshots that may still contain a personnummer,
+        // while preserving the newer local plan as the source of truth.
+        if (sanitized.removedPersonnr) await savePlan(readLocalSnapshot());
+        return;
+      }
+      writeLocalSnapshot(sanitized.snapshot);
       localStorage.setItem(LOCAL_UPDATED_AT, remote.updated_at || new Date().toISOString());
-      window.dispatchEvent(new CustomEvent('efterplan:remote-hydrated', { detail: parsed }));
+      if (sanitized.removedPersonnr) await savePlan(readLocalSnapshot());
+      window.dispatchEvent(new CustomEvent('efterplan:remote-hydrated', { detail: sanitized.snapshot }));
     } catch (_) { /* ignore malformed remote JSON */ }
   }
 
@@ -142,6 +175,14 @@ const SUPABASE_CONFIG = {
     const { data } = await client.auth.getUser();
     currentUser = data && data.user ? data.user : null;
     return currentUser;
+  }
+
+  async function getAccessToken() {
+    await initSupabase();
+    if (!client) return null;
+    const { data, error } = await client.auth.getSession();
+    if (error) return null;
+    return data?.session?.access_token || null;
   }
 
   async function savePlan(stateJson) {
@@ -357,14 +398,19 @@ const SUPABASE_CONFIG = {
     const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
     const rawKey = await crypto.subtle.exportKey('raw', key);
 
-    const { data, error } = await client.rpc('create_shared_plan', {
-      ciphertext_in: bufToBase64url(cipherBuf),
-      iv_in: bufToBase64url(iv.buffer),
+    const response = await fetch('/api/create-shared-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ciphertext: bufToBase64url(cipherBuf),
+        iv: bufToBase64url(iv.buffer),
+      }),
     });
-    if (error) throw error;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.id) throw new Error(data.error || 'share_create_failed');
 
     const keyStr = bufToBase64url(rawKey);
-    return `${window.location.origin}/?shared=${data}#k=${keyStr}`;
+    return `${window.location.origin}/?shared=${data.id}#k=${keyStr}`;
   }
 
   async function resolveSharedLink(id, keyStr) {
@@ -398,6 +444,7 @@ const SUPABASE_CONFIG = {
     signInWithMagicLink,
     signOut,
     getCurrentUser,
+    getAccessToken,
     savePlan,
     loadPlan,
     syncToSupabase,
