@@ -126,6 +126,7 @@
   <!-- Google Ads-tagg (statisk så att Googles tagg-kontroll hittar den). app.js hoppar över sin egen laddning när gtag finns. Se ADS-SETUP.md. -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18391491446"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18391491446');</script>
+  <script src="ga.js?v=1" defer></script>
 </head>
 <body>
 
@@ -263,6 +264,7 @@
   <section class="landing-section" id="section-integritet">
     <h2>Din integritet</h2>
     <p>Planen sparas i din webbläsare. Om du loggar in synkas planen och arkivets foton och uppgifter till Efterplans databas (Supabase). Personnumret synkas inte. När du skapar ett brev skickas uppgifterna du fyllt i, inklusive personnumret om du lagt till det, till Efterplans server för att skapa brevet. De sparas inte av den funktionen. Fotograferar du ett dokument för AI-kategorisering eller AI-förklaring skickas bilden till Anthropics API för analysen.</p>
+    <p>Vi räknar besök och klick med Google Analytics utan cookies — inget sparas på din enhet för statistiken, och det du skriver i planen skickas aldrig dit. Kommer du via en Google-annons kan Google sätta en annonscookie för att mäta att annonsen fungerade.</p>
     <p>Rensar du webbläsarens data försvinner det som bara finns lokalt, men kontots synkade plan och dokument finns kvar. Vill du radera synkad data, kontakta oss via länken under Kontakt. Äldre anmälningar till påminnelsemejl kommer inte att användas för nya utskick; deras uppgifter kan finnas kvar tills du ber oss radera dem.</p>
     <div class="privacy-badges">
       <span class="privacy-badge">Planen sparas lokalt</span>
@@ -1170,14 +1172,13 @@
 </div>
 
 <script src="supabase-client.js?v=4" defer></script>
-<script src="app.js?v=42" defer></script>
+<script src="app.js?v=43" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=19'));
   }
 </script>
 <!-- Analytics: byt ut efterplan.se mot din domän när du registrerat den -->
-<script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>
 
 <!-- ═══════════════════════════════════════════
      AUTH MODAL (source: auth-modal.html)

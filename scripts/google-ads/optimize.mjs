@@ -5,6 +5,7 @@
  */
 import Groq from 'groq-sdk';
 import { createClient } from '@supabase/supabase-js';
+import { GoogleAuth } from 'google-auth-library';
 import { writeFileSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -18,7 +19,8 @@ const supabase = createClient(
   process.env.SUPABASE_URL || 'https://vjupkemzpnrahdsljenl.supabase.co',
   process.env.SUPABASE_SECRET_KEY
 );
-const PLAUSIBLE_KEY = process.env.PLAUSIBLE_API_KEY;
+const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID;
+const GA4_CREDS = process.env.GA4_SERVICE_ACCOUNT_JSON;
 const REPORT_ONLY = process.argv.includes('--report-only');
 
 async function main() {
@@ -69,8 +71,8 @@ async function main() {
     .in('status', ['pending', 'applied'])
     .gte('created_at', d30);
 
-  // 5. Plausible (utm_source=google)
-  const plausible = await fetchPlausible();
+  // 5. GA4 (trafik från Google Ads)
+  const ga4 = await fetchGa4();
 
   // 6. Aggregera
   const metrics = aggregate(perfData);
@@ -81,7 +83,7 @@ async function main() {
   if (!REPORT_ONLY) {
     try {
       // 7. Analysera med Claude
-      const result = await analyzeWithClaude(metrics, searchTerms, budget, plausible, existingDecisions, today);
+      const result = await analyzeWithClaude(metrics, searchTerms, budget, ga4, existingDecisions, today);
       decisions = result.decisions ?? [];
       summary = result.summary ?? '';
 
@@ -105,7 +107,7 @@ async function main() {
   }
 
   // 9. Skriv rapport
-  const report = buildReport(today, metrics, plausible, budget, decisions, summary);
+  const report = buildReport(today, metrics, ga4, budget, decisions, summary);
   const reportPath = join(REPORTS_DIR, `ads-optimization-${today}.md`);
   writeFileSync(reportPath, report);
 
@@ -118,19 +120,36 @@ async function main() {
   if (approval > 0) process.exit(2);
 }
 
-async function fetchPlausible() {
-  if (!PLAUSIBLE_KEY) return null;
+// GA4 (sessionSource=google / sessionMedium=cpc) via Data API — samma form som
+// den gamla Plausible-hämtningen: { aggregate, goals: [{ 'event:name', events }] }.
+async function fetchGa4() {
+  if (!GA4_PROPERTY_ID || !GA4_CREDS) return null;
   try {
-    const base = 'https://plausible.io/api/v1/stats';
-    const h = { Authorization: `Bearer ${PLAUSIBLE_KEY}` };
-    const f = encodeURIComponent('visit:utm_source==google');
+    const creds = JSON.parse(GA4_CREDS);
+    const auth = new GoogleAuth({
+      credentials: { client_email: creds.client_email, private_key: creds.private_key },
+      scopes: ['https://www.googleapis.com/auth/analytics.readonly'],
+    });
+    const client = await auth.getClient();
+    const url = `https://analyticsdata.googleapis.com/v1beta/properties/${GA4_PROPERTY_ID}:runReport`;
+    const dimensionFilter = { andGroup: { expressions: [
+      { filter: { fieldName: 'sessionSource', stringFilter: { value: 'google' } } },
+      { filter: { fieldName: 'sessionMedium', stringFilter: { value: 'cpc' } } },
+    ] } };
+    const dateRanges = [{ startDate: '30daysAgo', endDate: 'today' }];
     const [agg, goals] = await Promise.all([
-      fetch(`${base}/aggregate?site_id=efterplan.se&period=30d&filters=${f}&metrics=visitors,pageviews,events`, { headers: h }).then(r => r.json()),
-      fetch(`${base}/breakdown?site_id=efterplan.se&period=30d&filters=${f}&property=event:name&metrics=events`, { headers: h }).then(r => r.json()),
+      client.request({ url, method: 'POST', data: { dateRanges, dimensionFilter,
+        metrics: [{ name: 'sessions' }, { name: 'screenPageViews' }, { name: 'eventCount' }] } }),
+      client.request({ url, method: 'POST', data: { dateRanges, dimensionFilter,
+        dimensions: [{ name: 'eventName' }], metrics: [{ name: 'eventCount' }], limit: 100 } }),
     ]);
-    return { aggregate: agg?.results ?? null, goals: goals?.results ?? [] };
+    const t = agg.data.rows?.[0]?.metricValues ?? [];
+    return {
+      aggregate: { sessions: Number(t[0]?.value ?? 0), pageviews: Number(t[1]?.value ?? 0), events: Number(t[2]?.value ?? 0) },
+      goals: (goals.data.rows ?? []).map(r => ({ 'event:name': r.dimensionValues[0].value, events: Number(r.metricValues[0].value) })),
+    };
   } catch (e) {
-    console.error('[ads-optimize] Plausible error:', e.message);
+    console.error('[ads-optimize] GA4 error:', e.message);
     return null;
   }
 }
@@ -211,7 +230,7 @@ Svara ENBART med giltig JSON:
   "summary": "1-2 meningar på svenska — vad gjordes och varför"
 }`;
 
-async function analyzeWithClaude(metrics, searchTerms, budget, plausible, existing, today) {
+async function analyzeWithClaude(metrics, searchTerms, budget, ga4, existing, today) {
   const existingStr = (existing ?? [])
     .map(d => `${d.decision_type}:${d.entity_name ?? '?'}`)
     .join(', ') || 'inga';
@@ -228,8 +247,8 @@ ${JSON.stringify(metrics.totals, null, 2)}
 SÖKTERMER UTAN ÅTGÄRD (topp 20 på kostnad):
 ${JSON.stringify((searchTerms ?? []).slice(0, 20), null, 2)}
 
-PLAUSIBLE (utm_source=google, 30 dagar):
-${JSON.stringify(plausible, null, 2)}
+GA4 (sessionSource=google, medium=cpc, 30 dagar):
+${JSON.stringify(ga4, null, 2)}
 
 BEFINTLIGA BESLUT (undvik duplikat): ${existingStr}`;
 
@@ -253,7 +272,7 @@ BEFINTLIGA BESLUT (undvik duplikat): ${existingStr}`;
   }
 }
 
-function buildReport(date, metrics, plausible, budget, decisions, summary) {
+function buildReport(date, metrics, ga4, budget, decisions, summary) {
   const auto = decisions.filter(d => d.status === 'pending');
   const approval = decisions.filter(d => d.status === 'requires_approval');
 
@@ -266,11 +285,11 @@ function buildReport(date, metrics, plausible, budget, decisions, summary) {
   r += `| Klick | ${metrics.totals.clicks} |\n`;
   r += `| Kostnad | ${metrics.totals.cost_sek.toFixed(2)} kr |\n`;
   r += `| Konverteringar (Ads) | ${metrics.totals.conversions} |\n`;
-  if (plausible?.goals?.length) {
-    const plan = plausible.goals.find(g => g['event:name'] === 'plan_generated');
-    const buy  = plausible.goals.find(g => g['event:name'] === 'premium_activated');
-    if (plan) r += `| Personlig plan skapad (Plausible) | ${plan.events} |\n`;
-    if (buy)  r += `| Köp 49 kr (Plausible) | ${buy.events} |\n`;
+  if (ga4?.goals?.length) {
+    const plan = ga4.goals.find(g => g['event:name'] === 'plan_generated');
+    const buy  = ga4.goals.find(g => g['event:name'] === 'premium_activated');
+    if (plan) r += `| Personlig plan skapad (GA4) | ${plan.events} |\n`;
+    if (buy)  r += `| Köp 49 kr (GA4) | ${buy.events} |\n`;
     if (buy && metrics.totals.cost_sek > 0 && buy.events > 0) {
       r += `| CPA (kostnad/köp) | ${(metrics.totals.cost_sek / buy.events).toFixed(0)} kr |\n`;
     }

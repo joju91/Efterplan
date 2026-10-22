@@ -53,22 +53,15 @@ export const SERVICES = {
     // använde. Om detta ändras igen: kör ett liknande engångs-debug-steg för
     // att verifiera ur secreten själv, gissa aldrig på gammal dokumentation.
     knownAccountEmail: 'efterplan@efterplan.iam.gserviceaccount.com',
-    // GA4_PROPERTY_ID används inte längre — sajten bytte spårning till
-    // Plausible 2026-09-02 (se PLAUSIBLE_API_KEY nedan). GA4-secreten lever
-    // kvar bara för att servicekontot även har Search Console-access.
+    // GA4_PROPERTY_ID används igen sedan 2026-10-22 — sajten bytte tillbaka
+    // från Plausible till cookielös GA4 (ga.js). Läses av veckorapporten,
+    // funnel-check och Google Ads-agenten.
     warning:
       '⚠️  VIKTIGT: klicka INTE "CREATE SERVICE ACCOUNT" (skapar nytt konto med ny\n' +
       '   e-post → tappar Search Console-behörighet, se T239/T246 i roadmap.md).\n' +
       '   Klicka istället in på det BEFINTLIGA kontot "efterplan@efterplan.iam..."\n' +
       '   i listan → fliken "KEYS" → "ADD KEY" → "Create new key" → JSON.\n' +
       '   Samma e-post hela tiden = Search Console-behörigheten består för alltid.',
-  },
-  plausible: {
-    label: 'Plausible (veckorapportens besöksstatistik)',
-    dashboardUrl: 'https://plausible.io/settings/api-keys',
-    vars: [],
-    githubSecrets: ['PLAUSIBLE_API_KEY'],
-    vercelSensitive: false,
   },
   ads_agent: {
     label: 'Google Ads Agent (delad hemlighet)',

@@ -88,17 +88,13 @@ SELECT
 
 ---
 
-## Steg 2 — Plausible (utm_source=google)
+## Steg 2 — GA4 (trafik från Google Ads)
 
-Hämta med WebFetch om PLAUSIBLE_API_KEY finns i miljön. Annars hoppa över.
-
-```
-GET https://plausible.io/api/v1/stats/breakdown
-  ?site_id=efterplan.se&period=30d
-  &filters=visit%3Autm_source%3D%3Dgoogle
-  &property=event%3Aname&metrics=events
-Authorization: Bearer <PLAUSIBLE_API_KEY>
-```
+Plausible är avvecklat (2026-10-22). GA4-siffrorna hämtas av
+`scripts/google-ads/optimize.mjs` (`fetchGa4()`, filter sessionSource=google +
+sessionMedium=cpc) och står i senaste `ads-reports/ads-optimization-*.md`. Läs
+därifrån. GA4 körs cookielöst (`ga.js`), så "användare" överräknas — jämför
+event och sessioner, inte användare.
 
 Viktiga event-namn: `plan_generated`, `premium_activated`, `onboarding_start`.
 

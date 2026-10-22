@@ -1,42 +1,56 @@
 // One-off/reusable diagnostic: breaks down the onboarding funnel step-by-step
-// using the onboarding_step custom event (fired in app.js obGoTo()) so we can
-// see WHERE people drop off, not just start vs. finish counts.
-// Run: PLAUSIBLE_API_KEY=... node scripts/funnel-check.mjs [period]
-// period: Plausible period string, e.g. 7d, 30d, 90d (default 30d)
+// using the onboarding_step_<n> events (fired via track() in app.js obGoTo())
+// so we can see WHERE people drop off, not just start vs. finish counts.
+// Run: GA4_PROPERTY_ID=... GA4_SERVICE_ACCOUNT_JSON=... node scripts/funnel-check.mjs [period]
+// period: number of days followed by "d", e.g. 7d, 30d, 90d (default 30d)
 
-const PLAUSIBLE_SITE_ID = process.env.PLAUSIBLE_SITE_ID || 'efterplan.se';
+import { google } from 'googleapis';
+import 'dotenv/config';
+
 const period = process.argv[2] || process.env.PERIOD || '30d';
+const days = parseInt(period, 10) || 30;
 
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 
-async function plausible(qs) {
-  const apiKey = process.env.PLAUSIBLE_API_KEY;
-  if (!apiKey) throw new Error('PLAUSIBLE_API_KEY missing');
-  const url = `https://plausible.io/api/v1/stats/${qs}${qs.includes('?') ? '&' : '?'}site_id=${encodeURIComponent(PLAUSIBLE_SITE_ID)}`;
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
-  const j = await r.json();
-  if (!r.ok) throw new Error(j.error || `Plausible ${r.status}`);
-  return j;
+function buildAuth() {
+  const scopes = ['https://www.googleapis.com/auth/analytics.readonly'];
+  const json = process.env.GA4_SERVICE_ACCOUNT_JSON;
+  if (json) {
+    const creds = JSON.parse(json);
+    return new google.auth.GoogleAuth({ credentials: { client_email: creds.client_email, private_key: creds.private_key }, scopes });
+  }
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    return new google.auth.GoogleAuth({ keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS, scopes });
+  }
+  throw new Error('Missing GA4 credentials (set GA4_SERVICE_ACCOUNT_JSON or GOOGLE_APPLICATION_CREDENTIALS)');
 }
 
-async function eventCount(name) {
-  const j = await plausible(`aggregate?period=${period}&metrics=events&filters=${encodeURIComponent(`event:name==${name}`)}`);
-  return num(j.results?.events?.value);
+async function report(requestBody) {
+  const propertyId = process.env.GA4_PROPERTY_ID;
+  if (!propertyId) throw new Error('GA4_PROPERTY_ID missing');
+  const data = google.analyticsdata({ version: 'v1beta', auth: buildAuth() });
+  const res = await data.properties.runReport({
+    property: `properties/${propertyId}`,
+    requestBody: { dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'today' }], ...requestBody },
+  });
+  return res.data.rows || [];
 }
 
 (async () => {
   const lines = [];
-  lines.push(`# Funnel-check — period=${period}`);
+  lines.push(`# Funnel-check — period=${days}d (GA4)`);
   lines.push('');
 
-  const agg = await plausible(`aggregate?period=${period}&metrics=visits,visitors`);
-  const visits = num(agg.results?.visits?.value);
-  lines.push(`Sessions (visits): ${visits}`);
+  const totals = await report({ metrics: [{ name: 'sessions' }] });
+  const visits = num(totals[0]?.metricValues[0]?.value);
+  lines.push(`Sessions: ${visits}`);
   lines.push('');
 
-  const onboardingStart = await eventCount('onboarding_start');
-  const planGenerated = await eventCount('plan_generated');
-  const taskCompleted = await eventCount('task_completed');
+  const eventRows = await report({ dimensions: [{ name: 'eventName' }], metrics: [{ name: 'eventCount' }], limit: 200 });
+  const events = Object.fromEntries(eventRows.map(r => [r.dimensionValues[0].value, num(r.metricValues[0].value)]));
+  const onboardingStart = events.onboarding_start || 0;
+  const planGenerated = events.plan_generated || 0;
+  const taskCompleted = events.task_completed || 0;
 
   lines.push('## Toppnivå');
   lines.push(`- onboarding_start: ${onboardingStart} (${visits ? (100*onboardingStart/visits).toFixed(1) : '0.0'}% av sessions)`);
@@ -46,31 +60,26 @@ async function eventCount(name) {
 
   lines.push('## Sidor (pageviews per path)');
   try {
-    const pages = await plausible(`breakdown?period=${period}&property=event:page&metrics=visitors,pageviews`);
-    const rows = (pages.results || []).sort((a, b) => num(b.pageviews) - num(a.pageviews)).slice(0, 20);
-    if (!rows.length) {
-      lines.push('_Inga sidor hittades._');
-    } else {
-      rows.forEach(r => lines.push(`- ${r.page}: ${r.pageviews} pageviews / ${r.visitors} visitors`));
-    }
+    const pages = await report({
+      dimensions: [{ name: 'pagePath' }],
+      metrics: [{ name: 'screenPageViews' }],
+      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+      limit: 20,
+    });
+    if (!pages.length) lines.push('_Inga sidor hittades._');
+    else pages.forEach(r => lines.push(`- ${r.dimensionValues[0].value}: ${r.metricValues[0].value} pageviews`));
   } catch (err) {
     lines.push(`_Breakdown misslyckades: ${err.message}_`);
   }
   lines.push('');
 
-  lines.push('## Steg-för-steg (onboarding_step-event, props.step)');
-  try {
-    const breakdown = await plausible(`breakdown?period=${period}&property=event:props:step&metrics=events&filters=${encodeURIComponent('event:name==onboarding_step')}`);
-    const rows = (breakdown.results || []).map(r => ({ step: r.step, events: num(r.events) }));
-    if (!rows.length) {
-      lines.push('_Inga onboarding_step-events i perioden._');
-    } else {
-      rows.sort((a, b) => String(a.step).localeCompare(String(b.step)));
-      rows.forEach(r => lines.push(`- steg ${r.step}: ${r.events}`));
-    }
-  } catch (err) {
-    lines.push(`_Breakdown misslyckades: ${err.message}_`);
-  }
+  lines.push('## Steg-för-steg (onboarding_step_<n>-event)');
+  const steps = Object.entries(events)
+    .filter(([name]) => name.startsWith('onboarding_step_'))
+    .map(([name, count]) => ({ step: name.slice('onboarding_step_'.length), count }))
+    .sort((a, b) => String(a.step).localeCompare(String(b.step), 'sv', { numeric: true }));
+  if (!steps.length) lines.push('_Inga onboarding_step-events i perioden._');
+  else steps.forEach(s => lines.push(`- steg ${s.step}: ${s.count}`));
   lines.push('');
 
   console.log(lines.join('\n'));

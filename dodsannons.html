@@ -92,7 +92,7 @@
       #dn-result-section { display: block !important; }
     }
   </style>
-  <script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>
+  <script src="ga.js?v=1" defer></script>
 </head>
 <body>
   <a href="#main" class="skip-link">Hoppa till innehållet</a>
@@ -192,7 +192,7 @@
         <p class="form-label-hint" style="margin-top:10px;">Utkast. Läs igenom och ändra fritt innan du lämnar texten till tidningen eller begravningsbyrån. Tidningen sätter den slutliga radbrytningen och lägger till eventuell symbol och foto.</p>
         <div class="seo-cta am-next">
           <p><strong>Nästa steg: banken och Skatteverket.</strong> Banken behöver veta om dödsfallet innan den kan betala begravningen och räkningar från kontot, och dödsboet behöver ofta skriva till Skatteverket och ge en av er fullmakt. Fyll i några uppgifter, så skriver vi breven åt dig.</p>
-          <a href="/?doc=bank&amp;utm_source=efterplan&amp;utm_medium=free_tool&amp;utm_campaign=dodsannons" class="btn-primary" data-action="plausibleFreeToApp" data-arg="dodsannons_upsell">Skriv brevet till banken →</a>
+          <a href="/?doc=bank&amp;utm_source=efterplan&amp;utm_medium=free_tool&amp;utm_campaign=dodsannons" class="btn-primary" data-action="trackFreeToApp" data-arg="dodsannons_upsell">Skriv brevet till banken →</a>
           <p>49 kr för alla brev · engångsbetalning, ingen prenumeration</p>
         </div>
       </div>
@@ -411,7 +411,7 @@
       document.getElementById('dn-copied').classList.add('hidden');
       document.getElementById('dn-result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      window.plausible && window.plausible('free_tool_letter_generated', { props: { area: 'dodsannons' } });
+      window.gaEvent && window.gaEvent('free_tool_letter_generated', { area: 'dodsannons' });
     }
 
     function copyNotice() {
@@ -420,7 +420,7 @@
         const msg = document.getElementById('dn-copied');
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 2000);
-        window.plausible && window.plausible('free_tool_letter_copied', { props: { area: 'dodsannons' } });
+        window.gaEvent && window.gaEvent('free_tool_letter_copied', { area: 'dodsannons' });
       };
       navigator.clipboard.writeText(text).then(done).catch(() => {
         const ta = document.createElement('textarea');
@@ -446,7 +446,7 @@
       <a href="./begravning-utomlands.html">Begravning utomlands</a>
     </p>
   </footer>
-  <script src="/free-tools.js"></script>
+  <script src="/free-tools.js?v=2"></script>
 </body>
 </html>
 

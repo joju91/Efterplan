@@ -91,10 +91,10 @@
       #am-result-section { display: block !important; }
     }
   </style>
-  <script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>
   <!-- Google Ads-tagg: sparar klick-ID (gclid) från annonsen så att konverteringar på / kan attribueras. Se ADS-SETUP.md. -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18391491446"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18391491446');</script>
+  <script src="ga.js?v=1" defer></script>
 </head>
 <body>
   <a href="#main" class="skip-link">Hoppa till innehållet</a>
@@ -159,14 +159,14 @@
 
         <div class="seo-cta am-next">
           <p><strong>Nästa steg: banken och Skatteverket.</strong> Under dödsboets gång behöver ni skriva till banken, Skatteverket och ofta ge en av er fullmakt för dödsboet. Fyll i några uppgifter, så skriver vi breven åt dig.</p>
-          <a href="/?doc=bank&amp;utm_source=efterplan&amp;utm_medium=free_tool&amp;utm_campaign=arvskifte_mall" class="btn-primary" data-action="plausibleFreeToApp" data-arg="arvskifte_mall_upsell">Skriv brevet till banken →</a>
+          <a href="/?doc=bank&amp;utm_source=efterplan&amp;utm_medium=free_tool&amp;utm_campaign=arvskifte_mall" class="btn-primary" data-action="trackFreeToApp" data-arg="arvskifte_mall_upsell">Skriv brevet till banken →</a>
           <p>49 kr för alla brev · engångsbetalning, ingen prenumeration</p>
         </div>
       </div>
 
       <div class="seo-cta">
         <p>Behöver du hjälp med hela dödsboet, inte bara arvskiftesavtalet — bouppteckning, bank, bostad och fler brev?</p>
-        <a href="/" class="btn-primary" data-action="plausibleFreeToApp" data-arg="arvskifte_mall">Skapa din fullständiga plan gratis →</a>
+        <a href="/" class="btn-primary" data-action="trackFreeToApp" data-arg="arvskifte_mall">Skapa din fullständiga plan gratis →</a>
       </div>
 
       <h2>Vanliga frågor</h2>
@@ -372,7 +372,7 @@ ${signatureLines}`;
         localStorage.setItem('efterplan_sender_name', heirRows[0].name);
       } catch (e) {}
 
-      window.plausible && window.plausible('free_tool_letter_generated', { props: { area: 'arvskifte_mall' } });
+      window.gaEvent && window.gaEvent('free_tool_letter_generated', { area: 'arvskifte_mall' });
     }
 
     function copyAgreement() {
@@ -381,7 +381,7 @@ ${signatureLines}`;
         const msg = document.getElementById('am-copied');
         msg.classList.remove('hidden');
         setTimeout(() => msg.classList.add('hidden'), 2000);
-        window.plausible && window.plausible('free_tool_letter_copied', { props: { area: 'arvskifte_mall' } });
+        window.gaEvent && window.gaEvent('free_tool_letter_copied', { area: 'arvskifte_mall' });
       };
       navigator.clipboard.writeText(text).then(done).catch(() => {
         const ta = document.createElement('textarea');
@@ -399,6 +399,6 @@ ${signatureLines}`;
     addHeir();
     addAsset();
   </script>
-  <script src="/free-tools.js"></script>
+  <script src="/free-tools.js?v=2"></script>
 </body>
 </html>

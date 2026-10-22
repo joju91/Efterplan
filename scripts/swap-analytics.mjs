@@ -1,5 +1,6 @@
-// Byter ut Google Analytics (gtag) mot Plausible på alla HTML-sidor.
-// Plausible är cookielöst och matchar sajtens integritetslöfte; ~1 KB.
+// Byter ut Plausible mot cookielös GA4 (ga.js) på alla HTML-sidor.
+// Plausible-prenumerationen löpte ut 2026-10; GA4 körs med
+// client_storage: 'none' (se ga.js) så inget sparas på besökarens enhet.
 //
 // Kör från repo-roten:  node scripts/swap-analytics.mjs
 
@@ -7,8 +8,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const PLAUSIBLE =
-  '<script defer data-domain="efterplan.se" src="https://plausible.io/js/script.outbound-links.js"></script>';
+const GA_TAG = '<script src="ga.js?v=1" defer></script>';
 
 const files = readdirSync(ROOT).filter((f) => f.endsWith('.html'));
 
@@ -17,28 +17,21 @@ for (const file of files) {
   const fp = path.join(ROOT, file);
   let html = readFileSync(fp, 'utf8');
   const before = html;
+  const eol = html.includes('\r\n') ? '\r\n' : '\n';
 
-  // 1. Ta bort ev. "<!-- Google tag (gtag.js) ... -->"-kommentar
-  html = html.replace(/[ \t]*<!--\s*Google tag \(gtag\.js\)[^>]*-->\r?\n?/g, '');
+  // 1. Ta bort Plausible-taggen (var den än står)
+  html = html.replace(/[ \t]*<script\b[^>]*\bsrc="https:\/\/plausible\.io\/js\/[^"]*"[^>]*>\s*<\/script>\r?\n?/g, '');
 
-  // 2. Ta bort alla <script>-block som rör gtag/googletagmanager
-  //    (både "<script async src=...gtag/js...></script>" och inline-configen)
+  // 2. Byt inline-anrop window.plausible('x', { props: {...} }) → window.gaEvent('x', {...})
   html = html.replace(
-    /[ \t]*<script\b[^>]*\bsrc="https:\/\/www\.googletagmanager\.com\/[^"]*"[^>]*>\s*<\/script>\r?\n?/g,
-    '',
+    /window\.plausible\s*&&\s*window\.plausible\(\s*('[^']+')\s*,\s*\{\s*props:\s*(\{[^}]*\})\s*\}\s*\)/g,
+    'window.gaEvent && window.gaEvent($1, $2)',
   );
-  html = html.replace(
-    /[ \t]*<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?\bgtag\(\s*['"]config['"][\s\S]*?<\/script>\r?\n?/g,
-    '',
-  );
-  html = html.replace(
-    /[ \t]*<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?googletagmanager\.com[\s\S]*?<\/script>\r?\n?/g,
-    '',
-  );
+  html = html.replace(/data-action="plausibleFreeToApp"/g, 'data-action="trackFreeToApp"');
 
-  // 3. Säkerställ Plausible-taggen (en gång, precis före </head>)
-  if (!html.includes('plausible.io/js/')) {
-    html = html.replace(/([ \t]*)<\/head>/i, `  ${PLAUSIBLE}\n$1</head>`);
+  // 3. Säkerställ GA-taggen (en gång, precis före </head>) — bara på sidor som hade spårning
+  if (before.includes('plausible.io/js/') && !html.includes('ga.js')) {
+    html = html.replace(/([ \t]*)<\/head>/i, `  ${GA_TAG}${eol}$1</head>`);
   }
 
   if (html !== before) {

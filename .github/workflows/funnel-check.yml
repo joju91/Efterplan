@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       period:
-        description: 'Plausible period (7d, 30d, 90d, ...)'
+        description: 'Period i dagar (7d, 30d, 90d, ...)'
         required: false
         default: '30d'
 
@@ -25,5 +25,6 @@ jobs:
       - name: Run funnel check
         working-directory: ga4-dashboard
         env:
-          PLAUSIBLE_API_KEY: ${{ secrets.PLAUSIBLE_API_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
         run: node scripts/funnel-check.mjs "${{ inputs.period }}" | tee -a "$GITHUB_STEP_SUMMARY"

@@ -270,11 +270,15 @@ function resumePlan() {
 }
 
 // ─── ANALYTICS ───────────────────────────────
-// Plausible custom events — safe noop if script hasn't loaded
+// GA4-event via ga.js (cookielöst) — safe noop if script hasn't loaded.
+// onboarding_step skickas som onboarding_step_<n> så stegen går att läsa
+// i GA4 utan att registrera en custom dimension för parametern "step".
 function track(event, props) {
-  if (typeof window.plausible === 'function') {
-    window.plausible(event, props ? { props } : undefined);
+  if (typeof window.gaEvent !== 'function') return;
+  if (event === 'onboarding_step' && props && props.step != null) {
+    event = 'onboarding_step_' + props.step;
   }
+  window.gaEvent(event, props);
 }
 
 function startOnboarding() {
@@ -2620,8 +2624,13 @@ function getDocContext() {
   };
 }
 
+// Senast öppnade dokumenttyp — skickas till statistiken i stället för
+// brevets titel, som kan innehålla namn användaren skrivit in.
+let lastDocType = null;
+
 function showDocForm(type) {
   if (isDocLocked(type)) { showDocPaywall(type); return; }
+  lastDocType = type;
   document.getElementById('doc-chooser').classList.add('hidden');
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
 
@@ -2876,7 +2885,7 @@ function generateAnnons() {
 }
 
 function showDocResult(title, text, emailSubject, phoneScript) {
-  track('doc_generated', { title: title.split(' — ')[0] });
+  track('doc_generated', { doc: lastDocType || 'okänd' });
   document.querySelectorAll('.doc-form').forEach(f => f.classList.add('hidden'));
   document.getElementById('doc-chooser').classList.add('hidden');
   document.getElementById('result-title').textContent = title;
@@ -2938,7 +2947,7 @@ async function requestPremiumDocument(type, fields, errorId, options = {}) {
       document.getElementById('doc-chooser').classList.add('hidden');
       document.querySelectorAll('.doc-form').forEach(form => form.classList.add('hidden'));
       document.getElementById('doc-result-bulk').classList.remove('hidden');
-      track('doc_generated', { title: 'Bulk uppsägning', count: String(doc.letters.length) });
+      track('doc_generated', { doc: 'bulk', count: String(doc.letters.length) });
       window.scrollTo(0, 0);
     } else {
       showDocResult(doc.title, doc.text, doc.emailSubject, doc.phoneScript);
@@ -2962,7 +2971,7 @@ function switchDocMode(mode) {
     const list = document.getElementById('doc-phone-checklist-items');
     list.innerHTML = docPhoneScript.checklist.map(item => `<li>${item}</li>`).join('');
     checklistBox.classList.remove('hidden');
-    track('doc_phone_script_viewed', { title: document.getElementById('result-title').textContent.split(' — ')[0] });
+    track('doc_phone_script_viewed', { doc: lastDocType || 'okänd' });
   } else {
     checklistBox.classList.add('hidden');
   }
@@ -3685,8 +3694,8 @@ document.addEventListener('click', function dispatchAction(e) {
       if (m) m.classList.add('hidden');
       break;
     }
-    case 'plausibleFreeToApp':
-      if (window.plausible) window.plausible('free_tool_to_app_click', { props: { area: v } });
+    case 'trackFreeToApp':
+      track('free_tool_to_app_click', { area: v });
       break;
     case 'removeHeir': {
       const node = document.getElementById('am-heir-' + el.dataset.id);

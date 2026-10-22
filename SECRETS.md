@@ -44,7 +44,6 @@ själva dashboarden — ingen leverantör tillåter det via API, av säkerhetssk
 | **Supabase** | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Ja, direkt från Supabase CLI (`supabase projects api-keys`) | Project Settings → API — manuellt klick, sen `keys:rotate -- supabase` |
 | **Anthropic** | `ANTHROPIC_API_KEY` | Nej — Sensitive i Vercel, Anthropic exponerar inte nyckelvärden via API | console.anthropic.com/settings/keys — manuellt klick, sen `keys:rotate -- anthropic` |
 | **Google (GSC)** | `GA4_SERVICE_ACCOUNT_JSON`, `GSC_SERVICE_ACCOUNT_JSON` | Nej — ligger bara som GitHub Actions-secrets, ingen `gcloud` CLI installerad | console.cloud.google.com → IAM → Service Accounts — manuellt, sen `keys:rotate -- google` |
-| **Plausible** | `PLAUSIBLE_API_KEY` | Nej — Plausible exponerar inte nyckelvärden via API | plausible.io/settings/api-keys — manuellt klick, sen `keys:rotate -- plausible` |
 | **Google Ads Agent** | `ADS_AGENT_SECRET`, `SUPABASE_URL` | Nej — genereras lokalt | `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"` → sätt i Vercel, GitHub och Google Ads Script Properties (se `scripts/google-ads/README.md`) |
 
 > **⚠️ Google-rotation — vanligaste felkällan (se T239/T246 i roadmap.md):**

@@ -13,7 +13,7 @@ api/ads-telemetry.js  →  Supabase (ads_performance, ads_search_terms)
 api/ads-decisions.js  ←  Supabase (ads_decisions)
 
 GitHub Action (måndag 08:00)
-    → läser Supabase + Plausible
+    → läser Supabase + GA4
     → anropar Claude för analys
     → skriver beslut till ads_decisions
     → öppnar GitHub Issue med rapport
@@ -111,7 +111,7 @@ Sådana förslag hamnar alltid i ett GitHub Issue med `⚠️ Kräver godkännan
 **Mjuk konvertering** — `ADS_LABEL_PLAN` (`07qVCNedmoIdEPbG38FE`): personlig plan skapad  
 **Hård konvertering** — `ADS_LABEL_PURCHASE` (`_6NoCNqdmoIdEPbG38FE`): köp 49 kr
 
-Konverteringar rapporteras i Google Ads (via gtag i app.js) OCH i Plausible (event: `premium_activated`). CPA-beräkningen i agenten använder Plausible-data (utm-filtrerat) som primär källa eftersom den inte är beroende av cookiesamtycke.
+Konverteringar rapporteras i Google Ads (via gtag i app.js) OCH i GA4 (event: `premium_activated`). CPA-beräkningen i agenten använder GA4-data (utm-filtrerat) som primär källa eftersom den inte är beroende av cookiesamtycke.
 
 **Lönsamhetsgräns:** CPA <49 kr = lönsam kampanj (köppriset täcker annonskostnaden).
 

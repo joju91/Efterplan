@@ -12,8 +12,8 @@ document.addEventListener('click', function freeToolAction(e) {
     case 'addHeir': case 'addAsset':
       call(a); break;
     case 'print': window.print(); break;
-    case 'plausibleFreeToApp':
-      if (window.plausible) window.plausible('free_tool_to_app_click', { props: { area: el.dataset.arg || '' } });
+    case 'trackFreeToApp':
+      if (window.gaEvent) window.gaEvent('free_tool_to_app_click', { area: el.dataset.arg || '' });
       break;
     case 'removeHeir': {
       const node = document.getElementById('am-heir-' + el.dataset.id);

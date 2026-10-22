@@ -167,7 +167,7 @@ DOM simultaneously (toggling `display:none`/`flex`). Each step has its own
 matching buttons and click the first **visible** one, never `.first()` alone.
 
 **Expected console errors (harmless in sandbox):** `ERR_TUNNEL_CONNECTION_FAILED`
-for `plausible.io`, `cdn.jsdelivr.net`, Google Fonts — these are blocked by
+for `googletagmanager.com`/`google-analytics.com`, `cdn.jsdelivr.net`, Google Fonts — these are blocked by
 the cloud proxy. They don't affect app functionality.
 
 **Stop server when done:**

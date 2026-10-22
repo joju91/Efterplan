@@ -14,7 +14,6 @@ import 'dotenv/config';
 const REPO_ROOT = path.resolve(process.cwd(), '..');
 const today     = new Date().toISOString().slice(0, 10);
 const outFile   = path.join(REPO_ROOT, `veckorapport-${today}.md`);
-const PLAUSIBLE_SITE_ID = process.env.PLAUSIBLE_SITE_ID || 'efterplan.se';
 
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 
@@ -59,35 +58,40 @@ async function fetchGscPositions() {
   }
 }
 
-// Sajten bytte spårning från GA4 till Plausible 2026-09-02 (commit c06ab65,
-// scripts/swap-analytics.mjs) — cookiefritt, matchar integritetslöftet.
-// GA4 tar därför inte längre emot data (rapporten visade 0 sessions/users).
-async function plausible(qs) {
-  const apiKey = process.env.PLAUSIBLE_API_KEY;
-  if (!apiKey) throw new Error('PLAUSIBLE_API_KEY missing');
-  const url = `https://plausible.io/api/v1/stats/${qs}${qs.includes('?') ? '&' : '?'}site_id=${encodeURIComponent(PLAUSIBLE_SITE_ID)}`;
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
-  const j = await r.json();
-  if (!r.ok) throw new Error(j.error || `Plausible ${r.status}`);
-  return j;
+// Sajten bytte tillbaka från Plausible till GA4 2026-10-22 (Plausible-
+// prenumerationen löpte ut). GA4 körs cookielöst (client_storage: 'none',
+// se ga.js) — "users" överräknas därför vid flersidesbesök.
+async function ga4Report(requestBody) {
+  const propertyId = process.env.GA4_PROPERTY_ID;
+  if (!propertyId) throw new Error('GA4_PROPERTY_ID missing');
+  const auth = buildAuth(['https://www.googleapis.com/auth/analytics.readonly']);
+  const data = google.analyticsdata({ version: 'v1beta', auth });
+  const res = await data.properties.runReport({
+    property: `properties/${propertyId}`,
+    requestBody: { dateRanges: [{ startDate: '7daysAgo', endDate: 'yesterday' }], ...requestBody },
+  });
+  return res.data.rows || [];
 }
 
 async function fetchKpis() {
   try {
-    const agg = await plausible('aggregate?period=7d&metrics=visits,visitors,bounce_rate');
-    const channelsJson = await plausible('breakdown?period=7d&property=visit:channel&metrics=visits');
-    const eventNames = ['onboarding_start', 'plan_generated', 'task_completed'];
-    const events = {};
-    for (const name of eventNames) {
-      const j = await plausible(`aggregate?period=7d&metrics=events&filters=${encodeURIComponent(`event:name==${name}`)}`);
-      events[name] = num(j.results?.events?.value);
-    }
-    const bounceRate = num(agg.results?.bounce_rate?.value);
+    const [totals, channelRows, eventRows] = await Promise.all([
+      ga4Report({ metrics: [{ name: 'sessions' }, { name: 'totalUsers' }, { name: 'engagementRate' }] }),
+      ga4Report({ dimensions: [{ name: 'sessionDefaultChannelGroup' }], metrics: [{ name: 'sessions' }] }),
+      ga4Report({
+        dimensions: [{ name: 'eventName' }],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['onboarding_start', 'plan_generated', 'task_completed'] } } },
+      }),
+    ]);
+    const t = totals[0]?.metricValues || [];
+    const events = { onboarding_start: 0, plan_generated: 0, task_completed: 0 };
+    for (const r of eventRows) events[r.dimensionValues[0].value] = num(r.metricValues[0].value);
     return {
-      sessions:   num(agg.results?.visits?.value),
-      users:      num(agg.results?.visitors?.value),
-      engagement: (100 - bounceRate) / 100,
-      channels:   (channelsJson.results || []).map(r => ({ name: r.channel, sessions: num(r.visits) })),
+      sessions:   num(t[0]?.value),
+      users:      num(t[1]?.value),
+      engagement: num(t[2]?.value),
+      channels:   channelRows.map(r => ({ name: r.dimensionValues[0].value, sessions: num(r.metricValues[0].value) })),
       events,
     };
   } catch (err) {
@@ -160,11 +164,11 @@ function buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc }) {
   md.push('');
   md.push('---');
   md.push('');
-  md.push('## 🔢 Nyckeltal (7 dagar — Plausible)');
+  md.push('## 🔢 Nyckeltal (7 dagar — GA4)');
   md.push('');
   if (kpis.error) {
     md.push('```');
-    md.push(`Plausible-anrop misslyckades: ${kpis.error}`);
+    md.push(`GA4-anrop misslyckades: ${kpis.error}`);
     md.push('```');
   } else {
     md.push('| Mått | Värde |');
