@@ -41,6 +41,20 @@ async function report(requestBody) {
   lines.push(`# Funnel-check — period=${days}d (GA4)`);
   lines.push('');
 
+  // Realtid (senaste 30 min) — bekräftar direkt att spårningen når rätt
+  // property, innan de vanliga rapporterna hunnit uppdateras (upp till ett dygn).
+  try {
+    const data = google.analyticsdata({ version: 'v1beta', auth: buildAuth() });
+    const rt = await data.properties.runRealtimeReport({
+      property: `properties/${process.env.GA4_PROPERTY_ID}`,
+      requestBody: { dimensions: [{ name: 'eventName' }], metrics: [{ name: 'eventCount' }] },
+    });
+    const rows = rt.data.rows || [];
+    lines.push(`Realtid (30 min): ${rows.length ? rows.map(r => `${r.dimensionValues[0].value}=${r.metricValues[0].value}`).join(', ') : 'inga event'}`);
+  } catch (err) {
+    lines.push(`Realtid misslyckades: ${err.message}`);
+  }
+
   const totals = await report({ metrics: [{ name: 'sessions' }] });
   const visits = num(totals[0]?.metricValues[0]?.value);
   lines.push(`Sessions: ${visits}`);
