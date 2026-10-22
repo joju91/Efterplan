@@ -26,7 +26,10 @@ export default async function handler(req, res) {
   }
 
   const ip = getClientIp(req);
-  const { limited } = await checkRateLimit('explain-document', ip, DAILY_LIMIT_PER_IP);
+  const { limited, unavailable } = await checkRateLimit('explain-document', ip, DAILY_LIMIT_PER_IP, { failClosed: true });
+  if (unavailable) {
+    return res.status(503).json({ ok: false, error: 'rate_limit_unavailable' });
+  }
   if (limited) {
     return res.status(429).json({ ok: false, error: 'rate_limited' });
   }
@@ -38,6 +41,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'missing_or_invalid_image' });
   }
   const [, mediaType, base64Data] = match;
+  if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(mediaType)) {
+    return res.status(415).json({ ok: false, error: 'unsupported_image_type' });
+  }
+  if (base64Data.length > 7_000_000) return res.status(413).json({ ok: false, error: 'image_too_large' });
 
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {

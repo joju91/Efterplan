@@ -1,12 +1,12 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v19';
+const CACHE = 'efterplan-v20';
 const ASSETS = [
   './',
   './index.html',
-  './style.css',
+  './style.css?v=14',
   './style-tokens.css?v=7',
   './app.js',
-  './supabase-client.js?v=3',
+  './supabase-client.js?v=4',
   './manifest.json',
   './icon.svg',
   './og.png',

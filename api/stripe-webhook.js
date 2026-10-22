@@ -24,9 +24,19 @@ export default async function handler(req, res) {
 
   try {
     if (event.type === 'checkout.session.completed') {
-      const s = event.data.object;
-      if (s.payment_status !== 'paid') {
+      const eventSession = event.data.object;
+      if (eventSession.payment_status !== 'paid') {
         return res.status(200).json({ received: true, skipped: 'unpaid' });
+      }
+      // Only Efterplan's own one-time Premium product may create an entitlement.
+      // Webhook signatures authenticate Stripe, not the purpose of a session.
+      const s = await getStripe().checkout.sessions.retrieve(eventSession.id, { expand: ['line_items'] });
+      const item = s.line_items?.data?.[0];
+      if (s.mode !== 'payment' || s.metadata?.source !== 'efterplan_paywall' ||
+          s.payment_status !== 'paid' || s.amount_total <= 0 ||
+          item?.price?.id !== process.env.STRIPE_PRICE_ID || item.quantity !== 1 ||
+          !!s.livemode !== !!event.livemode) {
+        return res.status(200).json({ received: true, skipped: 'not_efterplan_premium' });
       }
       const email =
         normalizeEmail(s.customer_details?.email) ||
