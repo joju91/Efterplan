@@ -1,4 +1,4 @@
-name: Update Sitemap & Notify Google
+name: Update Sitemap & Notify Google + IndexNow
 
 # Triggas av push till main som rör en .html-sida. sitemap.xml är .xml, inte
 # .html, så bot-committen från detta workflow triggar inte sig själv igen.
@@ -8,6 +8,11 @@ on:
     paths:
       - '*.html'
   workflow_dispatch: # tillåt manuell körning från Actions-fliken (t.ex. för test)
+    inputs:
+      indexnow_all:
+        description: 'Skicka ALLA sitemap-URL:er till IndexNow (inte bara ändrade)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write # behöver kunna pusha uppdaterad sitemap.xml tillbaka till repo
@@ -53,6 +58,28 @@ jobs:
           GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
         run: node submit-sitemap.mjs
 
+      # Vercel deployar samma push parallellt. IndexNow hämtar nyckelfilen och
+      # sidorna, så vänta tills produktionen faktiskt serverar nyckeln.
+      - name: Wait for IndexNow key on production
+        id: keywait
+        if: steps.update.outputs.sitemap_changed == 'true' || inputs.indexnow_all
+        run: |
+          KEY_FILE=$(ls | grep -E '^[a-f0-9]{32}\.txt$' | head -1)
+          for i in $(seq 1 20); do
+            if [ "$(curl -s "https://efterplan.se/$KEY_FILE")" == "$(cat "$KEY_FILE")" ]; then
+              echo "Nyckelfilen är live."; exit 0
+            fi
+            echo "Väntar på deploy ($i/20)..."; sleep 15
+          done
+          echo "::error::https://efterplan.se/$KEY_FILE svarar inte med rätt nyckel efter 5 min"; exit 1
+
+      - name: Submit changed URLs to IndexNow (Bing m.fl.)
+        if: steps.keywait.outcome == 'success'
+        env:
+          UPDATED_URLS: ${{ steps.update.outputs.updated_urls }}
+          SUBMIT_ALL: ${{ inputs.indexnow_all && 'true' || 'false' }}
+        run: node scripts/indexing/submit-indexnow.mjs
+
       - name: Write summary
         if: always()
         run: |
@@ -63,4 +90,5 @@ jobs:
             else
               echo "ℹ️ Ingen ändring i sitemap.xml — inget att skicka till Google."
             fi
+            echo "IndexNow: ${{ steps.keywait.outcome == 'success' && 'skickat (se loggen)' || 'hoppades över' }}"
           } >> "$GITHUB_STEP_SUMMARY"

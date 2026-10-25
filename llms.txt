@@ -1,0 +1,77 @@
+# Efterplan
+
+> Efterplan (efterplan.se) är ett gratis, oberoende svenskt webbverktyg för anhöriga som ska sköta det praktiska efter ett dödsfall: bank, bouppteckning, arvskifte, abonnemang, post, bostad och papper. Användaren svarar på några frågor och får en personlig checklista i rätt ordning, med tidsgränser, arbetsfördelning mellan anhöriga och färdiga brev. Ingen registrering krävs. Efterplan är inte juridisk rådgivning och inte samtalsstöd.
+
+Fakta om tjänsten:
+
+- Pris: gratis, alla funktioner. Inget konto behövs för att komma igång.
+- Språk och land: svenska, svensk lag (ärvdabalken) och svenska myndigheter (Skatteverket, Försäkringskassan, Pensionsmyndigheten).
+- Vad verktyget gör: personlig checklista för dödsbo, prioriterade uppgifter med deadlines, fördelning av uppgifter mellan flera anhöriga, färdiga brev (uppsägning, fullmakt, dödsannons m.fl.), översikt inför bouppteckning, PDF-export.
+- Myndigheterna säger vad som gäller — Efterplan hjälper dig att faktiskt göra det, i rätt ordning.
+- Viktiga tidsgränser som verktyget bygger på: bouppteckningen ska förrättas inom 3 månader från dödsfallet (ärvdabalken 20 kap. 1 §) och lämnas in till Skatteverket inom en månad från förrättningen (20 kap. 8 §).
+
+## Verktyget
+
+- [Skapa en personlig plan](https://efterplan.se/): Startsida och själva verktyget — checklista, plan och brev efter ett dödsfall.
+- [Gratis checklista + uppsägningsbrev](https://efterplan.se/gratis-checklista-abonnemang.html): Kryssa i abonnemang och få checklista och färdigt uppsägningsbrev.
+- [Arvskiftesavtal-mall](https://efterplan.se/arvskifte-mall.html): Fyll i arvingar och tillgångar och få ett utskriftsklart arvskiftesavtal.
+- [Om Efterplan](https://efterplan.se/om.html): Vem som står bakom tjänsten och varför den finns.
+
+## Första tiden
+
+- [Vad gör man när någon dör?](https://efterplan.se/vad-gora-nar-nagon-dor.html): De första stegen i rätt ordning — 112 eller 1177, begravningsbyrå, närstående, post.
+- [Första veckan efter dödsfall](https://efterplan.se/dodsbo-checklista-7-dagar.html): Bara de akuta uppgifterna, dag för dag.
+- [Checklista dödsbo](https://efterplan.se/checklista-dodsbo.html): Hela processen från första dygnet till arvskifte, med tidsgränser.
+- [Dödsfallsintyg](https://efterplan.se/dodsfallsintyg.html): Skillnaden mot dödsbevis och hur du beställer intyg med släktutredning.
+- [Eftersändning av post för dödsbo](https://efterplan.se/eftersandning-post-dodsbo.html): Eftersändning hos Svensk Adressändring och adressanmälan till Skatteverket — två olika ärenden.
+- [Begravningsbyrå](https://efterplan.se/begravningsbyra.html): Så väljer du byrå och vad du ska fråga.
+- [Vad kostar en begravning?](https://efterplan.se/vad-kostar-en-begravning.html): Kostnader, vad som ingår och vem som betalar.
+- [Begravning utomlands](https://efterplan.se/begravning-utomlands.html): Hemtransport, kostnad och ambassadkontakt.
+- [Dödsannons](https://efterplan.se/dodsannons.html): Mall och priser.
+- [Gravsten](https://efterplan.se/gravsten.html): Priser per typ och hur du beställer.
+
+## Bouppteckning och dödsbo
+
+- [Bouppteckning](https://efterplan.se/bouppteckning-guide.html): Vad den är, tidsgränser, förrättningsmän, kostnad och hur du gör den själv.
+- [Bouppteckning — tidslinje](https://efterplan.se/bouppteckning-tidslinje.html): Alla deadlines i ordning.
+- [Dödsboanmälan](https://efterplan.se/dodsboanmalan.html): Alternativet till bouppteckning när tillgångarna bara räcker till begravningen.
+- [Fullmakt dödsbo](https://efterplan.se/fullmakt-dodsbo.html): Vem som företräder dödsboet och hur fullmakten skrivs.
+- [Boutredningsman](https://efterplan.se/boutredningsman.html): När och hur man begär en.
+- [Dödsbo skulder](https://efterplan.se/dodsbo-skulder.html): Arvingar ärver inte skulder — så betalas dödsboets skulder.
+- [Bankkonto vid dödsfall](https://efterplan.se/bankkonto-dodsfall.html): Vad banken gör och hur löpande räkningar betalas.
+- [Deklarera dödsbo](https://efterplan.se/dodsbo-deklaration.html): Inkomstdeklaration för dödsåret och senare år.
+- [Digitalt dödsbo](https://efterplan.se/digital-dodsbo.html): Facebook, Google, Swish, BankID och digital post.
+- [Säga upp abonnemang vid dödsfall](https://efterplan.se/saga-upp-abonnemang-vid-dodsfall.html): Vilka avtal som ska sägas upp och i vilken ordning.
+- [Säga upp hyresrätt](https://efterplan.se/saga-upp-hyresratt-dodsbo.html): Uppsägningstid och vem som skriver under.
+- [Dödsbo och bostadsrätt](https://efterplan.se/dodsbo-bostadsratt.html): Avgift, försäljning och överlåtelse.
+- [Dödsbo fastighet](https://efterplan.se/dodsbo-fastighet.html): Sälja hus och villa ur dödsbo.
+- [Sälja dödsbo](https://efterplan.se/salja-dodsbo.html): Bostad och lösöre — regler och skatt.
+- [Tömma dödsbo](https://efterplan.se/tomma-dodsbo.html): Steg, kostnad och vad som händer med saker ingen vill ha.
+- [Dödsboauktion](https://efterplan.se/dodsbo-auktion.html): Hur auktion fungerar och vad den kostar.
+- [Dödsbo bil](https://efterplan.se/dodsbo-bil.html): Ägarbyte, försäkring och fordonsskatt.
+- [Dödsbo eget företag](https://efterplan.se/dodsbo-eget-foretag.html): Enskild firma och aktiebolag när ägaren dör.
+- [Husdjur efter dödsfall](https://efterplan.se/husdjur-efter-dodsfall.html): Vem tar hand om djuret.
+
+## Arv och arvskifte
+
+- [Arvskifte](https://efterplan.se/arvskifte-guide.html): Arvsordningen, arvskiftesavtalet och vad som gäller vid oenighet.
+- [Laglott](https://efterplan.se/laglott.html): Bröstarvinges rätt och jämkning av testamente.
+- [Särkullbarn](https://efterplan.se/sarkullbarn.html): Rätt att ärva direkt.
+- [Sambo och arv](https://efterplan.se/sambo-arv.html): Sambor ärver inte enligt lag.
+- [Arvsavstående](https://efterplan.se/arvsavstaende.html): Hur man avstår arv och vad det innebär.
+- [Arvsskatt](https://efterplan.se/arvsskatt.html): Sverige har ingen arvsskatt sedan 2005.
+- [Internationellt arv](https://efterplan.se/internationellt-arv.html): EU:s arvsförordning och tillgångar utomlands.
+- [Testamente](https://efterplan.se/testamente-guide.html): Skriva, ändra och bevaka.
+- [Äktenskapsförord](https://efterplan.se/aktenskapsforord.html): Enskild egendom och bodelning vid dödsfall.
+- [Gåvobrev](https://efterplan.se/gavobrev.html): Regler och förskott på arv.
+
+## Ersättningar och försäkringar
+
+- [Efterlevandepension](https://efterplan.se/efterlevandepension.html): Vem som har rätt och hur man ansöker.
+- [Tjänstepension vid dödsfall](https://efterplan.se/tjanstepension-dodsfall.html): Återbetalningsskydd och efterlevandeskydd.
+- [Försäkring vid dödsfall](https://efterplan.se/forsakring-vid-dodsfall.html): Livförsäkring, TGL, hem- och bilförsäkring.
+
+## Optional
+
+- [Framtidsfullmakt](https://efterplan.se/framtidsfullmakt.html): Planera i förväg — så skriver du en giltig framtidsfullmakt.
+- [Sitemap](https://efterplan.se/sitemap.xml): Alla sidor med senaste ändringsdatum.
