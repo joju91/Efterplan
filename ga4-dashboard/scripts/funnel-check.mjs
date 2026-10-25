@@ -72,6 +72,21 @@ async function report(requestBody) {
   lines.push(`- task_completed: ${taskCompleted}`);
   lines.push('');
 
+  // Samma källfilter som AI-sektionen i weekly-report.mjs.
+  lines.push('## Trafik från AI-assistenter');
+  try {
+    const ai = await report({
+      dimensions: [{ name: 'sessionSource' }],
+      metrics: [{ name: 'sessions' }],
+      dimensionFilter: { filter: { fieldName: 'sessionSource', stringFilter: { matchType: 'PARTIAL_REGEXP', value: 'chatgpt|openai|perplexity|copilot|gemini|bard|claude|anthropic|mistral|deepseek|you\\.com|phind|meta\\.ai', caseSensitive: false } } },
+    });
+    if (!ai.length) lines.push('_Inga sessioner från AI-assistenter i perioden._');
+    else ai.forEach(r => lines.push(`- ${r.dimensionValues[0].value}: ${r.metricValues[0].value} sessions`));
+  } catch (err) {
+    lines.push(`_AI-källor misslyckades: ${err.message}_`);
+  }
+  lines.push('');
+
   lines.push('## Sidor (pageviews per path)');
   try {
     const pages = await report({
