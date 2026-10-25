@@ -43,9 +43,12 @@ Lokala `scheduled-tasks` ingår inte (inga Efterplan-uppgifter där).
 Per trigger:
 1. `list_runs` (limit 1). Startad < 20 h sedan → återanvänd den, kör inte om.
 2. Annars `run`.
-3. När alla är startade: vänta in dem (kolla `list_runs` var ~60 s med
-   `sleep` i Bash, max 20 min totalt). Läs sedan `get_run_log` och ta
-   `result:`-raden. Ej klar efter 20 min → notera "pågår" och gå vidare.
+3. När alla är startade: gör steg 2 medan de kör, vänta sedan in dem
+   (max 20 min totalt). Ensam `sleep` blockeras — vänta med Monitor/
+   `until`-loop eller kolla igen efter annat arbete. Läs resultatet en gång:
+   `get_run_log` → `result:`-raden lokalt; i molnet ger sessionsposten inget
+   resultat, läs då det routinen lämnat (veckorapport-fil, commits/PR:er,
+   mejl "Efterplan – åtgärd krävs" i inkorgen). Ej klar → notera "pågår".
 
 Spara per routine: status + fynd som kräver åtgärd (tom om inget).
 
@@ -95,6 +98,8 @@ Nästa ID: högsta `T<nummer>` i filen + 1. Owner-tickets börjar med
 
 Ta Claude-tickets i prioordning. Kodändringar: gren `drift/YYYY-MM-DD`, en
 commit per ticket, PR mot main.
+- Vänta på CI med `subscribe_pr_activity` (moln) eller en `until`-loop på
+  `gh pr checks`, inte `sleep`.
 - **Merga själv** när CI är grön och ändringen inte rör betalning (Stripe),
   auth, `supabase/`-schema, hemligheter eller radering av data.
 - Annars: lämna PR:en öppen och gör den till en Owner-punkt.
