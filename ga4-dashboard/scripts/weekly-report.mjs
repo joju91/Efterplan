@@ -99,6 +99,36 @@ async function fetchKpis() {
   }
 }
 
+// Trafik från AI-assistenter (ChatGPT, Perplexity, Copilot, Gemini, Claude …)
+// — mäter om LLM-SEO-satsningen (llms.txt, IndexNow, svar först) ger effekt.
+// 28 dagar eftersom volymerna är små. ChatGPT taggar länkar med
+// utm_source=chatgpt.com; övriga syns som referral-källa.
+const AI_SOURCE_REGEX = 'chatgpt|openai|perplexity|copilot|gemini|bard|claude|anthropic|mistral|deepseek|you\\.com|phind|meta\\.ai';
+
+async function fetchAiReferrals() {
+  try {
+    const source = { filter: { fieldName: 'sessionSource', stringFilter: { matchType: 'PARTIAL_REGEXP', value: AI_SOURCE_REGEX, caseSensitive: false } } };
+    const dateRanges = [{ startDate: '28daysAgo', endDate: 'yesterday' }];
+    const [sessionRows, planRows] = await Promise.all([
+      ga4Report({ dateRanges, dimensions: [{ name: 'sessionSource' }], metrics: [{ name: 'sessions' }], dimensionFilter: source }),
+      ga4Report({
+        dateRanges,
+        dimensions: [{ name: 'sessionSource' }],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: { andGroup: { expressions: [source, { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'plan_generated' } } }] } },
+      }),
+    ]);
+    const plans = Object.fromEntries(planRows.map(r => [r.dimensionValues[0].value, num(r.metricValues[0].value)]));
+    return {
+      rows: sessionRows
+        .map(r => ({ source: r.dimensionValues[0].value, sessions: num(r.metricValues[0].value), plans: plans[r.dimensionValues[0].value] || 0 }))
+        .sort((a, b) => b.sessions - a.sessions),
+    };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 async function checkUptime() {
   const pages = ['/', '/sambo-arv.html', '/efterlevandepension.html', '/dodsbo-bostadsratt.html', '/vad-gora-nar-nagon-dor.html'];
   const out = [];
@@ -156,7 +186,7 @@ function roadmapStatus() {
   };
 }
 
-function buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc }) {
+function buildMarkdown({ kpis, ai, uptime, git, audit, roadmap, gsc }) {
   const md = [];
   md.push(`# Efterplan Veckorapport — ${today}`);
   md.push('');
@@ -189,6 +219,22 @@ function buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc }) {
     md.push('**Kanaler:**');
     md.push('');
     kpis.channels.sort((a,b)=>b.sessions-a.sessions).forEach(c => md.push(`- ${c.name}: ${c.sessions}`));
+  }
+  md.push('');
+  md.push('## 🤖 Trafik från AI-assistenter (28 dagar — GA4)');
+  md.push('');
+  if (ai.error) {
+    md.push(`_GA4-anrop misslyckades: ${ai.error}_`);
+  } else if (!ai.rows.length) {
+    md.push('_Inga sessioner från ChatGPT, Perplexity, Copilot, Gemini, Claude m.fl. ännu._');
+  } else {
+    const total = ai.rows.reduce((s, r) => s + r.sessions, 0);
+    const plans = ai.rows.reduce((s, r) => s + r.plans, 0);
+    md.push(`**${total}** sessioner, **${plans}** skapade planer.`);
+    md.push('');
+    md.push('| Källa | Sessions | plan_generated |');
+    md.push('|-------|----------|----------------|');
+    ai.rows.forEach(r => md.push(`| ${r.source} | ${r.sessions} | ${r.plans} |`));
   }
   md.push('');
   md.push('## 🔍 GSC — Sidor på position 11–25 (90 dagar)');
@@ -237,11 +283,11 @@ function buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc }) {
 }
 
 (async () => {
-  const [kpis, uptime, gsc] = await Promise.all([fetchKpis(), checkUptime(), fetchGscPositions()]);
+  const [kpis, ai, uptime, gsc] = await Promise.all([fetchKpis(), fetchAiReferrals(), checkUptime(), fetchGscPositions()]);
   const git = gitActivity();
   const audit = npmAudit();
   const roadmap = roadmapStatus();
-  const md = buildMarkdown({ kpis, uptime, git, audit, roadmap, gsc });
+  const md = buildMarkdown({ kpis, ai, uptime, git, audit, roadmap, gsc });
   writeFileSync(outFile, md, 'utf8');
   console.log(`Veckorapport skriven: ${outFile}`);
 })().catch(err => { console.error('FAIL:', err); process.exit(1); });

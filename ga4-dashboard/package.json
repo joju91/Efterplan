@@ -11,6 +11,6 @@
   "dependencies": {
     "dotenv": "^18.0.8",
     "express": "^5.0.0",
-    "googleapis": "^186.0.0"
+    "googleapis": "^188.0.0"
   }
 }
