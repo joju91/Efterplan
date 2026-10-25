@@ -74,7 +74,7 @@ function lastmodFor(file) {
 }
 
 function parseExistingSitemap() {
-  const existing = new Map(); // url -> { priority, changefreq }
+  const existing = new Map(); // url -> { priority, changefreq, lastmod }
   if (!existsSync(SITEMAP_PATH)) return existing;
   const xml = readFileSync(SITEMAP_PATH, 'utf8');
   const urlBlocks = xml.match(/<url>[\s\S]*?<\/url>/g) || [];
@@ -82,7 +82,8 @@ function parseExistingSitemap() {
     const loc = block.match(/<loc>([^<]+)<\/loc>/)?.[1];
     const priority = block.match(/<priority>([^<]+)<\/priority>/)?.[1] ?? DEFAULT_PRIORITY;
     const changefreq = block.match(/<changefreq>([^<]+)<\/changefreq>/)?.[1] ?? DEFAULT_CHANGEFREQ;
-    if (loc) existing.set(loc, { priority, changefreq });
+    const lastmod = block.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1];
+    if (loc) existing.set(loc, { priority, changefreq, lastmod });
   }
   return existing;
 }
@@ -164,18 +165,28 @@ function main() {
     writeFileSync(SITEMAP_PATH, newXml, 'utf8');
   }
 
+  // Nya sidor + sidor vars lastmod flyttats — det är dessa IndexNow ska få veta om.
+  const updatedUrls = entries
+    .filter((e) => existing.get(e.loc)?.lastmod !== e.lastmod)
+    .map((e) => e.loc);
+
   const summary = {
     changed,
     totalUrls: entries.length,
     added: brandNew.map(urlForFile),
     removed: removedUrls,
+    updated: updatedUrls,
   };
 
   console.log(JSON.stringify(summary, null, 2));
 
   // Exponera för workflow-steg via GITHUB_OUTPUT om tillgängligt.
   if (process.env.GITHUB_OUTPUT) {
-    writeFileSync(process.env.GITHUB_OUTPUT, `sitemap_changed=${changed}\n`, { flag: 'a' });
+    writeFileSync(
+      process.env.GITHUB_OUTPUT,
+      `sitemap_changed=${changed}\nupdated_urls=${JSON.stringify(updatedUrls)}\n`,
+      { flag: 'a' }
+    );
   }
 }
 

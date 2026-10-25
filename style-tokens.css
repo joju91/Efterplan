@@ -266,3 +266,25 @@ details.info-box p {
 }
 .bopp-select--full { flex-basis: 100%; order: 3; }
 .bopp-row--wrap .bopp-check-inline { order: 4; }
+
+/* LLM-SEO — källförteckning sist i guiderna. Räknas inte in i h2-numreringen. */
+.seo-article .seo-sources {
+  margin: var(--space-lg) 0 0;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--rule);
+  max-width: var(--measure);
+}
+.seo-article .seo-sources h2 {
+  display: block;
+  counter-increment: none;
+  font-family: var(--font);
+  font-variation-settings: normal;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-xs);
+}
+.seo-article .seo-sources h2::before { content: none; }
+.seo-article .seo-sources li { font-size: var(--fs-sm); }
