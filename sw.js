@@ -1,5 +1,5 @@
 /* Efterplan — Service Worker */
-const CACHE = 'efterplan-v22';
+const CACHE = 'efterplan-v23';
 const ASSETS = [
   './',
   './index.html',
