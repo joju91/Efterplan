@@ -907,5 +907,13 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐-tickets:
 - `ga4-dashboard` 0 sårbarheter — rent
 - `auth-modal.html` meta → T274 ✔ (falskt positiv, löst)
 
-**Observandum:** T295 status "Väntar på T294" är nu inaktuell — T294 är ✔. T295 kan påbörjas.
-**Observandum:** T290 Anthropic-nyckel löpte ut 2026-10-27 — verifiera att Owner roterade nyckeln (visas som ✔ i VECKORAPPORT-TICKETS 2026-10-25 men ☐ i huvudtabellen).
+~~**Observandum:** T295 status "Väntar på T294" är nu inaktuell — T294 är ✔. T295 kan påbörjas.~~ Inaktuellt: T295 stängd (x) 2026-10-25, se T306.
+~~**Observandum:** T290 Anthropic-nyckel löpte ut 2026-10-27 — verifiera att Owner roterade nyckeln (visas som ✔ i VECKORAPPORT-TICKETS 2026-10-25 men ☐ i huvudtabellen).~~ Inaktuellt: T290 är ✔ i huvudtabellen (Owner roterade 2026-10-25), se T306.
+
+---
+
+# 🛠 DRIFT — 2026-10-26
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T306 | Städa inaktuella observanda i VECKORAPPORT 2026-10-26 (`roadmap.md`): T290 är redan ✔ (nyckeln roterad 2026-10-25) och T295 är stängd (x) 2026-10-25 — observanda överstrukna med hänvisning. | 2026-10-26 | Drift | Routine monday-efterplan-weekly-update | 🟢 | Docs | ✔ |
