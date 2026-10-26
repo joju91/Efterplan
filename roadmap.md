@@ -897,3 +897,15 @@ Strukturerad design-/kvalitetsgenomgång av hela sajten — `teach-impeccable �
 |----|------|------|-------|--------|----------|------|--------|
 | T304 | **body-parser HIGH DoS-sårbarhet i ga4-dashboard (GHSA-27r3-jxmh-p828)** — `npm audit` visar 1 HIGH: `body-parser 2.3.0` sårbar för Denial of Service via trailing bytes efter en komprimerad request body. Skiljer sig från T242 (GHSA-v422-hmwv-36x6, low, ✔). Fix tillgänglig: `cd ga4-dashboard && npm audit fix` (ändrar bara lockfile). Fil: `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/154 | 2026-10-25 | Fas 12 | Veckorapport | 🔴 | Dev/Sec | ✔ (2026-10-25: `npm audit fix` → body-parser 2.4.0, 0 sårbarheter, server.js startar; PR drift/2026-10-25) |
 | T305 | **googleapis minor-uppgradering i ga4-dashboard (186.0.0 → 188.0.0)** — `npm outdated` visar `googleapis Latest: 188.0.0` mot locked `186.0.0` (2 minor versioner sedan T282 ✔). Troligen bakåtkompatibel men granska changelog för ny GA4 Analytics Data API-typ. Kör `cd ga4-dashboard && npm install googleapis@^188`, verifiera att `scripts/weekly-report.mjs` returnerar korrekt data. Fil: `ga4-dashboard/package.json`, `ga4-dashboard/package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/155 | 2026-10-25 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ 2026-10-25: googleapis ^188.0.0 i ga4-dashboard, 0 sårbarheter, funnel-check körd mot GA4 med nya versionen. |
+
+---
+
+# 🔍 VECKORAPPORT — 2026-10-26
+
+Inga nya tickets. Alla granskningsfynd hade befintliga ☐-tickets:
+- `stripe 23.0.1` → T275 ☐ (öppen sedan 2026-10-05)
+- `ga4-dashboard` 0 sårbarheter — rent
+- `auth-modal.html` meta → T274 ✔ (falskt positiv, löst)
+
+**Observandum:** T295 status "Väntar på T294" är nu inaktuell — T294 är ✔. T295 kan påbörjas.
+**Observandum:** T290 Anthropic-nyckel löpte ut 2026-10-27 — verifiera att Owner roterade nyckeln (visas som ✔ i VECKORAPPORT-TICKETS 2026-10-25 men ☐ i huvudtabellen).
