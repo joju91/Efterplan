@@ -917,3 +917,13 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐-tickets:
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T306 | Städa inaktuella observanda i VECKORAPPORT 2026-10-26 (`roadmap.md`): T290 är redan ✔ (nyckeln roterad 2026-10-25) och T295 är stängd (x) 2026-10-25 — observanda överstrukna med hänvisning. | 2026-10-26 | Drift | Routine monday-efterplan-weekly-update | 🟢 | Docs | ✔ |
+
+---
+
+# 🔍 VECKORAPPORT — 2026-10-29
+
+Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
+- `stripe 23.0.1` → T275 ☐ (öppen sedan 2026-10-05)
+- `ga4-dashboard` 0 sårbarheter — rent
+- `auth-modal.html` meta → T274 ✔ (falskt positiv, löst)
+- GA4_SERVICE_ACCOUNT_JSON ej i sandlåda → T270 ☐ (blockerar funneldata-läsning)
