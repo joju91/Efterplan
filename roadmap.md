@@ -937,3 +937,11 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 | T307 | **Owner, senast nu:** Anthropic-kontot har slut på krediter — `api/categorize-document.js` svarar `502 ai_request_failed` (Vercel-logg 2026-10-29: `Your credit balance is too low to access the Anthropic API`). AI-kategorisering och AI-förklaring i Arkiv fungerar inte. Nyckeln själv är giltig (T290). Köp krediter eller slå på auto-reload på console.anthropic.com/settings/billing. Verifiera efteråt: POST en bild till `/api/categorize-document` ska ge 200. | 2026-10-29 | Drift | Gmail + Vercel-logg | 🔴 | Owner/Infra | ☐ |
 | T308 | Ta bort kvarglömda `.codex-mcp-merge/` (merge-rester base/local/remote från en tidigare Codex-session, refereras inte någonstans). Weekly Health Check (lychee) har fallerat sedan 2026-10-25 på 270 brutna `file://`-länkar i katalogen — inga andra fel. Issue #166. | 2026-10-29 | Drift | Gmail + Routine nattrapport | 🟠 | Infra | ✔ |
 | T309 | **Owner, senast 4 nov:** Google Ads kräver en Google-nyckel (passkey) för känsliga åtgärder från 11 nov, och nyckeln kan ta upp till 7 dagar att börja fungera. Skapa den under myaccount.google.com → Säkerhet → Nycklar (eller via länken i mejlet från googleads-noreply 2026-10-26). Påverkar inte inloggning eller pågående kampanjer. | 2026-10-29 | Drift | Gmail | 🟠 | Owner | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-11-02
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T310 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.117.2, senaste är 2.118.0 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/169 | 2026-11-02 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
