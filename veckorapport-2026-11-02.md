@@ -1,72 +1,83 @@
-# Efterplan — 2026-11-02
+# Efterplan Veckorapport — 2026-11-02
 
-🔢 Sessions: GA4 SAKNAS — creds ej i sandlåda (T270 ☐)
-
-🔧 Uptime: ej verifierbar (sandlådeproxy returnerar 403) | Sårbarheter: 0 | Beroenden: 1 patch
-   - `@supabase/supabase-js` låst 2.117.2, latest 2.118.0 — T310 ☐ (ny)
-   - `stripe` 22.6.2 vs latest 23.1.0 — T275 ☐ (öppen sedan 2026-10-05)
-
-📣 T307 (Anthropic-krediter slut) blockerar Arkiv-AI och T309 kräver Google-nyckel senast **4 nov (om 2 dagar)** — Owner måste agera idag.
-
-🎫 Nya tickets: T310 – supabase-js 2.118.0 patch (#169)
-
-✅ Åtgärder att godkänna:
-| # | Åtgärd | Fil | P |
-|---|--------|-----|---|
-| 1 | T310 lagt till i roadmap.md | roadmap.md | 0 |
-| 2 | veckorapport-2026-11-02.md skapad | veckorapport-2026-11-02.md | 0 |
+> Genererad automatiskt av GitHub Actions (`.github/workflows/weekly-report.yml`).
 
 ---
 
-## DEL 1 — GA4
+## 🔢 Nyckeltal (7 dagar — GA4)
 
-GA4 SAKNAS — hoppar över DEL 1. `GA4_SERVICE_ACCOUNT_JSON` finns bara som GitHub Actions-secret, inte i molnsandlådan. T270 ☐ blockerar GA4-analys.
+| Mått | Värde |
+|------|-------|
+| Sessions | **90** |
+| Users | 85 |
+| Engagement rate | 48.9% |
+| Organisk andel | 53 (58.9%) |
+| onboarding_start | 0 (0.0% av sessions) |
+| plan_generated | 0 (0.0% av onboarding_start) |
+| task_completed | 0 |
 
-## DEL 2 — Kodaudit
+**Kanaler:**
 
-**Missing meta descriptions:** `auth-modal.html` — känd falskt positiv (body-fragment, ej standalone-sida). T100 `x`, T274 ✔.
+- Organic Search: 53
+- Direct: 31
+- AI Assistant: 3
+- Referral: 2
+- Paid Search: 1
 
-**TODOs/FIXMEs:** Inga hittade.
+## 🤖 Trafik från AI-assistenter (28 dagar — GA4)
 
-**GA4-events i app.js:**
-- `onboarding_start` (rad 287), `onboarding_step` (rad 372), `checkbox_toggle` (rad 430)
-- `plan_generated` (rad 446), `note_saved` (rad 1201), `deadline_dates_computed` (rad 1150)
-- `premium_activated` (rad 184), `bill_added` (rad 1759), `preview_cta_clicked` (rad 1358)
+**4** sessioner, **0** skapade planer.
 
-**Sårbarheter (ga4-dashboard):** 0 — rent.
+| Källa | Sessions | plan_generated |
+|-------|----------|----------------|
+| gemini.google.com | 3 | 0 |
+| chatgpt.com | 1 | 0 |
 
-**npm outdated:**
-- `@supabase/supabase-js`: lock 2.117.2, latest 2.118.0 → T310 (ny, 🟡)
-- `stripe`: lock 22.6.2, latest 23.1.0 → T275 ☐ (öppen)
+## 🔍 GSC — Sidor på position 11–25 (90 dagar)
 
-**Uptime:** Ej verifierbar från sandlåda (proxy blockerar utgående HTTPS till efterplan.se).
+| Pos | Klick | Visn | CTR | Sida |
+|-----|-------|------|-----|------|
+| 21.5 | 13 | 7491 | 0.2% | `/gravsten.html` |
+| 21.5 | 1 | 320 | 0.3% | `/bankkonto-dodsfall.html` |
+| 18.2 | 0 | 19 | 0.0% | `/internationellt-arv.html` |
+| 23.0 | 0 | 13 | 0.0% | `/arvsavstaende.html` |
+| 17.1 | 0 | 13 | 0.0% | `/eftersandning-post-dodsbo.html` |
+| 19.5 | 0 | 2 | 0.0% | `/tjanstepension-dodsfall.html` |
 
-## DEL 3 — Roadmap-status
+## 🟢 Uptime
 
-| Klara | Pågår | Ej startade |
-|-------|-------|-------------|
-| 238   | 13    | 36          |
+| Path | Status | Tid |
+|------|--------|-----|
+| `/` | 200 | 0.23s |
+| `/sambo-arv.html` | 200 | 0.17s |
+| `/efterlevandepension.html` | 200 | 0.13s |
+| `/dodsbo-bostadsratt.html` | 200 | 0.11s |
+| `/vad-gora-nar-nagon-dor.html` | 200 | 0.07s |
 
-**Pågående (urval):**
-- T015/T016 Validera stegordning med riktiga användare
-- T032 Test av hela köpflödet
-- T034 Bokio/Fortnox setup
-- T047/T081 Drop-off-analys
-- T060 Push-notiser (ej på main)
-- T079 Betald byrålisting
-- T307 🔴 Anthropic-krediter slut (Owner, nu)
-- T309 🟠 Google-nyckel senast **4 nov** (Owner, idag)
+## 📊 Git-aktivitet
 
-**Nästa öppna (T001, T003, T004):** företagsregistrering och bankärenden.
+- **7** commits, **28** filer ändrade
 
-**Marknadsinsikt:** Kampanjen är live men konverteringsdata saknas så länge Anthropic-kontot är urladdat (T307) — köp krediter idag och verifiera att Arkiv-AI svarar 200 igen.
+### Commits
 
-## DEL 4 — Auto-tickets
+- `2805ba9 Merge pull request #170 from joju91/drift/2026-11-02`
+- `93f7adb Drift 2026-11-02: T310 supabase-js 2.118.0 + T311`
+- `c9757c5 Veckorapport 2026-11-02: T310 + status`
+- `d11dc5b Merge pull request #168 from joju91/drift/2026-10-29`
+- `1703b42 Drift 2026-10-29: tickets T307-T309`
+- `40d744b T308: ta bort kvarglömda .codex-mcp-merge/`
+- `8515450 Veckorapport 2026-10-29: inga nya tickets + status`
 
-| ID | Beskrivning | Fil | Prio |
-|----|-------------|-----|------|
-| T310 | `@supabase/supabase-js` 2.117.2 → 2.118.0 patch-uppdatering | package-lock.json | 🟡 |
+## 🔧 Teknisk audit
 
-## DEL 5 — GitHub Issues
+- **npm audit (ga4-dashboard):** 0 critical · 0 high · 0 moderate · 0 low
+- **Live-sajt:** 200 på 0.23s
 
-- T310: https://github.com/joju91/Efterplan/issues/169
+## 🗺️ Roadmap-status
+
+| Status | Antal |
+|--------|-------|
+| ✔ Klara | 256 |
+| ⧖ Pågår | 15 |
+| ☐ Ej startade | 46 |
+
