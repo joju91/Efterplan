@@ -944,4 +944,12 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T310 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.117.2, senaste är 2.118.0 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/169 | 2026-11-02 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T310 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.117.2, senaste är 2.118.0 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/169 | 2026-11-02 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ 2026-11-02: lockfile → 2.118.0 (drift/2026-11-02) |
+
+---
+
+# 🛠 DRIFT — 2026-11-02
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T311 | **Owner:** Anthropic-nyckeln "Ekonomi" (`apikey_01V3eTgv…`) gick ut 2026-10-31 (nattrapport-mejl 31 okt + 1 nov). Efterplans nyckel heter "Efterplan" (T290), så troligen gäller det Min ekonomi och inte efterplan.se — bekräfta på console.anthropic.com/settings/keys vilken nyckel Vercel-projektets `ANTHROPIC_API_KEY` är. Är det "Ekonomi": skapa ny nyckel och kör `npm run keys:rotate -- anthropic`. Agenten kunde inte läsa Vercel-env från molnet. | 2026-11-02 | Drift | Routine nattrapport / Gmail | 🟠 | Owner/Infra | ☐ |
