@@ -960,4 +960,4 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T312 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.118.0, senaste är 2.119.0 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Föregångare: T310 ✔ (2.117.2→2.118.0 2026-11-02). Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/174 | 2026-11-09 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T312 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.118.0, senaste är 2.119.0 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Föregångare: T310 ✔ (2.117.2→2.118.0 2026-11-02). Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/174 | 2026-11-09 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ 2026-11-09: lockfile → 2.119.0, 0 sårbarheter (drift/2026-11-09) |
