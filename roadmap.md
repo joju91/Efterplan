@@ -961,3 +961,12 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T312 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.118.0, senaste är 2.119.0 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Föregångare: T310 ✔ (2.117.2→2.118.0 2026-11-02). Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/174 | 2026-11-09 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ 2026-11-09: lockfile → 2.119.0, 0 sårbarheter (drift/2026-11-09) |
+
+---
+
+# 🛠 DRIFT — 2026-11-10
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T313 | Weekly Health Check (schemalagd 2026-11-09, run 42673685658) föll med "No jobs were run" — inga jobb startade, alltså ett startfel hos GitHub, inte ett fel på sajten. Kör om manuellt (`workflow_dispatch` på main) och bekräfta grönt. | 2026-11-10 | Drift | Gmail | 🟡 | Infra | ✔ 2026-11-10: omkörning run 42856730552 grön |
+| T314 | `/run` steg 1: `fire_trigger` vägrar i molnet routines skapade via `http_api` (nattrapport, community-scan, monday-weekly-update). Dokumentera i `.claude/skills/run/SKILL.md` att senaste schemalagda körningen återanvänds då. | 2026-11-10 | Drift | Routine | 🟢 | Docs | ✔ 2026-11-10: SKILL.md steg 1 uppdaterad |
