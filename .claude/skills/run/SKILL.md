@@ -42,7 +42,10 @@ Lokala `scheduled-tasks` ingår inte (inga Efterplan-uppgifter där).
 
 Per trigger:
 1. `list_runs` (limit 1). Startad < 20 h sedan → återanvänd den, kör inte om.
-2. Annars `run`.
+2. Annars `run`. I molnet vägrar `fire_trigger` routines skapade via
+   `http_api` (nattrapport, community-scan, monday-weekly-update; bara
+   AI-synlighet går). Vägras den: återanvänd senaste schemalagda körningen
+   (status i `last_run`) och läs det den lämnat — ingen Owner-punkt.
 3. När alla är startade: gör steg 2 medan de kör, vänta sedan in dem
    (max 20 min totalt). Ensam `sleep` blockeras — vänta med Monitor/
    `until`-loop eller kolla igen efter annat arbete. Läs resultatet en gång:
