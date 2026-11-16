@@ -16,6 +16,59 @@ läsa tråden i sin helhet först.
 
 ---
 
+## 2026-11-16
+
+**Forum:** RikaTillsammans Forumet (Juridik: familje-, arvs- och förmögenhetsrätt)
+**Tråd:** [Får en släkting hålla i arvet?](https://rikatillsammans.se/forum/t/far-en-slakting-halla-i-arvet/125730)
+**Senaste inlägg:** 2026-06-18
+**Fråga:** Syskon undrar om en farbror som sköter dödsboet får hålla kvar
+arvet och ge otydliga besked om när arvskiftet blir klart, utan att övriga
+delägare är med och bestämmer.
+
+**Föreslaget svar:**
+> Nej, en enskild dödsbodelägare – oavsett om det är en farbror eller någon
+> annan – får inte ensam bestämma över dödsboet. Det ska förvaltas
+> gemensamt av alla delägare, och beslut om när och hur arvskiftet görs ska
+> fattas tillsammans, inte av en person på egen hand.
+>
+> Be om en tydlig tidsplan: när bouppteckningen registrerades, vad som
+> återstår och varför det drar ut på tiden (ofta är det skatten som ska
+> säkras innan utbetalning, vilket är en legitim anledning till viss
+> fördröjning – men inte till tystnad). Om han inte ger raka svar kan ni
+> själva ringa Skatteverket och fråga var ärendet står.
+>
+> Fortsätter det att kärva kan ni gemensamt begära att tingsrätten utser en
+> boutredningsman som tar över förvaltningen opartiskt – en skälig åtgärd
+> om förtroendet är brutet. Få gärna besluten dokumenterade skriftligt
+> framöver, det underlättar om det blir fler oklarheter.
+
+---
+
+**Forum:** RikaTillsammans Forumet (Juridik: familje-, arvs- och förmögenhetsrätt)
+**Tråd:** [Behålla eller sälja av dödsboets aktier?](https://rikatillsammans.se/forum/t/behalla-eller-salja-av-dodsboets-aktier/123667)
+**Senaste inlägg:** 2026-06-16
+**Fråga:** Trådstartaren, vars förälder gått bort, undrar om dödsboets
+aktier ska säljas eller behållas och föras över till arvingarna.
+
+**Föreslaget svar:**
+> Beklagar sorgen. Kort sagt: beslutet om aktierna hör till arvskiftet, och
+> ni behöver inte bestämma det i stressen direkt efter dödsfallet. Ni kan
+> antingen sälja aktierna i dödsboets namn (då deklarerar dödsboet en
+> eventuell vinst nästa år) eller låta dem gå över till arvingarna i
+> befintligt skick, med samma anskaffningsvärde som innan – ingen skatt
+> utlöses förrän någon faktiskt säljer.
+>
+> Oavsett väg krävs att alla dödsbodelägare är överens, och försäljning
+> eller överföring kan normalt inte ske förrän bouppteckningen är
+> registrerad hos Skatteverket. Finns inget akut behov av pengarna är det
+> inte ovanligt att behålla innehavet tills bouppteckningen är klar, i
+> stället för att sälja i stress.
+>
+> Om du vill ha överblick över allt annat som ska göras i dödsboet under
+> tiden finns gratis checklistor på efterplan.se.
+
+---
+
 ## 2026-09-07
 
 **Forum:** Flashback Forum (Ekonomi/Juridik)
