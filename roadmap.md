@@ -970,3 +970,11 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 |----|------|------|-------|--------|----------|------|--------|
 | T313 | Weekly Health Check (schemalagd 2026-11-09, run 42673685658) föll med "No jobs were run" — inga jobb startade, alltså ett startfel hos GitHub, inte ett fel på sajten. Kör om manuellt (`workflow_dispatch` på main) och bekräfta grönt. | 2026-11-10 | Drift | Gmail | 🟡 | Infra | ✔ 2026-11-10: omkörning run 42856730552 grön |
 | T314 | `/run` steg 1: `fire_trigger` vägrar i molnet routines skapade via `http_api` (nattrapport, community-scan, monday-weekly-update). Dokumentera i `.claude/skills/run/SKILL.md` att senaste schemalagda körningen återanvänds då. | 2026-11-10 | Drift | Routine | 🟢 | Docs | ✔ 2026-11-10: SKILL.md steg 1 uppdaterad |
+
+---
+
+# 🛠 DRIFT — 2026-11-16
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T315 | **Owner:** Granska community-scan PR #179 (2 nya RikaTillsammans-trådar, svarsförslag i `community-watch.md`). Bestäm om du svarar själv; merga eller stäng PR:n. Inget postas automatiskt. https://github.com/joju91/Efterplan/pull/179 | 2026-11-16 | Drift | Routine community-scan | 🟡 | Marketing | ☐ |
