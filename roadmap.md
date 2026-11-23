@@ -978,3 +978,11 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T315 | **Owner:** Granska community-scan PR #179 (2 nya RikaTillsammans-trådar, svarsförslag i `community-watch.md`). Bestäm om du svarar själv; merga eller stäng PR:n. Inget postas automatiskt. https://github.com/joju91/Efterplan/pull/179 | 2026-11-16 | Drift | Routine community-scan | 🟡 | Marketing | ☐ |
+
+---
+
+# 🔍 VECKORAPPORT-TICKETS — 2026-11-23
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T316 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.119.0, senaste är 2.119.2 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Föregångare: T312 ✔ (2.118.0→2.119.0 2026-11-09). Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/185 | 2026-11-23 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
