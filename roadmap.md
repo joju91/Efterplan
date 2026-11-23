@@ -985,4 +985,12 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
-| T316 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.119.0, senaste är 2.119.2 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Föregångare: T312 ✔ (2.118.0→2.119.0 2026-11-09). Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/185 | 2026-11-23 | Fas 12 | Veckorapport | 🟡 | Dev | ☐ |
+| T316 | `@supabase/supabase-js` patch-uppdatering: `package-lock.json` låser 2.119.0, senaste är 2.119.2 (patch, inom `^2.105.4`-intervallet). Kör `npm update @supabase/supabase-js` och committa uppdaterad `package-lock.json`. 0 sårbarheter i båda versionerna. Föregångare: T312 ✔ (2.118.0→2.119.0 2026-11-09). Fil: `package-lock.json`. Issue: https://github.com/joju91/Efterplan/issues/185 | 2026-11-23 | Fas 12 | Veckorapport | 🟡 | Dev | ✔ 2026-11-23: lockfile → 2.119.2, 0 sårbarheter, `require` ok (drift/2026-11-23) |
+
+---
+
+# 🛠 DRIFT — 2026-11-23
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T322 | **Owner:** ID-krock i roadmap. Öppna PR #183 (AI-synlighet) lägger till T316–T321, men main har redan T316 (supabase-js, veckorapport 2026-11-23). Numrera om PR #183:s tickets till T323–T328 innan du mergar, eller stäng den. Nya drift-tickets hoppar över T317–T321 tills det är löst. https://github.com/joju91/Efterplan/pull/183 | 2026-11-23 | Drift | Routine monday-weekly-update | 🟢 | Docs | ☐ |
