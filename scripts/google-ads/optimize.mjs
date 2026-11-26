@@ -40,7 +40,16 @@ async function main() {
   if (perfErr) { console.error('[ads-optimize] perfData:', perfErr.message); process.exit(1); }
 
   if (!perfData?.length) {
-    const msg = `# Google Ads — optimering ${today}\n\nIngen prestandadata i databasen. Google Ads Script behöver installeras och ha kört minst en gång.\n\nSe \`scripts/google-ads/README.md\` för installationsinstruktioner.\n`;
+    // Skilj på "aldrig installerat" och "har slutat exportera" — det senare kräver en annan åtgärd.
+    const { data: lastRow } = await supabase
+      .from('ads_performance')
+      .select('snapshot_date')
+      .order('snapshot_date', { ascending: false })
+      .limit(1);
+    const last = lastRow?.[0]?.snapshot_date;
+    const msg = last
+      ? `# Google Ads — optimering ${today}\n\nIngen prestandadata de senaste 30 dagarna. Google Ads Script exporterade senast **${last}** och har slutat köra.\n\nKontrollera i Google Ads → Verktyg → Massåtgärder → Skript att skriptet är aktivt, auktoriserat och har schema. Kör det en gång manuellt. Se \`scripts/google-ads/README.md\`.\n`
+      : `# Google Ads — optimering ${today}\n\nIngen prestandadata i databasen. Google Ads Script behöver installeras och ha kört minst en gång.\n\nSe \`scripts/google-ads/README.md\` för installationsinstruktioner.\n`;
     const reportPath = join(REPORTS_DIR, `ads-optimization-${today}.md`);
     writeFileSync(reportPath, msg);
     console.log('[ads-optimize] Ingen data — rapport skapad med instruktioner.');
