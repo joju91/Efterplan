@@ -994,3 +994,12 @@ Inga nya tickets. Alla granskningsfynd hade befintliga ☐/✔-tickets:
 | ID | Task | Date | Phase | Source | Priority | Type | Status |
 |----|------|------|-------|--------|----------|------|--------|
 | T322 | **Owner:** ID-krock i roadmap. Öppna PR #183 (AI-synlighet) lägger till T316–T321, men main har redan T316 (supabase-js, veckorapport 2026-11-23). Numrera om PR #183:s tickets till T323–T328 innan du mergar, eller stäng den. Nya drift-tickets hoppar över T317–T321 tills det är löst. https://github.com/joju91/Efterplan/pull/183 | 2026-11-23 | Drift | Routine monday-weekly-update | 🟢 | Docs | ☐ |
+
+---
+
+# 🛠 DRIFT — 2026-11-26
+
+| ID | Task | Date | Phase | Source | Priority | Type | Status |
+|----|------|------|-------|--------|----------|------|--------|
+| T329 | **Owner:** Google Ads Script har slutat exportera. `ads_performance` har senaste rad **2026-10-05**, så optimeringsrapporterna 11-09, 11-16 och 11-23 (issue #188) är tomma, och kampanjen optimeras inte. Öppna Google Ads → Verktyg → Massåtgärder → Skript. Kontrollera att skriptet (`scripts/google-ads/ads-script.js`) är aktivt, auktoriserat och schemalagt, och kör det en gång manuellt. Kontrollera också att kampanjen faktiskt ska vara igång: den har kört i 7 veckor utan uppföljning. Kan hänga ihop med T309 (passkey för känsliga åtgärder från 11 nov). (T323–T328 hoppas över, reserverade för omnumreringen i T322.) | 2026-11-26 | Drift | Gmail (issue #188) + Supabase | 🟠 | Owner | ☐ |
+| T330 | `scripts/google-ads/optimize.mjs`: när de senaste 30 dagarna saknar data skriver rapporten nu datumet för den senaste exporten och att skriptet har slutat köra, i stället för "behöver installeras". | 2026-11-26 | Drift | Gmail (issue #188) | 🟢 | Dev | ✔ 2026-11-26: `node --check` ok (drift/2026-11-26) |
